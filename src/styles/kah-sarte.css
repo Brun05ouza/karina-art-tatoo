@@ -1,0 +1,165 @@
+/* Kah Sarte — Obsidian & Parchment Tattoo Atelier */
+
+:root {
+  --ks-bg: #131412;
+  --ks-surface: #131412;
+  --ks-surface-lowest: #0d0e0d;
+  --ks-surface-low: #1b1c1a;
+  --ks-surface-container: #1f201e;
+  --ks-surface-high: #292a29;
+  --ks-primary: #F2EDE2;
+  --ks-on-surface: #e4e2e0;
+  --ks-on-surface-variant: #cac6bc;
+  --ks-outline: #949087;
+  --ks-outline-variant: #49473f;
+  --ks-aged-gold: #e9c082;
+  --ks-aged-gold-muted: #dab275;
+  --ks-stencil-blue: #263C86;
+  --ks-moss: #223529;
+  --ks-purple: #3A2444;
+}
+
+/* Grain overlay */
+.ks-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: 0.038;
+  mix-blend-mode: overlay;
+}
+
+/* Typography */
+.ks-display-xl {
+  font-family: "Bodoni Moda", serif;
+  font-size: clamp(52px, 8vw, 108px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  font-weight: 400;
+}
+
+.ks-headline-lg {
+  font-family: "Bodoni Moda", serif;
+  font-size: clamp(38px, 5vw, 70px);
+  line-height: 1.05;
+  font-weight: 400;
+}
+
+.ks-headline-md {
+  font-family: "Bodoni Moda", serif;
+  font-size: clamp(26px, 3vw, 46px);
+  line-height: 1.15;
+  font-weight: 400;
+}
+
+.ks-body-lg {
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+.ks-body-md {
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 300;
+}
+
+.ks-label-caps {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* Cursor: only hide on mouse devices, keep tap indicator on touch */
+@media (pointer: fine) {
+  html, body { cursor: none; }
+}
+@media (pointer: coarse) {
+  html, body { cursor: auto !important; }
+  a, button { cursor: pointer !important; }
+}
+
+/* ── Responsive layout helpers ───────────────────────────────── */
+@media (max-width: 767px) {
+  .ks-manifesto-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  .ks-two-col {
+    grid-template-columns: 1fr !important;
+  }
+  .ks-gallery-row {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+  .ks-gallery-center-col {
+    grid-template-columns: 1fr !important;
+  }
+  .ks-gallery-offset {
+    margin-top: 0 !important;
+  }
+  .ks-footer-grid {
+    grid-template-columns: 1fr !important;
+    text-align: center;
+    gap: 20px !important;
+  }
+  .ks-footer-right {
+    justify-content: center !important;
+  }
+  .ks-hide-mobile { display: none !important; }
+
+  /* Gallery mobile */
+  .ks-gallery-frame {
+    height: auto !important;
+    aspect-ratio: 3 / 4;
+  }
+  .ks-gallery-spacer { display: none !important; }
+}
+
+/* Stroke animation for preloader */
+@keyframes ks-draw-line {
+  from { stroke-dashoffset: 400; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes ks-star-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.75; }
+}
+
+/* Preloader fade out */
+@keyframes ks-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Image grayscale */
+.ks-img-bw {
+  filter: grayscale(100%) contrast(1.05);
+  transition: filter 0.6s ease;
+}
+
+.ks-img-bw:hover {
+  filter: grayscale(80%) contrast(1.08);
+}
+
+/* Section spacing */
+.ks-section-gap {
+  margin-bottom: clamp(100px, 15vw, 200px);
+}
+
+/* Scrollbar hidden for horizontal scroll */
+.ks-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.ks-no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
