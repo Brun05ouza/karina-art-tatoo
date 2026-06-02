@@ -6,6 +6,8 @@ export function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<CursorState>("default");
   const [visible, setVisible] = useState(false);
+  const stateRef = useRef<CursorState>("default");
+  const visibleRef = useRef(false);
   const pos = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
   const raf = useRef<number>(0);
@@ -13,16 +15,34 @@ export function CustomCursor() {
   useEffect(() => {
     if (window.matchMedia("(pointer: coarse)").matches) return;
 
+    const updateVisible = (next: boolean) => {
+      if (visibleRef.current === next) return;
+      visibleRef.current = next;
+      setVisible(next);
+    };
+
+    const updateState = (next: CursorState) => {
+      if (stateRef.current === next) return;
+      stateRef.current = next;
+      setState(next);
+    };
+
     const onMove = (e: MouseEvent) => {
       pos.current = { x: e.clientX, y: e.clientY };
-      if (!visible) setVisible(true);
+      if (!visibleRef.current) {
+        current.current = { x: e.clientX, y: e.clientY };
+        updateVisible(true);
+      }
 
       const el = e.target as Element;
-      if (el.closest("[data-cursor='gallery']")) setState("gallery");
-      else if (el.closest("[data-cursor='cta']")) setState("cta");
-      else if (el.closest("a, button, [data-cursor='link']")) setState("link");
-      else setState("default");
+      if (el.closest("[data-cursor='gallery']")) updateState("gallery");
+      else if (el.closest("[data-cursor='cta']")) updateState("cta");
+      else if (el.closest("a, button, [data-cursor='link']")) updateState("link");
+      else updateState("default");
     };
+
+    const onLeave = () => updateVisible(false);
+    const onEnter = () => updateVisible(true);
 
     const loop = () => {
       current.current.x += (pos.current.x - current.current.x) * 0.12;
@@ -35,14 +55,16 @@ export function CustomCursor() {
 
     raf.current = requestAnimationFrame(loop);
     window.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseleave", () => setVisible(false));
-    document.addEventListener("mouseenter", () => setVisible(true));
+    document.addEventListener("mouseleave", onLeave);
+    document.addEventListener("mouseenter", onEnter);
 
     return () => {
       window.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseleave", onLeave);
+      document.removeEventListener("mouseenter", onEnter);
       cancelAnimationFrame(raf.current);
     };
-  }, [visible]);
+  }, []);
 
   const sizes: Record<CursorState, number> = {
     default: 18,
@@ -80,6 +102,7 @@ export function CustomCursor() {
         opacity: visible ? 1 : 0,
         backgroundColor: state !== "default" ? "rgba(242,237,226,0.05)" : "transparent",
         backdropFilter: state !== "default" ? "none" : "none",
+        willChange: "transform, width, height, opacity",
       }}
     >
       {label && (
