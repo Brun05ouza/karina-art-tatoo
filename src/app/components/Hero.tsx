@@ -113,7 +113,7 @@ export function Hero() {
         }}
       >
         <img
-          src="https://unsplash.com/photos/1GkrGVoFuWA/download?force=true&w=1800"
+          src="https://images.unsplash.com/photo-1589299784109-62eec2521302?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1800"
           alt=""
           aria-hidden="true"
           style={{

@@ -3,9 +3,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { Link, useLocation } from "react-router";
 import { Menu, X } from "lucide-react";
 import { StarGlyph } from "./StarGlyph";
+import { lockScroll, subscribeLenisScroll, unlockScroll } from "../scroll";
 
 const navLinks = [
   { label: "Inicio", href: "/" },
+  { label: "Sobre mim", href: "/sobre" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Produtos", href: "/produtos", featured: true },
 ];
@@ -17,21 +19,18 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 60);
-    window.addEventListener("scroll", handler, { passive: true });
-    handler();
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
+  useEffect(() => subscribeLenisScroll((scroll) => setScrolled(scroll > 60)), []);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    if (!menuOpen) return undefined;
+
+    lockScroll();
+    return () => unlockScroll();
   }, [menuOpen]);
 
-  useEffect(() => setMenuOpen(false), [location.pathname]);
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <>
@@ -60,13 +59,16 @@ export function Header() {
           </Link>
         </nav>
 
-        <button
+        <motion.button
           className="ks-menu-button"
           onClick={() => setMenuOpen((v) => !v)}
           aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={menuOpen}
+          whileTap={{ scale: 0.94 }}
+          transition={{ duration: 0.15, ease: EASE }}
         >
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        </motion.button>
       </motion.header>
 
       <AnimatePresence>
@@ -84,17 +86,13 @@ export function Header() {
             </div>
             <nav>
               {[...navLinks, { label: "Orçamento", href: "/orcamento" }].map((link, i) => (
-                <motion.div
+                <MobileNavLink
                   key={link.href}
-                  initial={{ opacity: 0, x: -24 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: 0.15 + i * 0.06, ease: EASE }}
-                >
-                  <Link to={link.href}>
-                    <span>{String(i + 1).padStart(2, "0")}</span>
-                    <strong>{link.label}</strong>
-                  </Link>
-                </motion.div>
+                  {...link}
+                  index={i}
+                  active={location.pathname === link.href}
+                  onNavigate={() => setMenuOpen(false)}
+                />
               ))}
             </nav>
             <div className="ks-mobile-note">BOTÂNICA / FREEHAND / SUMIÊ</div>
@@ -128,5 +126,43 @@ function NavItem({
         transition={{ duration: 0.3, ease: EASE }}
       />
     </Link>
+  );
+}
+
+const MotionLink = motion.create(Link);
+
+function MobileNavLink({
+  label,
+  href,
+  index,
+  active,
+  featured,
+  onNavigate,
+}: {
+  label: string;
+  href: string;
+  index: number;
+  active: boolean;
+  featured?: boolean;
+  onNavigate: () => void;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -24 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, delay: 0.15 + index * 0.06, ease: EASE }}
+    >
+      <MotionLink
+        to={href}
+        className={`ks-mobile-nav-link${active ? " active" : ""}${featured ? " featured" : ""}`}
+        onClick={onNavigate}
+        whileHover={{ x: 8 }}
+        whileTap={{ scale: 0.98, x: 12 }}
+        transition={{ duration: 0.2, ease: EASE }}
+      >
+        <span>{String(index + 1).padStart(2, "0")}</span>
+        <strong>{label}</strong>
+      </MotionLink>
+    </motion.div>
   );
 }

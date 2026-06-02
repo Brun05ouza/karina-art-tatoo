@@ -2,7 +2,7 @@ import { StarGlyph } from "./StarGlyph";
 
 const links = [
   { label: "INSTAGRAM", href: "https://www.instagram.com/karina.sarte" },
-  { label: "WHATSAPP", href: "https://wa.me/5524999999999" },
+  { label: "WHATSAPP", href: "https://wa.me/5521990724477" },
   { label: "EMAIL", href: "mailto:kah@kahsarte.com" },
 ];
 

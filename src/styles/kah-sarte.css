@@ -23,6 +23,17 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
 a,
 button,
 summary {
@@ -198,6 +209,17 @@ summary {
   border: 1px solid rgba(242, 237, 226, 0.18);
   background: rgba(13, 14, 13, 0.52);
   color: var(--ks-primary);
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ks-menu-button:hover {
+  border-color: rgba(233, 192, 130, 0.35);
+  color: var(--ks-aged-gold);
+}
+
+.ks-menu-button:active {
+  background: rgba(233, 192, 130, 0.12);
 }
 
 .ks-mobile-menu {
@@ -216,26 +238,57 @@ summary {
   gap: 2px;
 }
 
-.ks-mobile-menu a {
+.ks-mobile-nav-link {
   display: flex;
   align-items: baseline;
   gap: 16px;
   width: 100%;
-  padding: 16px 0;
+  padding: 16px 12px;
+  margin: 0 -12px;
   border-bottom: 1px solid rgba(242, 237, 226, 0.06);
   color: var(--ks-primary);
   text-decoration: none;
+  transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.ks-mobile-menu span {
+.ks-mobile-nav-link:hover,
+.ks-mobile-nav-link:focus-visible {
+  background: rgba(233, 192, 130, 0.06);
+  color: var(--ks-aged-gold);
+  outline: none;
+}
+
+.ks-mobile-nav-link:active {
+  background: rgba(233, 192, 130, 0.12);
+}
+
+.ks-mobile-nav-link.active {
+  color: var(--ks-aged-gold);
+  border-bottom-color: rgba(233, 192, 130, 0.24);
+}
+
+.ks-mobile-nav-link.featured {
+  border-left: 2px solid rgba(233, 192, 130, 0.35);
+  padding-left: 14px;
+}
+
+.ks-mobile-nav-link span {
   min-width: 24px;
   color: var(--ks-outline-variant);
   font-family: "JetBrains Mono", monospace;
   font-size: 8px;
   letter-spacing: 0.2em;
+  transition: color 0.25s ease;
 }
 
-.ks-mobile-menu strong {
+.ks-mobile-nav-link:hover span,
+.ks-mobile-nav-link:focus-visible span,
+.ks-mobile-nav-link.active span {
+  color: var(--ks-aged-gold);
+}
+
+.ks-mobile-nav-link strong {
   font-family: "Bodoni Moda", serif;
   font-size: clamp(31px, 10vw, 52px);
   font-weight: 400;
@@ -336,9 +389,213 @@ summary {
   align-items: start;
 }
 
+.ks-two-col-has-image {
+  align-items: center;
+}
+
+.ks-preview-image {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border: 1px solid rgba(242, 237, 226, 0.1);
+  background: var(--ks-surface-low);
+}
+
+.ks-preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(35%) contrast(1.06) brightness(0.92);
+}
+
+.ks-two-col-has-image > div:first-child p {
+  margin-top: 18px;
+}
+
 .ks-stack {
   display: grid;
   gap: 22px;
+}
+
+.ks-budget-form {
+  display: grid;
+  gap: 16px;
+}
+
+.ks-budget-label {
+  color: var(--ks-aged-gold);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ks-budget-textarea {
+  width: 100%;
+  min-height: 168px;
+  padding: 18px 20px;
+  border: 1px solid rgba(242, 237, 226, 0.14);
+  background: rgba(27, 28, 26, 0.72);
+  color: var(--ks-primary);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  resize: vertical;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.ks-budget-textarea::placeholder {
+  color: var(--ks-outline);
+}
+
+.ks-budget-textarea:focus {
+  outline: none;
+  border-color: rgba(233, 192, 130, 0.42);
+  background: rgba(27, 28, 26, 0.92);
+}
+
+.ks-budget-textarea[aria-invalid="true"] {
+  border-color: rgba(212, 24, 61, 0.6);
+}
+
+.ks-budget-error {
+  color: #e08a9b;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.ks-budget-preview {
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px solid rgba(242, 237, 226, 0.08);
+  background: rgba(13, 14, 13, 0.55);
+  color: var(--ks-on-surface-variant);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.ks-budget-preview-label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ks-outline);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ks-budget-preview-idea {
+  color: var(--ks-primary);
+}
+
+.ks-budget-form .ks-primary-link {
+  width: fit-content;
+  cursor: inherit;
+}
+
+.ks-about-me {
+  background: var(--ks-surface-lowest);
+}
+
+.ks-about-me-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(36px, 6vw, 88px);
+  align-items: center;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.ks-about-me-image {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border: 1px solid rgba(242, 237, 226, 0.1);
+  background: var(--ks-surface-low);
+}
+
+.ks-about-me-image img,
+.ks-about-me-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(35%) contrast(1.06) brightness(0.92);
+}
+
+.ks-about-me-carousel-count {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  padding: 8px 10px;
+  border: 1px solid rgba(242, 237, 226, 0.12);
+  background: rgba(13, 14, 13, 0.72);
+  color: var(--ks-outline);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+}
+
+.ks-about-me-carousel-dots {
+  position: absolute;
+  bottom: 58px;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+
+.ks-about-me-tag {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 2;
+  padding: 8px 12px;
+  border: 1px solid rgba(233, 192, 130, 0.28);
+  background: rgba(13, 14, 13, 0.72);
+  color: var(--ks-aged-gold);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ks-about-me-content {
+  display: grid;
+  gap: 20px;
+}
+
+.ks-about-me-content h2 {
+  margin: 0;
+}
+
+.ks-about-me-content p {
+  margin: 0;
+}
+
+.ks-about-me-quote {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  border-left: 1px solid rgba(233, 192, 130, 0.45);
+  color: var(--ks-primary);
+  font-family: "Bodoni Moda", serif;
+  font-size: clamp(22px, 3.2vw, 34px);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+.ks-about-me-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(16px, 3vw, 28px);
+  margin-top: 8px;
 }
 
 .ks-section-title {
@@ -560,7 +817,7 @@ summary {
 .ks-portfolio-mobile-dots { display: none; }
 
 .ks-flash-showcase {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .ks-flash-scroll-layout {
@@ -570,12 +827,13 @@ summary {
   max-width: 1180px;
   margin: 0 auto;
   align-items: stretch;
-  height: clamp(460px, 66vh, 640px);
+  min-height: clamp(540px, 72vh, 760px);
 }
 
 .ks-flash-feature {
   position: relative;
   overflow: hidden;
+  min-height: clamp(540px, 72vh, 760px);
   border: 1px solid rgba(242, 237, 226, 0.12);
   background: var(--ks-surface-low);
 }
@@ -592,8 +850,9 @@ summary {
 .ks-flash-feature > div {
   position: absolute;
   inset: auto 0 0;
-  padding: clamp(28px, 5vw, 58px);
-  background: linear-gradient(to top, rgba(13, 14, 13, 0.97), rgba(13, 14, 13, 0.58), transparent);
+  z-index: 1;
+  padding: clamp(24px, 4vw, 48px);
+  background: linear-gradient(to top, rgba(13, 14, 13, 0.98) 72%, rgba(13, 14, 13, 0.62), transparent);
 }
 
 .ks-flash-feature h3 {
@@ -616,8 +875,18 @@ summary {
 
 .ks-flash-strip {
   display: grid;
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(5, minmax(96px, 1fr));
   gap: 10px;
+  min-height: clamp(540px, 72vh, 760px);
+}
+
+.ks-flash-feature-cta {
+  display: inline-flex;
+  margin-top: 16px;
+}
+
+.ks-center-action.ks-flash-mobile-action {
+  display: none;
 }
 
 .ks-flash-mini-card {
@@ -735,7 +1004,8 @@ summary {
 }
 
 .ks-status.reservado,
-.ks-status.tatuado {
+.ks-status.tatuado,
+.ks-status.referencia {
   border-color: rgba(148, 144, 135, 0.26);
   color: var(--ks-outline);
 }
@@ -857,29 +1127,150 @@ summary {
   background: rgba(233, 192, 130, 0.1);
 }
 
-.ks-product-intro {
+.ks-tattoo-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.ks-tattoo-gallery-card {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: none;
+  background: var(--ks-surface-low);
+  cursor: inherit;
+  text-align: left;
+}
+
+.ks-tattoo-gallery-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(80%) contrast(1.08) brightness(0.88);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.65s ease;
+}
+
+.ks-tattoo-gallery-card:hover img,
+.ks-tattoo-gallery-card:focus-visible img {
+  transform: scale(1.06);
+  filter: grayscale(30%) contrast(1.06) brightness(0.92);
+}
+
+.ks-tattoo-gallery-card .ks-product-visual-cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ks-tattoo-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9001;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 4vw, 32px);
+  background: rgba(13, 14, 13, 0.88);
+  backdrop-filter: blur(6px);
+}
+
+.ks-tattoo-modal-panel {
+  position: relative;
+  width: min(100%, 520px);
+  max-height: min(92vh, 820px);
+  overflow: auto;
+  border: 1px solid rgba(242, 237, 226, 0.1);
+  background: var(--ks-surface-lowest);
+  scrollbar-width: none;
+}
+
+.ks-tattoo-modal-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.ks-tattoo-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(242, 237, 226, 0.16);
+  background: rgba(13, 14, 13, 0.72);
+  color: var(--ks-primary);
+  cursor: inherit;
+}
+
+.ks-tattoo-modal-image {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--ks-surface-low);
+}
+
+.ks-tattoo-modal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ks-tattoo-modal-body {
+  display: grid;
+  gap: 16px;
+  padding: clamp(20px, 4vw, 28px);
+}
+
+.ks-tattoo-modal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.ks-tattoo-modal-meta .ks-status {
+  margin-bottom: 0;
+}
+
+.ks-tattoo-modal-body h2 {
+  margin: 0;
+}
+
+.ks-tattoo-modal-body p {
+  margin: 0;
+}
+
+.ks-tattoo-modal-body .ks-primary-link {
+  width: fit-content;
+  margin-top: 4px;
+}
+
+.ks-section-intro {
   position: fixed;
   inset: 0;
   z-index: 9996;
   display: grid;
   place-items: center;
   background: rgba(13, 14, 13, 0.98);
+  pointer-events: none;
+  will-change: opacity;
+  backface-visibility: hidden;
 }
 
-.ks-product-intro h2 {
+.ks-section-intro h2 {
   margin: 0;
   color: var(--ks-primary);
   font-family: "Bodoni Moda", serif;
   font-size: clamp(36px, 7vw, 92px);
   font-weight: 400;
-}
-
-.ks-drawn-line {
-  position: absolute;
-  width: min(54vw, 520px);
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--ks-aged-gold), transparent);
-  transform-origin: left;
+  will-change: transform, opacity;
+  text-align: center;
+  padding-inline: clamp(20px, 5vw, 48px);
 }
 
 .ks-product-groups {
@@ -1072,6 +1463,9 @@ summary {
   .ks-products-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  .ks-tattoo-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* ── Mobile layout ───────────────────────────────────────────── */
@@ -1118,6 +1512,22 @@ summary {
   .ks-two-col {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
+  }
+  .ks-about-me-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .ks-about-me-image {
+    aspect-ratio: 3 / 4;
+    max-height: 72vw;
+  }
+  .ks-about-me-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ks-about-me-actions .ks-primary-link,
+  .ks-about-me-actions .ks-text-link {
+    justify-content: center;
   }
   .ks-manifesto-grid,
   .ks-gallery-row,
@@ -1171,13 +1581,20 @@ summary {
   .ks-flash-scroll-layout {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
+    min-height: 0;
     height: auto;
     gap: 16px;
   }
-  .ks-flash-feature { min-height: 56vw; max-height: 72vw; }
+  .ks-flash-feature {
+    min-height: 56vw;
+    max-height: 72vw;
+  }
+  .ks-flash-feature-cta { display: none; }
+  .ks-center-action.ks-flash-mobile-action { display: flex; }
   .ks-flash-strip {
+    min-height: 0;
     grid-template-rows: unset;
-    grid-template-columns: repeat(4, 72px);
+    grid-template-columns: repeat(6, 72px);
     gap: 8px;
     overflow-x: auto;
     scrollbar-width: none;
