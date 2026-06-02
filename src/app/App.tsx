@@ -370,12 +370,33 @@ function AnimatedRoutes() {
   }, []);
 
   useEffect(() => {
+    const BASE = "https://kahsartetattoo.com.br";
     const pageSeo = seo[location.pathname] ?? seo["/"];
+    const url = BASE + location.pathname;
+
+    // title
     document.title = pageSeo.title;
-    const meta = document.querySelector("meta[name='description']") ?? document.createElement("meta");
-    meta.setAttribute("name", "description");
-    meta.setAttribute("content", pageSeo.description);
-    document.head.appendChild(meta);
+
+    // helper: upsert <meta> / <link> by selector
+    const setMeta = (selector: string, attr: string, value: string) => {
+      let el = document.head.querySelector(selector);
+      if (!el) {
+        const tag = selector.startsWith("link") ? "link" : "meta";
+        el = document.createElement(tag);
+        const [a, v] = selector.replace(/[\[\]'"]/g, " ").trim().split(/\s+/);
+        el.setAttribute(a, v ?? "");
+        document.head.appendChild(el);
+      }
+      el.setAttribute(attr, value);
+    };
+
+    setMeta("meta[name='description']",           "content", pageSeo.description);
+    setMeta("link[rel='canonical']",               "href",    url);
+    setMeta("meta[property='og:url']",             "content", url);
+    setMeta("meta[property='og:title']",           "content", pageSeo.title);
+    setMeta("meta[property='og:description']",     "content", pageSeo.description);
+    setMeta("meta[name='twitter:title']",          "content", pageSeo.title);
+    setMeta("meta[name='twitter:description']",    "content", pageSeo.description);
 
     const timers = [
       window.setTimeout(() => refreshScrollMetrics(), 200),
