@@ -598,12 +598,17 @@ function PreviewSection({
       <div>
         <span className="ks-label-caps ks-gold">{eyebrow}</span>
         <h2 className="ks-headline-lg">{title}</h2>
+        {image && (
+          <div className="ks-preview-image ks-preview-image-mobile">
+            <img src={image} alt={imageAlt ?? ""} loading="lazy" />
+          </div>
+        )}
         {image && <p className="ks-body-lg ks-muted">{text}</p>}
         {to && cta && <TextLink to={to}>{cta}</TextLink>}
       </div>
       {image ? (
         <motion.div
-          className="ks-preview-image"
+          className="ks-preview-image ks-preview-image-desktop"
           initial={{ opacity: 0, clipPath: "inset(0 0 100% 0)" }}
           whileInView={{ opacity: 1, clipPath: "inset(0 0 0% 0)" }}
           viewport={{ once: true, margin: "-10%" }}
@@ -703,21 +708,8 @@ function PortfolioCard({ item, index }: { item: (typeof galleryItems)[0]; index:
 
 function FlashPreview() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== "undefined" ? window.matchMedia("(max-width: 767px)").matches : false,
-  );
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsMobile(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
-  const visibleItems = isMobile ? flashItems : flashItems.slice(0, 5);
-  const safeIndex = activeIndex >= visibleItems.length ? 0 : activeIndex;
-  const active = visibleItems[safeIndex];
+  const visibleItems = flashItems.slice(0, 5);
+  const active = visibleItems[activeIndex] ?? visibleItems[0];
   const flashWhatsAppHref = wa("Olá Karina, vim do seu site e queria ver os flash tattoos disponíveis.");
 
   return (
@@ -725,28 +717,30 @@ function FlashPreview() {
       <SectionTitle eyebrow="Flash Tattoos disponíveis" title="Artes autorais prontas para tatuar" text="Disponibilidade limitada — me consulte direto pelo WhatsApp." />
       <div className="ks-flash-scroll-layout">
         <div className="ks-flash-feature">
-          <AnimatePresence mode="sync">
-            <motion.img
-              key={active.img}
-              src={active.img}
-              alt={`${active.name} flash tattoo`}
-              loading="lazy"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.55, ease: "easeInOut" }}
-            />
-          </AnimatePresence>
-          <div>
+          <div className="ks-flash-feature-media">
+            <AnimatePresence mode="sync">
+              <motion.img
+                key={active.img}
+                src={active.img}
+                alt={`${active.name} flash tattoo`}
+                loading="lazy"
+                initial={{ opacity: 0, scale: 1.045, y: 18, filter: "blur(10px) grayscale(70%) contrast(1.05) brightness(1.02)" }}
+                animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px) grayscale(70%) contrast(1.05) brightness(1.05)" }}
+                exit={{ opacity: 0, scale: 0.985, y: -14, filter: "blur(8px) grayscale(82%) contrast(1.08) brightness(0.92)" }}
+                transition={{ duration: 0.85, ease: FLUID_EASE }}
+              />
+            </AnimatePresence>
+          </div>
+          <div className="ks-flash-feature-content">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active.name}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.3, ease: EASE }}
+                initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -10, filter: "blur(5px)" }}
+                transition={{ duration: 0.55, ease: FLUID_EASE }}
               >
-                <span className="ks-status">{active.status}</span>
+                <span className={`ks-status ${active.status.toLowerCase()}`}>{active.status}</span>
                 <h3>{active.name}</h3>
                 <p>{active.text}</p>
                 <a className="ks-primary-link ks-flash-feature-cta" href={flashWhatsAppHref} target="_blank" rel="noopener noreferrer">
@@ -762,8 +756,10 @@ function FlashPreview() {
               key={item.name}
               item={item}
               index={index}
-              active={index === safeIndex}
-              onHover={() => setActiveIndex(index)}
+              active={index === activeIndex}
+              onSelect={() => {
+                if (index !== activeIndex) setActiveIndex(index);
+              }}
             />
           ))}
         </div>
@@ -781,12 +777,12 @@ function FlashMiniCard({
   item,
   index,
   active,
-  onHover,
+  onSelect,
 }: {
   item: (typeof flashItems)[0];
   index: number;
   active: boolean;
-  onHover: () => void;
+  onSelect: () => void;
 }) {
   return (
     <motion.article
@@ -795,9 +791,9 @@ function FlashMiniCard({
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-8%" }}
       transition={{ duration: 0.6, delay: index * 0.07, ease: EASE }}
-      onHoverStart={onHover}
-      onFocus={onHover}
-      onClick={onHover}
+      onHoverStart={onSelect}
+      onFocus={onSelect}
+      onClick={onSelect}
       tabIndex={0}
     >
       <img src={item.img} alt={`${item.name} flash tattoo`} loading="lazy" />
@@ -1048,6 +1044,7 @@ function PortfolioPage() {
         kicker="Portfolio de tattoos"
         title="Trabalhos recentes, autorais e personalizados."
         text="Uma seleção de tatuagens fine line, minimalistas, blackwork, flash tattoo e projetos criados para histórias específicas."
+        image="https://images.unsplash.com/photo-1726924244999-95eb16972c9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1800"
       />
       <section className="ks-section">
         <div className="ks-filter-row">
