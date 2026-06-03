@@ -25,7 +25,7 @@ export function Footer() {
     <footer className="ks-footer">
       <div className="ks-footer-inner">
         <Link to="/" className="ks-footer-brand">
-          <StarGlyph size={7} color="#6b2e35" />
+          <StarGlyph size={7} color="#B05574" />
           <span>Karina Sarte Tattoo</span>
         </Link>
 

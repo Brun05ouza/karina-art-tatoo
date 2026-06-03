@@ -1,35 +1,82 @@
 /* Karina Sarte — Vintage Editorial Tattoo Studio */
 
 :root {
-  --ks-bg: #f5f0e6;
-  --ks-paper: #f5f0e6;
-  --ks-surface: #ede6d8;
-  --ks-surface-lowest: #faf7f0;
-  --ks-surface-low: #e8e0d4;
-  --ks-surface-container: #e3dbd0;
-  --ks-surface-high: #d9d0c4;
-  --ks-primary: #2a2824;
-  --ks-on-surface: #3d3932;
-  --ks-on-surface-variant: #6b6558;
-  --ks-outline: #8a8274;
-  --ks-outline-variant: #b5aea0;
-  --ks-aged-gold: #6b2e35;
-  --ks-aged-gold-muted: #7a3d45;
-  --ks-accent-olive: #3d4a32;
-  --ks-accent-rose: #c4a09a;
-  --ks-coffee: #4a3828;
-  --ks-stencil-blue: #4a5c6e;
-  --ks-moss: #3d4a32;
-  --ks-purple: #5c3d52;
-  --ks-on-dark: #f5f0e6;
-  --ks-on-dark-muted: #d9d0c4;
-  --ks-cream: #ede6d8;
-  --ks-cream-low: #e3dbd0;
-  --ks-on-cream: #2a2824;
-  --ks-on-cream-muted: #6b6558;
-  --ks-on-cream-gold: #6b2e35;
-  --ks-wine: #5c242c;
-  --ks-wine-mid: #6b2e35;
+  /* ── Paleta base (5 cores) ── */
+  --ks-teal: #5e9fa3;
+  --ks-beige: #dcd1b4;
+  --ks-peach: #fab87f;
+  --ks-coral: #f87e7b;
+  --ks-plum: #b05574;
+  --ks-teal-dark: #4a8589;
+  --ks-plum-dark: #8e4660;
+  --ks-plum-deep: #6e3849;
+  --ks-ink: #3d2835;
+
+  /* RGB helpers */
+  --ks-beige-rgb: 220, 209, 180;
+  --ks-beige-light-rgb: 232, 226, 206;
+  --ks-ink-rgb: 61, 40, 53;
+  --ks-plum-rgb: 176, 85, 116;
+  --ks-teal-rgb: 94, 159, 163;
+  --ks-peach-rgb: 250, 184, 127;
+  --ks-coral-rgb: 248, 126, 123;
+
+  /* ── Papéis: uma cor, um trabalho ── */
+  --ks-role-base: var(--ks-beige);
+  --ks-role-warm: var(--ks-peach);
+  --ks-role-cool: var(--ks-teal);
+  --ks-role-highlight: var(--ks-coral);
+  --ks-role-action: var(--ks-plum);
+  --ks-label: var(--ks-coral);
+  --ks-link: var(--ks-teal-dark);
+  --ks-btn: var(--ks-plum);
+  --ks-btn-hover: var(--ks-plum-dark);
+  --ks-decor: var(--ks-peach);
+
+  /* ── Superfícies por seção ── */
+  --ks-bg: var(--ks-role-base);
+  --ks-paper: var(--ks-role-base);
+  --ks-surface: #d4caa8;
+  --ks-surface-lowest: #ebe4d4;
+  --ks-surface-low: var(--ks-beige);
+  --ks-surface-container: #cec39e;
+  --ks-surface-high: #c4b892;
+  --ks-surface-warm: #f2e8d8;
+  --ks-surface-cool: var(--ks-teal);
+  --ks-cream: #f8eddd;
+
+  /* ── Texto ── */
+  --ks-primary: var(--ks-ink);
+  --ks-on-surface: #4a3540;
+  --ks-on-surface-variant: #6b5562;
+  --ks-outline: #8a7582;
+  --ks-outline-variant: #a898a2;
+
+  /* ── Acentos legados (mapeados) ── */
+  --ks-aged-gold: var(--ks-label);
+  --ks-aged-gold-muted: #e06b68;
+  --ks-accent-olive: var(--ks-surface-cool);
+  --ks-accent-rose: var(--ks-coral);
+  --ks-coffee: var(--ks-ink);
+  --ks-stencil-blue: var(--ks-teal);
+  --ks-moss: var(--ks-teal-dark);
+  --ks-purple: var(--ks-plum);
+
+  /* ── Sobre fundos escuros / teal ── */
+  --ks-on-dark: var(--ks-beige);
+  --ks-on-dark-muted: #cec39e;
+  --ks-on-cool: var(--ks-beige);
+  --ks-on-cool-muted: rgba(var(--ks-beige-rgb), 0.78);
+
+  /* ── Seções quentes (peach) ── */
+  --ks-on-cream: var(--ks-ink);
+  --ks-on-cream-muted: #6b5562;
+  --ks-on-cream-gold: var(--ks-plum);
+
+  /* ── Faixas de ação ── */
+  --ks-wine: var(--ks-plum-dark);
+  --ks-wine-mid: var(--ks-plum);
+
   --ks-radius-btn: 100px;
   /* Impacto */
   --ks-font-display: "Amatic SC", cursive;
@@ -136,7 +183,7 @@ summary {
 }
 
 .ks-gold {
-  color: var(--ks-aged-gold);
+  color: var(--ks-label);
 }
 
 .ks-header {
@@ -148,15 +195,15 @@ summary {
   justify-content: space-between;
   height: 64px;
   padding: 0 clamp(20px, 5vw, 64px);
-  background: rgba(245, 240, 230, 0.82);
+  background: rgba(var(--ks-beige-rgb), 0.82);
   border-bottom: 1px solid transparent;
   transition: background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease;
 }
 
 .ks-header.is-scrolled,
 .ks-header.is-open {
-  background: rgba(250, 247, 240, 0.96);
-  border-bottom-color: rgba(74, 56, 40, 0.12);
+  background: rgba(var(--ks-beige-light-rgb), 0.96);
+  border-bottom-color: rgba(var(--ks-ink-rgb), 0.12);
   backdrop-filter: blur(10px);
 }
 
@@ -196,7 +243,7 @@ summary {
 
 .ks-nav-item:hover,
 .ks-nav-item.active {
-  color: var(--ks-aged-gold);
+  color: var(--ks-link);
 }
 
 .ks-nav-item span {
@@ -205,7 +252,7 @@ summary {
   right: 0;
   bottom: -5px;
   height: 1px;
-  background: var(--ks-aged-gold);
+  background: var(--ks-link);
   transform-origin: left;
 }
 
@@ -217,10 +264,10 @@ summary {
   gap: 10px;
   min-height: 42px;
   padding: 12px 18px;
-  border: 1px solid var(--ks-aged-gold);
+  border: 1px solid var(--ks-btn);
   border-radius: var(--ks-radius-btn);
   color: var(--ks-on-dark);
-  background: var(--ks-aged-gold);
+  background: var(--ks-btn);
   text-decoration: none;
   font-family: var(--ks-font-meta);
   font-size: 9px;
@@ -244,8 +291,8 @@ summary {
 .ks-nav-cta:hover,
 .ks-primary-link:hover,
 .ks-primary-link.special {
-  border-color: var(--ks-wine-mid);
-  background: var(--ks-wine-mid);
+  border-color: var(--ks-btn-hover);
+  background: var(--ks-btn-hover);
   color: var(--ks-on-dark);
 }
 
@@ -258,8 +305,8 @@ summary {
   justify-content: center;
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(74, 56, 40, 0.2);
-  background: rgba(250, 247, 240, 0.9);
+  border: 1px solid rgba(var(--ks-ink-rgb), 0.2);
+  background: rgba(var(--ks-beige-light-rgb), 0.9);
   color: var(--ks-primary);
   transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
   -webkit-tap-highlight-color: transparent;
@@ -271,7 +318,7 @@ summary {
 }
 
 .ks-menu-button:active {
-  background: rgba(107, 46, 53, 0.08);
+  background: rgba(var(--ks-plum-rgb), 0.08);
 }
 
 .ks-mobile-menu {
@@ -297,7 +344,7 @@ summary {
   width: 100%;
   padding: 16px 12px;
   margin: 0 -12px;
-  border-bottom: 1px solid rgba(74, 56, 40, 0.1);
+  border-bottom: 1px solid rgba(var(--ks-ink-rgb), 0.1);
   color: var(--ks-primary);
   text-decoration: none;
   transition: color 0.25s ease, background 0.25s ease, border-color 0.25s ease;
@@ -306,18 +353,18 @@ summary {
 
 .ks-mobile-nav-link:hover,
 .ks-mobile-nav-link:focus-visible {
-  background: rgba(107, 46, 53, 0.06);
+  background: rgba(var(--ks-plum-rgb), 0.06);
   color: var(--ks-aged-gold);
   outline: none;
 }
 
 .ks-mobile-nav-link:active {
-  background: rgba(107, 46, 53, 0.1);
+  background: rgba(var(--ks-plum-rgb), 0.1);
 }
 
 .ks-mobile-nav-link.active {
   color: var(--ks-aged-gold);
-  border-bottom-color: rgba(107, 46, 53, 0.22);
+  border-bottom-color: rgba(var(--ks-plum-rgb), 0.22);
 }
 
 .ks-mobile-nav-link span {
@@ -388,13 +435,13 @@ summary {
   background:
     linear-gradient(
       105deg,
-      rgba(245, 240, 230, 0.96) 0%,
-      rgba(245, 240, 230, 0.9) 30%,
-      rgba(245, 240, 230, 0.5) 52%,
-      rgba(42, 40, 36, 0.12) 72%,
-      rgba(42, 40, 36, 0.28) 100%
+      rgba(var(--ks-beige-rgb), 0.96) 0%,
+      rgba(var(--ks-beige-rgb), 0.9) 30%,
+      rgba(var(--ks-beige-rgb), 0.5) 52%,
+      rgba(var(--ks-ink-rgb), 0.12) 72%,
+      rgba(var(--ks-ink-rgb), 0.28) 100%
     ),
-    linear-gradient(to top, rgba(245, 240, 230, 0.82) 0%, transparent 46%);
+    linear-gradient(to top, rgba(var(--ks-beige-rgb), 0.82) 0%, transparent 46%);
 }
 
 .ks-page-hero-content {
@@ -438,8 +485,8 @@ summary {
   gap: 8px;
   margin-top: 22px;
   padding: 10px 16px;
-  border: 1px solid rgba(107, 46, 53, 0.28);
-  color: var(--ks-aged-gold);
+  border: 1px solid rgba(var(--ks-teal-rgb), 0.45);
+  color: var(--ks-link);
   text-decoration: none;
   font-family: var(--ks-font-meta);
   font-size: 9px;
@@ -449,8 +496,9 @@ summary {
 }
 
 .ks-text-link:hover {
-  border-color: var(--ks-aged-gold);
-  background: rgba(107, 46, 53, 0.06);
+  border-color: var(--ks-link);
+  background: rgba(var(--ks-teal-rgb), 0.1);
+  color: var(--ks-teal-dark);
 }
 
 .ks-section {
@@ -513,7 +561,7 @@ summary {
 .ks-budget-textarea {
   width: 100%;
   padding: 14px 16px;
-  border: 1px solid rgba(74, 56, 40, 0.18);
+  border: 1px solid rgba(var(--ks-ink-rgb), 0.18);
   background: var(--ks-paper);
   color: var(--ks-primary);
   font-family: var(--ks-font-body);
@@ -537,9 +585,9 @@ summary {
 .ks-budget-input:focus,
 .ks-budget-textarea:focus {
   outline: none;
-  border-color: rgba(107, 46, 53, 0.45);
+  border-color: rgba(var(--ks-plum-rgb), 0.45);
   background: var(--ks-paper);
-  box-shadow: 0 0 0 3px rgba(107, 46, 53, 0.08);
+  box-shadow: 0 0 0 3px rgba(var(--ks-plum-rgb), 0.08);
 }
 
 .ks-budget-textarea[aria-invalid="true"] {
@@ -547,7 +595,7 @@ summary {
 }
 
 .ks-budget-error {
-  color: #e08a9b;
+  color: var(--ks-coral);
   font-family: var(--ks-font-meta);
   font-size: 10px;
   letter-spacing: 0.06em;
@@ -557,7 +605,7 @@ summary {
   margin: 0;
   padding: 16px 18px;
   border: 1px solid rgba(242, 237, 226, 0.08);
-  background: rgba(13, 14, 13, 0.55);
+  background: rgba(var(--ks-ink-rgb), 0.55);
   color: var(--ks-on-surface-variant);
   font-family: var(--ks-font-body);
   font-size: 14px;
@@ -621,7 +669,7 @@ summary {
   z-index: 2;
   padding: 8px 10px;
   border: 1px solid rgba(242, 237, 226, 0.12);
-  background: rgba(13, 14, 13, 0.72);
+  background: rgba(var(--ks-ink-rgb), 0.72);
   color: var(--ks-outline);
   font-family: var(--ks-font-meta);
   font-size: 8px;
@@ -644,9 +692,9 @@ summary {
   left: 20px;
   z-index: 2;
   padding: 8px 12px;
-  border: 1px solid rgba(233, 192, 130, 0.28);
-  background: rgba(13, 14, 13, 0.72);
-  color: var(--ks-aged-gold);
+  border: 1px solid rgba(var(--ks-peach-rgb), 0.45);
+  background: rgba(var(--ks-ink-rgb), 0.72);
+  color: var(--ks-peach);
   font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.18em;
@@ -669,7 +717,7 @@ summary {
 .ks-about-me-quote {
   margin: 8px 0 0;
   padding-left: 20px;
-  border-left: 1px solid rgba(233, 192, 130, 0.45);
+  border-left: 1px solid rgba(var(--ks-peach-rgb), 0.45);
   color: var(--ks-primary);
   font-family: var(--ks-font-body-accent);
   font-size: clamp(22px, 3.2vw, 34px);
@@ -713,7 +761,7 @@ summary {
   position: relative;
   min-height: 420px;
   overflow: hidden;
-  border: 1px solid rgba(74, 56, 40, 0.14);
+  border: 1px solid rgba(var(--ks-ink-rgb), 0.14);
   background: var(--ks-surface-low);
 }
 
@@ -737,9 +785,9 @@ summary {
   padding: clamp(72px, 12vw, 96px) 24px 24px;
   background: linear-gradient(
     to top,
-    rgba(42, 40, 36, 0.94) 0%,
-    rgba(42, 40, 36, 0.72) 38%,
-    rgba(42, 40, 36, 0.28) 68%,
+    rgba(var(--ks-ink-rgb), 0.94) 0%,
+    rgba(var(--ks-ink-rgb), 0.72) 38%,
+    rgba(var(--ks-ink-rgb), 0.28) 68%,
     transparent 100%
   );
   transition: background 0.4s ease;
@@ -748,9 +796,9 @@ summary {
 .ks-image-card:hover .ks-image-card-overlay {
   background: linear-gradient(
     to top,
-    rgba(92, 36, 44, 0.94) 0%,
-    rgba(42, 40, 36, 0.68) 42%,
-    rgba(42, 40, 36, 0.22) 70%,
+    rgba(var(--ks-plum-rgb), 0.94) 0%,
+    rgba(var(--ks-ink-rgb), 0.68) 42%,
+    rgba(var(--ks-ink-rgb), 0.22) 70%,
     transparent 100%
   );
 }
@@ -824,7 +872,7 @@ summary {
 .ks-carousel-btn:hover {
   border-color: var(--ks-aged-gold);
   color: var(--ks-aged-gold);
-  background: rgba(233, 192, 130, 0.06);
+  background: rgba(var(--ks-peach-rgb), 0.06);
 }
 
 .ks-carousel-count {
@@ -873,7 +921,7 @@ summary {
   position: absolute;
   inset: auto 0 0;
   padding: 56px 20px 20px;
-  background: linear-gradient(to top, rgba(13,14,13,0.92) 0%, rgba(13,14,13,0.42) 50%, transparent 100%);
+  background: linear-gradient(to top, rgba(var(--ks-ink-rgb), 0.92) 0%, rgba(var(--ks-ink-rgb), 0.42) 50%, transparent 100%);
 }
 
 .ks-portfolio-card-overlay .ks-label-caps {
@@ -915,7 +963,7 @@ summary {
 }
 
 .ks-dot.active {
-  background: var(--ks-aged-gold);
+  background: var(--ks-label);
   transform: scale(1.4);
 }
 
@@ -966,8 +1014,8 @@ summary {
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(to top, rgba(13, 14, 13, 0.68), rgba(13, 14, 13, 0.18) 46%, transparent 72%),
-    linear-gradient(90deg, rgba(13, 14, 13, 0.1), transparent 42%);
+    linear-gradient(to top, rgba(var(--ks-ink-rgb), 0.68), rgba(var(--ks-ink-rgb), 0.18) 46%, transparent 72%),
+    linear-gradient(90deg, rgba(var(--ks-ink-rgb), 0.1), transparent 42%);
 }
 
 .ks-flash-feature-content {
@@ -975,7 +1023,7 @@ summary {
   inset: auto 0 0;
   z-index: 2;
   padding: clamp(24px, 4vw, 48px);
-  background: linear-gradient(to top, rgba(13, 14, 13, 0.96) 68%, rgba(13, 14, 13, 0.52), transparent);
+  background: linear-gradient(to top, rgba(var(--ks-ink-rgb), 0.96) 68%, rgba(var(--ks-ink-rgb), 0.52), transparent);
 }
 
 .ks-flash-feature h3 {
@@ -1024,7 +1072,7 @@ summary {
 
 .ks-flash-mini-card:hover,
 .ks-flash-mini-card.active {
-  border-color: rgba(233, 192, 130, 0.48);
+  border-color: rgba(var(--ks-peach-rgb), 0.48);
   background: rgba(41, 42, 41, 0.88);
 }
 
@@ -1086,7 +1134,7 @@ summary {
   position: relative;
   min-height: 220px;
   padding: 24px;
-  border: 1px solid rgba(74, 56, 40, 0.12);
+  border: 1px solid rgba(var(--ks-ink-rgb), 0.12);
   background: var(--ks-surface-lowest);
 }
 
@@ -1118,7 +1166,7 @@ summary {
   width: fit-content;
   margin-bottom: 14px;
   padding: 6px 9px;
-  border: 1px solid rgba(233, 192, 130, 0.3);
+  border: 1px solid rgba(var(--ks-peach-rgb), 0.3);
   color: var(--ks-aged-gold);
   font-family: var(--ks-font-meta);
   font-size: 8px;
@@ -1145,7 +1193,7 @@ summary {
   align-items: flex-end;
   padding: 130px clamp(24px, 5vw, 64px) clamp(58px, 8vw, 110px);
   background:
-    linear-gradient(120deg, rgba(13, 14, 13, 0.94), rgba(34, 53, 41, 0.42)),
+    linear-gradient(120deg, rgba(var(--ks-ink-rgb), 0.94), rgba(var(--ks-teal-rgb), 0.42)),
     url("https://images.unsplash.com/photo-1542727365-19732a80dcfd?auto=format&fit=crop&w=1800&q=80") center/cover;
 }
 
@@ -1204,10 +1252,10 @@ summary {
   padding: clamp(16px, 2.5vw, 28px);
   background: linear-gradient(
     to top,
-    rgba(42, 40, 36, 0.94) 0%,
-    rgba(42, 40, 36, 0.78) 32%,
-    rgba(42, 40, 36, 0.42) 58%,
-    rgba(42, 40, 36, 0.12) 78%,
+    rgba(var(--ks-ink-rgb), 0.94) 0%,
+    rgba(var(--ks-ink-rgb), 0.78) 32%,
+    rgba(var(--ks-ink-rgb), 0.42) 58%,
+    rgba(var(--ks-ink-rgb), 0.12) 78%,
     transparent 100%
   );
   transition: background 0.4s ease;
@@ -1216,7 +1264,7 @@ summary {
 /* Cards com foto: texto claro (não herdar --ks-on-cream da seção) */
 .ks-product-visual-card .ks-product-visual-overlay h3 {
   color: var(--ks-on-dark);
-  text-shadow: 0 1px 12px rgba(42, 40, 36, 0.45);
+  text-shadow: 0 1px 12px rgba(var(--ks-ink-rgb), 0.45);
 }
 
 .ks-section-cream .ks-product-visual-card .ks-product-visual-overlay h3,
@@ -1235,9 +1283,9 @@ summary {
 .ks-product-visual-card:hover .ks-product-visual-overlay {
   background: linear-gradient(
     to top,
-    rgba(92, 36, 44, 0.92) 0%,
-    rgba(42, 40, 36, 0.55) 45%,
-    rgba(42, 40, 36, 0.12) 72%,
+    rgba(var(--ks-plum-rgb), 0.92) 0%,
+    rgba(var(--ks-ink-rgb), 0.55) 45%,
+    rgba(var(--ks-ink-rgb), 0.12) 72%,
     transparent 100%
   );
 }
@@ -1278,9 +1326,9 @@ summary {
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border: 1px solid rgba(245, 240, 230, 0.45);
+  border: 1px solid rgba(var(--ks-beige-rgb), 0.45);
   color: var(--ks-on-dark);
-  background: rgba(107, 46, 53, 0.35);
+  background: rgba(var(--ks-plum-rgb), 0.35);
   font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.14em;
@@ -1347,7 +1395,7 @@ summary {
   display: grid;
   place-items: center;
   padding: clamp(16px, 4vw, 32px);
-  background: rgba(13, 14, 13, 0.88);
+  background: rgba(var(--ks-ink-rgb), 0.88);
   backdrop-filter: blur(6px);
 }
 
@@ -1376,7 +1424,7 @@ summary {
   width: 38px;
   height: 38px;
   border: 1px solid rgba(242, 237, 226, 0.16);
-  background: rgba(13, 14, 13, 0.72);
+  background: rgba(var(--ks-ink-rgb), 0.72);
   color: var(--ks-primary);
   cursor: inherit;
 }
@@ -1429,7 +1477,7 @@ summary {
   z-index: 9996;
   display: grid;
   place-items: center;
-  background: rgba(245, 240, 230, 0.98);
+  background: rgba(var(--ks-beige-rgb), 0.98);
   pointer-events: none;
   will-change: opacity;
   backface-visibility: hidden;
@@ -1468,8 +1516,8 @@ summary {
   width: 58px;
   height: 58px;
   margin-bottom: 20px;
-  border: 1px solid rgba(233, 192, 130, 0.32);
-  color: var(--ks-aged-gold);
+  border: 1px solid rgba(var(--ks-teal-rgb), 0.35);
+  color: var(--ks-link);
 }
 
 .ks-step-grid {
@@ -1480,7 +1528,7 @@ summary {
 }
 
 .ks-step span {
-  color: var(--ks-aged-gold);
+  color: var(--ks-label);
   font-family: var(--ks-font-meta);
   font-size: 10px;
   letter-spacing: 0.2em;
@@ -1489,8 +1537,8 @@ summary {
 .ks-cta-band {
   margin: 0;
   padding: clamp(56px, 8vw, 96px) clamp(24px, 5vw, 64px);
-  border-top: none;
-  background: linear-gradient(110deg, var(--ks-wine), var(--ks-wine-mid));
+  border-top: 3px solid rgba(var(--ks-peach-rgb), 0.5);
+  background: linear-gradient(118deg, var(--ks-plum-deep) 0%, var(--ks-plum) 52%, var(--ks-plum-dark) 100%);
   color: var(--ks-on-dark);
   text-align: center;
 }
@@ -1511,8 +1559,9 @@ summary {
 }
 
 .ks-cta-band .ks-primary-link:hover {
-  background: var(--ks-on-dark);
-  color: var(--ks-wine);
+  background: var(--ks-peach);
+  border-color: var(--ks-peach);
+  color: var(--ks-ink);
 }
 
 .ks-cta-band h2,
@@ -1548,7 +1597,7 @@ summary {
 }
 
 .ks-filter-row button {
-  border: 1px solid rgba(74, 56, 40, 0.18);
+  border: 1px solid rgba(var(--ks-ink-rgb), 0.18);
   background: transparent;
   color: var(--ks-on-surface-variant);
   padding: 9px 12px;
@@ -1564,7 +1613,7 @@ summary {
 .ks-filter-row button.active {
   border-color: var(--ks-aged-gold);
   color: var(--ks-aged-gold);
-  background: rgba(107, 46, 53, 0.06);
+  background: rgba(var(--ks-plum-rgb), 0.06);
 }
 
 .ks-flash-page-grid {
@@ -1580,7 +1629,7 @@ summary {
   flex-direction: column;
   height: 100%;
   min-height: 100%;
-  border: 1px solid rgba(74, 56, 40, 0.12);
+  border: 1px solid rgba(var(--ks-ink-rgb), 0.12);
   background: var(--ks-surface-lowest);
   overflow: hidden;
 }
@@ -1640,16 +1689,16 @@ summary {
 .ks-faq-list {
   max-width: 880px;
   margin: 0 auto;
-  border-top: 1px solid rgba(74, 56, 40, 0.12);
+  border-top: 1px solid rgba(var(--ks-ink-rgb), 0.12);
 }
 
 .ks-faq-item {
-  border-bottom: 1px solid rgba(74, 56, 40, 0.12);
+  border-bottom: 1px solid rgba(var(--ks-ink-rgb), 0.12);
   transition: border-color 0.3s ease;
 }
 
 .ks-faq-item.open {
-  border-color: rgba(107, 46, 53, 0.28);
+  border-color: rgba(var(--ks-plum-rgb), 0.28);
 }
 
 .ks-faq-question {
@@ -1685,7 +1734,7 @@ summary {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border: 1px solid rgba(74, 56, 40, 0.18);
+  border: 1px solid rgba(var(--ks-ink-rgb), 0.18);
   color: var(--ks-on-surface-variant);
   font-size: 20px;
   line-height: 1;
@@ -1694,7 +1743,7 @@ summary {
 }
 
 .ks-faq-item.open .ks-faq-icon {
-  border-color: rgba(107, 46, 53, 0.35);
+  border-color: rgba(var(--ks-plum-rgb), 0.35);
   color: var(--ks-aged-gold);
 }
 
@@ -1718,7 +1767,7 @@ summary {
   min-height: 52px;
   padding: 0 18px;
   border: 1px solid var(--ks-accent-olive);
-  background: rgba(250, 247, 240, 0.94);
+  background: rgba(var(--ks-beige-light-rgb), 0.94);
   color: var(--ks-accent-olive);
   text-decoration: none;
   backdrop-filter: blur(10px);
@@ -1726,7 +1775,7 @@ summary {
   font-size: 9px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  box-shadow: 0 8px 28px rgba(74, 56, 40, 0.12);
+  box-shadow: 0 8px 28px rgba(var(--ks-ink-rgb), 0.12);
   transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -1760,7 +1809,7 @@ summary {
 }
 
 .ks-section-cream .ks-gold {
-  color: var(--ks-on-cream-gold);
+  color: var(--ks-label);
 }
 
 .ks-section-cream .ks-label-caps {
@@ -1768,35 +1817,36 @@ summary {
 }
 
 .ks-section-cream .ks-label-caps.ks-gold {
-  color: var(--ks-on-cream-gold);
+  color: var(--ks-label);
 }
 
 .ks-section-cream .ks-primary-link {
-  border-color: var(--ks-aged-gold);
-  background: var(--ks-aged-gold);
+  border-color: var(--ks-btn);
+  background: var(--ks-btn);
   color: var(--ks-on-dark);
 }
 
 .ks-section-cream .ks-primary-link:hover,
 .ks-section-cream .ks-primary-link.special {
-  border-color: var(--ks-wine-mid);
-  background: var(--ks-wine-mid);
+  border-color: var(--ks-btn-hover);
+  background: var(--ks-btn-hover);
   color: var(--ks-on-dark);
 }
 
 .ks-section-cream .ks-text-link {
-  color: var(--ks-on-cream-gold);
+  color: var(--ks-link);
+  border-color: rgba(var(--ks-teal-rgb), 0.4);
 }
 
 .ks-section-cream .ks-preview-image {
-  border-color: rgba(28, 27, 24, 0.12);
+  border-color: rgba(var(--ks-ink-rgb), 0.12);
 }
 
 .ks-section-cream .ks-card,
 .ks-section-cream .ks-product-card,
 .ks-section-cream .ks-step {
-  background: rgba(232, 224, 212, 0.7);
-  border-color: rgba(28, 27, 24, 0.12);
+  background: rgba(var(--ks-peach-rgb), 0.22);
+  border-color: rgba(var(--ks-ink-rgb), 0.1);
 }
 
 .ks-section-cream .ks-card h3,
@@ -1811,23 +1861,23 @@ summary {
 }
 
 .ks-section-cream .ks-card a {
-  color: var(--ks-on-cream-gold);
+  color: var(--ks-link);
 }
 
 .ks-section-cream .ks-about-me-quote {
   color: var(--ks-on-cream);
-  border-left-color: rgba(122, 95, 38, 0.45);
+  border-left-color: rgba(var(--ks-peach-rgb), 0.45);
 }
 
 .ks-section-cream .ks-carousel-btn {
-  border-color: rgba(28, 27, 24, 0.22);
+  border-color: rgba(var(--ks-ink-rgb), 0.22);
   color: var(--ks-on-cream);
 }
 
 .ks-section-cream .ks-carousel-btn:hover {
-  border-color: var(--ks-on-cream-gold);
-  color: var(--ks-on-cream-gold);
-  background: rgba(122, 95, 38, 0.06);
+  border-color: var(--ks-link);
+  color: var(--ks-link);
+  background: rgba(var(--ks-teal-rgb), 0.08);
 }
 
 .ks-section-cream .ks-carousel-count {
@@ -1835,18 +1885,24 @@ summary {
 }
 
 .ks-section-cream .ks-dot {
-  background: rgba(28, 27, 24, 0.25);
+  background: rgba(var(--ks-ink-rgb), 0.25);
 }
 
 .ks-section-cream .ks-dot.active {
-  background: var(--ks-on-cream-gold);
+  background: var(--ks-btn);
 }
 
-/* ── Section theme: wine (deep burgundy) ────────────────────── */
+.ks-footer {
+  background: var(--ks-bg);
+  border-top: 3px solid rgba(var(--ks-teal-rgb), 0.28);
+  padding: clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px);
+}
+
+/* ── Section theme: wine (plum) ─────────────────────────────── */
 .ks-section-wine {
   background: var(--ks-wine);
   color: var(--ks-on-dark);
-  border-block-color: rgba(245, 240, 230, 0.08);
+  border-block-color: rgba(var(--ks-beige-rgb), 0.08);
 }
 
 .ks-section-wine h1,
@@ -1876,7 +1932,7 @@ summary {
 
 .ks-section-wine .ks-flash-mini-card:hover,
 .ks-section-wine .ks-flash-mini-card.active {
-  border-color: rgba(233, 192, 130, 0.48);
+  border-color: rgba(var(--ks-peach-rgb), 0.48);
   background: rgba(105, 38, 46, 0.85);
 }
 
@@ -1886,12 +1942,6 @@ summary {
 }
 
 /* Footer */
-.ks-footer {
-  background: var(--ks-cream);
-  border-top: 1px solid rgba(74, 56, 40, 0.12);
-  padding: clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px);
-}
-
 .ks-footer-inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -1928,7 +1978,7 @@ summary {
 }
 
 .ks-footer-nav a:hover {
-  color: var(--ks-aged-gold);
+  color: var(--ks-link);
 }
 
 .ks-footer-bottom {
@@ -1938,7 +1988,7 @@ summary {
   justify-content: space-between;
   gap: 16px;
   padding-top: 20px;
-  border-top: 1px solid rgba(74, 56, 40, 0.1);
+  border-top: 1px solid rgba(var(--ks-ink-rgb), 0.1);
 }
 
 .ks-footer-copy {
@@ -1966,7 +2016,7 @@ summary {
 }
 
 .ks-footer-social a:hover {
-  color: var(--ks-aged-gold);
+  color: var(--ks-label);
 }
 
 
@@ -2029,10 +2079,10 @@ summary {
     background:
       linear-gradient(
         to top,
-        rgba(245, 240, 230, 0.96) 0%,
-        rgba(245, 240, 230, 0.85) 34%,
-        rgba(245, 240, 230, 0.4) 62%,
-        rgba(42, 40, 36, 0.18) 100%
+        rgba(var(--ks-beige-rgb), 0.96) 0%,
+        rgba(var(--ks-beige-rgb), 0.85) 34%,
+        rgba(var(--ks-beige-rgb), 0.4) 62%,
+        rgba(var(--ks-ink-rgb), 0.18) 100%
       );
   }
   .ks-actions {
@@ -2181,13 +2231,13 @@ summary {
     object-position: center 34%;
   }
   .ks-flash-feature-media::after {
-    background: linear-gradient(to top, rgba(13, 14, 13, 0.22), transparent 44%);
+    background: linear-gradient(to top, rgba(var(--ks-ink-rgb), 0.22), transparent 44%);
   }
   .ks-flash-feature-content {
     position: relative;
     inset: auto;
     padding: 20px;
-    background: rgba(13, 14, 13, 0.96);
+    background: rgba(var(--ks-ink-rgb), 0.96);
   }
   .ks-flash-feature h3 {
     font-size: clamp(30px, 9vw, 44px);
@@ -2230,7 +2280,7 @@ summary {
   }
   .ks-flash-mini-card.active {
     border-color: var(--ks-aged-gold);
-    box-shadow: 0 0 0 1px rgba(233, 192, 130, 0.28);
+    box-shadow: 0 0 0 1px rgba(var(--ks-peach-rgb), 0.28);
   }
 
   /* ── Produtos — grid visual ── */
@@ -2278,7 +2328,8 @@ summary {
   .ks-home-hero {
     min-height: min(88svh, 720px);
     padding: 92px 20px 44px;
-    align-items: flex-end;
+    align-items: center;
+    justify-content: center;
   }
 
   .ks-home-hero-content {
@@ -2287,26 +2338,22 @@ summary {
 
   .ks-home-hero-shade {
     background:
-      linear-gradient(
-        to top,
-        rgba(245, 240, 230, 0.96) 0%,
-        rgba(245, 240, 230, 0.84) 30%,
-        rgba(245, 240, 230, 0.38) 58%,
-        rgba(42, 40, 36, 0.2) 100%
+      radial-gradient(
+        ellipse 100% 75% at 50% 50%,
+        rgba(var(--ks-beige-rgb), 0.92) 0%,
+        rgba(var(--ks-beige-rgb), 0.58) 48%,
+        rgba(var(--ks-beige-rgb), 0.2) 72%,
+        transparent 100%
       );
   }
 
   .ks-home-hero-bg {
-    object-position: center 28%;
-    filter: grayscale(40%) sepia(14%) contrast(1.05) brightness(0.9);
+    object-position: center center;
   }
 
-  .ks-home-hero-ornament {
-    opacity: 0.22;
-    top: 84px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
+  .ks-home-hero-content .ks-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .ks-home-flow .ks-editorial-split {
@@ -2401,11 +2448,12 @@ summary {
   min-height: clamp(460px, 62vh, 680px);
   margin: 0;
   overflow: hidden;
-  border-top: 1px solid rgba(74, 56, 40, 0.08);
+  border-top: 3px solid rgba(var(--ks-peach-rgb), 0.55);
 }
 
 .ks-home-flow .ks-editorial-split-text {
   padding: clamp(56px, 8vw, 96px) clamp(24px, 5vw, 64px);
+  background: var(--ks-surface-warm);
 }
 
 .ks-home-flow .ks-editorial-split-text::after {
@@ -2414,22 +2462,25 @@ summary {
   width: min(120px, 28vw);
   height: 1px;
   margin-top: clamp(28px, 4vw, 40px);
-  background: linear-gradient(to right, var(--ks-aged-gold), transparent);
+  background: linear-gradient(to right, var(--ks-label), transparent);
 }
 
 .ks-home-flow .ks-services-section {
   margin: 0;
   padding: clamp(64px, 8vw, 100px) clamp(24px, 5vw, 64px);
+  border-top: 3px solid rgba(var(--ks-teal-rgb), 0.45);
 }
 
 .ks-home-flow .ks-mural-section {
   padding: clamp(64px, 8vw, 100px) clamp(24px, 5vw, 64px);
-  background: var(--ks-bg);
+  background: var(--ks-surface-lowest);
+  border-top: 3px solid rgba(var(--ks-coral-rgb), 0.35);
 }
 
 .ks-home-flow .ks-products-preview {
   padding: clamp(64px, 8vw, 100px) clamp(24px, 5vw, 64px);
   background: var(--ks-cream);
+  border-top: 3px solid rgba(var(--ks-peach-rgb), 0.65);
   border-block: none;
 }
 
@@ -2441,11 +2492,13 @@ summary {
 .ks-home-hero {
   position: relative;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   min-height: min(92vh, 920px);
   padding: clamp(100px, 14vh, 140px) clamp(24px, 5vw, 64px) clamp(56px, 8vw, 96px);
   overflow: hidden;
   isolation: isolate;
+  text-align: center;
 }
 
 .ks-home-hero-bg {
@@ -2455,8 +2508,8 @@ summary {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 30%;
-  filter: grayscale(38%) sepia(16%) contrast(1.05) brightness(0.92);
+  object-position: center center;
+  filter: contrast(1.03) brightness(0.98);
   transform: scale(1.02);
 }
 
@@ -2465,47 +2518,68 @@ summary {
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(
-      105deg,
-      rgba(245, 240, 230, 0.97) 0%,
-      rgba(245, 240, 230, 0.88) 28%,
-      rgba(245, 240, 230, 0.45) 48%,
-      rgba(42, 40, 36, 0.15) 68%,
-      rgba(42, 40, 36, 0.35) 100%
+    radial-gradient(
+      ellipse 90% 70% at 50% 52%,
+      rgba(var(--ks-beige-rgb), 0.88) 0%,
+      rgba(var(--ks-beige-rgb), 0.62) 42%,
+      rgba(var(--ks-beige-rgb), 0.28) 68%,
+      rgba(var(--ks-beige-rgb), 0.08) 100%
     ),
-    linear-gradient(to top, rgba(245, 240, 230, 0.75) 0%, transparent 42%);
+    linear-gradient(
+      to top,
+      rgba(var(--ks-beige-rgb), 0.55) 0%,
+      transparent 38%
+    );
   pointer-events: none;
 }
 
 .ks-home-hero-content {
   position: relative;
   z-index: 2;
-  max-width: min(720px, 58vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(760px, 100%);
+  max-width: min(760px, 92vw);
+  margin-inline: auto;
+}
+
+.ks-home-hero-star {
+  margin-bottom: 18px;
+  opacity: 0.72;
 }
 
 .ks-home-hero-content .ks-label-caps {
   color: var(--ks-on-surface-variant);
+  text-align: center;
 }
 
 .ks-home-hero-content h1 {
   margin: 16px 0 22px;
   color: var(--ks-primary);
+  width: 100%;
+  text-align: justify;
+  text-align-last: center;
+  hyphens: auto;
 }
 
 .ks-home-hero-content .ks-body-lg {
   color: var(--ks-on-surface);
-  max-width: 54ch;
+  width: 100%;
+  max-width: 58ch;
+  text-align: justify;
+  text-align-last: center;
+  hyphens: auto;
 }
 
-.ks-home-hero-ornament {
-  position: absolute;
-  top: clamp(88px, 12vh, 120px);
-  right: clamp(24px, 6vw, 80px);
-  z-index: 2;
-  width: 48px;
-  height: 48px;
-  opacity: 0.4;
-  pointer-events: none;
+.ks-home-hero-content .ks-actions {
+  justify-content: center;
+  width: 100%;
+  margin-top: clamp(28px, 4vw, 36px);
+}
+
+.ks-home-hero-content .ks-text-link {
+  margin-top: 0;
 }
 
 /* ── Home: editorial split ────────────────────────────────────── */
@@ -2522,7 +2596,7 @@ summary {
   flex-direction: column;
   justify-content: center;
   padding: clamp(72px, 10vw, 120px) clamp(24px, 5vw, 64px);
-  background: var(--ks-bg);
+  background: var(--ks-surface-warm);
 }
 
 .ks-editorial-split-text h2 {
@@ -2533,7 +2607,7 @@ summary {
 .ks-editorial-split-media {
   position: relative;
   min-height: 100%;
-  background: var(--ks-primary);
+  background: var(--ks-teal-dark);
 }
 
 .ks-editorial-split-media img {
@@ -2585,7 +2659,7 @@ summary {
 }
 
 .ks-editorial-float .ks-window-portal {
-  box-shadow: 0 22px 52px rgba(42, 40, 36, 0.32);
+  box-shadow: 0 22px 52px rgba(var(--ks-ink-rgb), 0.32);
 }
 
 .ks-editorial-float .ks-window-portal img {
@@ -2607,8 +2681,8 @@ summary {
 /* ── Home: serviços ───────────────────────────────────────────── */
 .ks-services-section {
   padding: clamp(64px, 8vw, 110px) clamp(24px, 5vw, 64px);
-  background: var(--ks-accent-olive);
-  color: var(--ks-on-dark);
+  background: var(--ks-surface-cool);
+  color: var(--ks-on-cool);
   overflow: visible;
   isolation: isolate;
 }
@@ -2620,11 +2694,16 @@ summary {
 .ks-services-section .ks-section-title h2,
 .ks-services-section .ks-section-title p,
 .ks-services-section .ks-label-caps {
-  color: var(--ks-on-dark);
+  color: var(--ks-on-cool);
 }
 
 .ks-services-section .ks-muted {
-  color: var(--ks-on-dark-muted);
+  color: var(--ks-on-cool-muted);
+}
+
+.ks-services-section .ks-gold,
+.ks-services-section .ks-label-caps.ks-gold {
+  color: var(--ks-peach);
 }
 
 .ks-services-grid {
@@ -2669,7 +2748,7 @@ summary {
   flex-shrink: 0;
   width: 100%;
   padding-top: clamp(16px, 2.5vw, 28px);
-  background: var(--ks-accent-olive);
+  background: var(--ks-surface-cool);
   overflow: visible;
 }
 
@@ -2704,7 +2783,7 @@ summary {
   margin: 0 0 14px;
   font-size: 14px;
   line-height: 1.6;
-  color: var(--ks-on-dark-muted);
+  color: var(--ks-on-cool-muted);
 }
 
 .ks-service-card-link {
@@ -2715,8 +2794,8 @@ summary {
   margin-top: auto;
   min-height: 36px;
   padding: 8px 14px;
-  border: 1px solid rgba(245, 240, 230, 0.35);
-  background: rgba(107, 46, 53, 0.28);
+  border: 1px solid rgba(var(--ks-beige-rgb), 0.45);
+  background: rgba(var(--ks-plum-rgb), 0.82);
   font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.18em;
@@ -2726,8 +2805,8 @@ summary {
 }
 
 .ks-service-card:hover .ks-service-card-link {
-  border-color: rgba(245, 240, 230, 0.55);
-  background: rgba(107, 46, 53, 0.5);
+  border-color: rgba(var(--ks-peach-rgb), 0.75);
+  background: var(--ks-plum);
 }
 
 /* ── Home: mural portfólio ──────────────────────────────────── */
@@ -2746,7 +2825,7 @@ summary {
 .ks-mural-item {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(74, 56, 40, 0.14);
+  border: 1px solid rgba(var(--ks-ink-rgb), 0.14);
   background: var(--ks-surface-low);
   text-decoration: none;
   color: inherit;
@@ -2771,7 +2850,7 @@ summary {
   right: 0;
   bottom: 0;
   padding: 14px 12px;
-  background: linear-gradient(to top, rgba(42, 40, 36, 0.72), transparent);
+  background: linear-gradient(to top, rgba(var(--ks-ink-rgb), 0.72), transparent);
   color: var(--ks-on-dark);
 }
 
@@ -2808,7 +2887,8 @@ summary {
 @media (max-width: 1120px) {
   .ks-home-hero {
     min-height: min(88vh, 780px);
-    align-items: flex-end;
+    align-items: center;
+    justify-content: center;
     padding-top: 100px;
   }
 
@@ -2818,21 +2898,17 @@ summary {
 
   .ks-home-hero-shade {
     background:
-      linear-gradient(
-        to top,
-        rgba(245, 240, 230, 0.96) 0%,
-        rgba(245, 240, 230, 0.82) 32%,
-        rgba(245, 240, 230, 0.35) 58%,
-        rgba(42, 40, 36, 0.2) 100%
+      radial-gradient(
+        ellipse 100% 80% at 50% 48%,
+        rgba(var(--ks-beige-rgb), 0.94) 0%,
+        rgba(var(--ks-beige-rgb), 0.6) 50%,
+        rgba(var(--ks-beige-rgb), 0.18) 78%,
+        transparent 100%
       );
   }
 
   .ks-home-hero-bg {
-    object-position: center 22%;
-  }
-
-  .ks-home-hero-ornament {
-    opacity: 0.28;
+    object-position: center center;
   }
 
   .ks-editorial-split {
@@ -2919,7 +2995,7 @@ summary {
   z-index: 99990;
   display: grid;
   place-items: center;
-  background: rgba(245, 240, 230, 0.97);
+  background: rgba(var(--ks-beige-rgb), 0.97);
   color: var(--ks-aged-gold);
   pointer-events: all;
 }
@@ -2956,9 +3032,9 @@ summary {
   position: relative;
   padding: 128px clamp(24px, 5vw, 64px) clamp(48px, 6vw, 72px);
   background:
-    linear-gradient(120deg, rgba(245, 240, 230, 0.94), rgba(245, 240, 230, 0.78)),
+    linear-gradient(120deg, rgba(var(--ks-beige-rgb), 0.94), rgba(var(--ks-beige-rgb), 0.78)),
     url("https://images.unsplash.com/photo-1542727365-19732a80dcfd?auto=format&fit=crop&w=1800&q=80") center/cover;
-  border-bottom: 1px solid rgba(74, 56, 40, 0.1);
+  border-bottom: 1px solid rgba(var(--ks-ink-rgb), 0.1);
   isolation: isolate;
 }
 
@@ -2978,7 +3054,7 @@ summary {
 }
 
 .ks-products-category-card {
-  border: 1px solid rgba(74, 56, 40, 0.14);
+  border: 1px solid rgba(var(--ks-ink-rgb), 0.14);
   background: var(--ks-surface-lowest);
   overflow: hidden;
   transition: transform 0.35s ease, box-shadow 0.35s ease;
@@ -2986,7 +3062,7 @@ summary {
 
 .ks-products-category-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(74, 56, 40, 0.1);
+  box-shadow: 0 16px 40px rgba(var(--ks-ink-rgb), 0.1);
 }
 
 .ks-products-category-card a {

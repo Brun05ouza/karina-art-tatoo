@@ -58,7 +58,7 @@ export const tattooImages = {
 
   /** Home / destaque */
 
-  hero: u(id.inkingArm, 2000),
+  hero: "/assets/hero-home.png",
 
   sessionWide: u(id.sessionWide, 2000),
 

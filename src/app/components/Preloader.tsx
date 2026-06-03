@@ -27,7 +27,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
           style={{
             position: "fixed",
             inset: 0,
-            background: "#f5f0e6",
+            background: "#DCD1B4",
             zIndex: 99998,
             display: "flex",
             flexDirection: "column",
@@ -45,7 +45,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
           >
             <motion.path
               d="M 10 30 Q 50 10 100 30 Q 150 50 190 30"
-              stroke="#6b2e35"
+              stroke="#B05574"
               strokeWidth="0.75"
               fill="none"
               initial={{ pathLength: 0, opacity: 0 }}
@@ -60,7 +60,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
             transition={{ duration: 0.6, ease: "easeOut" }}
             style={{ animation: "ks-star-pulse 2s ease-in-out infinite" }}
           >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="#6b2e35">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#B05574">
               <path d="M12 0 L13.2 10.8 L24 12 L13.2 13.2 L12 24 L10.8 13.2 L0 12 L10.8 10.8 Z" />
             </svg>
           </motion.div>
@@ -74,7 +74,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
               fontSize: 10,
               letterSpacing: "0.22em",
               textTransform: "uppercase",
-              color: "#6b6558",
+              color: "#6b5562",
             }}
           >
             Karina Sarte — Tattoo autoral

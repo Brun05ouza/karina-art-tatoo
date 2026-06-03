@@ -656,15 +656,13 @@ function HomeHero() {
         loading="eager"
       />
       <div className="ks-home-hero-shade" aria-hidden="true" />
-      <div className="ks-home-hero-ornament" aria-hidden="true">
-        <StarGlyph size={40} color="#6b2e35" />
-      </div>
       <motion.div
         className="ks-home-hero-content"
         initial={{ opacity: 0, y: 28 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: EASE }}
       >
+        <StarGlyph size={36} color="#F87E7B" className="ks-home-hero-star" />
         <span className="ks-label-caps">Teresópolis · RJ</span>
         <h1 className="ks-display-xl">Arte na pele com identidade, cuidado e intenção.</h1>
         <p className="ks-body-lg">
@@ -1816,7 +1814,7 @@ function FlashCard({ name, status, text, img }: { name: string; status: string; 
         </div>
       )}
       <div className="ks-flash-page-card-body">
-        <StencilCrosshair size={14} color="#4a5c6e" />
+        <StencilCrosshair size={14} color="#5E9FA3" />
         <span className={`ks-status ${status.toLowerCase()}`}>{status}</span>
         <h3>{name}</h3>
         <p>{text}</p>
