@@ -1,4 +1,4 @@
-/* Kah Sarte — Vintage Editorial Tattoo Studio */
+/* Karina Sarte — Vintage Editorial Tattoo Studio */
 
 :root {
   --ks-bg: #f5f0e6;
@@ -30,6 +30,17 @@
   --ks-on-cream-gold: #6b2e35;
   --ks-wine: #5c242c;
   --ks-wine-mid: #6b2e35;
+  --ks-radius-btn: 100px;
+  /* Impacto */
+  --ks-font-display: "Amatic SC", cursive;
+  --ks-font-display-alt: "Barriecito", cursive;
+  --ks-font-display-skinny: "The Skinny", "Amatic SC", cursive;
+  --ks-font-display-lemon: "DK Lemon Yellow Sun", "Barriecito", cursive;
+  /* Elegante / vintage */
+  --ks-font-serif: "Cormorant Garamond", serif;
+  --ks-font-body: "Lora", serif;
+  --ks-font-body-accent: "Libre Baskerville", serif;
+  --ks-font-meta: "IBM Plex Mono", monospace;
 }
 
 * {
@@ -42,6 +53,7 @@ body {
   -ms-overflow-style: none;
   background: var(--ks-bg);
   color: var(--ks-primary);
+  font-family: var(--ks-font-body);
 }
 
 .ks-shell {
@@ -75,43 +87,44 @@ summary {
 
 /* Typography */
 .ks-display-xl {
-  font-family: "Cormorant Garamond", serif;
-  font-size: clamp(52px, 8vw, 108px);
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-  font-weight: 400;
+  font-family: var(--ks-font-display);
+  font-size: clamp(56px, 9vw, 120px);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  font-weight: 700;
 }
 
 .ks-headline-lg {
-  font-family: "Cormorant Garamond", serif;
-  font-size: clamp(38px, 5vw, 70px);
-  line-height: 1.05;
+  font-family: var(--ks-font-display-alt);
+  font-size: clamp(40px, 5.5vw, 76px);
+  line-height: 1;
+  letter-spacing: 0.01em;
   font-weight: 400;
 }
 
 .ks-headline-md {
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: clamp(26px, 3vw, 46px);
   line-height: 1.15;
   font-weight: 400;
 }
 
 .ks-body-lg {
-  font-family: "Source Serif 4", serif;
+  font-family: var(--ks-font-body);
   font-size: 18px;
   line-height: 1.6;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .ks-body-md {
-  font-family: "Source Serif 4", serif;
+  font-family: var(--ks-font-body);
   font-size: 15px;
   line-height: 1.65;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 .ks-label-caps {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 10px;
   line-height: 1;
   letter-spacing: 0.22em;
@@ -160,10 +173,10 @@ summary {
   gap: 8px;
   color: var(--ks-primary);
   text-decoration: none;
-  font-family: "Cormorant Garamond", serif;
-  font-size: clamp(14px, 1.6vw, 17px);
-  letter-spacing: 0.06em;
-  font-weight: 500;
+  font-family: var(--ks-font-display);
+  font-size: clamp(22px, 2.4vw, 28px);
+  letter-spacing: 0.04em;
+  font-weight: 700;
 }
 
 .ks-desktop-nav {
@@ -174,7 +187,7 @@ summary {
   position: relative;
   color: var(--ks-on-surface-variant);
   text-decoration: none;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 9px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -205,14 +218,27 @@ summary {
   min-height: 42px;
   padding: 12px 18px;
   border: 1px solid var(--ks-aged-gold);
+  border-radius: var(--ks-radius-btn);
   color: var(--ks-on-dark);
   background: var(--ks-aged-gold);
   text-decoration: none;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 9px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+}
+
+/* Botões e CTAs com borda arredondada */
+.ks-menu-button,
+.ks-carousel-btn,
+.ks-filter-row button,
+.ks-floating-whatsapp,
+.ks-product-visual-cta,
+.ks-service-card-link,
+.ks-tattoo-modal-close,
+.ks-text-link {
+  border-radius: var(--ks-radius-btn);
 }
 
 .ks-nav-cta:hover,
@@ -297,7 +323,7 @@ summary {
 .ks-mobile-nav-link span {
   min-width: 24px;
   color: var(--ks-outline-variant);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.2em;
   transition: color 0.25s ease;
@@ -310,7 +336,7 @@ summary {
 }
 
 .ks-mobile-nav-link strong {
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: clamp(31px, 10vw, 52px);
   font-weight: 400;
   line-height: 1;
@@ -326,7 +352,7 @@ summary {
 .ks-mobile-note {
   margin-top: 48px;
   color: var(--ks-outline-variant);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.2em;
 }
@@ -411,12 +437,20 @@ summary {
   align-items: center;
   gap: 8px;
   margin-top: 22px;
+  padding: 10px 16px;
+  border: 1px solid rgba(107, 46, 53, 0.28);
   color: var(--ks-aged-gold);
   text-decoration: none;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+  transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.ks-text-link:hover {
+  border-color: var(--ks-aged-gold);
+  background: rgba(107, 46, 53, 0.06);
 }
 
 .ks-section {
@@ -469,7 +503,7 @@ summary {
 
 .ks-budget-label {
   color: var(--ks-aged-gold);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 9px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -482,7 +516,7 @@ summary {
   border: 1px solid rgba(74, 56, 40, 0.18);
   background: var(--ks-paper);
   color: var(--ks-primary);
-  font-family: "Source Serif 4", serif;
+  font-family: var(--ks-font-body);
   font-size: 15px;
   line-height: 1.65;
   transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
@@ -514,7 +548,7 @@ summary {
 
 .ks-budget-error {
   color: #e08a9b;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 10px;
   letter-spacing: 0.06em;
 }
@@ -525,7 +559,7 @@ summary {
   border: 1px solid rgba(242, 237, 226, 0.08);
   background: rgba(13, 14, 13, 0.55);
   color: var(--ks-on-surface-variant);
-  font-family: "Source Serif 4", serif;
+  font-family: var(--ks-font-body);
   font-size: 14px;
   line-height: 1.65;
 }
@@ -534,7 +568,7 @@ summary {
   display: block;
   margin-bottom: 8px;
   color: var(--ks-outline);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -589,7 +623,7 @@ summary {
   border: 1px solid rgba(242, 237, 226, 0.12);
   background: rgba(13, 14, 13, 0.72);
   color: var(--ks-outline);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.16em;
 }
@@ -613,7 +647,7 @@ summary {
   border: 1px solid rgba(233, 192, 130, 0.28);
   background: rgba(13, 14, 13, 0.72);
   color: var(--ks-aged-gold);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -637,7 +671,7 @@ summary {
   padding-left: 20px;
   border-left: 1px solid rgba(233, 192, 130, 0.45);
   color: var(--ks-primary);
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-body-accent);
   font-size: clamp(22px, 3.2vw, 34px);
   font-weight: 400;
   font-style: italic;
@@ -732,7 +766,7 @@ summary {
 .ks-step h3 {
   margin: 10px 0 0;
   color: var(--ks-primary);
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: 24px;
   font-weight: 400;
   line-height: 1.12;
@@ -741,7 +775,7 @@ summary {
 .ks-image-card h3 {
   margin: 10px 0 0;
   color: var(--ks-on-dark);
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: clamp(22px, 2.2vw, 26px);
   font-weight: 500;
   line-height: 1.12;
@@ -794,7 +828,7 @@ summary {
 }
 
 .ks-carousel-count {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 10px;
   letter-spacing: 0.2em;
   color: var(--ks-outline);
@@ -850,7 +884,7 @@ summary {
 .ks-portfolio-card-overlay h3 {
   margin: 8px 0 0;
   color: var(--ks-primary);
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: clamp(18px, 2vw, 26px);
   font-weight: 400;
   line-height: 1.1;
@@ -947,7 +981,7 @@ summary {
 .ks-flash-feature h3 {
   margin: 12px 0 10px;
   color: var(--ks-primary);
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: clamp(32px, 5vw, 66px);
   font-weight: 400;
   line-height: 1;
@@ -956,7 +990,7 @@ summary {
 .ks-flash-feature p {
   max-width: 440px;
   color: var(--ks-outline);
-  font-family: "Source Serif 4", serif;
+  font-family: var(--ks-font-body);
   font-size: 15px;
   font-weight: 300;
   line-height: 1.65;
@@ -1018,7 +1052,7 @@ summary {
 .ks-flash-mini-card h3 {
   margin: 6px 0 4px;
   color: var(--ks-primary);
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: clamp(16px, 1.6vw, 22px);
   font-weight: 400;
   line-height: 1.1;
@@ -1027,7 +1061,7 @@ summary {
 .ks-flash-mini-card p {
   margin: 0;
   color: var(--ks-outline);
-  font-family: "Source Serif 4", serif;
+  font-family: var(--ks-font-body);
   font-size: 12px;
   font-weight: 300;
   line-height: 1.5;
@@ -1061,7 +1095,7 @@ summary {
 .ks-step p,
 .ks-faq-list p {
   color: var(--ks-outline);
-  font-family: "Source Serif 4", serif;
+  font-family: var(--ks-font-body);
   font-size: 14px;
   font-weight: 300;
   line-height: 1.65;
@@ -1073,7 +1107,7 @@ summary {
   margin-top: 16px;
   color: var(--ks-aged-gold);
   text-decoration: none;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 9px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1086,7 +1120,7 @@ summary {
   padding: 6px 9px;
   border: 1px solid rgba(233, 192, 130, 0.3);
   color: var(--ks-aged-gold);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1216,7 +1250,7 @@ summary {
 
 .ks-product-visual-overlay h3 {
   margin: 0 0 8px;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: clamp(18px, 1.8vw, 26px);
   font-weight: 500;
   line-height: 1.1;
@@ -1225,7 +1259,7 @@ summary {
 .ks-product-visual-hover-text {
   margin: 0 0 14px;
   max-width: 28ch;
-  font-family: "Source Serif 4", serif;
+  font-family: var(--ks-font-body);
   font-size: 13px;
   font-weight: 300;
   line-height: 1.5;
@@ -1247,7 +1281,7 @@ summary {
   border: 1px solid rgba(245, 240, 230, 0.45);
   color: var(--ks-on-dark);
   background: rgba(107, 46, 53, 0.35);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1404,9 +1438,11 @@ summary {
 .ks-section-intro h2 {
   margin: 0;
   color: var(--ks-primary);
-  font-family: "Cormorant Garamond", serif;
-  font-size: clamp(36px, 7vw, 92px);
-  font-weight: 400;
+  font-family: var(--ks-font-display-skinny);
+  font-size: clamp(44px, 8vw, 104px);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: 0.03em;
   will-change: transform, opacity;
   text-align: center;
   padding-inline: clamp(20px, 5vw, 48px);
@@ -1445,7 +1481,7 @@ summary {
 
 .ks-step span {
   color: var(--ks-aged-gold);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 10px;
   letter-spacing: 0.2em;
 }
@@ -1488,6 +1524,10 @@ summary {
 .ks-cta-band h2 {
   margin-top: 0;
   margin-bottom: 14px;
+  font-family: var(--ks-font-display-lemon);
+  font-size: clamp(32px, 4.5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
 }
 
 .ks-cta-band p {
@@ -1512,7 +1552,7 @@ summary {
   background: transparent;
   color: var(--ks-on-surface-variant);
   padding: 9px 12px;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1575,7 +1615,7 @@ summary {
   flex: 1 1 auto;
   margin: 0;
   color: var(--ks-on-surface-variant);
-  font-family: "Source Serif 4", serif;
+  font-family: var(--ks-font-body);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -1627,7 +1667,7 @@ summary {
 
 .ks-faq-question span:first-child {
   color: var(--ks-primary);
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: clamp(18px, 2.2vw, 26px);
   font-weight: 400;
   line-height: 1.2;
@@ -1682,7 +1722,7 @@ summary {
   color: var(--ks-accent-olive);
   text-decoration: none;
   backdrop-filter: blur(10px);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 9px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1863,7 +1903,7 @@ summary {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: 15px;
   font-weight: 500;
   color: var(--ks-primary);
@@ -1879,7 +1919,7 @@ summary {
 
 .ks-footer-nav a {
   color: var(--ks-on-surface-variant);
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -1902,7 +1942,7 @@ summary {
 }
 
 .ks-footer-copy {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -1916,7 +1956,7 @@ summary {
 }
 
 .ks-footer-social a {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -2493,7 +2533,7 @@ summary {
 .ks-editorial-split-media {
   position: relative;
   min-height: 100%;
-  background: var(--ks-cream);
+  background: var(--ks-primary);
 }
 
 .ks-editorial-split-media img {
@@ -2501,28 +2541,67 @@ summary {
   height: 100%;
   min-height: 420px;
   object-fit: cover;
-  filter: grayscale(30%) sepia(10%) contrast(1.03);
+  object-position: center 30%;
+  filter: grayscale(55%) sepia(12%) contrast(1.05) brightness(0.72);
+  opacity: 0.55;
 }
 
 .ks-editorial-float {
   position: absolute;
-  left: 42%;
-  bottom: 14%;
-  z-index: 2;
-  width: min(42vw, 320px);
-  aspect-ratio: 3 / 4;
-  border: 1px solid rgba(74, 56, 40, 0.22);
-  padding: 8px;
-  background: var(--ks-paper);
-  box-shadow: 0 20px 50px rgba(74, 56, 40, 0.18);
+  left: 40%;
+  bottom: 12%;
+  z-index: 3;
+  width: min(40vw, 280px);
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
   transform: rotate(-3deg);
 }
 
-.ks-editorial-float img {
+.ks-svg-clip-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Portal janela — manifesto + cards de serviço (mesmo recorte) */
+.ks-window-portal {
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 3 / 4.2;
+  clip-path: url(#ks-window-clip);
+  -webkit-clip-path: url(#ks-window-clip);
+  border-radius: 50% 50% 0 0 / 34% 34% 0 0;
+}
+
+.ks-window-portal img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(25%) sepia(12%);
+  object-position: center 32%;
+}
+
+.ks-editorial-float .ks-window-portal {
+  box-shadow: 0 22px 52px rgba(42, 40, 36, 0.32);
+}
+
+.ks-editorial-float .ks-window-portal img {
+  object-position: center 35%;
+  filter: grayscale(22%) sepia(12%) contrast(1.04);
+}
+
+.ks-service-card-media .ks-window-portal img {
+  transform: scale(1.04);
+  filter: grayscale(35%) sepia(10%);
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+.ks-service-card:hover .ks-window-portal img {
+  transform: scale(1.08);
+  filter: grayscale(15%) sepia(8%);
 }
 
 /* ── Home: serviços ───────────────────────────────────────────── */
@@ -2530,6 +2609,12 @@ summary {
   padding: clamp(64px, 8vw, 110px) clamp(24px, 5vw, 64px);
   background: var(--ks-accent-olive);
   color: var(--ks-on-dark);
+  overflow: visible;
+  isolation: isolate;
+}
+
+.ks-services-section .ks-section-title {
+  margin-bottom: clamp(24px, 4vw, 48px);
 }
 
 .ks-services-section .ks-section-title h2,
@@ -2545,16 +2630,20 @@ summary {
 .ks-services-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-auto-rows: 1fr;
+  grid-auto-rows: auto;
   align-items: stretch;
   gap: clamp(16px, 2vw, 24px);
   margin-top: clamp(36px, 5vw, 56px);
+  padding-top: clamp(32px, 5vw, 56px);
+  overflow: visible;
 }
 
+.ks-service-grid-item,
 .ks-services-grid > * {
   display: flex;
-  min-height: 100%;
-  height: 100%;
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
 }
 
 .ks-service-card {
@@ -2562,37 +2651,35 @@ summary {
   flex-direction: column;
   width: 100%;
   height: 100%;
-  min-height: clamp(420px, 36vw, 520px);
+  padding-top: 0;
   text-decoration: none;
   color: inherit;
-  background: rgba(250, 247, 240, 0.08);
-  border: 1px solid rgba(245, 240, 230, 0.14);
-  transition: transform 0.35s ease, border-color 0.35s ease;
+  background: transparent;
+  border: none;
+  overflow: visible;
+  transition: transform 0.35s ease;
 }
 
 .ks-service-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(245, 240, 230, 0.32);
 }
 
 .ks-service-card-media {
   flex: 0 0 auto;
-  aspect-ratio: 4 / 5;
+  flex-shrink: 0;
   width: 100%;
-  overflow: hidden;
+  padding-top: clamp(16px, 2.5vw, 28px);
+  background: var(--ks-accent-olive);
+  overflow: visible;
 }
 
-.ks-service-card-media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(35%) sepia(10%);
-  transition: transform 0.5s ease, filter 0.5s ease;
-}
-
-.ks-service-card:hover .ks-service-card-media img {
-  transform: scale(1.04);
-  filter: grayscale(15%) sepia(8%);
+.ks-service-card-media .ks-window-portal {
+  margin: 0 auto;
+  flex-shrink: 0;
+  clip-path: url(#ks-window-clip-card);
+  -webkit-clip-path: url(#ks-window-clip-card);
+  border-radius: 0;
+  height: auto;
 }
 
 .ks-service-card-body {
@@ -2600,12 +2687,13 @@ summary {
   flex: 1 1 auto;
   flex-direction: column;
   padding: 20px 18px 22px;
-  min-height: 0;
+  background: transparent;
+  border: none;
 }
 
 .ks-service-card-body h3 {
   margin: 0 0 10px;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: clamp(22px, 2.2vw, 28px);
   font-weight: 500;
   line-height: 1.15;
@@ -2620,12 +2708,26 @@ summary {
 }
 
 .ks-service-card-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
   margin-top: auto;
-  font-family: "IBM Plex Mono", monospace;
+  min-height: 36px;
+  padding: 8px 14px;
+  border: 1px solid rgba(245, 240, 230, 0.35);
+  background: rgba(107, 46, 53, 0.28);
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--ks-accent-rose);
+  color: var(--ks-on-dark);
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.ks-service-card:hover .ks-service-card-link {
+  border-color: rgba(245, 240, 230, 0.55);
+  background: rgba(107, 46, 53, 0.5);
 }
 
 /* ── Home: mural portfólio ──────────────────────────────────── */
@@ -2675,7 +2777,7 @@ summary {
 
 .ks-mural-item-caption span {
   display: block;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 8px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -2685,7 +2787,7 @@ summary {
 .ks-mural-item-caption strong {
   display: block;
   margin-top: 4px;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: 18px;
   font-weight: 500;
 }
@@ -2742,9 +2844,13 @@ summary {
     position: relative;
     left: auto;
     bottom: auto;
-    width: min(88%, 320px);
+    width: min(88%, 300px);
     margin: 28px auto 8px;
     transform: rotate(-2deg);
+  }
+
+  .ks-editorial-float .ks-window-portal {
+    aspect-ratio: 3 / 3.8;
   }
 
   .ks-home-flow .ks-editorial-split {
@@ -2780,12 +2886,12 @@ summary {
   }
 
   .ks-service-card {
-    min-height: 0;
+    height: auto;
   }
 
-  .ks-service-card-media {
-    aspect-ratio: 4 / 3;
-    min-height: 200px;
+  .ks-service-card-media .ks-window-portal {
+    aspect-ratio: 3 / 3.6;
+    min-height: 240px;
   }
 
   .ks-mural-grid {
@@ -2834,7 +2940,7 @@ summary {
   z-index: 1;
   margin: 0;
   padding-inline: 24px;
-  font-family: "Cormorant Garamond", serif;
+  font-family: var(--ks-font-serif);
   font-size: clamp(36px, 6vw, 72px);
   font-weight: 500;
   text-align: center;
@@ -2921,7 +3027,7 @@ summary {
   align-items: center;
   gap: 8px;
   margin-top: 18px;
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--ks-font-meta);
   font-size: 9px;
   letter-spacing: 0.16em;
   text-transform: uppercase;

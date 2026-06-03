@@ -104,7 +104,7 @@ export function Manifesto() {
               maxWidth: 520,
             }}
           >
-            Kah cria tatuagens autorais que atravessam botânica, símbolos, linhas livres e
+            Karina Sarte cria tatuagens autorais que atravessam botânica, símbolos, linhas livres e
             composições feitas para existir com o corpo — não apenas sobre ele.
           </motion.p>
         </div>

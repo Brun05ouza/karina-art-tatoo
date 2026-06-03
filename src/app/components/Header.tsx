@@ -41,9 +41,9 @@ export function Header() {
         transition={{ duration: 1, delay: 0.2, ease: EASE }}
         className={`ks-header${scrolled ? " is-scrolled" : ""}${menuOpen ? " is-open" : ""}`}
       >
-        <Link to="/" className="ks-logo" aria-label="Kah Sarte Tattoo">
+        <Link to="/" className="ks-logo" aria-label="Karina Sarte Tattoo">
           <StarGlyph size={8} color="#6b2e35" />
-          <span>Kah Sarte Tattoo</span>
+          <span>Karina Sarte Tattoo</span>
         </Link>
 
         <nav className="ks-desktop-nav">

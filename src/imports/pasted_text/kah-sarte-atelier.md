@@ -1,6 +1,6 @@
 
 
-Crie um protótipo funcional em React/Next.js para o site da artista tatuadora **Kah Sarte**, com estética de **atelier privado, tattoo autoral, ritual, botânica, sumiê, freehand e arte em pele**.
+Crie um protótipo funcional em React/Next.js para o site da artista tatuadora **Karina Sarte**, com estética de **atelier privado, tattoo autoral, ritual, botânica, sumiê, freehand e arte em pele**.
 
 O resultado precisa seguir uma direção visual **editorial, minimalista, dark, contemplativa e premium**, semelhante a um catálogo de galeria de arte ou editorial de moda independente. Não quero uma landing page comercial. Quero uma experiência visual silenciosa, sofisticada, com muito espaço negativo, grid assimétrico, imagens em preto e branco, tipografia serifada forte e microinterações muito bem dosadas.
 
@@ -411,7 +411,7 @@ Cada desenho nasce de escuta, gesto e intenção.
 Abaixo, texto menor:
 
 ```txt
-Kah cria tatuagens autorais que atravessam botânica, símbolos, linhas livres e composições feitas para existir com o corpo — não apenas sobre ele.
+Karina Sarte cria tatuagens autorais que atravessam botânica, símbolos, linhas livres e composições feitas para existir com o corpo — não apenas sobre ele.
 ```
 
 Animação:
@@ -694,7 +694,7 @@ A ARTISTA POR TRÁS DO TRAÇO
 Texto:
 
 ```txt
-Kah Sarte é artista e tatuadora autoral. Seu trabalho mistura botânica, sumiê, linhas livres e símbolos delicados em composições pensadas para o corpo.
+Karina Sarte é artista e tatuadora autoral. Seu trabalho mistura botânica, sumiê, linhas livres e símbolos delicados em composições pensadas para o corpo.
 ```
 
 Detalhes:
@@ -921,7 +921,7 @@ COMEÇAR UMA IDEIA
 Cada pele pede um desenho.
 Cada desenho nasce de escuta, gesto e intenção.
 
-Kah cria tatuagens autorais que atravessam botânica, símbolos, linhas livres e composições feitas para existir com o corpo — não apenas sobre ele.
+Karina Sarte cria tatuagens autorais que atravessam botânica, símbolos, linhas livres e composições feitas para existir com o corpo — não apenas sobre ele.
 ```
 
 ### Galeria
@@ -988,7 +988,7 @@ Atendimento individual em Teresópolis — RJ, com horário marcado, escuta e pr
 ```txt
 A artista por trás do traço.
 
-Kah Sarte é artista e tatuadora autoral. Seu trabalho mistura botânica, sumiê, linhas livres e símbolos delicados em composições pensadas para o corpo.
+Karina Sarte é artista e tatuadora autoral. Seu trabalho mistura botânica, sumiê, linhas livres e símbolos delicados em composições pensadas para o corpo.
 ```
 
 ### Agendamento

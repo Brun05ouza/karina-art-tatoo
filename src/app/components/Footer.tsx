@@ -26,7 +26,7 @@ export function Footer() {
       <div className="ks-footer-inner">
         <Link to="/" className="ks-footer-brand">
           <StarGlyph size={7} color="#6b2e35" />
-          <span>Kah Sarte Tattoo</span>
+          <span>Karina Sarte Tattoo</span>
         </Link>
 
         <nav className="ks-footer-nav" aria-label="Navegação do site">
@@ -38,7 +38,7 @@ export function Footer() {
         </nav>
 
         <div className="ks-footer-bottom">
-          <span className="ks-footer-copy">© 2026 Kah Sarte Tattoo · Teresópolis, RJ</span>
+          <span className="ks-footer-copy">© 2026 Karina Sarte Tattoo · Teresópolis, RJ</span>
           <div className="ks-footer-social">
             {socialLinks.map((link) => (
               <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer">

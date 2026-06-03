@@ -2,7 +2,7 @@
 
  * Mocks Unsplash (URLs testadas) — prioridade: tatuagem na pele, sessão ou flash.
 
- * Substituir por fotos reais da Kah quando tiver o acervo.
+ * Substituir por fotos reais da Karina Sarte quando tiver o acervo.
 
  */
 

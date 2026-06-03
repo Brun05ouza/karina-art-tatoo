@@ -55,29 +55,29 @@ const flashMocks = [
   tattooImages.blackworkOrganic,
 ] as const;
 
-const WA_DEFAULT = "Olá, Kah! Vim pelo site e queria fazer um orçamento.";
-const WA_PRODUCTS = "Olá, Kah! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
+const WA_DEFAULT = "Olá, Karina Sarte! Vim pelo site e queria fazer um orçamento.";
+const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
 
 const ProductsNavContext = createContext<(() => void) | null>(null);
 
 const SECTION_INTRO_TITLES: Record<string, string> = {
-  "/sobre": "Sobre a Kah",
+  "/sobre": "Sobre a Karina Sarte",
   "/portfolio": "Portfólio",
   "/flash-tattoos": "Flash Tattoos",
-  "/produtos": "Coleções da Kah",
+  "/produtos": "Coleções da Karina Sarte",
   "/como-funciona": "Como funciona",
   "/cuidados": "Cuidados",
   "/depoimentos": "Depoimentos",
   "/faq": "FAQ",
 };
-const BUDGET_WHATSAPP_INTRO = "Olá, Kah! Vim pelo site e queria fazer um orçamento de tattoo.";
+const BUDGET_WHATSAPP_INTRO = "Olá, Karina Sarte! Vim pelo site e queria fazer um orçamento de tattoo.";
 
 function productWhatsAppMessage(productName: string) {
-  return `Olá, Kah! Vim pelo site e me interessei por ${productName}. Gostaria de saber mais.`;
+  return `Olá, Karina Sarte! Vim pelo site e me interessei por ${productName}. Gostaria de saber mais.`;
 }
 
 function tattooChoiceMessage(tattooName: string) {
-  return `Olá, Kah! Vim pelo site e escolhi a tattoo "${tattooName}". Gostaria de saber mais.`;
+  return `Olá, Karina Sarte! Vim pelo site e escolhi a tattoo "${tattooName}". Gostaria de saber mais.`;
 }
 
 function filterPortfolioCategory(itemCategory: string, filter: string) {
@@ -206,14 +206,14 @@ const productCategories = [
       "Opções para tattoos pequenas, projetos autorais, sessões personalizadas e flashes exclusivos.",
     cta: "Consultar planos",
     img: productGroups[0].img,
-    message: "Olá, Kah! Vim pelo site e gostaria de consultar os planos de tattoo.",
+    message: "Olá, Karina Sarte! Vim pelo site e gostaria de consultar os planos de tattoo.",
   },
   {
     title: "Flash Tattoos",
     description: "Artes prontas e disponíveis para tatuar, com identidade própria e disponibilidade limitada.",
     cta: "Ver flashes disponíveis",
     img: productGroups[1].img,
-    message: "Olá, Kah! Vim pelo site e gostaria de ver os flash tattoos disponíveis.",
+    message: "Olá, Karina Sarte! Vim pelo site e gostaria de ver os flash tattoos disponíveis.",
     link: "/flash-tattoos",
   },
   {
@@ -221,14 +221,14 @@ const productCategories = [
     description: "Ilustrações autorais para decorar, presentear ou colecionar.",
     cta: "Consultar artes",
     img: productGroups[2].img,
-    message: "Olá, Kah! Vim pelo site e gostaria de consultar prints e artes.",
+    message: "Olá, Karina Sarte! Vim pelo site e gostaria de consultar prints e artes.",
   },
   {
     title: "Kits e Produtos",
     description: "Produtos selecionados, itens personalizados e possíveis kits ligados ao universo da tattoo.",
     cta: "Consultar disponibilidade",
     img: productGroups[3].img,
-    message: "Olá, Kah! Vim pelo site e gostaria de consultar kits e produtos.",
+    message: "Olá, Karina Sarte! Vim pelo site e gostaria de consultar kits e produtos.",
   },
 ] as const;
 
@@ -320,46 +320,46 @@ const tattooGalleryItems = [
 
 const seo: Record<string, { title: string; description: string }> = {
   "/": {
-    title: "Kah Sarte Tattoo | Tatuagens Autorais e Flash Tattoos",
+    title: "Karina Sarte Tattoo | Tatuagens Autorais e Flash Tattoos",
     description:
-      "Crio tatuagens autorais, flash tattoos e produtos artísticos em Teresópolis, RJ. Kah Sarte Tattoo.",
+      "Crio tatuagens autorais, flash tattoos e produtos artísticos em Teresópolis, RJ. Karina Sarte Tattoo.",
   },
   "/sobre": {
-    title: "Sobre a Kah | Kah Sarte Tattoo",
-    description: "Conheça a Kah Sarte Tattoo: tatuagens autorais, identidade visual e processo criativo em Teresópolis, RJ.",
+    title: "Sobre a Karina Sarte | Karina Sarte Tattoo",
+    description: "Conheça a Karina Sarte Tattoo: tatuagens autorais, identidade visual e processo criativo em Teresópolis, RJ.",
   },
   "/portfolio": {
-    title: "Portfólio de Tattoos | Kah Sarte Tattoo",
+    title: "Portfólio de Tattoos | Karina Sarte Tattoo",
     description:
-      "Veja meus trabalhos recentes: fine line, minimalistas, blackwork e projetos personalizados na Kah Sarte Tattoo.",
+      "Veja meus trabalhos recentes: fine line, minimalistas, blackwork e projetos personalizados na Karina Sarte Tattoo.",
   },
   "/flash-tattoos": {
-    title: "Flash Tattoos Disponíveis | Kah Sarte Tattoo",
-    description: "Confira meus flash tattoos autorais disponíveis para tatuar na Kah Sarte Tattoo.",
+    title: "Flash Tattoos Disponíveis | Karina Sarte Tattoo",
+    description: "Confira meus flash tattoos autorais disponíveis para tatuar na Karina Sarte Tattoo.",
   },
   "/produtos": {
-    title: "Produtos Autorais, Prints e Planos de Tattoo | Kah Sarte Tattoo",
+    title: "Produtos Autorais, Prints e Planos de Tattoo | Karina Sarte Tattoo",
     description:
-      "Produtos autorais, prints, artes, kits, flash tattoos e planos de tattoo disponíveis na Kah Sarte Tattoo.",
+      "Produtos autorais, prints, artes, kits, flash tattoos e planos de tattoo disponíveis na Karina Sarte Tattoo.",
   },
   "/como-funciona": {
-    title: "Como Funciona o Atendimento | Kah Sarte Tattoo",
-    description: "Entenda meu processo de orçamento, criação, agenda e sessão na Kah Sarte Tattoo.",
+    title: "Como Funciona o Atendimento | Karina Sarte Tattoo",
+    description: "Entenda meu processo de orçamento, criação, agenda e sessão na Karina Sarte Tattoo.",
   },
   "/cuidados": {
-    title: "Cuidados com Tattoo | Kah Sarte Tattoo",
+    title: "Cuidados com Tattoo | Karina Sarte Tattoo",
     description: "Orientações de cuidados antes, durante e depois da tattoo, cicatrização e experiência de atendimento.",
   },
   "/depoimentos": {
-    title: "Depoimentos | Kah Sarte Tattoo",
-    description: "Relatos de quem já tatuou comigo na Kah Sarte Tattoo.",
+    title: "Depoimentos | Karina Sarte Tattoo",
+    description: "Relatos de quem já tatuou comigo na Karina Sarte Tattoo.",
   },
   "/faq": {
-    title: "FAQ | Kah Sarte Tattoo",
+    title: "FAQ | Karina Sarte Tattoo",
     description: "Perguntas frequentes sobre orçamento, flash tattoos, produtos e cuidados com tattoo.",
   },
   "/orcamento": {
-    title: "Orçamento de Tattoo | Kah Sarte Tattoo",
+    title: "Orçamento de Tattoo | Karina Sarte Tattoo",
     description: "Envie sua ideia e fale comigo pelo WhatsApp para orçamento de tattoo.",
   },
 };
@@ -440,6 +440,16 @@ function AppLayout({
 
   return (
     <>
+      <svg className="ks-svg-clip-defs" width="0" height="0" aria-hidden="true">
+        <defs>
+          <clipPath id="ks-window-clip" clipPathUnits="objectBoundingBox">
+            <path d="M0,1 L0,0.08 Q0.5,0 1,0.08 L1,1 Z" />
+          </clipPath>
+          <clipPath id="ks-window-clip-card" clipPathUnits="objectBoundingBox">
+            <path d="M0,1 L0,0.12 Q0.5,0.04 1,0.12 L1,1 Z" />
+          </clipPath>
+        </defs>
+      </svg>
       <div className="ks-grain" aria-hidden="true" />
       <Preloader
         onComplete={() => {
@@ -601,7 +611,7 @@ const homeServiceCards = [
   },
   {
     title: "Produtos Autorais",
-    text: "Produtos, prints e coleções criadas dentro do universo visual da Kah.",
+    text: "Produtos, prints e coleções criadas dentro do universo visual da Karina Sarte.",
     img: tattooImages.cardPrint,
     to: "/produtos",
     cta: "Ver produtos",
@@ -627,7 +637,7 @@ function HomePage() {
       <ProductsPreview />
       <CtaBand
         title="Vamos criar sua próxima tattoo?"
-        text="Envie sua ideia, referências, tamanho aproximado e local do corpo. A Kah analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele."
+        text="Envie sua ideia, referências, tamanho aproximado e local do corpo. A Karina Sarte analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele."
         cta="Quero um orçamento"
         to="/orcamento"
       />
@@ -682,7 +692,7 @@ function EditorialSplitSection() {
         <span className="ks-label-caps ks-gold">Manifesto</span>
         <h2 className="ks-headline-lg">Entre o traço, a pele e a história.</h2>
         <p className="ks-body-lg ks-muted">
-          Cada projeto nasce de uma ideia, uma referência ou uma memória. A proposta da Kah é transformar esse ponto de
+          Cada projeto nasce de uma ideia, uma referência ou uma memória. A proposta da Karina Sarte é transformar esse ponto de
           partida em uma tattoo com identidade, equilíbrio e cuidado em cada detalhe.
         </p>
         <PrimaryLink to="/sobre">Conhecer a artista</PrimaryLink>
@@ -701,11 +711,13 @@ function EditorialSplitSection() {
         viewport={{ once: true, margin: "-8%" }}
         transition={{ duration: 1, delay: 0.2, ease: EASE }}
       >
-        <img
-          src={tattooImages.lineDetail}
-          alt="Detalhe de tatuagem em traço fino"
-          loading="lazy"
-        />
+        <div className="ks-window-portal">
+          <img
+            src={tattooImages.tattooInProgress}
+            alt="Sessão de tatuagem em andamento"
+            loading="lazy"
+          />
+        </div>
       </motion.div>
     </section>
   );
@@ -723,6 +735,7 @@ function HomeServicesSection() {
         {homeServiceCards.map((card, index) => (
           <motion.div
             key={card.title}
+            className="ks-service-grid-item"
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-8%" }}
@@ -730,7 +743,9 @@ function HomeServicesSection() {
           >
             <Link className="ks-service-card" to={card.to}>
               <div className="ks-service-card-media">
-                <img src={card.img} alt={card.title} loading="lazy" />
+                <div className="ks-window-portal">
+                  <img src={card.img} alt={card.title} loading="lazy" />
+                </div>
               </div>
               <div className="ks-service-card-body">
                 <h3>{card.title}</h3>
@@ -753,7 +768,7 @@ function MuralPortfolioPreview() {
       <SectionTitle
         eyebrow="Portfólio"
         title="Trabalhos recentes"
-        text="Uma seleção de tattoos, flashes e projetos autorais criados pela Kah."
+        text="Uma seleção de tattoos, flashes e projetos autorais criados pela Karina Sarte."
       />
       <div className="ks-mural-grid">
         {items.map((item, index) => (
@@ -832,7 +847,7 @@ function AboutMeSection() {
               />
             ))}
           </div>
-          <span className="ks-about-me-tag">Karina · Kah Sarte</span>
+          <span className="ks-about-me-tag">Karina Sarte</span>
         </motion.div>
 
         <motion.div
@@ -1000,7 +1015,7 @@ function FlashPreview() {
   const [activeIndex, setActiveIndex] = useState(0);
   const visibleItems = flashItems.slice(0, 5);
   const active = visibleItems[activeIndex] ?? visibleItems[0];
-  const flashWhatsAppHref = wa("Olá, Kah! Vim pelo site e queria ver os flash tattoos disponíveis.");
+  const flashWhatsAppHref = wa("Olá, Karina Sarte! Vim pelo site e queria ver os flash tattoos disponíveis.");
 
   return (
     <section className="ks-section ks-section-wine ks-flash-showcase">
@@ -1122,9 +1137,9 @@ function ProductsPreview() {
     <section className="ks-section ks-products-preview ks-section-cream">
       <div className="ks-products-header">
         <span className="ks-label-caps ks-gold">Coleções</span>
-        <h2 className="ks-headline-lg">Coleções da Kah</h2>
+        <h2 className="ks-headline-lg">Coleções da Karina Sarte</h2>
         <p className="ks-body-lg ks-muted" style={{ marginTop: 16, maxWidth: 640 }}>
-          Arte para usar, colecionar e levar na pele. Além das tatuagens, a Kah também cria produtos, artes, flashes e
+          Arte para usar, colecionar e levar na pele. Além das tatuagens, a Karina Sarte também cria produtos, artes, flashes e
           coleções exclusivas para quem se identifica com seu universo visual.
         </p>
       </div>
@@ -1313,8 +1328,8 @@ function AboutPage() {
     <>
       <PageHero
         kicker="A artista"
-        title="Sobre a Kah"
-        text="A Kah Sarte Tattoo cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele."
+        title="Sobre a Karina Sarte"
+        text="A Karina Sarte Tattoo cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele."
         image={tattooImages.heroAbout}
       >
         <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
@@ -1338,7 +1353,7 @@ function AboutPage() {
             “Cada traço carrega intenção — a tattoo precisa conversar com quem você é e com o corpo que a recebe.”
           </blockquote>
           <p className="ks-body-lg ks-muted">
-            Com estética autoral, traço fino e referências botânicas, a Kah constrói projetos que equilibram delicadeza e
+            Com estética autoral, traço fino e referências botânicas, a Karina Sarte constrói projetos que equilibram delicadeza e
             presença. O atendimento começa com escuta: entender referências, proporções e o significado por trás da ideia.
           </p>
           <p className="ks-body-lg ks-muted">
@@ -1366,7 +1381,7 @@ function PortfolioPage() {
       <PageHero
         kicker="Portfólio"
         title="Portfólio"
-        text="Conheça tattoos, flashes e projetos autorais criados pela Kah."
+        text="Conheça tattoos, flashes e projetos autorais criados pela Karina Sarte."
         image={tattooImages.heroPortfolio}
       />
       <section className="ks-section">
@@ -1427,13 +1442,13 @@ function ProductsPage() {
           transition={{ duration: 0.8, ease: EASE }}
         >
           <span className="ks-label-caps ks-gold">Coleções</span>
-          <h1 className="ks-display-xl">Coleções da Kah</h1>
+          <h1 className="ks-display-xl">Coleções da Karina Sarte</h1>
           <p className="ks-body-lg ks-muted" style={{ maxWidth: 680, marginTop: 18 }}>
             Arte para usar, colecionar e levar na pele.
           </p>
           <p className="ks-body-lg ks-muted" style={{ maxWidth: 720, marginTop: 12 }}>
             Produtos autorais, planos, flashes, prints e criações exclusivas feitas para aproximar ainda mais a arte da
-            Kah de quem acompanha seu trabalho.
+            Karina Sarte de quem acompanha seu trabalho.
           </p>
           <a className="ks-primary-link" href={wa(WA_PRODUCTS)} style={{ marginTop: 28 }}>
             Consultar produtos pelo WhatsApp <WhatsAppIcon />
@@ -1458,7 +1473,7 @@ function ProductsPage() {
       <HowToBuy />
       <ProductFaq />
       <CtaBand
-        title="Quer levar a arte da Kah para além da pele?"
+        title="Quer levar a arte da Karina Sarte para além da pele?"
         text="Consulte disponibilidade, valores e opções personalizadas pelo WhatsApp."
         cta="Consultar pelo WhatsApp"
         href={wa(WA_PRODUCTS)}
@@ -1552,7 +1567,7 @@ function ProductsTransitionOverlay({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.35, ease: EASE }}
           >
-            Coleções da Kah
+            Coleções da Karina Sarte
           </motion.h2>
         </motion.div>
       )}
@@ -1702,7 +1717,7 @@ function BudgetPage() {
       <PageHero
         kicker="Orçamento"
         title="Vamos criar sua próxima tattoo?"
-        text="Envie sua ideia, referências, tamanho aproximado e local do corpo. A Kah analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele."
+        text="Envie sua ideia, referências, tamanho aproximado e local do corpo. A Karina Sarte analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele."
         image={tattooImages.heroBudget}
       />
       <section className="ks-section ks-two-col">
@@ -1805,7 +1820,7 @@ function FlashCard({ name, status, text, img }: { name: string; status: string; 
         <span className={`ks-status ${status.toLowerCase()}`}>{status}</span>
         <h3>{name}</h3>
         <p>{text}</p>
-        <a className="ks-primary-link" href={wa("Olá, Kah! Vim pelo site e queria saber se esse flash tattoo ainda está disponível.")}>
+        <a className="ks-primary-link" href={wa("Olá, Karina Sarte! Vim pelo site e queria saber se esse flash tattoo ainda está disponível.")}>
           Quero esse flash <WhatsAppIcon />
         </a>
       </div>
@@ -2027,7 +2042,7 @@ function FloatingWhatsApp() {
   return (
     <a className="ks-floating-whatsapp" href={wa(message)} aria-label="Falar comigo pelo WhatsApp" target="_blank" rel="noopener noreferrer">
       <WhatsAppIcon />
-      <span>Falar com a Kah</span>
+      <span>Falar com a Karina Sarte</span>
     </a>
   );
 }

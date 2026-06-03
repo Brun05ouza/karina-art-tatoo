@@ -41,7 +41,7 @@ export function ArtistSection() {
         >
           <img
             src={tattooImages.artistTattooing}
-            alt="Kah Sarte"
+            alt="Karina Sarte"
             style={{
               width: "100%",
               aspectRatio: "3/4",
@@ -148,7 +148,7 @@ export function ArtistSection() {
               maxWidth: 420,
             }}
           >
-            Kah Sarte é artista e tatuadora autoral. Seu trabalho mistura botânica, sumiê, linhas
+            Karina Sarte é artista e tatuadora autoral. Seu trabalho mistura botânica, sumiê, linhas
             livres e símbolos delicados em composições pensadas para o corpo.
           </motion.p>
 
