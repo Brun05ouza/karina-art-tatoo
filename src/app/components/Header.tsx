@@ -6,10 +6,11 @@ import { StarGlyph } from "./StarGlyph";
 import { lockScroll, subscribeLenisScroll, unlockScroll } from "../scroll";
 
 const navLinks = [
-  { label: "Inicio", href: "/" },
-  { label: "Sobre mim", href: "/sobre" },
-  { label: "Portfolio", href: "/portfolio" },
-  { label: "Produtos", href: "/produtos", featured: true },
+  { label: "Início", href: "/" },
+  { label: "Sobre", href: "/sobre" },
+  { label: "Portfólio", href: "/portfolio" },
+  { label: "Flash Tattoos", href: "/flash-tattoos" },
+  { label: "Produtos", href: "/produtos" },
 ];
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -38,16 +39,11 @@ export function Header() {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.2, ease: EASE }}
-        className="ks-header"
-        style={{
-          background: scrolled || menuOpen ? "rgba(13,14,13,0.95)" : "linear-gradient(to bottom, rgba(13,14,13,0.62), transparent)",
-          backdropFilter: scrolled || menuOpen ? "blur(10px)" : "none",
-          borderBottom: scrolled && !menuOpen ? "1px solid rgba(242,237,226,0.06)" : "1px solid transparent",
-        }}
+        className={`ks-header${scrolled ? " is-scrolled" : ""}${menuOpen ? " is-open" : ""}`}
       >
         <Link to="/" className="ks-logo" aria-label="Kah Sarte Tattoo">
-          <StarGlyph size={8} color="#e9c082" />
-          <span>KAH SARTE</span>
+          <StarGlyph size={8} color="#6b2e35" />
+          <span>Kah Sarte Tattoo</span>
         </Link>
 
         <nav className="ks-desktop-nav">
@@ -82,7 +78,7 @@ export function Header() {
             className="ks-mobile-menu"
           >
             <div className="ks-mobile-star">
-              <StarGlyph size={40} color="#e9c082" />
+              <StarGlyph size={40} color="#6b2e35" />
             </div>
             <nav>
               {[...navLinks, { label: "Orçamento", href: "/orcamento" }].map((link, i) => (
@@ -95,7 +91,7 @@ export function Header() {
                 />
               ))}
             </nav>
-            <div className="ks-mobile-note">BOTÂNICA / FREEHAND / SUMIÊ</div>
+            <div className="ks-mobile-note">Tatuagens autorais · Teresópolis, RJ</div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -107,17 +103,15 @@ function NavItem({
   label,
   href,
   active,
-  featured,
 }: {
   label: string;
   href: string;
   active: boolean;
-  featured?: boolean;
 }) {
   return (
     <Link
       to={href}
-      className={`ks-nav-item${active ? " active" : ""}${featured ? " featured" : ""}`}
+      className={`ks-nav-item${active ? " active" : ""}`}
       data-cursor="link"
     >
       {label}
@@ -136,14 +130,12 @@ function MobileNavLink({
   href,
   index,
   active,
-  featured,
   onNavigate,
 }: {
   label: string;
   href: string;
   index: number;
   active: boolean;
-  featured?: boolean;
   onNavigate: () => void;
 }) {
   return (
@@ -154,7 +146,7 @@ function MobileNavLink({
     >
       <MotionLink
         to={href}
-        className={`ks-mobile-nav-link${active ? " active" : ""}${featured ? " featured" : ""}`}
+        className={`ks-mobile-nav-link${active ? " active" : ""}`}
         onClick={onNavigate}
         whileHover={{ x: 8 }}
         whileTap={{ scale: 0.98, x: 12 }}

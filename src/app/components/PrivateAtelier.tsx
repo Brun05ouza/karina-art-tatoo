@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { StarGlyph } from "./StarGlyph";
+import { tattooImages } from "../tattoo-images";
 
 const features = [
   "atendimento privado",
@@ -124,8 +125,8 @@ export function PrivateAtelier() {
             }}
           />
           <img
-            src="https://images.unsplash.com/photo-1703074907714-4cd6a222fc39?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
-            alt="Ateliê privado"
+            src={tattooImages.sessionClose}
+            alt="Sessão de tatuagem"
             style={{
               width: "100%",
               aspectRatio: "4/5",

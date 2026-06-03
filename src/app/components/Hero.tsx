@@ -1,6 +1,8 @@
 import { useRef, useState, type ReactNode } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { StarGlyph } from "./StarGlyph";
+import { tattooImages } from "../tattoo-images";
+import { scrollTo } from "../scroll";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -48,7 +50,7 @@ function CTAButton() {
       onMouseLeave={() => setHovered(false)}
       onClick={(e) => {
         e.preventDefault();
-        document.querySelector("#agendar")?.scrollIntoView({ behavior: "smooth" });
+        scrollTo("#agendar", { offset: -64 });
       }}
       style={{
         display: "inline-flex",
@@ -113,7 +115,7 @@ export function Hero() {
         }}
       >
         <img
-          src="https://images.unsplash.com/photo-1589299784109-62eec2521302?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1800"
+          src={tattooImages.hero}
           alt=""
           aria-hidden="true"
           style={{

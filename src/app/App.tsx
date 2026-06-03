@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { gsap } from "gsap";
@@ -17,6 +17,7 @@ import {
   Route,
   Routes,
   useLocation,
+  useNavigate,
 } from "react-router";
 
 import { Preloader } from "./components/Preloader";
@@ -26,6 +27,7 @@ import { StarGlyph } from "./components/StarGlyph";
 import { StencilCrosshair } from "./components/StencilCrosshair";
 import {
   observeScrollRoot,
+  queueRefresh,
   refreshScrollMetrics,
   registerLenis,
   resetScrollPosition,
@@ -34,16 +36,33 @@ import {
   unregisterLenis,
   unobserveScrollRoot,
 } from "./scroll";
+import { tattooImages } from "./tattoo-images";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const FLUID_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const WHATSAPP = "https://wa.me/5521990724477";
+const PAGE_HERO_DEFAULT_IMAGE = tattooImages.sessionWide;
+
+/** Mocks únicos por flash (evita repetir a mesma foto) */
+const flashMocks = [
+  tattooImages.fineLineBotanical,
+  tattooImages.minimalSymbols,
+  tattooImages.floralHealed,
+  tattooImages.flashSheet,
+  tattooImages.armTattoo,
+  tattooImages.blackworkOrganic,
+] as const;
+
+const WA_DEFAULT = "Olá, Kah! Vim pelo site e queria fazer um orçamento.";
+const WA_PRODUCTS = "Olá, Kah! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
+
+const ProductsNavContext = createContext<(() => void) | null>(null);
 
 const SECTION_INTRO_TITLES: Record<string, string> = {
-  "/sobre": "Sobre mim",
-  "/portfolio": "Portfolio",
+  "/sobre": "Sobre a Kah",
+  "/portfolio": "Portfólio",
   "/flash-tattoos": "Flash Tattoos",
   "/produtos": "Coleções da Kah",
   "/como-funciona": "Como funciona",
@@ -51,14 +70,20 @@ const SECTION_INTRO_TITLES: Record<string, string> = {
   "/depoimentos": "Depoimentos",
   "/faq": "FAQ",
 };
-const BUDGET_WHATSAPP_PREFIX = "Olá Karina, vim do seu site, minha ideia de tatoo seria: ";
+const BUDGET_WHATSAPP_INTRO = "Olá, Kah! Vim pelo site e queria fazer um orçamento de tattoo.";
 
 function productWhatsAppMessage(productName: string) {
-  return `Olá Karina, vim do seu site, me interessei por ${productName} e gostaria de saber mais.`;
+  return `Olá, Kah! Vim pelo site e me interessei por ${productName}. Gostaria de saber mais.`;
 }
 
 function tattooChoiceMessage(tattooName: string) {
-  return `Olá Karina, vim do seu site e escolhi a tattoo "${tattooName}". Gostaria de saber mais.`;
+  return `Olá, Kah! Vim pelo site e escolhi a tattoo "${tattooName}". Gostaria de saber mais.`;
+}
+
+function filterPortfolioCategory(itemCategory: string, filter: string) {
+  if (filter === "Projetos Autorais") return itemCategory === "Autoral";
+  if (filter === "Cicatrizadas") return itemCategory === "Cicatrizada";
+  return itemCategory === filter;
 }
 
 function tattooStatusClass(status: string) {
@@ -73,37 +98,37 @@ const galleryItems = [
   {
     title: "Fine line botânica",
     category: "Fine Line",
-    img: "https://images.unsplash.com/photo-1726924244999-95eb16972c9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooImages.fineLineBotanical,
     alt: "Tatuagem botânica delicada em fine line",
   },
   {
     title: "Traço ornamental",
     category: "Autoral",
-    img: "https://images.unsplash.com/photo-1712256877407-c5181b2cfa89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooImages.ornamental,
     alt: "Projeto autoral de tatuagem ornamental",
   },
   {
     title: "Freehand orgânico",
     category: "Blackwork",
-    img: "https://images.unsplash.com/photo-1589299784109-62eec2521302?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-    alt: "Tatuagem autoral criada em freehand",
+    img: tattooImages.blackworkOrganic,
+    alt: "Tatuagem autoral em blackwork orgânico",
   },
   {
     title: "Símbolos pequenos",
     category: "Minimalista",
-    img: "https://images.unsplash.com/photo-1499001720097-29ee4e4fc261?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooImages.minimalSymbols,
     alt: "Tatuagens pequenas e minimalistas",
   },
   {
     title: "Floral cicatrizado",
     category: "Cicatrizada",
-    img: "https://images.unsplash.com/photo-1776843013036-71e03b131c7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooImages.floralHealed,
     alt: "Tatuagem floral cicatrizada",
   },
   {
     title: "Flash autoral",
     category: "Flash Tattoo",
-    img: "https://images.unsplash.com/photo-1542727365-19732a80dcfd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooImages.flashSheet,
     alt: "Flash tattoo autoral em preto",
   },
 ];
@@ -113,62 +138,112 @@ const flashItems = [
     name: "Floral lunar",
     status: "Disponível",
     text: "Composição delicada para braço, costela ou tornozelo.",
-    img: "https://images.unsplash.com/photo-1726924244999-95eb16972c9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: flashMocks[0],
   },
   {
     name: "Ornamento estrela",
     status: "Reservado",
     text: "Linhas finas com presença mística e tamanho médio.",
-    img: "https://images.unsplash.com/photo-1499001720097-29ee4e4fc261?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: flashMocks[1],
   },
   {
     name: "Ramo livre",
     status: "Disponível",
     text: "Flash botânico único, ideal para antebraço ou nuca.",
-    img: "https://images.unsplash.com/photo-1776843013036-71e03b131c7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: flashMocks[2],
   },
   {
     name: "Selo autoral",
     status: "Tatuado",
     text: "Referência de flash já executado para inspiração.",
-    img: "https://images.unsplash.com/photo-1542727365-19732a80dcfd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: flashMocks[3],
   },
   {
     name: "Traço ornamental",
     status: "Disponível",
     text: "Linhas ornamentais autorais, perfeitas para antebraço ou panturrilha.",
-    img: "https://images.unsplash.com/photo-1712256877407-c5181b2cfa89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: flashMocks[4],
   },
   {
     name: "Freehand orgânico",
     status: "Disponível",
     text: "Formas orgânicas criadas em freehand, com traço único e presença autoral.",
-    img: "https://images.unsplash.com/photo-1589299784109-62eec2521302?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: flashMocks[5],
   },
 ];
 
 const productGroups = [
   {
     title: "Planos de Tattoo",
-    cta: "Consultar",
-    img: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800",
+    cta: "Consultar planos",
+    hoverText: "Opções para tattoos pequenas, projetos autorais e sessões personalizadas.",
+    img: tattooImages.cardAutoral,
   },
   {
     title: "Flash Tattoos",
-    cta: "Ver flashes",
-    img: "https://images.unsplash.com/photo-1542727365-19732a80dcfd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800",
+    cta: "Ver flashes disponíveis",
+    hoverText: "Artes prontas com identidade própria e disponibilidade limitada.",
+    img: tattooImages.cardFlash,
   },
   {
     title: "Prints & Artes",
-    cta: "Ver artes",
-    img: "https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800",
+    cta: "Consultar artes",
+    hoverText: "Ilustrações autorais para decorar, presentear ou colecionar.",
+    img: tattooImages.cardPrint,
   },
   {
     title: "Kits e Produtos",
-    cta: "Consultar",
-    img: "https://images.unsplash.com/photo-1776843013036-71e03b131c7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800",
+    cta: "Consultar disponibilidade",
+    hoverText: "Itens selecionados e kits ligados ao universo da tattoo.",
+    img: tattooImages.cardKits,
   },
 ];
+
+const productCategories = [
+  {
+    title: "Planos de Tattoo",
+    description:
+      "Opções para tattoos pequenas, projetos autorais, sessões personalizadas e flashes exclusivos.",
+    cta: "Consultar planos",
+    img: productGroups[0].img,
+    message: "Olá, Kah! Vim pelo site e gostaria de consultar os planos de tattoo.",
+  },
+  {
+    title: "Flash Tattoos",
+    description: "Artes prontas e disponíveis para tatuar, com identidade própria e disponibilidade limitada.",
+    cta: "Ver flashes disponíveis",
+    img: productGroups[1].img,
+    message: "Olá, Kah! Vim pelo site e gostaria de ver os flash tattoos disponíveis.",
+    link: "/flash-tattoos",
+  },
+  {
+    title: "Prints & Artes",
+    description: "Ilustrações autorais para decorar, presentear ou colecionar.",
+    cta: "Consultar artes",
+    img: productGroups[2].img,
+    message: "Olá, Kah! Vim pelo site e gostaria de consultar prints e artes.",
+  },
+  {
+    title: "Kits e Produtos",
+    description: "Produtos selecionados, itens personalizados e possíveis kits ligados ao universo da tattoo.",
+    cta: "Consultar disponibilidade",
+    img: productGroups[3].img,
+    message: "Olá, Kah! Vim pelo site e gostaria de consultar kits e produtos.",
+  },
+] as const;
+
+const tattooGalleryMocks = [
+  tattooImages.fineLineBotanical,
+  tattooImages.ornamental,
+  tattooImages.blackworkOrganic,
+  tattooImages.minimalSymbols,
+  tattooImages.floralHealed,
+  tattooImages.flashSheet,
+  tattooImages.armTattoo,
+  tattooImages.healedWork,
+  tattooImages.flashDesign,
+  tattooImages.healedDetail,
+] as const;
 
 const tattooGalleryItems = [
   {
@@ -176,70 +251,70 @@ const tattooGalleryItems = [
     category: "Fine Line",
     status: "Disponível",
     description: "Composição botânica delicada em traço fino. Ideal para antebraço, costela ou tornozelo.",
-    img: "https://images.unsplash.com/photo-1726924244999-95eb16972c9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooGalleryMocks[0],
   },
   {
     name: "Traço ornamental",
     category: "Autoral",
     status: "Disponível",
     description: "Projeto autoral com linhas ornamentais que acompanham a anatomia do corpo.",
-    img: "https://images.unsplash.com/photo-1712256877407-c5181b2cfa89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooGalleryMocks[1],
   },
   {
     name: "Freehand orgânico",
     category: "Blackwork",
     status: "Disponível",
     description: "Desenho criado em freehand com formas orgânicas e presença autoral.",
-    img: "https://images.unsplash.com/photo-1589299784109-62eec2521302?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooGalleryMocks[2],
   },
   {
     name: "Símbolos pequenos",
     category: "Minimalista",
     status: "Disponível",
     description: "Símbolos minimalistas para quem busca algo delicado e significativo.",
-    img: "https://images.unsplash.com/photo-1499001720097-29ee4e4fc261?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooGalleryMocks[3],
   },
   {
     name: "Floral lunar",
     category: "Flash Tattoo",
     status: "Disponível",
     description: "Flash botânico com referência lunar, perfeito para braço ou nuca.",
-    img: "https://images.unsplash.com/photo-1726924244999-95eb16972c9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooGalleryMocks[4],
   },
   {
     name: "Ornamento estrela",
     category: "Flash Tattoo",
     status: "Reservado",
     description: "Linhas finas com presença mística e tamanho médio. Consulte disponibilidade.",
-    img: "https://images.unsplash.com/photo-1499001720097-29ee4e4fc261?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooGalleryMocks[5],
   },
   {
     name: "Ramo livre",
     category: "Flash Tattoo",
     status: "Disponível",
     description: "Flash botânico único, ideal para antebraço, tornozelo ou costela.",
-    img: "https://images.unsplash.com/photo-1776843013036-71e03b131c7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooGalleryMocks[6],
   },
   {
     name: "Floral cicatrizado",
     category: "Referência",
     status: "Tatuado",
     description: "Referência de trabalho cicatrizado para inspirar novos projetos autorais.",
-    img: "https://images.unsplash.com/photo-1776843013036-71e03b131c7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooGalleryMocks[7],
   },
   {
     name: "Flash autoral",
     category: "Blackwork",
     status: "Disponível",
-    description: "Flash autoral em preto, com traço firme e a minha identidade visual.",
-    img: "https://images.unsplash.com/photo-1542727365-19732a80dcfd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    description: "Flash autoral em preto, com traço firme e identidade visual.",
+    img: tattooGalleryMocks[8],
   },
   {
     name: "Selo autoral",
     category: "Autoral",
     status: "Referência",
     description: "Referência de flash já executado, útil para entender estilo e proporção.",
-    img: "https://images.unsplash.com/photo-1542727365-19732a80dcfd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+    img: tattooGalleryMocks[9],
   },
 ];
 
@@ -250,11 +325,11 @@ const seo: Record<string, { title: string; description: string }> = {
       "Crio tatuagens autorais, flash tattoos e produtos artísticos em Teresópolis, RJ. Kah Sarte Tattoo.",
   },
   "/sobre": {
-    title: "Sobre mim | Kah Sarte Tattoo",
-    description: "Minha trajetória, estilo artístico e processo criativo na Kah Sarte Tattoo.",
+    title: "Sobre a Kah | Kah Sarte Tattoo",
+    description: "Conheça a Kah Sarte Tattoo: tatuagens autorais, identidade visual e processo criativo em Teresópolis, RJ.",
   },
   "/portfolio": {
-    title: "Portfolio de Tattoos | Kah Sarte Tattoo",
+    title: "Portfólio de Tattoos | Kah Sarte Tattoo",
     description:
       "Veja meus trabalhos recentes: fine line, minimalistas, blackwork e projetos personalizados na Kah Sarte Tattoo.",
   },
@@ -272,8 +347,8 @@ const seo: Record<string, { title: string; description: string }> = {
     description: "Entenda meu processo de orçamento, criação, agenda e sessão na Kah Sarte Tattoo.",
   },
   "/cuidados": {
-    title: "Cuidados com Tattoo e Biossegurança | Kah Sarte Tattoo",
-    description: "Orientações de cuidados antes e depois da tattoo, cicatrização e biossegurança no meu atendimento.",
+    title: "Cuidados com Tattoo | Kah Sarte Tattoo",
+    description: "Orientações de cuidados antes, durante e depois da tattoo, cicatrização e experiência de atendimento.",
   },
   "/depoimentos": {
     title: "Depoimentos | Kah Sarte Tattoo",
@@ -299,9 +374,10 @@ function AppShell() {
     const lenis = new Lenis({
       lerp: 0.12,
       smoothWheel: true,
-      wheelMultiplier: 0.9,
+      wheelMultiplier: 1.0,   // padrão — sem redução artificial
       touchMultiplier: 1.2,
       autoRaf: false,
+      autoResize: false,       // gerenciamos resize manualmente via queueRefresh/refreshScrollMetrics
     });
 
     registerLenis(lenis);
@@ -333,6 +409,37 @@ function AppShell() {
 
   return (
     <BrowserRouter>
+      <AppLayout preloaderDone={preloaderDone} setPreloaderDone={setPreloaderDone} />
+    </BrowserRouter>
+  );
+}
+
+function AppLayout({
+  preloaderDone,
+  setPreloaderDone,
+}: {
+  preloaderDone: boolean;
+  setPreloaderDone: (value: boolean) => void;
+}) {
+  const [productsTransition, setProductsTransition] = useState(false);
+  const navigate = useNavigate();
+
+  const startProductsTransition = useCallback(() => {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) {
+      navigate("/produtos", { state: { fromProductsTransition: true } });
+      return;
+    }
+    setProductsTransition(true);
+  }, [navigate]);
+
+  const completeProductsTransition = useCallback(() => {
+    navigate("/produtos", { state: { fromProductsTransition: true } });
+    setProductsTransition(false);
+  }, [navigate]);
+
+  return (
+    <>
       <div className="ks-grain" aria-hidden="true" />
       <Preloader
         onComplete={() => {
@@ -341,20 +448,21 @@ function AppShell() {
         }}
       />
       <div
+        className="ks-shell"
         style={{
-          background: "#131412",
-          color: "#F2EDE2",
-          minHeight: "100vh",
           opacity: preloaderDone ? 1 : 0,
           transition: "opacity 0.6s ease",
         }}
       >
-        <Header />
-        <AnimatedRoutes />
-        <Footer />
-        <FloatingWhatsApp />
+        <ProductsNavContext.Provider value={startProductsTransition}>
+          <Header />
+          <AnimatedRoutes />
+          <Footer />
+          <FloatingWhatsApp />
+        </ProductsNavContext.Provider>
       </div>
-    </BrowserRouter>
+      <ProductsTransitionOverlay active={productsTransition} onComplete={completeProductsTransition} />
+    </>
   );
 }
 
@@ -398,15 +506,12 @@ function AnimatedRoutes() {
     setMeta("meta[name='twitter:title']",          "content", pageSeo.title);
     setMeta("meta[name='twitter:description']",    "content", pageSeo.description);
 
-    const timers = [
-      window.setTimeout(() => refreshScrollMetrics(), 200),
-      window.setTimeout(() => refreshScrollMetrics(), 800),
-      window.setTimeout(() => refreshScrollMetrics(), 1600),
-    ];
+    // Um único refresh após o conteúdo da rota se estabilizar.
+    // O onAnimationComplete já dispara refreshScrollMetrics() ao fim da animação de entrada;
+    // este timeout cobre conteúdo que carrega levemente depois (fontes, imagens lazy).
+    const timer = window.setTimeout(queueRefresh, 350);
 
-    return () => {
-      timers.forEach((timer) => window.clearTimeout(timer));
-    };
+    return () => window.clearTimeout(timer);
   }, [location.pathname]);
 
   return (
@@ -451,7 +556,7 @@ function PageHero({
   kicker,
   title,
   text,
-  image,
+  image = PAGE_HERO_DEFAULT_IMAGE,
   children,
 }: {
   kicker: string;
@@ -462,8 +567,8 @@ function PageHero({
 }) {
   return (
     <section className="ks-page-hero">
-      {image && <img className="ks-page-hero-image" src={image} alt="" aria-hidden="true" />}
-      <div className="ks-page-hero-shade" />
+      <img className="ks-page-hero-image" src={image} alt="" aria-hidden="true" loading="eager" />
+      <div className="ks-page-hero-shade" aria-hidden="true" />
       <motion.div
         className="ks-page-hero-content"
         initial={{ opacity: 0, y: 24 }}
@@ -479,39 +584,201 @@ function PageHero({
   );
 }
 
+const homeServiceCards = [
+  {
+    title: "Tatuagens Autorais",
+    text: "Projetos personalizados criados a partir da sua ideia, referência e estilo.",
+    img: tattooImages.cardAutoral,
+    to: "/portfolio",
+    cta: "Ver projetos",
+  },
+  {
+    title: "Flash Tattoos",
+    text: "Artes prontas e exclusivas, com disponibilidade limitada para tatuar.",
+    img: tattooImages.cardFlash,
+    to: "/flash-tattoos",
+    cta: "Ver flashes",
+  },
+  {
+    title: "Produtos Autorais",
+    text: "Produtos, prints e coleções criadas dentro do universo visual da Kah.",
+    img: tattooImages.cardPrint,
+    to: "/produtos",
+    cta: "Ver produtos",
+  },
+  {
+    title: "Cuidados e Experiência",
+    text: "Atendimento com cuidado, orientação e responsabilidade em todas as etapas.",
+    img: tattooImages.cardCare,
+    to: "/cuidados",
+    cta: "Saiba mais",
+  },
+] as const;
+
+const muralLayout = ["ks-mural-a", "ks-mural-b", "ks-mural-c", "ks-mural-d", "ks-mural-e", "ks-mural-f"] as const;
+
 function HomePage() {
   return (
-    <>
-      <PageHero
-        kicker="Teresopolis - RJ"
-        title="Tatuagens autorais com identidade, cuidado e arte em cada detalhe."
-        text="Crio projetos personalizados, flash tattoos e artes exclusivas para transformar ideias em arte na pele."
-        image="https://images.unsplash.com/photo-1589299784109-62eec2521302?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1800"
-      >
-        <div className="ks-actions">
-          <PrimaryLink to="/orcamento">Quero fazer um orçamento</PrimaryLink>
-          <TextLink to="/portfolio">Ver portfolio</TextLink>
-        </div>
-      </PageHero>
-      <PreviewSection
-        eyebrow="Como eu penso para cada tattoo"
-        title="Arte pensada para conversar com o corpo."
-        text="Crio tatuagens autorais traduzindo histórias, símbolos e ideias em traços únicos. Cada projeto respeita quem você é, o seu corpo e a proposta artística que faz sentido para você."
-        image="https://images.unsplash.com/photo-1726924244999-95eb16972c9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200"
-        imageAlt="Detalhe de tatuagem fine line botânica"
-      />
-      <PortfolioPreview />
-      <FlashPreview />
-      <CareHomeSection />
+    <div className="ks-home-flow">
+      <HomeHero />
+      <EditorialSplitSection />
+      <HomeServicesSection />
+      <MuralPortfolioPreview />
       <ProductsPreview />
-      <AboutMeSection />
       <CtaBand
         title="Vamos criar sua próxima tattoo?"
-        text="Envie sua ideia, referências, tamanho aproximado e local do corpo para receber uma orientação personalizada."
+        text="Envie sua ideia, referências, tamanho aproximado e local do corpo. A Kah analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele."
         cta="Quero um orçamento"
         to="/orcamento"
       />
-    </>
+    </div>
+  );
+}
+
+function HomeHero() {
+  return (
+    <section className="ks-home-hero">
+      <img
+        className="ks-home-hero-bg"
+        src={tattooImages.hero}
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+      />
+      <div className="ks-home-hero-shade" aria-hidden="true" />
+      <div className="ks-home-hero-ornament" aria-hidden="true">
+        <StarGlyph size={40} color="#6b2e35" />
+      </div>
+      <motion.div
+        className="ks-home-hero-content"
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: EASE }}
+      >
+        <span className="ks-label-caps">Teresópolis · RJ</span>
+        <h1 className="ks-display-xl">Arte na pele com identidade, cuidado e intenção.</h1>
+        <p className="ks-body-lg">
+          Tatuagens autorais, flash tattoos e criações exclusivas pensadas para transformar ideias em arte.
+        </p>
+        <div className="ks-actions">
+          <PrimaryLink to="/orcamento">Quero fazer um orçamento</PrimaryLink>
+          <TextLink to="/portfolio">Ver portfólio</TextLink>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+function EditorialSplitSection() {
+  return (
+    <section className="ks-editorial-split">
+      <motion.div
+        className="ks-editorial-split-text"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-10%" }}
+        transition={{ duration: 0.9, ease: EASE }}
+      >
+        <span className="ks-label-caps ks-gold">Manifesto</span>
+        <h2 className="ks-headline-lg">Entre o traço, a pele e a história.</h2>
+        <p className="ks-body-lg ks-muted">
+          Cada projeto nasce de uma ideia, uma referência ou uma memória. A proposta da Kah é transformar esse ponto de
+          partida em uma tattoo com identidade, equilíbrio e cuidado em cada detalhe.
+        </p>
+        <PrimaryLink to="/sobre">Conhecer a artista</PrimaryLink>
+      </motion.div>
+      <div className="ks-editorial-split-media">
+        <img
+          src={tattooImages.tattooInProgress}
+          alt="Sessão de tatuagem em andamento"
+          loading="lazy"
+        />
+      </div>
+      <motion.div
+        className="ks-editorial-float"
+        initial={{ opacity: 0, y: 32, rotate: -6 }}
+        whileInView={{ opacity: 1, y: 0, rotate: -3 }}
+        viewport={{ once: true, margin: "-8%" }}
+        transition={{ duration: 1, delay: 0.2, ease: EASE }}
+      >
+        <img
+          src={tattooImages.lineDetail}
+          alt="Detalhe de tatuagem em traço fino"
+          loading="lazy"
+        />
+      </motion.div>
+    </section>
+  );
+}
+
+function HomeServicesSection() {
+  return (
+    <section className="ks-services-section">
+      <SectionTitle
+        eyebrow="Serviços"
+        title="O que você encontra por aqui"
+        text="Projetos autorais, flash tattoos e produtos criados para quem busca arte com personalidade."
+      />
+      <div className="ks-services-grid">
+        {homeServiceCards.map((card, index) => (
+          <motion.div
+            key={card.title}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-8%" }}
+            transition={{ duration: 0.65, delay: index * 0.08, ease: EASE }}
+          >
+            <Link className="ks-service-card" to={card.to}>
+              <div className="ks-service-card-media">
+                <img src={card.img} alt={card.title} loading="lazy" />
+              </div>
+              <div className="ks-service-card-body">
+                <h3>{card.title}</h3>
+                <p>{card.text}</p>
+                <span className="ks-service-card-link">{card.cta}</span>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MuralPortfolioPreview() {
+  const items = galleryItems.slice(0, 6);
+
+  return (
+    <section className="ks-mural-section">
+      <SectionTitle
+        eyebrow="Portfólio"
+        title="Trabalhos recentes"
+        text="Uma seleção de tattoos, flashes e projetos autorais criados pela Kah."
+      />
+      <div className="ks-mural-grid">
+        {items.map((item, index) => (
+          <motion.div
+            key={item.title}
+            className={`ks-mural-item ${muralLayout[index]}`}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-8%" }}
+            transition={{ duration: 0.6, delay: index * 0.06, ease: EASE }}
+          >
+            <Link to="/portfolio" style={{ display: "block", height: "100%" }}>
+              <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+              <div className="ks-mural-item-caption">
+                <span>{item.category}</span>
+                <strong>{item.title}</strong>
+              </div>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+      <div className="ks-mural-footer">
+        <PrimaryLink to="/portfolio">Ver portfólio completo</PrimaryLink>
+      </div>
+    </section>
   );
 }
 
@@ -605,6 +872,7 @@ function PreviewSection({
   imageAlt,
   to,
   cta,
+  className,
 }: {
   eyebrow: string;
   title: string;
@@ -613,9 +881,10 @@ function PreviewSection({
   imageAlt?: string;
   to?: string;
   cta?: string;
+  className?: string;
 }) {
   return (
-    <section className={`ks-section ks-two-col${image ? " ks-two-col-has-image" : ""}`}>
+    <section className={`ks-section ks-two-col${image ? " ks-two-col-has-image" : ""}${className ? " " + className : ""}`}>
       <div>
         <span className="ks-label-caps ks-gold">{eyebrow}</span>
         <h2 className="ks-headline-lg">{title}</h2>
@@ -731,10 +1000,10 @@ function FlashPreview() {
   const [activeIndex, setActiveIndex] = useState(0);
   const visibleItems = flashItems.slice(0, 5);
   const active = visibleItems[activeIndex] ?? visibleItems[0];
-  const flashWhatsAppHref = wa("Olá Karina, vim do seu site e queria ver os flash tattoos disponíveis.");
+  const flashWhatsAppHref = wa("Olá, Kah! Vim pelo site e queria ver os flash tattoos disponíveis.");
 
   return (
-    <section className="ks-section ks-surface-band ks-flash-showcase">
+    <section className="ks-section ks-section-wine ks-flash-showcase">
       <SectionTitle eyebrow="Flash Tattoos disponíveis" title="Artes autorais prontas para tatuar" text="Disponibilidade limitada — me consulte direto pelo WhatsApp." />
       <div className="ks-flash-scroll-layout">
         <div className="ks-flash-feature">
@@ -829,7 +1098,7 @@ function FlashMiniCard({
 
 function CareHomeSection() {
   return (
-    <section className="ks-section">
+    <section className="ks-section ks-section-cream">
       <SectionTitle
         eyebrow="Cuidados"
         title="Cuidado, segurança e responsabilidade"
@@ -850,10 +1119,14 @@ function CareHomeSection() {
 
 function ProductsPreview() {
   return (
-    <section className="ks-section ks-products-preview">
+    <section className="ks-section ks-products-preview ks-section-cream">
       <div className="ks-products-header">
-        <span className="ks-label-caps ks-gold">Artes &amp; Produtos</span>
-        <h2 className="ks-headline-lg">Arte para usar,<br />colecionar e levar na pele.</h2>
+        <span className="ks-label-caps ks-gold">Coleções</span>
+        <h2 className="ks-headline-lg">Coleções da Kah</h2>
+        <p className="ks-body-lg ks-muted" style={{ marginTop: 16, maxWidth: 640 }}>
+          Arte para usar, colecionar e levar na pele. Além das tatuagens, a Kah também cria produtos, artes, flashes e
+          coleções exclusivas para quem se identifica com seu universo visual.
+        </p>
       </div>
       <div className="ks-products-grid">
         {productGroups.map((group, index) => (
@@ -861,7 +1134,7 @@ function ProductsPreview() {
         ))}
       </div>
       <div className="ks-center-action" style={{ marginTop: "clamp(28px, 4vw, 48px)" }}>
-        <PrimaryLink to="/produtos" special>Ver coleção completa</PrimaryLink>
+        <ProductsEntryLink>Ver mais produtos</ProductsEntryLink>
       </div>
     </section>
   );
@@ -892,6 +1165,7 @@ function ProductVisualCard({
       <div className="ks-product-visual-overlay">
         <span className="ks-label-caps">{String(index + 1).padStart(2, "0")}</span>
         <h3>{group.title}</h3>
+        <p className="ks-product-visual-hover-text">{group.hoverText}</p>
         <span className="ks-product-visual-cta">
           {group.cta} <ArrowRight size={12} />
         </span>
@@ -1038,18 +1312,40 @@ function AboutPage() {
   return (
     <>
       <PageHero
-        kicker="Sobre mim"
-        title="Projetos autorais que unem arte, identidade e cuidado."
-        text="Penso cada tattoo de forma personalizada, respeitando o seu corpo, a sua história e o estilo de quem escolhe levar aquela arte na pele."
-        image="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1800"
+        kicker="A artista"
+        title="Sobre a Kah"
+        text="A Kah Sarte Tattoo cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele."
+        image={tattooImages.heroAbout}
       >
         <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
       </PageHero>
-      <section className="ks-section ks-two-col">
-        <h2 className="ks-headline-lg">Processo criativo com escuta e presença.</h2>
+      <section className="ks-section ks-two-col ks-section-cream">
+        <motion.div
+          className="ks-preview-image"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.9, ease: EASE }}
+        >
+          <img
+            src={tattooImages.artistTattooing}
+            alt="Artista realizando tatuagem"
+            loading="lazy"
+          />
+        </motion.div>
         <div className="ks-stack">
-          <p className="ks-body-lg ks-muted">Minha trajetória nasce da pesquisa de símbolos, botânica, linha fina e composições que acompanham a anatomia. Construo cada desenho para fazer sentido visual e afetivo.</p>
-          <p className="ks-body-lg ks-muted">Meu atendimento é feito com cuidado desde a primeira conversa: referências, tamanho, local do corpo, disponibilidade e orientações de biossegurança entram no mesmo fluxo.</p>
+          <blockquote className="ks-about-me-quote">
+            “Cada traço carrega intenção — a tattoo precisa conversar com quem você é e com o corpo que a recebe.”
+          </blockquote>
+          <p className="ks-body-lg ks-muted">
+            Com estética autoral, traço fino e referências botânicas, a Kah constrói projetos que equilibram delicadeza e
+            presença. O atendimento começa com escuta: entender referências, proporções e o significado por trás da ideia.
+          </p>
+          <p className="ks-body-lg ks-muted">
+            Em Teresópolis, o estúdio é um espaço de criação e cuidado — da primeira mensagem à cicatrização, com
+            orientação clara em cada etapa.
+          </p>
+          <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
         </div>
       </section>
       <FeatureStrip />
@@ -1058,21 +1354,41 @@ function AboutPage() {
 }
 
 function PortfolioPage() {
-  const categories = ["Todos", "Fine Line", "Minimalista", "Blackwork", "Projetos Autorais", "Flash Tattoo", "Tattoos Cicatrizadas"];
+  const categories = ["Todos", "Fine Line", "Minimalista", "Blackwork", "Projetos Autorais", "Flash Tattoo", "Cicatrizadas"];
+  const [activeCategory, setActiveCategory] = useState("Todos");
+  const filteredItems =
+    activeCategory === "Todos"
+      ? galleryItems
+      : galleryItems.filter((item) => filterPortfolioCategory(item.category, activeCategory));
+
   return (
     <>
       <PageHero
-        kicker="Portfolio de tattoos"
-        title="Trabalhos recentes, autorais e personalizados."
-        text="Uma seleção de tatuagens fine line, minimalistas, blackwork, flash tattoo e projetos criados para histórias específicas."
-        image="https://images.unsplash.com/photo-1726924244999-95eb16972c9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1800"
+        kicker="Portfólio"
+        title="Portfólio"
+        text="Conheça tattoos, flashes e projetos autorais criados pela Kah."
+        image={tattooImages.heroPortfolio}
       />
       <section className="ks-section">
         <div className="ks-filter-row">
-          {categories.map((category) => <button key={category}>{category}</button>)}
+          {categories.map((category) => (
+            <button
+              key={category}
+              type="button"
+              className={activeCategory === category ? "active" : ""}
+              onClick={() => setActiveCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
         </div>
-        <ImageGrid items={galleryItems} />
-        <CtaBand title="Gostei desse estilo, quero um orçamento" text="Me envie referências para construirmos uma proposta personalizada." cta="Começar orçamento" to="/orcamento" />
+        <ImageGrid items={filteredItems} />
+        <CtaBand
+          title="Gostei desse estilo, quero um orçamento"
+          text="Envie sua ideia e referências para construirmos uma proposta personalizada."
+          cta="Quero um orçamento"
+          to="/orcamento"
+        />
       </section>
     </>
   );
@@ -1083,13 +1399,14 @@ function FlashPage() {
     <>
       <PageHero
         kicker="Flash Tattoos"
-        title="Artes autorais prontas para tatuar."
-        text="Cada flash tem identidade própria e disponibilidade limitada. Me consulte antes de reservar."
+        title="Flash Tattoos disponíveis"
+        text="Artes autorais prontas para tatuar, com disponibilidade limitada."
+        image={tattooImages.heroFlash}
       />
       <section className="ks-section">
-        <div className="ks-card-grid four">
-          {flashItems.concat(flashItems).map((item, index) => (
-            <FlashCard key={`${item.name}-${index}`} {...item} />
+        <div className="ks-flash-page-grid">
+          {flashItems.map((item) => (
+            <FlashCard key={item.name} {...item} img={item.img} />
           ))}
         </div>
       </section>
@@ -1098,35 +1415,171 @@ function FlashPage() {
 }
 
 function ProductsPage() {
+  const location = useLocation();
+  const stagger = Boolean((location.state as { fromProductsTransition?: boolean } | null)?.fromProductsTransition);
+
   return (
     <>
-      <PageHero
-        kicker="Coleções da Kah"
-        title="Arte para usar, colecionar e levar na pele."
-        text="Produtos autorais, prints, kits e flashes para quem se identifica com meu universo visual."
-        image="https://images.unsplash.com/photo-1611501275019-9b5cda994e8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1800"
-      >
-        <a className="ks-primary-link" href={wa("Olá Karina, vim do seu site e queria falar sobre tattoos, artes ou produtos disponíveis.")}>
-          Falar comigo <WhatsAppIcon />
-        </a>
-      </PageHero>
-      <section className="ks-section">
-        <SectionTitle
-          eyebrow="Galeria de tatuagens"
-          title="Escolha a arte que combina com você"
-          text="Toque em uma tattoo para ver detalhes e reservar direto pelo WhatsApp."
-        />
-        <TattooGallery />
+      <section className="ks-products-page-hero">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: EASE }}
+        >
+          <span className="ks-label-caps ks-gold">Coleções</span>
+          <h1 className="ks-display-xl">Coleções da Kah</h1>
+          <p className="ks-body-lg ks-muted" style={{ maxWidth: 680, marginTop: 18 }}>
+            Arte para usar, colecionar e levar na pele.
+          </p>
+          <p className="ks-body-lg ks-muted" style={{ maxWidth: 720, marginTop: 12 }}>
+            Produtos autorais, planos, flashes, prints e criações exclusivas feitas para aproximar ainda mais a arte da
+            Kah de quem acompanha seu trabalho.
+          </p>
+          <a className="ks-primary-link" href={wa(WA_PRODUCTS)} style={{ marginTop: 28 }}>
+            Consultar produtos pelo WhatsApp <WhatsAppIcon />
+          </a>
+        </motion.div>
+      </section>
+      <section className="ks-section ks-products-catalog">
+        <motion.div
+          className="ks-products-category-grid"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: stagger ? 0.12 : 0.06 } },
+          }}
+        >
+          {productCategories.map((category, index) => (
+            <ProductCategoryCard key={category.title} category={category} index={index} />
+          ))}
+        </motion.div>
       </section>
       <HowToBuy />
       <ProductFaq />
       <CtaBand
-        title="Quer uma arte, produto ou tattoo exclusiva comigo?"
-        text="Me chame no WhatsApp para consultar disponibilidade, valores e opções personalizadas."
-        cta="Falar comigo"
-        href={wa("Olá Karina, vim do seu site e queria falar sobre tattoos, artes ou produtos disponíveis.")}
+        title="Quer levar a arte da Kah para além da pele?"
+        text="Consulte disponibilidade, valores e opções personalizadas pelo WhatsApp."
+        cta="Consultar pelo WhatsApp"
+        href={wa(WA_PRODUCTS)}
       />
     </>
+  );
+}
+
+function ProductCategoryCard({
+  category,
+  index,
+}: {
+  category: (typeof productCategories)[number];
+  index: number;
+}) {
+  const inner = (
+    <>
+      <div className="ks-products-category-media">
+        <img src={category.img} alt={category.title} loading="lazy" />
+      </div>
+      <div className="ks-products-category-body">
+        <span className="ks-label-caps ks-muted">{String(index + 1).padStart(2, "0")}</span>
+        <h2 className="ks-headline-md">{category.title}</h2>
+        <p className="ks-body-md ks-muted">{category.description}</p>
+        <span className="ks-products-category-cta">
+          {category.cta} <ArrowRight size={14} />
+        </span>
+      </div>
+    </>
+  );
+
+  return (
+    <motion.article
+      className="ks-products-category-card"
+      variants={{
+        hidden: { opacity: 0, y: 28 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: EASE } },
+      }}
+    >
+      {"link" in category && category.link ? (
+        <Link to={category.link}>{inner}</Link>
+      ) : (
+        <a href={wa(category.message)} target="_blank" rel="noopener noreferrer">
+          {inner}
+        </a>
+      )}
+    </motion.article>
+  );
+}
+
+function ProductsTransitionOverlay({
+  active,
+  onComplete,
+}: {
+  active: boolean;
+  onComplete: () => void;
+}) {
+  useEffect(() => {
+    if (!active) return undefined;
+    lockScroll();
+    const timer = window.setTimeout(onComplete, 1600);
+    return () => {
+      window.clearTimeout(timer);
+      unlockScroll();
+    };
+  }, [active, onComplete]);
+
+  return (
+    <AnimatePresence>
+      {active && (
+        <motion.div
+          className="ks-products-transition"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.35, ease: EASE }}
+        >
+          <svg className="ks-products-transition-stroke" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+            <motion.path
+              d="M0 60 C200 10 400 110 600 60 S1000 10 1200 60"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 0.7 }}
+              transition={{ duration: 0.9, ease: FLUID_EASE }}
+            />
+          </svg>
+          <motion.h2
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.35, ease: EASE }}
+          >
+            Coleções da Kah
+          </motion.h2>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function ProductsEntryLink({ children }: { children: React.ReactNode }) {
+  const startTransition = useContext(ProductsNavContext);
+  const [pressed, setPressed] = useState(false);
+
+  return (
+    <button
+      type="button"
+      className={`ks-primary-link special${pressed ? " is-expanding" : ""}`}
+      data-cursor="cta"
+      onClick={() => {
+        setPressed(true);
+        window.setTimeout(() => {
+          startTransition?.();
+          setPressed(false);
+        }, 180);
+      }}
+    >
+      {children}
+      <ArrowRight size={16} />
+    </button>
   );
 }
 
@@ -1134,7 +1587,12 @@ function ProcessPage() {
   const steps = ["Envie sua ideia", "Receba uma orientação", "Agende sua sessão", "Faça sua tattoo"];
   return (
     <>
-      <PageHero kicker="Como funciona" title="Como funciona o atendimento" text="Da primeira mensagem ao cuidado final, organizo um processo direto, acolhedor e claro com você." />
+      <PageHero
+        kicker="Como funciona"
+        title="Como funciona o atendimento"
+        text="Da primeira mensagem ao cuidado final, organizo um processo direto, acolhedor e claro com você."
+        image={tattooImages.heroProcess}
+      />
       <section className="ks-section">
         <StepSection steps={steps} />
       </section>
@@ -1143,14 +1601,28 @@ function ProcessPage() {
   );
 }
 
+const careBlocks = [
+  ["Antes da tattoo", "Prepare o corpo e a pele: hidratação, descanso e evitar álcool ajudam na sessão. Envie referências e tire dúvidas antes do dia."],
+  ["Durante a sessão", "Ambiente acolhedor, materiais descartáveis e biossegurança em cada etapa. Você é orientada durante todo o processo."],
+  ["Depois da tattoo", "Siga as orientações de limpeza e proteção. A cicatrização é parte do projeto — respeite os prazos indicados."],
+  ["Cicatrização", "Coçar, exposição solar e tecidos apertados podem comprometer o resultado. Acompanhe as fases da pele com calma."],
+  ["O que evitar", "Piscina, mar, sol direto e exercícios intensos nas primeiras semanas, conforme orientação personalizada."],
+  ["Dúvidas comuns", "Qualquer sinal fora do esperado deve ser comunicado. Estou disponível para orientar durante a cicatrização."],
+] as const;
+
 function CarePage() {
   return (
     <>
-      <PageHero kicker="Cuidados" title="Cuidado, segurança e responsabilidade" text="Para mim, a experiência começa antes da sessão e continua nos cuidados após o procedimento." />
+      <PageHero
+        kicker="Cuidados"
+        title="Cuidado antes, durante e depois da tattoo"
+        text="A experiência da tattoo envolve escuta, preparo, segurança e orientação. Cada etapa é pensada para que o processo seja mais tranquilo, responsável e cuidadoso."
+        image={tattooImages.heroCare}
+      />
       <section className="ks-section">
         <div className="ks-card-grid three">
-          {["Antes da tattoo", "Durante a sessão", "Depois da tattoo", "Cicatrização", "O que evitar", "Biossegurança"].map((title) => (
-            <MiniCard key={title} title={title} text="Dou orientações claras, uso materiais adequados e acompanho você para uma boa cicatrização." />
+          {careBlocks.map(([title, text]) => (
+            <MiniCard key={title} title={title} text={text} />
           ))}
         </div>
       </section>
@@ -1161,7 +1633,12 @@ function CarePage() {
 function TestimonialsPage() {
   return (
     <>
-      <PageHero kicker="Depoimentos" title="Quem já tatuou comigo" text="Relatos sobre resultado, cuidado e experiência de atendimento comigo." />
+      <PageHero
+        kicker="Depoimentos"
+        title="Quem já tatuou comigo"
+        text="Relatos sobre resultado, cuidado e experiência de atendimento comigo."
+        image={tattooImages.heroTestimonials}
+      />
       <section className="ks-section">
         <div className="ks-card-grid three">
           {["Amei o resultado, ficou exatamente do jeito que eu queria.", "Além da tattoo linda, o atendimento foi super cuidadoso.", "Me senti segura durante todo o processo."].map((text, index) => (
@@ -1180,69 +1657,108 @@ function TestimonialsPage() {
 function FaqPage() {
   return (
     <>
-      <PageHero kicker="FAQ" title="Perguntas frequentes" text="Respostas rápidas sobre orçamento, desenhos personalizados, flash tattoos, produtos e cuidados pós-tattoo." />
+      <PageHero
+        kicker="FAQ"
+        title="Perguntas frequentes"
+        text="Respostas rápidas sobre orçamento, desenhos personalizados, flash tattoos, produtos e cuidados pós-tattoo."
+        image={tattooImages.heroFaq}
+      />
       <ProductFaq full />
     </>
   );
 }
 
 function BudgetPage() {
-  const [idea, setIdea] = useState("");
+  const [form, setForm] = useState({
+    name: "",
+    whatsapp: "",
+    idea: "",
+    bodyPlace: "",
+    size: "",
+    references: "",
+    notes: "",
+  });
   const [error, setError] = useState(false);
-  const trimmedIdea = idea.trim();
-  const whatsappMessage = `${BUDGET_WHATSAPP_PREFIX}${trimmedIdea}`;
+
+  const buildMessage = () => {
+    const lines = [BUDGET_WHATSAPP_INTRO, ""];
+    if (form.name.trim()) lines.push(`Nome: ${form.name.trim()}`);
+    if (form.whatsapp.trim()) lines.push(`WhatsApp: ${form.whatsapp.trim()}`);
+    if (form.idea.trim()) lines.push(`Ideia: ${form.idea.trim()}`);
+    if (form.bodyPlace.trim()) lines.push(`Local do corpo: ${form.bodyPlace.trim()}`);
+    if (form.size.trim()) lines.push(`Tamanho aproximado: ${form.size.trim()}`);
+    if (form.references.trim()) lines.push(`Referências: ${form.references.trim()}`);
+    if (form.notes.trim()) lines.push(`Observações: ${form.notes.trim()}`);
+    return lines.join("\n");
+  };
+
+  const update = (field: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((current) => ({ ...current, [field]: event.target.value }));
+    if (error && event.target.value.trim()) setError(false);
+  };
 
   return (
     <>
       <PageHero
         kicker="Orçamento"
         title="Vamos criar sua próxima tattoo?"
-        text="Descreva sua ideia abaixo e envie direto pelo WhatsApp. Analiso sua proposta e oriento o melhor caminho."
-        image="https://images.unsplash.com/photo-1726924244999-95eb16972c9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1800"
+        text="Envie sua ideia, referências, tamanho aproximado e local do corpo. A Kah analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele."
+        image={tattooImages.heroBudget}
       />
       <section className="ks-section ks-two-col">
         <div>
           <h2 className="ks-headline-md">O que enviar</h2>
-          <p className="ks-body-lg ks-muted">Conte sua ideia, referências visuais, local do corpo, tamanho aproximado e qualquer detalhe importante para personalizar o orçamento.</p>
+          <p className="ks-body-lg ks-muted">
+            Preencha o que puder — todos os campos são opcionais, mas quanto mais contexto, melhor a orientação inicial.
+          </p>
         </div>
         <form
           className="ks-budget-form"
           onSubmit={(event) => {
             event.preventDefault();
-            if (!trimmedIdea) {
+            if (!form.idea.trim() && !form.references.trim()) {
               setError(true);
               return;
             }
-            window.open(wa(whatsappMessage), "_blank", "noopener,noreferrer");
+            window.open(wa(buildMessage()), "_blank", "noopener,noreferrer");
           }}
         >
-          <label className="ks-budget-label" htmlFor="tattoo-idea">
-            Sua ideia de tattoo
-          </label>
+          <label className="ks-budget-label" htmlFor="budget-name">Nome</label>
+          <input id="budget-name" className="ks-budget-input" value={form.name} onChange={update("name")} />
+
+          <label className="ks-budget-label" htmlFor="budget-whatsapp">WhatsApp</label>
+          <input id="budget-whatsapp" className="ks-budget-input" value={form.whatsapp} onChange={update("whatsapp")} />
+
+          <label className="ks-budget-label" htmlFor="budget-idea">Ideia da tattoo</label>
           <textarea
-            id="tattoo-idea"
+            id="budget-idea"
             className="ks-budget-textarea"
-            rows={6}
-            placeholder="Ex.: flor minimalista no pulso, traço fino, referência botânica..."
-            value={idea}
+            rows={4}
+            placeholder="Descreva sua ideia..."
+            value={form.idea}
             aria-invalid={error}
-            onChange={(event) => {
-              setIdea(event.target.value);
-              if (error && event.target.value.trim()) setError(false);
-            }}
+            onChange={update("idea")}
           />
+
+          <label className="ks-budget-label" htmlFor="budget-place">Local do corpo</label>
+          <input id="budget-place" className="ks-budget-input" value={form.bodyPlace} onChange={update("bodyPlace")} />
+
+          <label className="ks-budget-label" htmlFor="budget-size">Tamanho aproximado</label>
+          <input id="budget-size" className="ks-budget-input" value={form.size} onChange={update("size")} />
+
+          <label className="ks-budget-label" htmlFor="budget-refs">Referências</label>
+          <textarea id="budget-refs" className="ks-budget-textarea" rows={3} value={form.references} onChange={update("references")} />
+
+          <label className="ks-budget-label" htmlFor="budget-notes">Observações</label>
+          <textarea id="budget-notes" className="ks-budget-textarea" rows={3} value={form.notes} onChange={update("notes")} />
+
           {error && (
             <span className="ks-budget-error" role="alert">
-              Conte um pouco sobre sua ideia antes de enviar.
+              Conte sua ideia ou envie referências antes de chamar no WhatsApp.
             </span>
           )}
-          <p className="ks-budget-preview">
-            <span className="ks-budget-preview-label">Prévia da mensagem</span>
-            {BUDGET_WHATSAPP_PREFIX}
-            <span className="ks-budget-preview-idea">{trimmedIdea || "sua ideia aqui"}</span>
-          </p>
           <button type="submit" className="ks-primary-link">
-            Enviar no WhatsApp <WhatsAppIcon />
+            Chamar no WhatsApp <WhatsAppIcon />
           </button>
         </form>
       </section>
@@ -1266,8 +1782,8 @@ function ImageGrid({ items }: { items: typeof galleryItems }) {
       {items.map((item) => (
         <article className="ks-image-card" key={item.title}>
           <img src={item.img} alt={item.alt} loading="lazy" />
-          <div>
-            <span className="ks-label-caps ks-muted">{item.category}</span>
+          <div className="ks-image-card-overlay">
+            <span className="ks-label-caps">{item.category}</span>
             <h3>{item.title}</h3>
           </div>
         </article>
@@ -1276,14 +1792,23 @@ function ImageGrid({ items }: { items: typeof galleryItems }) {
   );
 }
 
-function FlashCard({ name, status, text }: { name: string; status: string; text: string }) {
+function FlashCard({ name, status, text, img }: { name: string; status: string; text: string; img?: string }) {
   return (
-    <article className="ks-card">
-      <StencilCrosshair size={14} color="#263C86" />
-      <span className={`ks-status ${status.toLowerCase()}`}>{status}</span>
-      <h3>{name}</h3>
-      <p>{text}</p>
-      <a href={wa(`Olá Karina, vim do seu site e queria saber se o flash "${name}" ainda está disponível.`)}>Quero esse flash</a>
+    <article className="ks-flash-page-card">
+      {img && (
+        <div className="ks-flash-page-card-media">
+          <img src={img} alt={`Flash ${name}`} loading="lazy" />
+        </div>
+      )}
+      <div className="ks-flash-page-card-body">
+        <StencilCrosshair size={14} color="#4a5c6e" />
+        <span className={`ks-status ${status.toLowerCase()}`}>{status}</span>
+        <h3>{name}</h3>
+        <p>{text}</p>
+        <a className="ks-primary-link" href={wa("Olá, Kah! Vim pelo site e queria saber se esse flash tattoo ainda está disponível.")}>
+          Quero esse flash <WhatsAppIcon />
+        </a>
+      </div>
     </article>
   );
 }
@@ -1404,8 +1929,14 @@ function FeatureStrip() {
 }
 
 function IntroPage({ path, children }: { path: keyof typeof SECTION_INTRO_TITLES; children: React.ReactNode }) {
+  const location = useLocation();
+  const skipIntro = Boolean((location.state as { fromProductsTransition?: boolean } | null)?.fromProductsTransition);
   const [contentReady, setContentReady] = useState(false);
   const title = SECTION_INTRO_TITLES[path];
+
+  if (skipIntro) {
+    return <>{children}</>;
+  }
 
   const handleReveal = () => {
     setContentReady(true);
@@ -1490,15 +2021,13 @@ function TextLink({ to, children }: { to: string; children: React.ReactNode }) {
 function FloatingWhatsApp() {
   const location = useLocation();
   const message = useMemo(
-    () => location.pathname === "/produtos"
-      ? "Olá Karina, vim do seu site e queria saber mais sobre os produtos disponíveis."
-      : "Olá Karina, vim do seu site e queria fazer um orçamento.",
+    () => (location.pathname === "/produtos" ? WA_PRODUCTS : WA_DEFAULT),
     [location.pathname],
   );
   return (
     <a className="ks-floating-whatsapp" href={wa(message)} aria-label="Falar comigo pelo WhatsApp" target="_blank" rel="noopener noreferrer">
       <WhatsAppIcon />
-      <span>Falar comigo</span>
+      <span>Falar com a Kah</span>
     </a>
   );
 }

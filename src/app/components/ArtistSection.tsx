@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { StarGlyph } from "./StarGlyph";
+import { tattooImages } from "../tattoo-images";
 
 export function ArtistSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -39,7 +40,7 @@ export function ArtistSection() {
           }}
         >
           <img
-            src="https://images.unsplash.com/photo-1506863530036-1efeddceb993?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080"
+            src={tattooImages.artistTattooing}
             alt="Kah Sarte"
             style={{
               width: "100%",

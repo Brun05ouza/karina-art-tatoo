@@ -15,11 +15,13 @@ function notifyScrollListeners(scroll: number) {
   scrollListeners.forEach((listener) => listener(scroll));
 }
 
-function queueRefresh() {
+// Leve resize debounçado — usado pelo ResizeObserver durante scroll/animações.
+// NÃO chama ScrollTrigger.refresh() aqui: é uma operação cara que trava
+// o main thread se chamada a cada frame de animação whileInView.
+export function queueRefresh() {
   cancelAnimationFrame(refreshRaf);
   refreshRaf = requestAnimationFrame(() => {
     lenis?.resize();
-    ScrollTrigger.refresh();
   });
 }
 
@@ -93,6 +95,21 @@ export function ensureScrollUnlocked() {
   document.documentElement.style.overflow = "";
 }
 
+// Wrapper para lenis.scrollTo — permite que componentes façam scroll
+// programático sem acessar a instância do Lenis diretamente.
+export function scrollTo(
+  target: string | number | HTMLElement,
+  options?: { offset?: number; duration?: number; immediate?: boolean },
+) {
+  if (lenis) {
+    lenis.scrollTo(target as Parameters<typeof lenis.scrollTo>[0], options);
+  } else if (typeof target === "string") {
+    document.querySelector(target)?.scrollIntoView({ behavior: "auto" });
+  } else if (typeof target === "number") {
+    window.scrollTo({ top: target, behavior: "auto" });
+  }
+}
+
 export function resetScrollPosition() {
   ensureScrollUnlocked();
 
@@ -106,7 +123,6 @@ export function resetScrollPosition() {
 }
 
 export function refreshScrollMetrics() {
-  ensureScrollUnlocked();
   lenis?.resize();
   ScrollTrigger.refresh();
 }

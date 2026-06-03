@@ -35,6 +35,10 @@ export function CustomCursor() {
       }
 
       const el = e.target as Element;
+      if (el.closest("input, textarea, select")) {
+        updateVisible(false);
+        return;
+      }
       if (el.closest("[data-cursor='gallery']")) updateState("gallery");
       else if (el.closest("[data-cursor='cta']")) updateState("cta");
       else if (el.closest("a, button, [data-cursor='link']")) updateState("link");
