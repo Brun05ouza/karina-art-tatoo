@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kahsartetattoo.com.br/sitemap.xml
+# SPA — rotas públicas indexáveis via sitemap
+Sitemap: https://karinasarte.com.br/sitemap.xml

@@ -1,7 +1,6 @@
 import { useRef, useState, type ReactNode } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { StarGlyph } from "./StarGlyph";
-import { tattooImages } from "../tattoo-images";
 import { scrollTo } from "../scroll";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -114,9 +113,11 @@ export function Hero() {
           scale: 1.12,
         }}
       >
-        <img
-          src={tattooImages.hero}
-          alt=""
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
           aria-hidden="true"
           style={{
             width: "100%",
@@ -126,7 +127,9 @@ export function Hero() {
             filter: "grayscale(68%) saturate(0.82) contrast(1.16) brightness(0.78)",
             opacity: 0.7,
           }}
-        />
+        >
+          <source src="/assets/hero-video.mp4" type="video/mp4" />
+        </video>
       </motion.div>
 
       <div

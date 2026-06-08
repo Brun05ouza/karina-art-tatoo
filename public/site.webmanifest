@@ -1,0 +1,19 @@
+{
+  "name": "Karina Sarte",
+  "short_name": "Karina Sarte",
+  "description": "Tatuagens autorais, flash tattoos e projetos personalizados em Teresópolis, RJ.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#dcd1b4",
+  "theme_color": "#b05574",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/assets/hero-home.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

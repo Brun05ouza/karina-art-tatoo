@@ -77,7 +77,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
               color: "#6b5562",
             }}
           >
-            Karina Sarte — Tattoo autoral
+            Karina Sarte
           </motion.div>
         </motion.div>
       )}

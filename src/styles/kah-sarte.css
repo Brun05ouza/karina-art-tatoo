@@ -78,6 +78,17 @@
   --ks-wine-mid: var(--ks-plum);
 
   --ks-radius-btn: 100px;
+
+  /* Escala tipográfica */
+  --ks-text-display: clamp(64px, 10vw, 132px);
+  --ks-text-headline-lg: clamp(44px, 6vw, 86px);
+  --ks-text-headline-md: clamp(30px, 3.5vw, 52px);
+  --ks-text-body-lg: 20px;
+  --ks-text-body-md: 17px;
+  --ks-text-label: 13px;
+  --ks-text-ui: 12px;
+  --ks-text-ui-sm: 11px;
+
   /* Impacto */
   --ks-font-display: "Amatic SC", cursive;
   --ks-font-display-alt: "Barriecito", cursive;
@@ -135,7 +146,7 @@ summary {
 /* Typography */
 .ks-display-xl {
   font-family: var(--ks-font-display);
-  font-size: clamp(56px, 9vw, 120px);
+  font-size: var(--ks-text-display);
   line-height: 0.92;
   letter-spacing: 0.02em;
   font-weight: 700;
@@ -143,7 +154,7 @@ summary {
 
 .ks-headline-lg {
   font-family: var(--ks-font-display-alt);
-  font-size: clamp(40px, 5.5vw, 76px);
+  font-size: var(--ks-text-headline-lg);
   line-height: 1;
   letter-spacing: 0.01em;
   font-weight: 400;
@@ -151,30 +162,30 @@ summary {
 
 .ks-headline-md {
   font-family: var(--ks-font-serif);
-  font-size: clamp(26px, 3vw, 46px);
+  font-size: var(--ks-text-headline-md);
   line-height: 1.15;
   font-weight: 400;
 }
 
 .ks-body-lg {
   font-family: var(--ks-font-body);
-  font-size: 18px;
+  font-size: var(--ks-text-body-lg);
   line-height: 1.6;
   font-weight: 400;
 }
 
 .ks-body-md {
   font-family: var(--ks-font-body);
-  font-size: 15px;
+  font-size: var(--ks-text-body-md);
   line-height: 1.65;
   font-weight: 400;
 }
 
 .ks-label-caps {
   font-family: var(--ks-font-meta);
-  font-size: 10px;
-  line-height: 1;
-  letter-spacing: 0.22em;
+  font-size: var(--ks-text-label);
+  line-height: 1.2;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
@@ -193,7 +204,7 @@ summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: 68px;
   padding: 0 clamp(20px, 5vw, 64px);
   background: rgba(var(--ks-beige-rgb), 0.82);
   border-bottom: 1px solid transparent;
@@ -221,7 +232,7 @@ summary {
   color: var(--ks-primary);
   text-decoration: none;
   font-family: var(--ks-font-display);
-  font-size: clamp(22px, 2.4vw, 28px);
+  font-size: clamp(24px, 2.6vw, 32px);
   letter-spacing: 0.04em;
   font-weight: 700;
 }
@@ -235,7 +246,7 @@ summary {
   color: var(--ks-on-surface-variant);
   text-decoration: none;
   font-family: var(--ks-font-meta);
-  font-size: 9px;
+  font-size: var(--ks-text-ui);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   transition: color 0.3s ease;
@@ -262,16 +273,16 @@ summary {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 42px;
-  padding: 12px 18px;
+  min-height: 46px;
+  padding: 13px 20px;
   border: 1px solid var(--ks-btn);
   border-radius: var(--ks-radius-btn);
   color: var(--ks-on-dark);
   background: var(--ks-btn);
   text-decoration: none;
   font-family: var(--ks-font-meta);
-  font-size: 9px;
-  letter-spacing: 0.18em;
+  font-size: 13px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
 }
@@ -371,7 +382,7 @@ summary {
   min-width: 24px;
   color: var(--ks-outline-variant);
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.2em;
   transition: color 0.25s ease;
 }
@@ -400,7 +411,7 @@ summary {
   margin-top: 48px;
   color: var(--ks-outline-variant);
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.2em;
 }
 
@@ -484,13 +495,13 @@ summary {
   align-items: center;
   gap: 8px;
   margin-top: 22px;
-  padding: 10px 16px;
+  padding: 11px 18px;
   border: 1px solid rgba(var(--ks-teal-rgb), 0.45);
   color: var(--ks-link);
   text-decoration: none;
   font-family: var(--ks-font-meta);
-  font-size: 9px;
-  letter-spacing: 0.2em;
+  font-size: 13px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
 }
@@ -552,8 +563,8 @@ summary {
 .ks-budget-label {
   color: var(--ks-aged-gold);
   font-family: var(--ks-font-meta);
-  font-size: 9px;
-  letter-spacing: 0.18em;
+  font-size: 13px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -565,7 +576,7 @@ summary {
   background: var(--ks-paper);
   color: var(--ks-primary);
   font-family: var(--ks-font-body);
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.65;
   transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
   color-scheme: light;
@@ -597,8 +608,8 @@ summary {
 .ks-budget-error {
   color: var(--ks-coral);
   font-family: var(--ks-font-meta);
-  font-size: 10px;
-  letter-spacing: 0.06em;
+  font-size: 13px;
+  letter-spacing: 0.04em;
 }
 
 .ks-budget-preview {
@@ -608,7 +619,7 @@ summary {
   background: rgba(var(--ks-ink-rgb), 0.55);
   color: var(--ks-on-surface-variant);
   font-family: var(--ks-font-body);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.65;
 }
 
@@ -617,7 +628,7 @@ summary {
   margin-bottom: 8px;
   color: var(--ks-outline);
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -672,7 +683,7 @@ summary {
   background: rgba(var(--ks-ink-rgb), 0.72);
   color: var(--ks-outline);
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.16em;
 }
 
@@ -696,7 +707,7 @@ summary {
   background: rgba(var(--ks-ink-rgb), 0.72);
   color: var(--ks-peach);
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -877,7 +888,7 @@ summary {
 
 .ks-carousel-count {
   font-family: var(--ks-font-meta);
-  font-size: 10px;
+  font-size: var(--ks-text-label);
   letter-spacing: 0.2em;
   color: var(--ks-outline);
   min-width: 52px;
@@ -1039,7 +1050,7 @@ summary {
   max-width: 440px;
   color: var(--ks-outline);
   font-family: var(--ks-font-body);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 300;
   line-height: 1.65;
 }
@@ -1110,7 +1121,7 @@ summary {
   margin: 0;
   color: var(--ks-outline);
   font-family: var(--ks-font-body);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 300;
   line-height: 1.5;
 }
@@ -1144,7 +1155,7 @@ summary {
 .ks-faq-list p {
   color: var(--ks-outline);
   font-family: var(--ks-font-body);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 300;
   line-height: 1.65;
 }
@@ -1156,7 +1167,7 @@ summary {
   color: var(--ks-aged-gold);
   text-decoration: none;
   font-family: var(--ks-font-meta);
-  font-size: 9px;
+  font-size: var(--ks-text-ui);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -1169,7 +1180,7 @@ summary {
   border: 1px solid rgba(var(--ks-peach-rgb), 0.3);
   color: var(--ks-aged-gold);
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -1330,7 +1341,7 @@ summary {
   color: var(--ks-on-dark);
   background: rgba(var(--ks-plum-rgb), 0.35);
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   opacity: 0;
@@ -1530,7 +1541,7 @@ summary {
 .ks-step span {
   color: var(--ks-label);
   font-family: var(--ks-font-meta);
-  font-size: 10px;
+  font-size: var(--ks-text-label);
   letter-spacing: 0.2em;
 }
 
@@ -1600,10 +1611,10 @@ summary {
   border: 1px solid rgba(var(--ks-ink-rgb), 0.18);
   background: transparent;
   color: var(--ks-on-surface-variant);
-  padding: 9px 12px;
+  padding: 10px 15px;
   font-family: var(--ks-font-meta);
-  font-size: 8px;
-  letter-spacing: 0.16em;
+  font-size: 13px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
   transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
@@ -1665,7 +1676,7 @@ summary {
   margin: 0;
   color: var(--ks-on-surface-variant);
   font-family: var(--ks-font-body);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.6;
 }
 
@@ -1772,7 +1783,7 @@ summary {
   text-decoration: none;
   backdrop-filter: blur(10px);
   font-family: var(--ks-font-meta);
-  font-size: 9px;
+  font-size: var(--ks-text-ui);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   box-shadow: 0 8px 28px rgba(var(--ks-ink-rgb), 0.12);
@@ -1954,7 +1965,7 @@ summary {
   align-items: center;
   gap: 8px;
   font-family: var(--ks-font-serif);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 500;
   color: var(--ks-primary);
   letter-spacing: 0.06em;
@@ -1970,7 +1981,7 @@ summary {
 .ks-footer-nav a {
   color: var(--ks-on-surface-variant);
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   text-decoration: none;
@@ -1993,7 +2004,7 @@ summary {
 
 .ks-footer-copy {
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ks-outline);
@@ -2007,7 +2018,7 @@ summary {
 
 .ks-footer-social a {
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ks-outline);
@@ -2055,10 +2066,11 @@ summary {
   }
 
   /* ── Typography ── */
-  .ks-display-xl   { font-size: clamp(44px, 14vw, 64px); }
-  .ks-headline-lg  { font-size: clamp(32px, 10vw, 52px); }
-  .ks-headline-md  { font-size: clamp(22px, 7vw, 36px); }
-  .ks-body-lg      { font-size: 15px; }
+  .ks-display-xl   { font-size: clamp(48px, 14vw, 72px); }
+  .ks-headline-lg  { font-size: clamp(36px, 10vw, 58px); }
+  .ks-headline-md  { font-size: clamp(24px, 7vw, 40px); }
+  .ks-body-lg      { font-size: 18px; }
+  .ks-body-md      { font-size: 16px; }
 
   /* ── Hero ── */
   .ks-page-hero {
@@ -2558,9 +2570,8 @@ summary {
   margin: 16px 0 22px;
   color: var(--ks-primary);
   width: 100%;
-  text-align: justify;
-  text-align-last: center;
-  hyphens: auto;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .ks-home-hero-content .ks-body-lg {
@@ -2781,7 +2792,7 @@ summary {
 .ks-service-card-body p {
   flex: 1 1 auto;
   margin: 0 0 14px;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.6;
   color: var(--ks-on-cool-muted);
 }
@@ -2797,7 +2808,7 @@ summary {
   border: 1px solid rgba(var(--ks-beige-rgb), 0.45);
   background: rgba(var(--ks-plum-rgb), 0.82);
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ks-on-dark);
@@ -2857,7 +2868,7 @@ summary {
 .ks-mural-item-caption span {
   display: block;
   font-family: var(--ks-font-meta);
-  font-size: 8px;
+  font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   opacity: 0.9;
@@ -3104,7 +3115,7 @@ summary {
   gap: 8px;
   margin-top: 18px;
   font-family: var(--ks-font-meta);
-  font-size: 9px;
+  font-size: var(--ks-text-ui);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ks-aged-gold);

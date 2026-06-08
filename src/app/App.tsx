@@ -37,6 +37,7 @@ import {
   unobserveScrollRoot,
 } from "./scroll";
 import { tattooImages } from "./tattoo-images";
+import { applyPageSeo, FAQ_ITEMS } from "./seo";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -59,6 +60,7 @@ const WA_DEFAULT = "Olá, Karina Sarte! Vim pelo site e queria fazer um orçamen
 const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
 
 const ProductsNavContext = createContext<(() => void) | null>(null);
+const PreloaderDoneContext = createContext(false);
 
 const SECTION_INTRO_TITLES: Record<string, string> = {
   "/sobre": "Sobre a Karina Sarte",
@@ -318,52 +320,6 @@ const tattooGalleryItems = [
   },
 ];
 
-const seo: Record<string, { title: string; description: string }> = {
-  "/": {
-    title: "Karina Sarte Tattoo | Tatuagens Autorais e Flash Tattoos",
-    description:
-      "Crio tatuagens autorais, flash tattoos e produtos artísticos em Teresópolis, RJ. Karina Sarte Tattoo.",
-  },
-  "/sobre": {
-    title: "Sobre a Karina Sarte | Karina Sarte Tattoo",
-    description: "Conheça a Karina Sarte Tattoo: tatuagens autorais, identidade visual e processo criativo em Teresópolis, RJ.",
-  },
-  "/portfolio": {
-    title: "Portfólio de Tattoos | Karina Sarte Tattoo",
-    description:
-      "Veja meus trabalhos recentes: fine line, minimalistas, blackwork e projetos personalizados na Karina Sarte Tattoo.",
-  },
-  "/flash-tattoos": {
-    title: "Flash Tattoos Disponíveis | Karina Sarte Tattoo",
-    description: "Confira meus flash tattoos autorais disponíveis para tatuar na Karina Sarte Tattoo.",
-  },
-  "/produtos": {
-    title: "Produtos Autorais, Prints e Planos de Tattoo | Karina Sarte Tattoo",
-    description:
-      "Produtos autorais, prints, artes, kits, flash tattoos e planos de tattoo disponíveis na Karina Sarte Tattoo.",
-  },
-  "/como-funciona": {
-    title: "Como Funciona o Atendimento | Karina Sarte Tattoo",
-    description: "Entenda meu processo de orçamento, criação, agenda e sessão na Karina Sarte Tattoo.",
-  },
-  "/cuidados": {
-    title: "Cuidados com Tattoo | Karina Sarte Tattoo",
-    description: "Orientações de cuidados antes, durante e depois da tattoo, cicatrização e experiência de atendimento.",
-  },
-  "/depoimentos": {
-    title: "Depoimentos | Karina Sarte Tattoo",
-    description: "Relatos de quem já tatuou comigo na Karina Sarte Tattoo.",
-  },
-  "/faq": {
-    title: "FAQ | Karina Sarte Tattoo",
-    description: "Perguntas frequentes sobre orçamento, flash tattoos, produtos e cuidados com tattoo.",
-  },
-  "/orcamento": {
-    title: "Orçamento de Tattoo | Karina Sarte Tattoo",
-    description: "Envie sua ideia e fale comigo pelo WhatsApp para orçamento de tattoo.",
-  },
-};
-
 function AppShell() {
   const [preloaderDone, setPreloaderDone] = useState(false);
 
@@ -464,12 +420,14 @@ function AppLayout({
           transition: "opacity 0.6s ease",
         }}
       >
-        <ProductsNavContext.Provider value={startProductsTransition}>
-          <Header />
-          <AnimatedRoutes />
-          <Footer />
-          <FloatingWhatsApp />
-        </ProductsNavContext.Provider>
+        <PreloaderDoneContext.Provider value={preloaderDone}>
+          <ProductsNavContext.Provider value={startProductsTransition}>
+            <Header />
+            <AnimatedRoutes />
+            <Footer />
+            <FloatingWhatsApp />
+          </ProductsNavContext.Provider>
+        </PreloaderDoneContext.Provider>
       </div>
       <ProductsTransitionOverlay active={productsTransition} onComplete={completeProductsTransition} />
     </>
@@ -488,39 +446,9 @@ function AnimatedRoutes() {
   }, []);
 
   useEffect(() => {
-    const BASE = "https://kahsartetattoo.com.br";
-    const pageSeo = seo[location.pathname] ?? seo["/"];
-    const url = BASE + location.pathname;
+    applyPageSeo(location.pathname);
 
-    // title
-    document.title = pageSeo.title;
-
-    // helper: upsert <meta> / <link> by selector
-    const setMeta = (selector: string, attr: string, value: string) => {
-      let el = document.head.querySelector(selector);
-      if (!el) {
-        const tag = selector.startsWith("link") ? "link" : "meta";
-        el = document.createElement(tag);
-        const [a, v] = selector.replace(/[\[\]'"]/g, " ").trim().split(/\s+/);
-        el.setAttribute(a, v ?? "");
-        document.head.appendChild(el);
-      }
-      el.setAttribute(attr, value);
-    };
-
-    setMeta("meta[name='description']",           "content", pageSeo.description);
-    setMeta("link[rel='canonical']",               "href",    url);
-    setMeta("meta[property='og:url']",             "content", url);
-    setMeta("meta[property='og:title']",           "content", pageSeo.title);
-    setMeta("meta[property='og:description']",     "content", pageSeo.description);
-    setMeta("meta[name='twitter:title']",          "content", pageSeo.title);
-    setMeta("meta[name='twitter:description']",    "content", pageSeo.description);
-
-    // Um único refresh após o conteúdo da rota se estabilizar.
-    // O onAnimationComplete já dispara refreshScrollMetrics() ao fim da animação de entrada;
-    // este timeout cobre conteúdo que carrega levemente depois (fontes, imagens lazy).
     const timer = window.setTimeout(queueRefresh, 350);
-
     return () => window.clearTimeout(timer);
   }, [location.pathname]);
 
@@ -646,14 +574,31 @@ function HomePage() {
 }
 
 function HomeHero() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const preloaderDone = useContext(PreloaderDoneContext);
+
+  useEffect(() => {
+    if (preloaderDone) {
+      videoRef.current?.play();
+    }
+  }, [preloaderDone]);
+
+  const handleEnded = useCallback(() => {
+    window.setTimeout(() => {
+      videoRef.current?.play();
+    }, 5000);
+  }, []);
+
   return (
     <section className="ks-home-hero">
-      <img
+      <video
+        ref={videoRef}
         className="ks-home-hero-bg"
-        src={tattooImages.hero}
-        alt=""
+        src="/assets/hero-video.mp4"
+        muted
+        playsInline
         aria-hidden="true"
-        loading="eager"
+        onEnded={handleEnded}
       />
       <div className="ks-home-hero-shade" aria-hidden="true" />
       <motion.div
@@ -1327,7 +1272,7 @@ function AboutPage() {
       <PageHero
         kicker="A artista"
         title="Sobre a Karina Sarte"
-        text="A Karina Sarte Tattoo cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele."
+        text="Karina Sarte cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele."
         image={tattooImages.heroAbout}
       >
         <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
@@ -1861,14 +1806,7 @@ function StepSection({ steps }: { steps: string[] }) {
 }
 
 function ProductFaq({ full = false }: { full?: boolean }) {
-  const questions = [
-    ["Como faço um orçamento?", "Envie sua ideia pelo WhatsApp com referências, tamanho aproximado e local do corpo."],
-    ["Faço desenhos personalizados?", "Sim. Crio projetos conforme a ideia e o estilo que você deseja."],
-    ["Tem flash tattoo disponível?", "Sim. Os flashes disponíveis ficam na página Flash Tattoos ou podem ser consultados comigo pelo WhatsApp."],
-    ["Como funcionam os produtos?", "Os produtos e artes ficam na página Produtos. A compra ou consulta é feita diretamente comigo pelo WhatsApp."],
-    ["Preciso pagar sinal?", "A regra de reserva pode ser confirmada no atendimento, conforme agenda e projeto."],
-    ["Quais formas de pagamento são aceitas?", "As formas de pagamento são combinadas diretamente comigo pelo WhatsApp."],
-  ];
+  const questions = FAQ_ITEMS;
   const [open, setOpen] = useState<number | null>(null);
   const list = questions.slice(0, full ? questions.length : 4);
 

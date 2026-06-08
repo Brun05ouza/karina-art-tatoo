@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { StarGlyph } from "./StarGlyph";
+import { SITE } from "../seo";
 
 const pageLinks = [
   { label: "Início", href: "/" },
@@ -15,9 +16,9 @@ const pageLinks = [
 ];
 
 const socialLinks = [
-  { label: "Instagram", href: "https://www.instagram.com/karina.sarte" },
+  { label: "Instagram", href: SITE.instagram },
   { label: "WhatsApp", href: "https://wa.me/5521990724477" },
-  { label: "E-mail", href: "mailto:kah@kahsarte.com" },
+  { label: "E-mail", href: `mailto:${SITE.email}` },
 ];
 
 export function Footer() {
@@ -26,7 +27,7 @@ export function Footer() {
       <div className="ks-footer-inner">
         <Link to="/" className="ks-footer-brand">
           <StarGlyph size={7} color="#B05574" />
-          <span>Karina Sarte Tattoo</span>
+          <span>Karina Sarte</span>
         </Link>
 
         <nav className="ks-footer-nav" aria-label="Navegação do site">
@@ -38,7 +39,7 @@ export function Footer() {
         </nav>
 
         <div className="ks-footer-bottom">
-          <span className="ks-footer-copy">© 2026 Karina Sarte Tattoo · Teresópolis, RJ</span>
+          <span className="ks-footer-copy">© 2026 Karina Sarte · Teresópolis, RJ</span>
           <div className="ks-footer-social">
             {socialLinks.map((link) => (
               <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer">
