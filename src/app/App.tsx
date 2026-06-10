@@ -21,6 +21,7 @@ import {
 } from "react-router";
 
 import { Preloader } from "./components/Preloader";
+import { StudioScrollSection } from "./components/StudioScrollSection";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { StarGlyph } from "./components/StarGlyph";
@@ -560,6 +561,7 @@ function HomePage() {
     <div className="ks-home-flow">
       <HomeHero />
       <EditorialSplitSection />
+      <StudioScrollSection />
       <HomeServicesSection />
       <MuralPortfolioPreview />
       <ProductsPreview />

@@ -99,7 +99,7 @@ export function ensureScrollUnlocked() {
 // programático sem acessar a instância do Lenis diretamente.
 export function scrollTo(
   target: string | number | HTMLElement,
-  options?: { offset?: number; duration?: number; immediate?: boolean },
+  options?: { offset?: number; duration?: number; immediate?: boolean; force?: boolean },
 ) {
   if (lenis) {
     lenis.scrollTo(target as Parameters<typeof lenis.scrollTo>[0], options);
