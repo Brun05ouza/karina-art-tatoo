@@ -91,7 +91,7 @@ export function ProcessHorizontal() {
       <section
         ref={sectionRef}
         className="hidden md:block"
-        style={{ background: "#131412", position: "relative" }}
+        style={{ background: "#2E173A", position: "relative" }}
       >
         {/* Sticky panel — stays in viewport while section scrolls */}
         <div
@@ -124,7 +124,7 @@ export function ProcessHorizontal() {
                 fontSize: 9,
                 letterSpacing: "0.22em",
                 textTransform: "uppercase",
-                color: "#949087",
+                color: "#806E85",
                 marginBottom: 24,
               }}
             >
@@ -144,7 +144,7 @@ export function ProcessHorizontal() {
                       fontSize: "clamp(38px, 4.5vw, 62px)",
                       lineHeight: 1.05,
                       fontWeight: 400,
-                      color: "#F2EDE2",
+                      color: "#F7F5F6",
                     }}
                   >
                     {word}
@@ -165,7 +165,7 @@ export function ProcessHorizontal() {
             >
               <motion.path
                 d="M 0 18 Q 27 5 55 18 Q 83 31 110 18"
-                stroke="#e9c082"
+                stroke="#A898AA"
                 strokeWidth="0.75"
                 fill="none"
                 initial={{ pathLength: 0 }}
@@ -197,7 +197,7 @@ export function ProcessHorizontal() {
       <section
         className="block md:hidden"
         style={{
-          background: "#131412",
+          background: "#2E173A",
           padding: "clamp(64px, 12vw, 120px) clamp(24px, 5vw, 40px)",
         }}
       >
@@ -207,7 +207,7 @@ export function ProcessHorizontal() {
             fontSize: 9,
             letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: "#949087",
+            color: "#806E85",
             marginBottom: 24,
           }}
         >
@@ -219,7 +219,7 @@ export function ProcessHorizontal() {
             fontSize: "clamp(38px, 10vw, 56px)",
             lineHeight: 1.05,
             fontWeight: 400,
-            color: "#F2EDE2",
+            color: "#F7F5F6",
             marginBottom: 48,
           }}
         >
@@ -241,8 +241,8 @@ function ProcessCard({ card, index }: { card: (typeof cards)[0]; index: number }
       style={{
         width: "clamp(280px, 30vw, 380px)",
         height: "clamp(320px, 50vh, 460px)",
-        background: index % 2 === 0 ? "#1b1c1a" : "#1f201e",
-        border: "1px solid rgba(242,237,226,0.08)",
+        background: index % 2 === 0 ? "#40294E" : "#5B4964",
+        border: "1px solid rgba(247,245,246,0.08)",
         padding: "clamp(28px, 3.5vw, 44px)",
         display: "flex",
         flexDirection: "column",
@@ -255,7 +255,7 @@ function ProcessCard({ card, index }: { card: (typeof cards)[0]; index: number }
           fontFamily: '"JetBrains Mono", monospace',
           fontSize: 10,
           letterSpacing: "0.18em",
-          color: "#263C86",
+          color: "#806E85",
           textTransform: "uppercase",
         }}
       >
@@ -267,7 +267,7 @@ function ProcessCard({ card, index }: { card: (typeof cards)[0]; index: number }
           fontFamily: '"Bodoni Moda", serif',
           fontSize: "clamp(20px, 2.2vw, 30px)",
           fontWeight: 400,
-          color: "#F2EDE2",
+          color: "#F7F5F6",
           lineHeight: 1.2,
         }}
       >
@@ -280,7 +280,7 @@ function ProcessCard({ card, index }: { card: (typeof cards)[0]; index: number }
           fontSize: 13,
           lineHeight: 1.65,
           fontWeight: 300,
-          color: "#949087",
+          color: "#806E85",
           margin: 0,
         }}
       >
@@ -294,8 +294,8 @@ function ProcessCardMobile({ card, index }: { card: (typeof cards)[0]; index: nu
   return (
     <div
       style={{
-        background: index % 2 === 0 ? "#1b1c1a" : "#1f201e",
-        border: "1px solid rgba(242,237,226,0.08)",
+        background: index % 2 === 0 ? "#40294E" : "#5B4964",
+        border: "1px solid rgba(247,245,246,0.08)",
         padding: "28px 24px",
         display: "flex",
         flexDirection: "column",
@@ -307,7 +307,7 @@ function ProcessCardMobile({ card, index }: { card: (typeof cards)[0]; index: nu
           fontFamily: '"JetBrains Mono", monospace',
           fontSize: 9,
           letterSpacing: "0.18em",
-          color: "#263C86",
+          color: "#806E85",
           textTransform: "uppercase",
         }}
       >
@@ -318,7 +318,7 @@ function ProcessCardMobile({ card, index }: { card: (typeof cards)[0]; index: nu
           fontFamily: '"Bodoni Moda", serif',
           fontSize: 22,
           fontWeight: 400,
-          color: "#F2EDE2",
+          color: "#F7F5F6",
         }}
       >
         {card.title}
@@ -329,7 +329,7 @@ function ProcessCardMobile({ card, index }: { card: (typeof cards)[0]; index: nu
           fontSize: 13,
           lineHeight: 1.65,
           fontWeight: 300,
-          color: "#949087",
+          color: "#806E85",
           margin: 0,
         }}
       >

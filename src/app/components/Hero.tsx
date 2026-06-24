@@ -33,7 +33,7 @@ function FloatingStar({ x, y, delay = 0, size = 8, opacity = 1 }: { x: string; y
         pointerEvents: "none",
       }}
     >
-      <StarGlyph size={size} color="#e9c082" />
+      <StarGlyph size={size} color="#A898AA" />
     </motion.div>
   );
 }
@@ -58,7 +58,7 @@ function CTAButton() {
         textDecoration: "none",
         cursor: "none",
         padding: "12px 0",
-        borderBottom: `1px solid ${hovered ? "#e9c082" : "rgba(242,237,226,0.52)"}`,
+        borderBottom: `1px solid ${hovered ? "#A898AA" : "rgba(247,245,246,0.52)"}`,
         transition: "border-color 0.4s ease",
       }}
     >
@@ -68,7 +68,7 @@ function CTAButton() {
           fontSize: 9,
           letterSpacing: "0.26em",
           textTransform: "uppercase",
-          color: hovered ? "#e9c082" : "#f2ede2",
+          color: hovered ? "#A898AA" : "#f7f5f6",
           transition: "color 0.4s ease",
         }}
       >
@@ -80,7 +80,7 @@ function CTAButton() {
         style={{ opacity: hovered ? 1 : 0.72 }}
       >
         <svg width="14" height="1" viewBox="0 0 14 1" fill="none">
-          <line x1="0" y1="0.5" x2="14" y2="0.5" stroke={hovered ? "#e9c082" : "#f2ede2"} strokeWidth="0.5" />
+          <line x1="0" y1="0.5" x2="14" y2="0.5" stroke={hovered ? "#A898AA" : "#f7f5f6"} strokeWidth="0.5" />
         </svg>
       </motion.div>
     </a>
@@ -101,7 +101,7 @@ export function Hero() {
       style={{
         position: "relative",
         minHeight: "100vh",
-        background: "#0d0e0d",
+        background: "#111014",
         overflow: "hidden",
       }}
     >
@@ -136,7 +136,7 @@ export function Hero() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(115deg, rgba(233,192,130,0.13) 0%, rgba(58,36,68,0.08) 42%, rgba(13,14,13,0.12) 100%)",
+          background: "linear-gradient(115deg, rgba(168,152,170,0.13) 0%, rgba(64,41,78,0.08) 42%, rgba(17,16,20,0.12) 100%)",
           mixBlendMode: "screen",
           pointerEvents: "none",
         }}
@@ -145,7 +145,7 @@ export function Hero() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "radial-gradient(ellipse at 72% 46%, rgba(233,192,130,0.24) 0%, rgba(233,192,130,0.08) 32%, transparent 62%)",
+          background: "radial-gradient(ellipse at 72% 46%, rgba(168,152,170,0.24) 0%, rgba(168,152,170,0.08) 32%, transparent 62%)",
           pointerEvents: "none",
         }}
       />
@@ -153,7 +153,7 @@ export function Hero() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(to right, rgba(13,14,13,0.78) 0%, rgba(13,14,13,0.42) 44%, rgba(13,14,13,0.1) 100%)",
+          background: "linear-gradient(to right, rgba(17,16,20,0.78) 0%, rgba(17,16,20,0.42) 44%, rgba(17,16,20,0.1) 100%)",
           pointerEvents: "none",
         }}
       />
@@ -164,7 +164,7 @@ export function Hero() {
           left: 0,
           right: 0,
           height: "48%",
-          background: "linear-gradient(to bottom, transparent, rgba(13,14,13,0.9))",
+          background: "linear-gradient(to bottom, transparent, rgba(17,16,20,0.9))",
           pointerEvents: "none",
         }}
       />
@@ -175,7 +175,7 @@ export function Hero() {
           left: 0,
           right: 0,
           height: "18%",
-          background: "linear-gradient(to top, transparent, rgba(13,14,13,0.48))",
+          background: "linear-gradient(to top, transparent, rgba(17,16,20,0.48))",
           pointerEvents: "none",
         }}
       />
@@ -208,7 +208,7 @@ export function Hero() {
             fontFamily: '"JetBrains Mono", monospace',
             fontSize: 8,
             letterSpacing: "0.2em",
-            color: "rgba(242,237,226,0.7)",
+            color: "rgba(247,245,246,0.7)",
             textTransform: "uppercase",
           }}
         >
@@ -219,7 +219,7 @@ export function Hero() {
             fontFamily: '"JetBrains Mono", monospace',
             fontSize: 8,
             letterSpacing: "0.2em",
-            color: "rgba(242,237,226,0.48)",
+            color: "rgba(247,245,246,0.48)",
           }}
         >
           -22.4121° S / -42.9758° W
@@ -241,7 +241,7 @@ export function Hero() {
           lineHeight: 1,
           letterSpacing: "-0.06em",
           color: "transparent",
-          WebkitTextStroke: "0.5px rgba(242,237,226,0.13)",
+          WebkitTextStroke: "0.5px rgba(247,245,246,0.13)",
           userSelect: "none",
           pointerEvents: "none",
         }}
@@ -259,7 +259,7 @@ export function Hero() {
           top: "30%",
           width: "0.5px",
           height: "clamp(60px, 8vw, 100px)",
-          background: "linear-gradient(to bottom, rgba(233,192,130,0.82), rgba(233,192,130,0.08))",
+          background: "linear-gradient(to bottom, rgba(168,152,170,0.82), rgba(168,152,170,0.08))",
           transformOrigin: "top",
         }}
       />
@@ -285,14 +285,14 @@ export function Hero() {
             fontSize: 9,
             letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: "#e9c082",
+            color: "#A898AA",
             marginBottom: "clamp(16px, 2.5vw, 28px)",
             display: "flex",
             alignItems: "center",
             gap: 10,
           }}
         >
-          <span style={{ display: "inline-block", width: 20, height: "0.5px", background: "#e9c082", verticalAlign: "middle" }} />
+          <span style={{ display: "inline-block", width: 20, height: "0.5px", background: "#A898AA", verticalAlign: "middle" }} />
           BOTÂNICA · FREEHAND · SUMIÊ
         </motion.div>
 
@@ -303,7 +303,7 @@ export function Hero() {
             lineHeight: 0.9,
             letterSpacing: "-0.03em",
             fontWeight: 400,
-            color: "#F2EDE2",
+            color: "#F7F5F6",
             textShadow: "0 20px 60px rgba(0,0,0,0.62), 0 2px 18px rgba(0,0,0,0.55)",
             marginBottom: "clamp(28px, 4vw, 48px)",
             maxWidth: "100%",
@@ -313,7 +313,7 @@ export function Hero() {
           <RevealLine delay={0.38} large>AUTORAL</RevealLine>
           <div style={{ height: "clamp(6px, 1vw, 12px)" }} />
           <RevealLine delay={0.54} large>
-            <span style={{ color: "rgba(242,237,226,0.82)", fontStyle: "italic" }}>EM PELE VIVA</span>
+            <span style={{ color: "rgba(247,245,246,0.82)", fontStyle: "italic" }}>EM PELE VIVA</span>
           </RevealLine>
         </div>
 
@@ -327,7 +327,7 @@ export function Hero() {
             justifyContent: "space-between",
             alignItems: "flex-end",
             gap: "12px 0",
-            borderTop: "1px solid rgba(242,237,226,0.22)",
+            borderTop: "1px solid rgba(247,245,246,0.22)",
             paddingTop: "clamp(16px, 2.5vw, 24px)",
           }}
         >
@@ -336,7 +336,7 @@ export function Hero() {
               fontFamily: '"JetBrains Mono", monospace',
               fontSize: 8,
               letterSpacing: "0.2em",
-              color: "rgba(242,237,226,0.68)",
+              color: "rgba(247,245,246,0.68)",
               textTransform: "uppercase",
             }}
           >
@@ -368,7 +368,7 @@ export function Hero() {
           style={{
             width: "0.5px",
             height: 32,
-            background: "linear-gradient(to bottom, rgba(233,192,130,0.7), transparent)",
+            background: "linear-gradient(to bottom, rgba(168,152,170,0.7), transparent)",
           }}
         />
       </motion.div>

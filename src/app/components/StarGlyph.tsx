@@ -5,7 +5,7 @@ interface StarGlyphProps {
   pulse?: boolean;
 }
 
-export function StarGlyph({ size = 16, color = "#e9c082", className = "", pulse = false }: StarGlyphProps) {
+export function StarGlyph({ size = 16, color = "#A898AA", className = "", pulse = false }: StarGlyphProps) {
   return (
     <svg
       width={size}
@@ -20,7 +20,7 @@ export function StarGlyph({ size = 16, color = "#e9c082", className = "", pulse 
   );
 }
 
-export function StarGlyph8({ size = 14, color = "#e9c082", className = "" }: Omit<StarGlyphProps, "pulse">) {
+export function StarGlyph8({ size = 14, color = "#A898AA", className = "" }: Omit<StarGlyphProps, "pulse">) {
   return (
     <svg
       width={size}

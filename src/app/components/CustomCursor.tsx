@@ -95,7 +95,7 @@ export function CustomCursor() {
         width: sz,
         height: sz,
         borderRadius: "50%",
-        border: `1px solid rgba(242, 237, 226, ${state === "default" ? 0.9 : 0.5})`,
+        border: `1px solid rgba(247, 245, 246, ${state === "default" ? 0.9 : 0.5})`,
         mixBlendMode: "difference",
         pointerEvents: "none",
         zIndex: 99999,
@@ -104,7 +104,7 @@ export function CustomCursor() {
         justifyContent: "center",
         transition: "width 0.3s cubic-bezier(0.22,1,0.36,1), height 0.3s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease",
         opacity: visible ? 1 : 0,
-        backgroundColor: state !== "default" ? "rgba(242,237,226,0.05)" : "transparent",
+        backgroundColor: state !== "default" ? "rgba(247,245,246,0.05)" : "transparent",
         backdropFilter: state !== "default" ? "none" : "none",
         willChange: "transform, width, height, opacity",
       }}
@@ -115,7 +115,7 @@ export function CustomCursor() {
             fontFamily: '"JetBrains Mono", monospace',
             fontSize: 9,
             letterSpacing: "0.2em",
-            color: "#F2EDE2",
+            color: "#F7F5F6",
             whiteSpace: "nowrap",
           }}
         >

@@ -13,7 +13,7 @@ export function ArtistSection() {
       id="artista"
       ref={ref}
       style={{
-        background: "#1b1c1a",
+        background: "#40294E",
         padding: "clamp(80px, 12vw, 160px) clamp(24px, 5vw, 64px)",
       }}
     >
@@ -35,7 +35,7 @@ export function ArtistSection() {
           transition={{ duration: 1.4, ease }}
           style={{
             position: "relative",
-            border: "1px solid rgba(242,237,226,0.1)",
+            border: "1px solid rgba(247,245,246,0.1)",
             padding: 12,
           }}
         >
@@ -61,7 +61,7 @@ export function ArtistSection() {
           >
             <path
               d="M 0 30 Q 40 10 80 30 Q 100 40 120 20"
-              stroke="#e9c082"
+              stroke="#A898AA"
               strokeWidth="0.75"
               fill="none"
             />
@@ -75,7 +75,7 @@ export function ArtistSection() {
               fontFamily: '"JetBrains Mono", monospace',
               fontSize: 8,
               letterSpacing: "0.18em",
-              color: "#263C86",
+              color: "#806E85",
               textTransform: "uppercase",
             }}
           >
@@ -94,7 +94,7 @@ export function ArtistSection() {
               fontSize: 9,
               letterSpacing: "0.22em",
               textTransform: "uppercase",
-              color: "#949087",
+              color: "#806E85",
               marginBottom: 24,
             }}
           >
@@ -109,7 +109,7 @@ export function ArtistSection() {
                 fontSize: "clamp(26px, 3vw, 44px)",
                 lineHeight: 1.15,
                 fontWeight: 400,
-                color: "#F2EDE2",
+                color: "#F7F5F6",
               }}
             >
               {["A ARTISTA POR", "TRÁS DO TRAÇO"].map((line, i) => (
@@ -130,7 +130,7 @@ export function ArtistSection() {
               transition={{ duration: 0.8, delay: 0.5 }}
               style={{ marginTop: 6 }}
             >
-              <StarGlyph size={12} color="#e9c082" pulse />
+              <StarGlyph size={12} color="#A898AA" pulse />
             </motion.div>
           </div>
 
@@ -143,7 +143,7 @@ export function ArtistSection() {
               fontSize: 15,
               lineHeight: 1.65,
               fontWeight: 300,
-              color: "#cac6bc",
+              color: "#BAB1BA",
               marginBottom: 40,
               maxWidth: 420,
             }}
@@ -167,9 +167,9 @@ export function ArtistSection() {
                 fontSize: 9,
                 letterSpacing: "0.22em",
                 textTransform: "uppercase",
-                color: "#e9c082",
+                color: "#A898AA",
                 textDecoration: "none",
-                borderBottom: "0.5px solid rgba(233,192,130,0.4)",
+                borderBottom: "0.5px solid rgba(168,152,170,0.4)",
                 paddingBottom: 4,
                 cursor: "none",
               }}

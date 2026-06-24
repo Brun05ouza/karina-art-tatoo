@@ -11,7 +11,7 @@ export const SITE = {
   email: "contato@karinasarte.com.br",
   phone: "+5521990724477",
   phoneDisplay: "(21) 99072-4477",
-  themeColor: "#b05574",
+  themeColor: "#2E173A",
   ogImagePath: "/assets/hero-home.png",
   ogImageAlt: "Tatuagem autoral de pantera por Karina Sarte em Teresópolis, RJ",
   address: {

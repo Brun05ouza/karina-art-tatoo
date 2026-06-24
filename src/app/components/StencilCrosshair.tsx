@@ -5,7 +5,7 @@ interface CrosshairProps {
   className?: string;
 }
 
-function CornerMark({ size = 12, color = "#263C86" }: { size?: number; color?: string }) {
+function CornerMark({ size = 12, color = "#806E85" }: { size?: number; color?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 12 12" fill="none" stroke={color} strokeWidth="0.75">
       <line x1="0" y1="6" x2="4" y2="6" />
@@ -14,7 +14,7 @@ function CornerMark({ size = 12, color = "#263C86" }: { size?: number; color?: s
   );
 }
 
-export function StencilCrosshair({ size = 12, color = "#263C86", position = "all", className = "" }: CrosshairProps) {
+export function StencilCrosshair({ size = 12, color = "#806E85", position = "all", className = "" }: CrosshairProps) {
   if (position === "all") {
     return (
       <>

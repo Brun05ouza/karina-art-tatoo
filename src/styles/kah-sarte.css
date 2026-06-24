@@ -2,59 +2,67 @@
 
 :root {
   /* ── Paleta base (5 cores) ── */
-  --ks-teal: #5e9fa3;
-  --ks-beige: #dcd1b4;
-  --ks-peach: #fab87f;
-  --ks-coral: #f87e7b;
-  --ks-plum: #b05574;
-  --ks-teal-dark: #4a8589;
-  --ks-plum-dark: #8e4660;
-  --ks-plum-deep: #6e3849;
-  --ks-ink: #3d2835;
+  --ks-purple-deep: #2e173a;
+  --ks-purple-dark: #40294e;
+  --ks-purple-burnt: #5b4964;
+  --ks-lilac-dark: #806e85;
+  --ks-lavender-aged: #a898aa;
+  --ks-paper-lavender: #bab1ba;
+  --ks-light-gray: #dbdadb;
+  --ks-highlight: #f7f5f6;
+  --ks-teal: var(--ks-lilac-dark);
+  --ks-beige: var(--ks-paper-lavender);
+  --ks-peach: var(--ks-lavender-aged);
+  --ks-coral: var(--ks-purple-burnt);
+  --ks-plum: var(--ks-purple-deep);
+  --ks-teal-dark: var(--ks-purple-burnt);
+  --ks-plum-dark: var(--ks-purple-dark);
+  --ks-plum-deep: var(--ks-purple-deep);
+  --ks-ink: #111014;
 
   /* RGB helpers */
-  --ks-beige-rgb: 220, 209, 180;
-  --ks-beige-light-rgb: 232, 226, 206;
-  --ks-ink-rgb: 61, 40, 53;
-  --ks-plum-rgb: 176, 85, 116;
-  --ks-teal-rgb: 94, 159, 163;
-  --ks-peach-rgb: 250, 184, 127;
-  --ks-coral-rgb: 248, 126, 123;
+  --ks-beige-rgb: 186, 177, 186;
+  --ks-beige-light-rgb: 219, 218, 219;
+  --ks-ink-rgb: 17, 16, 20;
+  --ks-plum-rgb: 46, 23, 58;
+  --ks-teal-rgb: 128, 110, 133;
+  --ks-peach-rgb: 168, 152, 170;
+  --ks-coral-rgb: 91, 73, 100;
 
   /* ── Papéis: uma cor, um trabalho ── */
-  --ks-role-base: var(--ks-beige);
-  --ks-role-warm: var(--ks-peach);
-  --ks-role-cool: var(--ks-teal);
-  --ks-role-highlight: var(--ks-coral);
-  --ks-role-action: var(--ks-plum);
-  --ks-label: var(--ks-coral);
-  --ks-link: var(--ks-teal-dark);
+  --ks-role-base: var(--ks-paper-lavender);
+  --ks-role-warm: var(--ks-light-gray);
+  --ks-role-cool: var(--ks-purple-dark);
+  --ks-role-highlight: var(--ks-lilac-dark);
+  --ks-role-action: var(--ks-purple-deep);
+  --ks-label: var(--ks-purple-burnt);
+  --ks-link: var(--ks-purple-dark);
   --ks-btn: var(--ks-plum);
-  --ks-btn-hover: var(--ks-plum-dark);
-  --ks-decor: var(--ks-peach);
+  --ks-btn-hover: var(--ks-purple-burnt);
+  --ks-decor: var(--ks-lavender-aged);
 
   /* ── Superfícies por seção ── */
   --ks-bg: var(--ks-role-base);
-  --ks-paper: var(--ks-role-base);
-  --ks-surface: #d4caa8;
-  --ks-surface-lowest: #ebe4d4;
-  --ks-surface-low: var(--ks-beige);
-  --ks-surface-container: #cec39e;
-  --ks-surface-high: #c4b892;
-  --ks-surface-warm: #f2e8d8;
-  --ks-surface-cool: var(--ks-teal);
-  --ks-cream: #f8eddd;
+  --ks-paper: var(--ks-light-gray);
+  --ks-surface: var(--ks-lavender-aged);
+  --ks-surface-lowest: var(--ks-light-gray);
+  --ks-surface-low: var(--ks-paper-lavender);
+  --ks-surface-container: var(--ks-lavender-aged);
+  --ks-surface-high: var(--ks-lilac-dark);
+  --ks-surface-warm: var(--ks-highlight);
+  --ks-surface-cool: var(--ks-purple-dark);
+  --ks-cream: var(--ks-highlight);
 
   /* ── Texto ── */
   --ks-primary: var(--ks-ink);
-  --ks-on-surface: #4a3540;
-  --ks-on-surface-variant: #6b5562;
-  --ks-outline: #8a7582;
-  --ks-outline-variant: #a898a2;
+  --ks-on-surface: var(--ks-purple-deep);
+  --ks-on-surface-variant: var(--ks-purple-burnt);
+  --ks-outline: var(--ks-lilac-dark);
+  --ks-outline-variant: var(--ks-lavender-aged);
 
   /* ── Acentos legados (mapeados) ── */
   --ks-aged-gold: var(--ks-label);
-  --ks-aged-gold-muted: #e06b68;
+  --ks-aged-gold-muted: var(--ks-lilac-dark);
   --ks-accent-olive: var(--ks-surface-cool);
   --ks-accent-rose: var(--ks-coral);
   --ks-coffee: var(--ks-ink);
@@ -63,15 +71,15 @@
   --ks-purple: var(--ks-plum);
 
   /* ── Sobre fundos escuros / teal ── */
-  --ks-on-dark: var(--ks-beige);
-  --ks-on-dark-muted: #cec39e;
-  --ks-on-cool: var(--ks-beige);
+  --ks-on-dark: var(--ks-highlight);
+  --ks-on-dark-muted: var(--ks-paper-lavender);
+  --ks-on-cool: var(--ks-highlight);
   --ks-on-cool-muted: rgba(var(--ks-beige-rgb), 0.78);
 
   /* ── Seções quentes (peach) ── */
   --ks-on-cream: var(--ks-ink);
-  --ks-on-cream-muted: #6b5562;
-  --ks-on-cream-gold: var(--ks-plum);
+  --ks-on-cream-muted: var(--ks-purple-burnt);
+  --ks-on-cream-gold: var(--ks-purple-deep);
 
   /* ── Faixas de ação ── */
   --ks-wine: var(--ks-plum-dark);
@@ -531,7 +539,7 @@ summary {
   position: relative;
   overflow: hidden;
   aspect-ratio: 4 / 5;
-  border: 1px solid rgba(242, 237, 226, 0.1);
+  border: 1px solid rgba(247, 245, 246, 0.1);
   background: var(--ks-surface-low);
 }
 
@@ -615,7 +623,7 @@ summary {
 .ks-budget-preview {
   margin: 0;
   padding: 16px 18px;
-  border: 1px solid rgba(242, 237, 226, 0.08);
+  border: 1px solid rgba(247, 245, 246, 0.08);
   background: rgba(var(--ks-ink-rgb), 0.55);
   color: var(--ks-on-surface-variant);
   font-family: var(--ks-font-body);
@@ -659,7 +667,7 @@ summary {
   position: relative;
   overflow: hidden;
   aspect-ratio: 4 / 5;
-  border: 1px solid rgba(242, 237, 226, 0.1);
+  border: 1px solid rgba(247, 245, 246, 0.1);
   background: var(--ks-surface-low);
 }
 
@@ -679,7 +687,7 @@ summary {
   right: 16px;
   z-index: 2;
   padding: 8px 10px;
-  border: 1px solid rgba(242, 237, 226, 0.12);
+  border: 1px solid rgba(247, 245, 246, 0.12);
   background: rgba(var(--ks-ink-rgb), 0.72);
   color: var(--ks-outline);
   font-family: var(--ks-font-meta);
@@ -759,7 +767,7 @@ summary {
 
 .ks-surface-band {
   background: var(--ks-surface-lowest);
-  border-block: 1px solid rgba(242, 237, 226, 0.06);
+  border-block: 1px solid rgba(247, 245, 246, 0.06);
 }
 
 .ks-image-grid {
@@ -873,7 +881,7 @@ summary {
   justify-content: center;
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(242, 237, 226, 0.2);
+  border: 1px solid rgba(247, 245, 246, 0.2);
   background: transparent;
   color: var(--ks-primary);
   cursor: pointer;
@@ -998,7 +1006,7 @@ summary {
   position: relative;
   overflow: hidden;
   min-height: clamp(540px, 72vh, 760px);
-  border: 1px solid rgba(242, 237, 226, 0.12);
+  border: 1px solid rgba(247, 245, 246, 0.12);
   background: var(--ks-surface-low);
 }
 
@@ -1074,8 +1082,8 @@ summary {
 .ks-flash-mini-card {
   display: grid;
   grid-template-columns: 100px 1fr;
-  border: 1px solid rgba(242, 237, 226, 0.12);
-  background: rgba(31, 32, 30, 0.62);
+  border: 1px solid rgba(247, 245, 246, 0.12);
+  background: rgba(64, 41, 78, 0.62);
   overflow: hidden;
   cursor: pointer;
   transition: border-color 0.3s ease, background 0.3s ease;
@@ -1084,7 +1092,7 @@ summary {
 .ks-flash-mini-card:hover,
 .ks-flash-mini-card.active {
   border-color: rgba(var(--ks-peach-rgb), 0.48);
-  background: rgba(41, 42, 41, 0.88);
+  background: rgba(91, 73, 100, 0.88);
 }
 
 .ks-flash-mini-card img {
@@ -1211,7 +1219,7 @@ summary {
 /* Products Preview — visual grid */
 .ks-products-preview {
   background: var(--ks-surface-lowest);
-  border-block: 1px solid rgba(242, 237, 226, 0.06);
+  border-block: 1px solid rgba(247, 245, 246, 0.06);
 }
 
 .ks-products-header {
@@ -1415,7 +1423,7 @@ summary {
   width: min(100%, 520px);
   max-height: min(92vh, 820px);
   overflow: auto;
-  border: 1px solid rgba(242, 237, 226, 0.1);
+  border: 1px solid rgba(247, 245, 246, 0.1);
   background: var(--ks-surface-lowest);
   scrollbar-width: none;
 }
@@ -1434,7 +1442,7 @@ summary {
   justify-content: center;
   width: 38px;
   height: 38px;
-  border: 1px solid rgba(242, 237, 226, 0.16);
+  border: 1px solid rgba(247, 245, 246, 0.16);
   background: rgba(var(--ks-ink-rgb), 0.72);
   color: var(--ks-primary);
   cursor: inherit;
@@ -1937,18 +1945,18 @@ summary {
 }
 
 .ks-section-wine .ks-flash-mini-card {
-  background: rgba(85, 26, 32, 0.58);
-  border-color: rgba(242, 237, 226, 0.12);
+  background: rgba(46, 23, 58, 0.58);
+  border-color: rgba(247, 245, 246, 0.12);
 }
 
 .ks-section-wine .ks-flash-mini-card:hover,
 .ks-section-wine .ks-flash-mini-card.active {
   border-color: rgba(var(--ks-peach-rgb), 0.48);
-  background: rgba(105, 38, 46, 0.85);
+  background: rgba(64, 41, 78, 0.85);
 }
 
 .ks-section-wine .ks-flash-feature {
-  border-color: rgba(242, 237, 226, 0.1);
+  border-color: rgba(247, 245, 246, 0.1);
   background: var(--ks-wine-mid);
 }
 
@@ -2668,7 +2676,7 @@ summary {
   font-family: var(--ks-font-meta);
   font-size: 10px;
   letter-spacing: 0.2em;
-  color: rgba(248, 237, 221, 0.6);
+  color: rgba(247, 245, 246, 0.6);
   pointer-events: none;
 }
 
@@ -2679,7 +2687,7 @@ summary {
   bottom: 0;
   z-index: 2;
   height: 2px;
-  background: rgba(248, 237, 221, 0.14);
+  background: rgba(247, 245, 246, 0.14);
   pointer-events: none;
 }
 

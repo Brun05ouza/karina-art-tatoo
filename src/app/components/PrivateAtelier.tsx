@@ -20,7 +20,7 @@ export function PrivateAtelier() {
       id="atelie"
       ref={ref}
       style={{
-        background: "#0d0e0d",
+        background: "#111014",
         padding: "clamp(80px, 12vw, 160px) clamp(24px, 5vw, 64px)",
       }}
     >
@@ -43,7 +43,7 @@ export function PrivateAtelier() {
               fontSize: "clamp(30px, 4vw, 54px)",
               lineHeight: 1.1,
               fontWeight: 400,
-              color: "#F2EDE2",
+              color: "#F7F5F6",
               marginBottom: 32,
             }}
           >
@@ -69,7 +69,7 @@ export function PrivateAtelier() {
               fontSize: 15,
               lineHeight: 1.65,
               fontWeight: 300,
-              color: "#cac6bc",
+              color: "#BAB1BA",
               marginBottom: 48,
               maxWidth: 420,
             }}
@@ -87,13 +87,13 @@ export function PrivateAtelier() {
                 transition={{ duration: 0.7, delay: 0.7 + i * 0.1, ease }}
                 style={{ display: "flex", alignItems: "center", gap: 12 }}
               >
-                <StarGlyph size={8} color="#e9c082" />
+                <StarGlyph size={8} color="#A898AA" />
                 <span
                   style={{
                     fontFamily: '"Hanken Grotesk", sans-serif',
                     fontSize: 14,
                     fontWeight: 300,
-                    color: "#cac6bc",
+                    color: "#BAB1BA",
                     letterSpacing: "0.04em",
                   }}
                 >
@@ -111,7 +111,7 @@ export function PrivateAtelier() {
           transition={{ duration: 1.2, delay: 0.3, ease }}
           style={{
             position: "relative",
-            border: "1px solid rgba(242,237,226,0.1)",
+            border: "1px solid rgba(247,245,246,0.1)",
             padding: 12,
           }}
         >
@@ -119,7 +119,7 @@ export function PrivateAtelier() {
             style={{
               position: "absolute",
               inset: 0,
-              border: "1px solid rgba(242,237,226,0.08)",
+              border: "1px solid rgba(247,245,246,0.08)",
               pointerEvents: "none",
               zIndex: 1,
             }}
@@ -144,7 +144,7 @@ export function PrivateAtelier() {
               fontFamily: '"JetBrains Mono", monospace',
               fontSize: 8,
               letterSpacing: "0.18em",
-              color: "#263C86",
+              color: "#806E85",
               textTransform: "uppercase",
             }}
           >

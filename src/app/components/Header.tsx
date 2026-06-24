@@ -42,7 +42,7 @@ export function Header() {
         className={`ks-header${scrolled ? " is-scrolled" : ""}${menuOpen ? " is-open" : ""}`}
       >
         <Link to="/" className="ks-logo" aria-label="Karina Sarte">
-          <StarGlyph size={8} color="#B05574" />
+          <StarGlyph size={8} color="#2E173A" />
           <span>Karina Sarte</span>
         </Link>
 
@@ -78,7 +78,7 @@ export function Header() {
             className="ks-mobile-menu"
           >
             <div className="ks-mobile-star">
-              <StarGlyph size={40} color="#B05574" />
+              <StarGlyph size={40} color="#806E85" />
             </div>
             <nav>
               {[...navLinks, { label: "Orçamento", href: "/orcamento" }].map((link, i) => (

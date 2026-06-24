@@ -13,7 +13,7 @@ export function Manifesto() {
       id="manifesto"
       ref={ref}
       style={{
-        background: "#1b1c1a",
+        background: "#40294E",
         padding: "clamp(80px, 12vw, 160px) clamp(24px, 5vw, 64px)",
       }}
     >
@@ -36,14 +36,14 @@ export function Manifesto() {
           style={{ paddingTop: 6 }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <StarGlyph size={8} color="#e9c082" />
+            <StarGlyph size={8} color="#A898AA" />
             <span
               style={{
                 fontFamily: '"JetBrains Mono", monospace',
                 fontSize: 9,
                 letterSpacing: "0.22em",
                 textTransform: "uppercase",
-                color: "#949087",
+                color: "#806E85",
               }}
             >
               01 — MANIFESTO
@@ -57,7 +57,7 @@ export function Manifesto() {
             transition={{ duration: 1, delay: 0.3, ease }}
             style={{
               height: "0.5px",
-              background: "rgba(242,237,226,0.12)",
+              background: "rgba(247,245,246,0.12)",
               marginTop: 16,
               transformOrigin: "left",
             }}
@@ -72,7 +72,7 @@ export function Manifesto() {
               fontSize: "clamp(28px, 3vw, 46px)",
               lineHeight: 1.15,
               fontWeight: 400,
-              color: "#F2EDE2",
+              color: "#F7F5F6",
               marginBottom: 32,
             }}
           >
@@ -100,7 +100,7 @@ export function Manifesto() {
               fontSize: 15,
               lineHeight: 1.65,
               fontWeight: 300,
-              color: "#cac6bc",
+              color: "#BAB1BA",
               maxWidth: 520,
             }}
           >

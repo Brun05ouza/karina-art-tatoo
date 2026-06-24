@@ -87,7 +87,7 @@ function GalleryCard({ item, delay = 0 }: { item: (typeof items)[0]; delay?: num
         style={{
           position: "relative",
           height: heights[item.size],
-          border: "1px solid rgba(242,237,226,0.12)",
+          border: "1px solid rgba(247,245,246,0.12)",
           overflow: "hidden",
           padding: 8,
         }}
@@ -121,7 +121,7 @@ function GalleryCard({ item, delay = 0 }: { item: (typeof items)[0]; delay?: num
             fontFamily: '"JetBrains Mono", monospace',
             fontSize: 8,
             letterSpacing: "0.18em",
-            color: "#263C86",
+            color: "#806E85",
             textTransform: "uppercase",
             opacity: hovered ? 1 : 0.6,
             transition: "opacity 0.3s ease",
@@ -143,7 +143,7 @@ function GalleryCard({ item, delay = 0 }: { item: (typeof items)[0]; delay?: num
             fontFamily: '"Bodoni Moda", serif',
             fontSize: "clamp(18px, 2vw, 24px)",
             fontWeight: 400,
-            color: "#F2EDE2",
+            color: "#F7F5F6",
             marginBottom: 6,
           }}
         >
@@ -155,7 +155,7 @@ function GalleryCard({ item, delay = 0 }: { item: (typeof items)[0]; delay?: num
             fontSize: 13,
             lineHeight: 1.6,
             fontWeight: 300,
-            color: "#949087",
+            color: "#806E85",
           }}
         >
           {item.text}
@@ -179,8 +179,8 @@ function QuoteDivider() {
         gridColumn: "1 / -1",
         textAlign: "center",
         padding: "clamp(32px, 5vw, 64px) 0",
-        borderTop: "0.5px solid rgba(242,237,226,0.1)",
-        borderBottom: "0.5px solid rgba(242,237,226,0.1)",
+        borderTop: "0.5px solid rgba(247,245,246,0.1)",
+        borderBottom: "0.5px solid rgba(247,245,246,0.1)",
       }}
     >
       <em
@@ -188,7 +188,7 @@ function QuoteDivider() {
           fontFamily: '"Bodoni Moda", serif',
           fontSize: "clamp(16px, 2.5vw, 26px)",
           fontWeight: 400,
-          color: "#cac6bc",
+          color: "#BAB1BA",
           fontStyle: "italic",
         }}
       >
@@ -207,7 +207,7 @@ export function EditorialGallery() {
     <section
       id="galeria"
       style={{
-        background: "#131412",
+        background: "#2E173A",
         padding: "clamp(64px, 12vw, 160px) clamp(24px, 5vw, 64px)",
       }}
     >
@@ -222,7 +222,7 @@ export function EditorialGallery() {
             fontSize: 9,
             letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: "#949087",
+            color: "#806E85",
             marginBottom: 16,
           }}
         >
@@ -238,7 +238,7 @@ export function EditorialGallery() {
               fontFamily: '"Bodoni Moda", serif',
               fontSize: "clamp(36px, 5vw, 70px)",
               fontWeight: 400,
-              color: "#F2EDE2",
+              color: "#F7F5F6",
               lineHeight: 1.05,
             }}
           >
@@ -249,7 +249,7 @@ export function EditorialGallery() {
             animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ duration: 0.8, delay: 0.4, ease }}
           >
-            <StarGlyph size={14} color="#e9c082" />
+            <StarGlyph size={14} color="#A898AA" />
           </motion.div>
         </div>
       </div>

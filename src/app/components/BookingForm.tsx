@@ -33,7 +33,7 @@ function FloatInput({
           fontSize: active ? 8 : 12,
           letterSpacing: "0.18em",
           textTransform: "uppercase",
-          color: active ? (focused ? "#263C86" : "#e9c082") : "#949087",
+          color: active ? (focused ? "#806E85" : "#A898AA") : "#806E85",
           transition: "all 0.25s ease",
           pointerEvents: "none",
         }}
@@ -51,12 +51,12 @@ function FloatInput({
           width: "100%",
           background: "transparent",
           border: "none",
-          borderBottom: `0.5px solid ${focused ? "#263C86" : "rgba(242,237,226,0.2)"}`,
+          borderBottom: `0.5px solid ${focused ? "#806E85" : "rgba(247,245,246,0.2)"}`,
           outline: "none",
           fontFamily: '"Hanken Grotesk", sans-serif',
           fontSize: 15,
           fontWeight: 300,
-          color: "#F2EDE2",
+          color: "#F7F5F6",
           padding: "8px 0",
           transition: "border-color 0.3s ease",
           cursor: "inherit",
@@ -92,7 +92,7 @@ export function BookingForm() {
     <section
       id="agendar"
       style={{
-        background: "#0d0e0d",
+        background: "#111014",
         padding: "clamp(80px, 12vw, 160px) clamp(24px, 5vw, 64px)",
       }}
     >
@@ -106,7 +106,7 @@ export function BookingForm() {
             fontFamily: '"Bodoni Moda", serif',
             fontSize: "clamp(32px, 4vw, 56px)",
             fontWeight: 400,
-            color: "#F2EDE2",
+            color: "#F7F5F6",
             marginBottom: 16,
             lineHeight: 1.1,
           }}
@@ -121,7 +121,7 @@ export function BookingForm() {
             fontFamily: '"Hanken Grotesk", sans-serif',
             fontSize: 14,
             fontWeight: 300,
-            color: "#949087",
+            color: "#806E85",
             maxWidth: 420,
             margin: "0 auto",
             lineHeight: 1.6,
@@ -139,13 +139,13 @@ export function BookingForm() {
         style={{
           maxWidth: 560,
           margin: "0 auto",
-          background: "#131412",
-          border: "1px solid rgba(242,237,226,0.1)",
+          background: "#2E173A",
+          border: "1px solid rgba(247,245,246,0.1)",
           padding: "clamp(24px, 5vw, 56px)",
           position: "relative",
         }}
       >
-        <StencilCrosshair size={14} color="#263C86" />
+        <StencilCrosshair size={14} color="#806E85" />
 
         {/* Step indicators */}
         <div style={{ display: "flex", gap: 8, marginBottom: 40, justifyContent: "center" }}>
@@ -164,7 +164,7 @@ export function BookingForm() {
                     width: 5,
                     height: 5,
                     borderRadius: "50%",
-                    background: i === step ? "#e9c082" : i < step ? "#e9c082" : "rgba(242,237,226,0.2)",
+                    background: i === step ? "#A898AA" : i < step ? "#A898AA" : "rgba(247,245,246,0.2)",
                     transition: "background 0.3s ease",
                   }}
                 />
@@ -173,7 +173,7 @@ export function BookingForm() {
                     fontFamily: '"JetBrains Mono", monospace',
                     fontSize: 7,
                     letterSpacing: "0.15em",
-                    color: i === step ? "#e9c082" : "#49473f",
+                    color: i === step ? "#A898AA" : "#5B4964",
                     textTransform: "uppercase",
                     transition: "color 0.3s ease",
                   }}
@@ -186,7 +186,7 @@ export function BookingForm() {
                   style={{
                     width: 24,
                     height: "0.5px",
-                    background: i < step ? "#e9c082" : "rgba(242,237,226,0.1)",
+                    background: i < step ? "#A898AA" : "rgba(247,245,246,0.1)",
                     marginBottom: 14,
                     transition: "background 0.3s ease",
                   }}
@@ -224,7 +224,7 @@ export function BookingForm() {
                         fontSize: 8,
                         letterSpacing: "0.18em",
                         textTransform: "uppercase",
-                        color: "#949087",
+                        color: "#806E85",
                         marginBottom: 16,
                       }}
                     >
@@ -236,13 +236,13 @@ export function BookingForm() {
                           key={opt}
                           onClick={() => setField("availability")(opt)}
                           style={{
-                            background: form.availability === opt ? "rgba(233,192,130,0.12)" : "transparent",
-                            border: `0.5px solid ${form.availability === opt ? "#e9c082" : "rgba(242,237,226,0.15)"}`,
+                            background: form.availability === opt ? "rgba(168,152,170,0.12)" : "transparent",
+                            border: `0.5px solid ${form.availability === opt ? "#A898AA" : "rgba(247,245,246,0.15)"}`,
                             padding: "8px 16px",
                             fontFamily: '"Hanken Grotesk", sans-serif',
                             fontSize: 13,
                             fontWeight: 300,
-                            color: form.availability === opt ? "#e9c082" : "#949087",
+                            color: form.availability === opt ? "#A898AA" : "#806E85",
                             cursor: "inherit",
                             transition: "all 0.25s ease",
                           }}
@@ -269,7 +269,7 @@ export function BookingForm() {
                       fontSize: 8,
                       letterSpacing: "0.18em",
                       textTransform: "uppercase",
-                      color: "#e9c082",
+                      color: "#A898AA",
                       marginBottom: 12,
                     }}
                   >
@@ -283,12 +283,12 @@ export function BookingForm() {
                     style={{
                       width: "100%",
                       background: "transparent",
-                      border: "0.5px solid rgba(242,237,226,0.15)",
+                      border: "0.5px solid rgba(247,245,246,0.15)",
                       outline: "none",
                       fontFamily: '"Hanken Grotesk", sans-serif',
                       fontSize: 14,
                       fontWeight: 300,
-                      color: "#F2EDE2",
+                      color: "#F7F5F6",
                       padding: 16,
                       resize: "none",
                       lineHeight: 1.65,
@@ -296,10 +296,10 @@ export function BookingForm() {
                       cursor: "inherit",
                     }}
                     onFocus={(e) =>
-                      (e.target.style.borderColor = "#263C86")
+                      (e.target.style.borderColor = "#806E85")
                     }
                     onBlur={(e) =>
-                      (e.target.style.borderColor = "rgba(242,237,226,0.15)")
+                      (e.target.style.borderColor = "rgba(247,245,246,0.15)")
                     }
                   />
                 </div>
@@ -325,7 +325,7 @@ export function BookingForm() {
                       fontSize: 9,
                       letterSpacing: "0.2em",
                       textTransform: "uppercase",
-                      color: "#949087",
+                      color: "#806E85",
                       cursor: "inherit",
                     }}
                   >
@@ -340,21 +340,21 @@ export function BookingForm() {
                     data-cursor="link"
                     style={{
                       background: "none",
-                      border: "0.5px solid rgba(242,237,226,0.3)",
+                      border: "0.5px solid rgba(247,245,246,0.3)",
                       padding: "10px 24px",
                       fontFamily: '"JetBrains Mono", monospace',
                       fontSize: 9,
                       letterSpacing: "0.2em",
                       textTransform: "uppercase",
-                      color: "#F2EDE2",
+                      color: "#F7F5F6",
                       cursor: "inherit",
                       transition: "border-color 0.3s ease",
                     }}
                     onMouseEnter={(e) =>
-                      ((e.target as HTMLButtonElement).style.borderColor = "#e9c082")
+                      ((e.target as HTMLButtonElement).style.borderColor = "#A898AA")
                     }
                     onMouseLeave={(e) =>
-                      ((e.target as HTMLButtonElement).style.borderColor = "rgba(242,237,226,0.3)")
+                      ((e.target as HTMLButtonElement).style.borderColor = "rgba(247,245,246,0.3)")
                     }
                   >
                     PRÓXIMO
@@ -364,14 +364,14 @@ export function BookingForm() {
                     onClick={submit}
                     data-cursor="cta"
                     style={{
-                      background: "#F2EDE2",
+                      background: "#F7F5F6",
                       border: "none",
                       padding: "12px 28px",
                       fontFamily: '"JetBrains Mono", monospace',
                       fontSize: 9,
                       letterSpacing: "0.22em",
                       textTransform: "uppercase",
-                      color: "#131412",
+                      color: "#2E173A",
                       cursor: "inherit",
                     }}
                   >
@@ -396,7 +396,7 @@ function SuccessState() {
       style={{ textAlign: "center", padding: "32px 0" }}
     >
       <div style={{ marginBottom: 24 }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="#e9c082">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="#A898AA">
           <path d="M12 0 L13.2 10.8 L24 12 L13.2 13.2 L12 24 L10.8 13.2 L0 12 L10.8 10.8 Z" />
         </svg>
       </div>
@@ -405,7 +405,7 @@ function SuccessState() {
           fontFamily: '"Bodoni Moda", serif',
           fontSize: 22,
           fontWeight: 400,
-          color: "#F2EDE2",
+          color: "#F7F5F6",
           marginBottom: 12,
           fontStyle: "italic",
         }}
@@ -417,7 +417,7 @@ function SuccessState() {
           fontFamily: '"Hanken Grotesk", sans-serif',
           fontSize: 14,
           fontWeight: 300,
-          color: "#949087",
+          color: "#806E85",
           lineHeight: 1.6,
         }}
       >
