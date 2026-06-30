@@ -98,10 +98,10 @@
   --ks-text-ui-sm: 11px;
 
   /* Impacto */
-  --ks-font-display: "Amatic SC", cursive;
-  --ks-font-display-alt: "Barriecito", cursive;
-  --ks-font-display-skinny: "The Skinny", "Amatic SC", cursive;
-  --ks-font-display-lemon: "DK Lemon Yellow Sun", "Barriecito", cursive;
+  --ks-font-display: "Kah Sarte Display", "Cormorant Garamond", serif;
+  --ks-font-display-alt: "Kah Sarte Display", "Cormorant Garamond", serif;
+  --ks-font-display-skinny: "Kah Sarte Display", "Cormorant Garamond", serif;
+  --ks-font-display-lemon: "Kah Sarte Display", "Cormorant Garamond", serif;
   /* Elegante / vintage */
   --ks-font-serif: "Cormorant Garamond", serif;
   --ks-font-body: "Lora", serif;
@@ -2412,6 +2412,52 @@ summary {
   .ks-gallery-spacer { display: none !important; }
 }
 
+/* ── Preloader ────────────────────────────────────────────────── */
+.ks-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: #f3b55f;
+  overflow: hidden;
+}
+
+.ks-preloader-media {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(94vw, 440px);
+  max-height: min(86svh, 820px);
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+@media (min-width: 768px) {
+  .ks-preloader-media {
+    max-width: min(36vw, 480px);
+    max-height: min(84svh, 900px);
+  }
+}
+
+@media (min-width: 1200px) {
+  .ks-preloader-media {
+    max-width: min(32vw, 520px);
+    max-height: min(80svh, 960px);
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .ks-preloader-media {
+    max-height: min(92svh, 420px);
+    max-width: min(42vh, 320px);
+  }
+}
+
 /* Stroke animation for preloader */
 @keyframes ks-draw-line {
   from { stroke-dashoffset: 400; }
@@ -2775,6 +2821,10 @@ summary {
   object-position: center 32%;
 }
 
+.ks-window-portal .ks-hover-process-media {
+  height: 100%;
+}
+
 .ks-editorial-float .ks-window-portal {
   box-shadow: 0 22px 52px rgba(var(--ks-ink-rgb), 0.32);
 }
@@ -2790,9 +2840,115 @@ summary {
   transition: transform 0.5s ease, filter 0.5s ease;
 }
 
+.ks-service-card-media .ks-window-portal .ks-hover-process-poster,
+.ks-service-card-media .ks-window-portal .ks-hover-process-video {
+  transform: scale(1.04);
+  filter: grayscale(35%) sepia(10%);
+  transition: transform 0.5s ease, filter 0.5s ease, opacity 0.45s ease;
+}
+
 .ks-service-card:hover .ks-window-portal img {
   transform: scale(1.08);
   filter: grayscale(15%) sepia(8%);
+}
+
+.ks-service-card:hover .ks-window-portal .ks-hover-process-poster,
+.ks-service-card:hover .ks-window-portal .ks-hover-process-video {
+  transform: scale(1.08);
+  filter: grayscale(15%) sepia(8%);
+}
+
+/* ── Hover: vídeo de processo criativo ─────────────────────────── */
+.ks-hover-process-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background: rgba(var(--ks-ink-rgb), 0.08);
+  cursor: pointer;
+}
+
+.ks-hover-process-poster,
+.ks-hover-process-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.ks-hover-process-video {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.ks-hover-process-poster {
+  transition: opacity 0.45s ease, transform 0.5s ease, filter 0.5s ease;
+}
+
+.ks-hover-process-media.is-playing .ks-hover-process-video {
+  opacity: 1;
+}
+
+.ks-hover-process-media.is-playing .ks-hover-process-poster {
+  opacity: 0;
+}
+
+.ks-hover-process-hint {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2;
+  padding: 7px 11px;
+  border: 1px solid rgba(var(--ks-beige-rgb), 0.55);
+  background: rgba(var(--ks-plum-rgb), 0.82);
+  color: var(--ks-on-dark);
+  font-family: var(--ks-font-meta);
+  font-size: var(--ks-text-ui-sm);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.ks-hover-process-media:not(.is-playing):hover .ks-hover-process-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ks-hover-process-media.is-playing .ks-hover-process-hint {
+  opacity: 0;
+}
+
+@media (hover: none) {
+  .ks-hover-process-media:not(.is-playing) .ks-hover-process-hint {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ks-mural-item .ks-hover-process-media {
+  height: 100%;
+  min-height: 100%;
+}
+
+.ks-mural-item .ks-hover-process-poster,
+.ks-mural-item .ks-hover-process-video {
+  min-height: 100%;
+  transition: transform 0.55s ease, filter 0.55s ease, opacity 0.45s ease;
+  filter: grayscale(18%) sepia(8%);
+}
+
+.ks-mural-item:hover .ks-hover-process-poster,
+.ks-mural-item:hover .ks-hover-process-video {
+  transform: scale(1.04);
+  filter: grayscale(0%) sepia(4%);
 }
 
 /* ── Home: serviços ───────────────────────────────────────────── */
@@ -2933,32 +3089,53 @@ summary {
 
 .ks-mural-grid {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-auto-rows: clamp(140px, 18vw, 220px);
-  gap: clamp(12px, 1.5vw, 18px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(18px, 2.2vw, 28px);
   margin-top: clamp(32px, 5vw, 48px);
 }
 
 .ks-mural-item {
   position: relative;
   overflow: hidden;
+  aspect-ratio: 3 / 4.25;
+  min-height: clamp(360px, 38vw, 560px);
   border: 1px solid rgba(var(--ks-ink-rgb), 0.14);
   background: var(--ks-surface-low);
   text-decoration: none;
   color: inherit;
 }
 
+.ks-mural-item-link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.ks-mural-item-media {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .ks-mural-item img {
+  display: block;
   width: 100%;
   height: 100%;
+  min-height: 100%;
   object-fit: cover;
+  object-position: center;
   filter: grayscale(28%) sepia(8%);
   transition: transform 0.55s ease, filter 0.55s ease;
 }
 
 .ks-mural-item:hover img {
-  transform: scale(1.05);
+  transform: scale(1.04);
   filter: grayscale(8%) sepia(6%);
+}
+
+.ks-mural-item-media .ks-hover-process-media {
+  height: 100%;
 }
 
 .ks-mural-item-caption {
@@ -2984,16 +3161,9 @@ summary {
   display: block;
   margin-top: 4px;
   font-family: var(--ks-font-serif);
-  font-size: 18px;
+  font-size: clamp(18px, 1.6vw, 22px);
   font-weight: 500;
 }
-
-.ks-mural-a { grid-column: span 5; grid-row: span 2; }
-.ks-mural-b { grid-column: span 4; }
-.ks-mural-c { grid-column: span 3; grid-row: span 2; }
-.ks-mural-d { grid-column: span 4; }
-.ks-mural-e { grid-column: span 3; }
-.ks-mural-f { grid-column: span 5; }
 
 .ks-mural-footer {
   display: flex;
@@ -3056,20 +3226,12 @@ summary {
 
   .ks-mural-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: 180px;
+    gap: clamp(14px, 2vw, 22px);
   }
 
-  .ks-mural-a,
-  .ks-mural-b,
-  .ks-mural-c,
-  .ks-mural-d,
-  .ks-mural-e,
-  .ks-mural-f {
-    grid-column: span 1;
-    grid-row: span 1;
+  .ks-mural-item {
+    min-height: clamp(300px, 44vw, 440px);
   }
-
-  .ks-mural-a { grid-row: span 2; }
 }
 
 @media (max-width: 640px) {
@@ -3089,10 +3251,13 @@ summary {
 
   .ks-mural-grid {
     grid-template-columns: 1fr;
-    grid-auto-rows: 200px;
+    gap: 16px;
   }
 
-  .ks-mural-a { grid-row: span 1; }
+  .ks-mural-item {
+    aspect-ratio: 3 / 4;
+    min-height: clamp(380px, 72vw, 520px);
+  }
 
   .ks-products-grid {
     grid-template-columns: 1fr;

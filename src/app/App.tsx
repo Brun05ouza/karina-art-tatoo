@@ -21,6 +21,7 @@ import {
 } from "react-router";
 
 import { Preloader } from "./components/Preloader";
+import { HoverProcessMedia } from "./components/HoverProcessMedia";
 import { StudioScrollSection } from "./components/StudioScrollSection";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
@@ -38,6 +39,7 @@ import {
   unobserveScrollRoot,
 } from "./scroll";
 import { tattooImages } from "./tattoo-images";
+import { processVideos } from "./process-videos";
 import { applyPageSeo, FAQ_ITEMS } from "./seo";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -103,12 +105,14 @@ const galleryItems = [
     category: "Fine Line",
     img: tattooImages.fineLineBotanical,
     alt: "Tatuagem botânica delicada em fine line",
+    processVideo: processVideos.artProcess,
   },
   {
     title: "Traço ornamental",
     category: "Autoral",
     img: tattooImages.ornamental,
     alt: "Projeto autoral de tatuagem ornamental",
+    processVideo: processVideos.artProcess,
   },
   {
     title: "Freehand orgânico",
@@ -530,6 +534,7 @@ const homeServiceCards = [
     img: tattooImages.cardAutoral,
     to: "/portfolio",
     cta: "Ver projetos",
+    processVideo: processVideos.artProcess,
   },
   {
     title: "Flash Tattoos",
@@ -553,8 +558,6 @@ const homeServiceCards = [
     cta: "Saiba mais",
   },
 ] as const;
-
-const muralLayout = ["ks-mural-a", "ks-mural-b", "ks-mural-c", "ks-mural-d", "ks-mural-e", "ks-mural-f"] as const;
 
 function HomePage() {
   return (
@@ -689,7 +692,15 @@ function HomeServicesSection() {
             <Link className="ks-service-card" to={card.to}>
               <div className="ks-service-card-media">
                 <div className="ks-window-portal">
-                  <img src={card.img} alt={card.title} loading="lazy" />
+                  {"processVideo" in card && card.processVideo ? (
+                    <HoverProcessMedia
+                      poster={card.processVideo.poster}
+                      videoSrc={card.processVideo.src}
+                      alt={card.title}
+                    />
+                  ) : (
+                    <img src={card.img} alt={card.title} loading="lazy" />
+                  )}
                 </div>
               </div>
               <div className="ks-service-card-body">
@@ -719,14 +730,25 @@ function MuralPortfolioPreview() {
         {items.map((item, index) => (
           <motion.div
             key={item.title}
-            className={`ks-mural-item ${muralLayout[index]}`}
+            className="ks-mural-item"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-8%" }}
             transition={{ duration: 0.6, delay: index * 0.06, ease: EASE }}
           >
-            <Link to="/portfolio" style={{ display: "block", height: "100%" }}>
-              <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+            <Link to="/portfolio" className="ks-mural-item-link">
+              <div className="ks-mural-item-media">
+                {"processVideo" in item && item.processVideo ? (
+                  <HoverProcessMedia
+                    poster={item.processVideo.poster}
+                    videoSrc={item.processVideo.src}
+                    alt={item.alt}
+                    loading={index < 2 ? "eager" : "lazy"}
+                  />
+                ) : (
+                  <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+                )}
+              </div>
               <div className="ks-mural-item-caption">
                 <span>{item.category}</span>
                 <strong>{item.title}</strong>
