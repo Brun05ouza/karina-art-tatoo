@@ -25,7 +25,7 @@ import { HoverProcessMedia } from "./components/HoverProcessMedia";
 import { StudioScrollSection } from "./components/StudioScrollSection";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
-import { StarGlyph } from "./components/StarGlyph";
+import { BrandStar } from "./components/BrandStar";
 import { StencilCrosshair } from "./components/StencilCrosshair";
 import {
   observeScrollRoot,
@@ -64,6 +64,7 @@ const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre
 
 const ProductsNavContext = createContext<(() => void) | null>(null);
 const PreloaderDoneContext = createContext(false);
+const brandStarVariant = (index: number) => ((index % 3) + 1) as 1 | 2 | 3;
 
 const SECTION_INTRO_TITLES: Record<string, string> = {
   "/sobre": "Sobre a Karina Sarte",
@@ -518,6 +519,7 @@ function PageHero({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: EASE }}
       >
+        <BrandStar variant={2} size={62} className="ks-page-hero-brand-star" />
         <span className="ks-label-caps ks-muted">{kicker}</span>
         <h1 className="ks-display-xl">{title}</h1>
         <p className="ks-body-lg">{text}</p>
@@ -563,7 +565,18 @@ function HomePage() {
   return (
     <div className="ks-home-flow">
       <HomeHero />
+      <HomeSectionIntro
+        eyebrow="Manifesto"
+        title="Antes do desenho, existe uma escuta."
+        text="Um respiro para entender corpo, intenção e referência antes de transformar a ideia em traço."
+      />
       <EditorialSplitSection />
+      <HomeSectionIntro
+        eyebrow="O estúdio"
+        title="Conheça o espaço onde a tattoo acontece."
+        text="Uma passagem pelo ambiente de criação, preparo e cuidado que acompanha cada sessão."
+        tone="dark"
+      />
       <StudioScrollSection />
       <HomeServicesSection />
       <MuralPortfolioPreview />
@@ -575,6 +588,39 @@ function HomePage() {
         to="/orcamento"
       />
     </div>
+  );
+}
+
+function HomeSectionIntro({
+  eyebrow,
+  title,
+  text,
+  tone = "light",
+}: {
+  eyebrow: string;
+  title: string;
+  text: string;
+  tone?: "light" | "dark";
+}) {
+  return (
+    <section className={`ks-home-section-intro ks-home-section-intro-${tone}`}>
+      <motion.div
+        className="ks-home-section-intro-inner"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-12%" }}
+        transition={{ duration: 0.8, ease: EASE }}
+      >
+        <BrandStar
+          variant={tone === "dark" ? 2 : 3}
+          size={54}
+          className={`ks-home-section-intro-star${tone === "dark" ? " ks-brand-star-light" : ""}`}
+        />
+        <span className="ks-label-caps">{eyebrow}</span>
+        <h2 className="ks-headline-lg">{title}</h2>
+        <p className="ks-body-lg">{text}</p>
+      </motion.div>
+    </section>
   );
 }
 
@@ -612,7 +658,7 @@ function HomeHero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: EASE }}
       >
-        <StarGlyph size={36} color="#A898AA" className="ks-home-hero-star" />
+        <BrandStar variant={1} size={72} className="ks-home-hero-star" />
         <span className="ks-label-caps">Teresópolis · RJ</span>
         <h1 className="ks-display-xl">Arte na pele com identidade, cuidado e intenção.</h1>
         <p className="ks-body-lg">
@@ -750,6 +796,7 @@ function MuralPortfolioPreview() {
                 )}
               </div>
               <div className="ks-mural-item-caption">
+                <BrandStar variant={brandStarVariant(index)} size={32} className="ks-image-footer-star ks-brand-star-light" />
                 <span>{item.category}</span>
                 <strong>{item.title}</strong>
               </div>
@@ -873,6 +920,7 @@ function PreviewSection({
         {image && (
           <div className="ks-preview-image ks-preview-image-mobile">
             <img src={image} alt={imageAlt ?? ""} loading="lazy" />
+            <BrandStar variant={2} size={46} className="ks-preview-image-star ks-brand-star-light" />
           </div>
         )}
         {image && <p className="ks-body-lg ks-muted">{text}</p>}
@@ -887,6 +935,7 @@ function PreviewSection({
           transition={{ duration: 1.2, ease: EASE }}
         >
           <img src={image} alt={imageAlt ?? ""} loading="lazy" />
+          <BrandStar variant={2} size={58} className="ks-preview-image-star ks-brand-star-light" />
         </motion.div>
       ) : (
         <div>
@@ -969,6 +1018,7 @@ function PortfolioCard({ item, index }: { item: (typeof galleryItems)[0]; index:
     <article className="ks-portfolio-card">
       <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
       <div className="ks-portfolio-card-overlay">
+        <BrandStar variant={brandStarVariant(index)} size={34} className="ks-image-footer-star ks-brand-star-light" />
         <span className="ks-label-caps ks-gold">
           {String(index + 1).padStart(2, "0")} — {item.category}
         </span>
@@ -1751,6 +1801,7 @@ function BudgetPage() {
 function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
   return (
     <div className="ks-section-title">
+      <BrandStar variant={1} size={42} className="ks-section-title-star" />
       <span className="ks-label-caps ks-gold">{eyebrow}</span>
       <h2 className="ks-headline-lg">{title}</h2>
       <p className="ks-body-lg ks-muted">{text}</p>
@@ -1761,10 +1812,11 @@ function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string
 function ImageGrid({ items }: { items: typeof galleryItems }) {
   return (
     <div className="ks-image-grid">
-      {items.map((item) => (
+      {items.map((item, index) => (
         <article className="ks-image-card" key={item.title}>
           <img src={item.img} alt={item.alt} loading="lazy" />
           <div className="ks-image-card-overlay">
+            <BrandStar variant={brandStarVariant(index)} size={34} className="ks-image-footer-star ks-brand-star-light" />
             <span className="ks-label-caps">{item.category}</span>
             <h3>{item.title}</h3>
           </div>
@@ -1973,6 +2025,7 @@ function SectionIntro({ title, onReveal }: { title: string; onReveal?: () => voi
 function CtaBand({ title, text, cta, to, href }: { title: string; text: string; cta: string; to?: string; href?: string }) {
   return (
     <section className="ks-cta-band">
+      <BrandStar variant={3} size={52} className="ks-cta-band-star" />
       <h2 className="ks-headline-md">{title}</h2>
       <p className="ks-body-lg ks-muted">{text}</p>
       {to ? <PrimaryLink to={to}>{cta}</PrimaryLink> : <a className="ks-primary-link" href={href}>{cta}<ArrowRight size={16} /></a>}

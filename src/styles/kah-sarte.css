@@ -139,6 +139,31 @@ summary {
   cursor: inherit;
 }
 
+.ks-brand-star {
+  display: inline-block;
+  width: var(--ks-brand-star-size, 24px);
+  height: var(--ks-brand-star-size, 24px);
+  object-fit: contain;
+  flex: 0 0 auto;
+  filter: brightness(0) saturate(100%);
+  opacity: 0.78;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ks-brand-star-light {
+  filter: brightness(0) invert(1);
+  opacity: 0.72;
+}
+
+.ks-brand-star-soft {
+  opacity: 0.28;
+}
+
+.ks-brand-star-mark {
+  opacity: 0.5;
+}
+
 /* Grain overlay */
 .ks-grain {
   position: fixed;
@@ -243,6 +268,12 @@ summary {
   font-size: clamp(24px, 2.6vw, 32px);
   letter-spacing: 0.04em;
   font-weight: 700;
+}
+
+.ks-logo-star {
+  width: clamp(18px, 2vw, 24px);
+  height: clamp(18px, 2vw, 24px);
+  opacity: 0.9;
 }
 
 .ks-desktop-nav {
@@ -370,6 +401,17 @@ summary {
   -webkit-tap-highlight-color: transparent;
 }
 
+.ks-mobile-star {
+  position: absolute;
+  top: clamp(78px, 12vh, 120px);
+  right: clamp(24px, 8vw, 56px);
+  width: clamp(76px, 24vw, 128px);
+  height: clamp(76px, 24vw, 128px);
+  display: grid;
+  place-items: center;
+  opacity: 0.45;
+}
+
 .ks-mobile-nav-link:hover,
 .ks-mobile-nav-link:focus-visible {
   background: rgba(var(--ks-plum-rgb), 0.06);
@@ -406,13 +448,6 @@ summary {
   font-size: clamp(31px, 10vw, 52px);
   font-weight: 400;
   line-height: 1;
-}
-
-.ks-mobile-star {
-  position: absolute;
-  top: 84px;
-  right: 32px;
-  opacity: 0.38;
 }
 
 .ks-mobile-note {
@@ -467,6 +502,14 @@ summary {
   position: relative;
   z-index: 2;
   max-width: min(960px, 72vw);
+}
+
+.ks-page-hero-brand-star {
+  display: block;
+  width: clamp(44px, 7vw, 86px);
+  height: clamp(44px, 7vw, 86px);
+  margin-bottom: clamp(18px, 2.5vw, 28px);
+  opacity: 0.44;
 }
 
 .ks-page-hero-content .ks-label-caps {
@@ -548,6 +591,26 @@ summary {
   height: 100%;
   object-fit: cover;
   filter: grayscale(35%) contrast(1.06) brightness(0.92);
+}
+
+.ks-preview-image-star {
+  position: absolute;
+  right: clamp(14px, 2vw, 22px);
+  bottom: clamp(14px, 2vw, 22px);
+  z-index: 2;
+  width: clamp(38px, 4.4vw, 58px);
+  height: clamp(38px, 4.4vw, 58px);
+  padding: 7px;
+  border: 1px solid rgba(var(--ks-beige-rgb), 0.32);
+  background: rgba(var(--ks-ink-rgb), 0.42);
+  backdrop-filter: blur(8px);
+}
+
+.ks-preview-image .ks-preview-image-star {
+  width: clamp(38px, 4.4vw, 58px);
+  height: clamp(38px, 4.4vw, 58px);
+  min-height: 0;
+  object-fit: contain;
 }
 
 .ks-preview-image-mobile {
@@ -759,6 +822,14 @@ summary {
   text-align: center;
 }
 
+.ks-section-title-star {
+  display: block;
+  width: clamp(34px, 4.4vw, 52px);
+  height: clamp(34px, 4.4vw, 52px);
+  margin: 0 auto clamp(14px, 2vw, 20px);
+  opacity: 0.32;
+}
+
 .ks-section-title h2,
 .ks-two-col h2 {
   margin: 14px 0 18px;
@@ -801,7 +872,7 @@ summary {
 .ks-image-card-overlay {
   position: absolute;
   inset: auto 0 0;
-  padding: clamp(72px, 12vw, 96px) 24px 24px;
+  padding: clamp(72px, 12vw, 96px) 76px 24px 24px;
   background: linear-gradient(
     to top,
     rgba(var(--ks-ink-rgb), 0.94) 0%,
@@ -810,6 +881,25 @@ summary {
     transparent 100%
   );
   transition: background 0.4s ease;
+}
+
+.ks-image-footer-star {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2;
+  width: clamp(28px, 3vw, 38px);
+  height: clamp(28px, 3vw, 38px);
+  opacity: 0.62;
+}
+
+.ks-image-card-overlay .ks-image-footer-star,
+.ks-mural-item-caption .ks-image-footer-star,
+.ks-portfolio-card-overlay .ks-image-footer-star {
+  width: clamp(28px, 3vw, 38px);
+  height: clamp(28px, 3vw, 38px);
+  min-height: 0;
+  object-fit: contain;
 }
 
 .ks-image-card:hover .ks-image-card-overlay {
@@ -939,7 +1029,7 @@ summary {
 .ks-portfolio-card-overlay {
   position: absolute;
   inset: auto 0 0;
-  padding: 56px 20px 20px;
+  padding: 56px 72px 20px 20px;
   background: linear-gradient(to top, rgba(var(--ks-ink-rgb), 0.92) 0%, rgba(var(--ks-ink-rgb), 0.42) 50%, transparent 100%);
 }
 
@@ -1554,12 +1644,24 @@ summary {
 }
 
 .ks-cta-band {
+  position: relative;
   margin: 0;
   padding: clamp(56px, 8vw, 96px) clamp(24px, 5vw, 64px);
   border-top: 3px solid rgba(var(--ks-peach-rgb), 0.5);
   background: linear-gradient(118deg, var(--ks-plum-deep) 0%, var(--ks-plum) 52%, var(--ks-plum-dark) 100%);
   color: var(--ks-on-dark);
   text-align: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ks-cta-band-star {
+  display: block;
+  width: clamp(42px, 5vw, 64px);
+  height: clamp(42px, 5vw, 64px);
+  margin: 0 auto clamp(18px, 2.5vw, 26px);
+  filter: brightness(0) invert(1);
+  opacity: 0.5;
 }
 
 .ks-cta-band h2,
@@ -1912,9 +2014,12 @@ summary {
 }
 
 .ks-footer {
+  position: relative;
   background: var(--ks-bg);
   border-top: 3px solid rgba(var(--ks-teal-rgb), 0.28);
   padding: clamp(40px, 6vw, 72px) clamp(24px, 5vw, 64px);
+  overflow: hidden;
+  isolation: isolate;
 }
 
 /* ── Section theme: wine (plum) ─────────────────────────────── */
@@ -1962,10 +2067,23 @@ summary {
 
 /* Footer */
 .ks-footer-inner {
+  position: relative;
+  z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
   gap: clamp(28px, 4vw, 40px);
+}
+
+.ks-footer-watermark {
+  position: absolute;
+  top: 50%;
+  right: clamp(20px, 6vw, 88px);
+  z-index: 0;
+  width: clamp(120px, 20vw, 220px);
+  height: clamp(120px, 20vw, 220px);
+  opacity: 0.08;
+  transform: translateY(-50%) rotate(-8deg);
 }
 
 .ks-footer-brand {
@@ -1978,6 +2096,12 @@ summary {
   color: var(--ks-primary);
   letter-spacing: 0.06em;
   text-decoration: none;
+}
+
+.ks-footer-brand-star {
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
 }
 
 .ks-footer-nav {
@@ -2507,7 +2631,79 @@ summary {
 }
 
 .ks-home-flow .ks-home-hero {
-  padding-bottom: clamp(48px, 7vw, 72px);
+  padding-bottom: clamp(72px, 9vw, 112px);
+}
+
+.ks-home-section-intro {
+  position: relative;
+  padding: clamp(76px, 10vw, 132px) clamp(24px, 5vw, 64px);
+  overflow: hidden;
+}
+
+.ks-home-section-intro::before {
+  content: "";
+  position: absolute;
+  top: clamp(28px, 4vw, 52px);
+  left: clamp(24px, 5vw, 64px);
+  right: clamp(24px, 5vw, 64px);
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(var(--ks-plum-rgb), 0.32),
+    transparent
+  );
+}
+
+.ks-home-section-intro-light {
+  background: var(--ks-bg);
+  color: var(--ks-primary);
+}
+
+.ks-home-section-intro-dark {
+  background: var(--ks-purple-deep);
+  color: var(--ks-on-dark);
+}
+
+.ks-home-section-intro-inner {
+  width: min(880px, 100%);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.ks-home-section-intro-star {
+  display: block;
+  width: clamp(42px, 5vw, 62px);
+  height: clamp(42px, 5vw, 62px);
+  margin: 0 auto clamp(16px, 2vw, 22px);
+  opacity: 0.3;
+}
+
+.ks-home-section-intro .ks-label-caps {
+  display: inline-flex;
+  margin-bottom: clamp(14px, 2vw, 20px);
+  color: var(--ks-label);
+}
+
+.ks-home-section-intro-dark .ks-label-caps {
+  color: var(--ks-lavender-aged);
+}
+
+.ks-home-section-intro h2 {
+  margin: 0 auto;
+  max-width: 760px;
+  text-wrap: balance;
+}
+
+.ks-home-section-intro p {
+  max-width: 62ch;
+  margin: clamp(18px, 2.5vw, 26px) auto 0;
+  color: var(--ks-on-surface-variant);
+  text-align: center;
+}
+
+.ks-home-section-intro-dark p {
+  color: var(--ks-on-dark-muted);
 }
 
 .ks-home-flow .ks-editorial-split {
@@ -2611,8 +2807,10 @@ summary {
 }
 
 .ks-home-hero-star {
+  width: clamp(54px, 7vw, 82px);
+  height: clamp(54px, 7vw, 82px);
   margin-bottom: 18px;
-  opacity: 0.72;
+  opacity: 0.34;
 }
 
 .ks-home-hero-content .ks-label-caps {
@@ -3143,7 +3341,7 @@ summary {
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 14px 12px;
+  padding: 14px 68px 14px 12px;
   background: linear-gradient(to top, rgba(var(--ks-ink-rgb), 0.72), transparent);
   color: var(--ks-on-dark);
 }
@@ -3220,6 +3418,10 @@ summary {
     overflow: visible;
   }
 
+  .ks-home-section-intro {
+    padding-block: clamp(64px, 12vw, 96px);
+  }
+
   .ks-services-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -3235,6 +3437,23 @@ summary {
 }
 
 @media (max-width: 640px) {
+  .ks-home-section-intro {
+    padding: 56px 20px 64px;
+  }
+
+  .ks-home-section-intro::before {
+    left: 20px;
+    right: 20px;
+  }
+
+  .ks-home-section-intro h2 {
+    font-size: clamp(34px, 12vw, 52px);
+  }
+
+  .ks-home-section-intro p {
+    font-size: 16px;
+  }
+
   .ks-services-grid {
     grid-template-columns: 1fr;
     grid-auto-rows: auto;
