@@ -2,7 +2,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { Link, useLocation } from "react-router";
 import { Menu, X } from "lucide-react";
-import { BrandStar } from "./BrandStar";
+import { StarGlyph } from "./StarGlyph";
 import { lockScroll, subscribeLenisScroll, unlockScroll } from "../scroll";
 
 const navLinks = [
@@ -42,7 +42,7 @@ export function Header() {
         className={`ks-header${scrolled ? " is-scrolled" : ""}${menuOpen ? " is-open" : ""}`}
       >
         <Link to="/" className="ks-logo" aria-label="Karina Sarte">
-          <BrandStar variant={3} size={18} className="ks-logo-star" />
+          <StarGlyph size={8} color="#2E173A" />
           <span>Karina Sarte</span>
         </Link>
 
@@ -78,7 +78,7 @@ export function Header() {
             className="ks-mobile-menu"
           >
             <div className="ks-mobile-star">
-              <BrandStar variant={2} size={84} className="ks-brand-star-soft" />
+              <StarGlyph size={40} color="#806E85" />
             </div>
             <nav>
               {[...navLinks, { label: "Orçamento", href: "/orcamento" }].map((link, i) => (

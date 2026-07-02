@@ -64,7 +64,29 @@ const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre
 
 const ProductsNavContext = createContext<(() => void) | null>(null);
 const PreloaderDoneContext = createContext(false);
-const brandStarVariant = (index: number) => ((index % 3) + 1) as 1 | 2 | 3;
+const brandStarVariant = (index: number) => (index % 2 === 0 ? 2 : 3) as 2 | 3;
+
+function StarSprinkle({ className = "", light = false }: { className?: string; light?: boolean }) {
+  const stars = [
+    { variant: 2, size: 128 },
+    { variant: 3, size: 92 },
+    { variant: 2, size: 74 },
+    { variant: 3, size: 52 },
+  ] as const;
+
+  return (
+    <div className={`ks-star-sprinkle${light ? " ks-star-sprinkle-light" : ""}${className ? " " + className : ""}`} aria-hidden="true">
+      {stars.map((star, index) => (
+        <BrandStar
+          key={`${star.variant}-${index}`}
+          variant={star.variant}
+          size={star.size}
+          className={`ks-star-sprinkle-mark mark-${index + 1}`}
+        />
+      ))}
+    </div>
+  );
+}
 
 const SECTION_INTRO_TITLES: Record<string, string> = {
   "/sobre": "Sobre a Karina Sarte",
@@ -513,13 +535,14 @@ function PageHero({
     <section className="ks-page-hero">
       <img className="ks-page-hero-image" src={image} alt="" aria-hidden="true" loading="eager" />
       <div className="ks-page-hero-shade" aria-hidden="true" />
+      <BrandStar variant={2} size={240} className="ks-page-hero-starfield" />
+      <StarSprinkle className="ks-star-sprinkle-page-hero" />
       <motion.div
         className="ks-page-hero-content"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: EASE }}
       >
-        <BrandStar variant={2} size={62} className="ks-page-hero-brand-star" />
         <span className="ks-label-caps ks-muted">{kicker}</span>
         <h1 className="ks-display-xl">{title}</h1>
         <p className="ks-body-lg">{text}</p>
@@ -558,6 +581,40 @@ const homeServiceCards = [
     img: tattooImages.cardCare,
     to: "/cuidados",
     cta: "Saiba mais",
+  },
+] as const;
+
+const homeMuralItems = [
+  {
+    title: "Processo autoral",
+    category: "Vídeo de processo",
+    alt: "Processo criativo de tatuagem autoral",
+    processVideo: processVideos.artProcess,
+  },
+  {
+    title: "Escuta",
+    category: "01",
+    text: "Referências, intenção e corpo antes do desenho.",
+  },
+  {
+    title: "Composição",
+    category: "02",
+    text: "Linhas, respiro e encaixe para a ideia ganhar forma.",
+  },
+  {
+    title: "Traço",
+    category: "03",
+    text: "Um estudo visual para a arte conversar com a pele.",
+  },
+  {
+    title: "Presença",
+    category: "04",
+    text: "Detalhes autorais para uma tattoo com identidade.",
+  },
+  {
+    title: "Cuidado",
+    category: "05",
+    text: "Orientação e acompanhamento em cada etapa.",
   },
 ] as const;
 
@@ -604,6 +661,12 @@ function HomeSectionIntro({
 }) {
   return (
     <section className={`ks-home-section-intro ks-home-section-intro-${tone}`}>
+      <BrandStar
+        variant={tone === "dark" ? 2 : 3}
+        size={220}
+        className={`ks-home-section-intro-starfield${tone === "dark" ? " ks-brand-star-light" : ""}`}
+      />
+      <StarSprinkle className="ks-star-sprinkle-intro" light={tone === "dark"} />
       <motion.div
         className="ks-home-section-intro-inner"
         initial={{ opacity: 0, y: 24 }}
@@ -611,11 +674,6 @@ function HomeSectionIntro({
         viewport={{ once: true, margin: "-12%" }}
         transition={{ duration: 0.8, ease: EASE }}
       >
-        <BrandStar
-          variant={tone === "dark" ? 2 : 3}
-          size={54}
-          className={`ks-home-section-intro-star${tone === "dark" ? " ks-brand-star-light" : ""}`}
-        />
         <span className="ks-label-caps">{eyebrow}</span>
         <h2 className="ks-headline-lg">{title}</h2>
         <p className="ks-body-lg">{text}</p>
@@ -652,13 +710,13 @@ function HomeHero() {
         onEnded={handleEnded}
       />
       <div className="ks-home-hero-shade" aria-hidden="true" />
+      <BrandStar variant={2} size={260} className="ks-home-hero-starfield" />
       <motion.div
         className="ks-home-hero-content"
         initial={{ opacity: 0, y: 28 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: EASE }}
       >
-        <BrandStar variant={1} size={72} className="ks-home-hero-star" />
         <span className="ks-label-caps">Teresópolis · RJ</span>
         <h1 className="ks-display-xl">Arte na pele com identidade, cuidado e intenção.</h1>
         <p className="ks-body-lg">
@@ -720,6 +778,7 @@ function EditorialSplitSection() {
 function HomeServicesSection() {
   return (
     <section className="ks-services-section">
+      <StarSprinkle className="ks-star-sprinkle-services" light />
       <SectionTitle
         eyebrow="Serviços"
         title="O que você encontra por aqui"
@@ -748,6 +807,11 @@ function HomeServicesSection() {
                     <img src={card.img} alt={card.title} loading="lazy" />
                   )}
                 </div>
+                <BrandStar
+                  variant={brandStarVariant(index + 1)}
+                  size={150}
+                  className="ks-service-card-star ks-brand-star-light"
+                />
               </div>
               <div className="ks-service-card-body">
                 <h3>{card.title}</h3>
@@ -763,20 +827,18 @@ function HomeServicesSection() {
 }
 
 function MuralPortfolioPreview() {
-  const items = galleryItems.slice(0, 6);
-
   return (
     <section className="ks-mural-section">
       <SectionTitle
         eyebrow="Portfólio"
         title="Trabalhos recentes"
-        text="Uma seleção de tattoos, flashes e projetos autorais criados pela Karina Sarte."
+        text="Um recorte do processo criativo, com o vídeo como destaque e cards editoriais para conduzir a navegação."
       />
       <div className="ks-mural-grid">
-        {items.map((item, index) => (
+        {homeMuralItems.map((item, index) => (
           <motion.div
             key={item.title}
-            className="ks-mural-item"
+            className={`ks-mural-item${"processVideo" in item ? " ks-mural-item-featured" : " ks-mural-item-empty"}`}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-8%" }}
@@ -789,14 +851,24 @@ function MuralPortfolioPreview() {
                     poster={item.processVideo.poster}
                     videoSrc={item.processVideo.src}
                     alt={item.alt}
-                    loading={index < 2 ? "eager" : "lazy"}
+                    loading="lazy"
                   />
                 ) : (
-                  <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+                  <div className="ks-mural-placeholder">
+                    <BrandStar
+                      variant={brandStarVariant(index)}
+                      size={230}
+                      className="ks-mural-placeholder-star"
+                    />
+                  </div>
                 )}
+                <BrandStar
+                  variant={brandStarVariant(index)}
+                  size={180}
+                  className="ks-card-starfield ks-brand-star-light"
+                />
               </div>
               <div className="ks-mural-item-caption">
-                <BrandStar variant={brandStarVariant(index)} size={32} className="ks-image-footer-star ks-brand-star-light" />
                 <span>{item.category}</span>
                 <strong>{item.title}</strong>
               </div>
@@ -1017,8 +1089,12 @@ function PortfolioCard({ item, index }: { item: (typeof galleryItems)[0]; index:
   return (
     <article className="ks-portfolio-card">
       <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+      <BrandStar
+        variant={brandStarVariant(index)}
+        size={172}
+        className="ks-card-starfield ks-brand-star-light"
+      />
       <div className="ks-portfolio-card-overlay">
-        <BrandStar variant={brandStarVariant(index)} size={34} className="ks-image-footer-star ks-brand-star-light" />
         <span className="ks-label-caps ks-gold">
           {String(index + 1).padStart(2, "0")} — {item.category}
         </span>
@@ -1152,6 +1228,7 @@ function CareHomeSection() {
 function ProductsPreview() {
   return (
     <section className="ks-section ks-products-preview ks-section-cream">
+      <StarSprinkle className="ks-star-sprinkle-products" />
       <div className="ks-products-header">
         <span className="ks-label-caps ks-gold">Coleções</span>
         <h2 className="ks-headline-lg">Coleções da Karina Sarte</h2>
@@ -1194,6 +1271,11 @@ function ProductVisualCard({
   const content = (
     <>
       <img src={group.img} alt={group.title} loading="lazy" />
+      <BrandStar
+        variant={brandStarVariant(index + 2)}
+        size={190}
+        className="ks-product-card-star ks-brand-star-light"
+      />
       <div className="ks-product-visual-overlay">
         <span className="ks-label-caps">{String(index + 1).padStart(2, "0")}</span>
         <h3>{group.title}</h3>
@@ -1801,7 +1883,7 @@ function BudgetPage() {
 function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
   return (
     <div className="ks-section-title">
-      <BrandStar variant={1} size={42} className="ks-section-title-star" />
+      <BrandStar variant={2} size={190} className="ks-section-title-starfield" />
       <span className="ks-label-caps ks-gold">{eyebrow}</span>
       <h2 className="ks-headline-lg">{title}</h2>
       <p className="ks-body-lg ks-muted">{text}</p>
@@ -1815,8 +1897,12 @@ function ImageGrid({ items }: { items: typeof galleryItems }) {
       {items.map((item, index) => (
         <article className="ks-image-card" key={item.title}>
           <img src={item.img} alt={item.alt} loading="lazy" />
+          <BrandStar
+            variant={brandStarVariant(index)}
+            size={180}
+            className="ks-card-starfield ks-brand-star-light"
+          />
           <div className="ks-image-card-overlay">
-            <BrandStar variant={brandStarVariant(index)} size={34} className="ks-image-footer-star ks-brand-star-light" />
             <span className="ks-label-caps">{item.category}</span>
             <h3>{item.title}</h3>
           </div>
@@ -2025,7 +2111,8 @@ function SectionIntro({ title, onReveal }: { title: string; onReveal?: () => voi
 function CtaBand({ title, text, cta, to, href }: { title: string; text: string; cta: string; to?: string; href?: string }) {
   return (
     <section className="ks-cta-band">
-      <BrandStar variant={3} size={52} className="ks-cta-band-star" />
+      <BrandStar variant={3} size={260} className="ks-cta-band-starfield" />
+      <StarSprinkle className="ks-star-sprinkle-cta" light />
       <h2 className="ks-headline-md">{title}</h2>
       <p className="ks-body-lg ks-muted">{text}</p>
       {to ? <PrimaryLink to={to}>{cta}</PrimaryLink> : <a className="ks-primary-link" href={href}>{cta}<ArrowRight size={16} /></a>}

@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { BrandStar } from "./BrandStar";
+import { StarGlyph } from "./StarGlyph";
 import { SITE } from "../seo";
 
 const pageLinks = [
@@ -24,10 +25,10 @@ const socialLinks = [
 export function Footer() {
   return (
     <footer className="ks-footer">
-      <BrandStar variant={2} size={120} className="ks-footer-watermark" />
+      <BrandStar variant={2} size={320} className="ks-footer-watermark" />
       <div className="ks-footer-inner">
         <Link to="/" className="ks-footer-brand">
-          <BrandStar variant={3} size={20} className="ks-footer-brand-star" />
+          <StarGlyph size={7} color="#A898AA" />
           <span>Karina Sarte</span>
         </Link>
 

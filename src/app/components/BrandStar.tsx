@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
 const STAR_ASSETS = {
-  1: "/assets/brand/star-karina-1.svg",
+  1: "/assets/brand/star-karina-2.svg",
   2: "/assets/brand/star-karina-2.svg",
   3: "/assets/brand/star-karina-3.svg",
 } as const;
