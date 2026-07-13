@@ -3019,12 +3019,12 @@ summary {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: min(92vh, 920px);
   padding: clamp(100px, 14vh, 140px) clamp(24px, 5vw, 64px) clamp(56px, 8vw, 96px);
   overflow: hidden;
   isolation: isolate;
-  text-align: center;
+  text-align: left;
 }
 
 .ks-home-hero-bg {
@@ -3044,11 +3044,11 @@ summary {
   inset: 0;
   z-index: 1;
   background:
-    radial-gradient(
-      ellipse 90% 70% at 50% 52%,
-      rgba(var(--ks-beige-rgb), 0.88) 0%,
-      rgba(var(--ks-beige-rgb), 0.62) 42%,
-      rgba(var(--ks-beige-rgb), 0.28) 68%,
+    linear-gradient(
+      90deg,
+      rgba(var(--ks-beige-rgb), 0.96) 0%,
+      rgba(var(--ks-beige-rgb), 0.88) 34%,
+      rgba(var(--ks-beige-rgb), 0.48) 58%,
       rgba(var(--ks-beige-rgb), 0.08) 100%
     ),
     linear-gradient(
@@ -3064,10 +3064,10 @@ summary {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: min(760px, 100%);
-  max-width: min(760px, 92vw);
-  margin-inline: auto;
+  align-items: flex-start;
+  width: min(680px, 52vw);
+  max-width: 100%;
+  margin: 0;
 }
 
 .ks-home-hero-starfield {
@@ -3085,14 +3085,14 @@ summary {
 
 .ks-home-hero-content .ks-label-caps {
   color: var(--ks-on-surface-variant);
-  text-align: center;
+  text-align: left;
 }
 
 .ks-home-hero-content h1 {
   margin: 16px 0 22px;
   color: var(--ks-primary);
   width: 100%;
-  text-align: center;
+  text-align: left;
   text-wrap: balance;
 }
 
@@ -3100,13 +3100,13 @@ summary {
   color: var(--ks-on-surface);
   width: 100%;
   max-width: 58ch;
-  text-align: justify;
-  text-align-last: center;
-  hyphens: auto;
+  text-align: left;
+  text-align-last: auto;
+  hyphens: none;
 }
 
 .ks-home-hero-content .ks-actions {
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
   margin-top: clamp(28px, 4vw, 36px);
 }
@@ -3814,22 +3814,22 @@ summary {
   .ks-home-hero {
     min-height: min(88vh, 780px);
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding-top: 100px;
   }
 
   .ks-home-hero-content {
-    max-width: 100%;
+    width: min(620px, 66vw);
   }
 
   .ks-home-hero-shade {
     background:
-      radial-gradient(
-        ellipse 100% 80% at 50% 48%,
-        rgba(var(--ks-beige-rgb), 0.94) 0%,
-        rgba(var(--ks-beige-rgb), 0.6) 50%,
-        rgba(var(--ks-beige-rgb), 0.18) 78%,
-        transparent 100%
+      linear-gradient(
+        90deg,
+        rgba(var(--ks-beige-rgb), 0.96) 0%,
+        rgba(var(--ks-beige-rgb), 0.86) 44%,
+        rgba(var(--ks-beige-rgb), 0.3) 76%,
+        rgba(var(--ks-beige-rgb), 0.08) 100%
       );
   }
 
@@ -3865,6 +3865,30 @@ summary {
 }
 
 @media (max-width: 640px) {
+  .ks-home-hero {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .ks-home-hero-content {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .ks-home-hero-shade {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(var(--ks-beige-rgb), 0.94) 0%,
+        rgba(var(--ks-beige-rgb), 0.82) 68%,
+        rgba(var(--ks-beige-rgb), 0.58) 100%
+      );
+  }
+
+  .ks-home-hero-content .ks-actions {
+    align-items: flex-start;
+  }
+
   .ks-home-section-intro {
     padding: 56px 20px 64px;
   }
