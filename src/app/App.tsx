@@ -718,7 +718,6 @@ function HomeHero() {
         loading="eager"
         decoding="async"
       />
-      <div className="ks-home-hero-shade" aria-hidden="true" />
       <motion.div
         className="ks-home-hero-content"
         initial={{ opacity: 0, y: 28 }}
