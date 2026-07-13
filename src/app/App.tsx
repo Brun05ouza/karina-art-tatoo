@@ -65,6 +65,10 @@ const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre
 const ProductsNavContext = createContext<(() => void) | null>(null);
 const PreloaderDoneContext = createContext(false);
 const brandStarVariant = (index: number) => (index % 2 === 0 ? 2 : 3) as 2 | 3;
+const looseStarAssets = [
+  "/assets/brand/star-karina-filled.png",
+  "/assets/brand/star-karina-outline.png",
+] as const;
 
 function StarSprinkle({ className = "", light = false }: { className?: string; light?: boolean }) {
   const stars = [
@@ -84,6 +88,31 @@ function StarSprinkle({ className = "", light = false }: { className?: string; l
           className={`ks-star-sprinkle-mark mark-${index + 1}`}
         />
       ))}
+    </div>
+  );
+}
+
+function SectionStarBreak({
+  align = "right",
+  light = false,
+}: {
+  align?: "left" | "right" | "center";
+  light?: boolean;
+}) {
+  return (
+    <div className={`ks-section-star-break ks-section-star-break-${align}${light ? " ks-section-star-break-light" : ""}`} aria-hidden="true">
+      <div className="ks-section-star-break-field">
+        {[0, 1, 0, 1].map((assetIndex, index) => (
+          <img
+            key={`${align}-${index}`}
+            className={`ks-section-star-break-star star-${index + 1}`}
+            src={looseStarAssets[assetIndex]}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -427,10 +456,10 @@ function AppLayout({
       <svg className="ks-svg-clip-defs" width="0" height="0" aria-hidden="true">
         <defs>
           <clipPath id="ks-window-clip" clipPathUnits="objectBoundingBox">
-            <path d="M0,1 L0,0.08 Q0.5,0 1,0.08 L1,1 Z" />
+            <path d="M0.055,0.985 L0.055,0.18 C0.055,0.07 0.22,0.015 0.5,0.015 C0.78,0.015 0.945,0.07 0.945,0.18 L0.945,0.985 Q0.5,0.965 0.055,0.985 Z" />
           </clipPath>
           <clipPath id="ks-window-clip-card" clipPathUnits="objectBoundingBox">
-            <path d="M0,1 L0,0.12 Q0.5,0.04 1,0.12 L1,1 Z" />
+            <path d="M0.045,0.985 L0.045,0.2 C0.045,0.08 0.22,0.025 0.5,0.025 C0.78,0.025 0.955,0.08 0.955,0.2 L0.955,0.985 Q0.5,0.965 0.045,0.985 Z" />
           </clipPath>
         </defs>
       </svg>
@@ -622,12 +651,10 @@ function HomePage() {
   return (
     <div className="ks-home-flow">
       <HomeHero />
-      <HomeSectionIntro
-        eyebrow="Manifesto"
-        title="Antes do desenho, existe uma escuta."
-        text="Um respiro para entender corpo, intenção e referência antes de transformar a ideia em traço."
-      />
+      <SectionStarBreak align="right" />
       <EditorialSplitSection />
+      <EditorialWindowBridge />
+      <SectionStarBreak align="left" light />
       <HomeSectionIntro
         eyebrow="O estúdio"
         title="Conheça o espaço onde a tattoo acontece."
@@ -635,9 +662,13 @@ function HomePage() {
         tone="dark"
       />
       <StudioScrollSection />
+      <SectionStarBreak align="right" light />
       <HomeServicesSection />
+      <SectionStarBreak align="left" light />
       <MuralPortfolioPreview />
+      <SectionStarBreak align="right" />
       <ProductsPreview />
+      <SectionStarBreak align="left" />
       <CtaBand
         title="Vamos criar sua próxima tattoo?"
         text="Envie sua ideia, referências, tamanho aproximado e local do corpo. A Karina Sarte analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele."
@@ -661,12 +692,6 @@ function HomeSectionIntro({
 }) {
   return (
     <section className={`ks-home-section-intro ks-home-section-intro-${tone}`}>
-      <BrandStar
-        variant={tone === "dark" ? 2 : 3}
-        size={220}
-        className={`ks-home-section-intro-starfield${tone === "dark" ? " ks-brand-star-light" : ""}`}
-      />
-      <StarSprinkle className="ks-star-sprinkle-intro" light={tone === "dark"} />
       <motion.div
         className="ks-home-section-intro-inner"
         initial={{ opacity: 0, y: 24 }}
@@ -683,34 +708,17 @@ function HomeSectionIntro({
 }
 
 function HomeHero() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const preloaderDone = useContext(PreloaderDoneContext);
-
-  useEffect(() => {
-    if (preloaderDone) {
-      videoRef.current?.play();
-    }
-  }, [preloaderDone]);
-
-  const handleEnded = useCallback(() => {
-    window.setTimeout(() => {
-      videoRef.current?.play();
-    }, 5000);
-  }, []);
-
   return (
     <section className="ks-home-hero">
-      <video
-        ref={videoRef}
+      <img
         className="ks-home-hero-bg"
-        src="/assets/hero-video.mp4"
-        muted
-        playsInline
+        src={tattooImages.hero}
+        alt=""
         aria-hidden="true"
-        onEnded={handleEnded}
+        loading="eager"
+        decoding="async"
       />
       <div className="ks-home-hero-shade" aria-hidden="true" />
-      <BrandStar variant={2} size={260} className="ks-home-hero-starfield" />
       <motion.div
         className="ks-home-hero-content"
         initial={{ opacity: 0, y: 28 }}
@@ -741,12 +749,17 @@ function EditorialSplitSection() {
         viewport={{ once: true, margin: "-10%" }}
         transition={{ duration: 0.9, ease: EASE }}
       >
-        <span className="ks-label-caps ks-gold">Manifesto</span>
-        <h2 className="ks-headline-lg">Entre o traço, a pele e a história.</h2>
+        <span className="ks-label-caps ks-gold">Processo criativo</span>
+        <h2 className="ks-headline-lg">Da conversa nasce uma composição autoral.</h2>
         <p className="ks-body-lg ks-muted">
-          Cada projeto nasce de uma ideia, uma referência ou uma memória. A proposta da Karina Sarte é transformar esse ponto de
-          partida em uma tattoo com identidade, equilíbrio e cuidado em cada detalhe.
+          Referências, memória e proporção do corpo viram um desenho pensado para ter presença na pele, com equilíbrio,
+          identidade e cuidado em cada detalhe.
         </p>
+        <div className="ks-editorial-process" aria-label="Fluxo de criação">
+          <span>01 · Referência</span>
+          <span>02 · Desenho</span>
+          <span>03 · Pele</span>
+        </div>
         <PrimaryLink to="/sobre">Conhecer a artista</PrimaryLink>
       </motion.div>
       <div className="ks-editorial-split-media">
@@ -756,12 +769,19 @@ function EditorialSplitSection() {
           loading="lazy"
         />
       </div>
+    </section>
+  );
+}
+
+function EditorialWindowBridge() {
+  return (
+    <section className="ks-editorial-window-bridge" aria-label="Processo de tatuagem em destaque">
       <motion.div
-        className="ks-editorial-float"
-        initial={{ opacity: 0, y: 32, rotate: -6 }}
-        whileInView={{ opacity: 1, y: 0, rotate: -3 }}
+        className="ks-editorial-window-bridge-card"
+        initial={{ opacity: 0, y: 34, rotate: -5 }}
+        whileInView={{ opacity: 1, y: 0, rotate: -2 }}
         viewport={{ once: true, margin: "-8%" }}
-        transition={{ duration: 1, delay: 0.2, ease: EASE }}
+        transition={{ duration: 0.9, ease: EASE }}
       >
         <div className="ks-window-portal">
           <img
@@ -778,7 +798,6 @@ function EditorialSplitSection() {
 function HomeServicesSection() {
   return (
     <section className="ks-services-section">
-      <StarSprinkle className="ks-star-sprinkle-services" light />
       <SectionTitle
         eyebrow="Serviços"
         title="O que você encontra por aqui"
@@ -807,11 +826,6 @@ function HomeServicesSection() {
                     <img src={card.img} alt={card.title} loading="lazy" />
                   )}
                 </div>
-                <BrandStar
-                  variant={brandStarVariant(index + 1)}
-                  size={150}
-                  className="ks-service-card-star ks-brand-star-light"
-                />
               </div>
               <div className="ks-service-card-body">
                 <h3>{card.title}</h3>
@@ -855,18 +869,9 @@ function MuralPortfolioPreview() {
                   />
                 ) : (
                   <div className="ks-mural-placeholder">
-                    <BrandStar
-                      variant={brandStarVariant(index)}
-                      size={230}
-                      className="ks-mural-placeholder-star"
-                    />
+                    <span className="ks-mural-placeholder-label">{item.category}</span>
                   </div>
                 )}
-                <BrandStar
-                  variant={brandStarVariant(index)}
-                  size={180}
-                  className="ks-card-starfield ks-brand-star-light"
-                />
               </div>
               <div className="ks-mural-item-caption">
                 <span>{item.category}</span>
@@ -1228,7 +1233,6 @@ function CareHomeSection() {
 function ProductsPreview() {
   return (
     <section className="ks-section ks-products-preview ks-section-cream">
-      <StarSprinkle className="ks-star-sprinkle-products" />
       <div className="ks-products-header">
         <span className="ks-label-caps ks-gold">Coleções</span>
         <h2 className="ks-headline-lg">Coleções da Karina Sarte</h2>
@@ -1271,11 +1275,6 @@ function ProductVisualCard({
   const content = (
     <>
       <img src={group.img} alt={group.title} loading="lazy" />
-      <BrandStar
-        variant={brandStarVariant(index + 2)}
-        size={190}
-        className="ks-product-card-star ks-brand-star-light"
-      />
       <div className="ks-product-visual-overlay">
         <span className="ks-label-caps">{String(index + 1).padStart(2, "0")}</span>
         <h3>{group.title}</h3>
@@ -1883,7 +1882,6 @@ function BudgetPage() {
 function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
   return (
     <div className="ks-section-title">
-      <BrandStar variant={2} size={190} className="ks-section-title-starfield" />
       <span className="ks-label-caps ks-gold">{eyebrow}</span>
       <h2 className="ks-headline-lg">{title}</h2>
       <p className="ks-body-lg ks-muted">{text}</p>
@@ -2111,8 +2109,6 @@ function SectionIntro({ title, onReveal }: { title: string; onReveal?: () => voi
 function CtaBand({ title, text, cta, to, href }: { title: string; text: string; cta: string; to?: string; href?: string }) {
   return (
     <section className="ks-cta-band">
-      <BrandStar variant={3} size={260} className="ks-cta-band-starfield" />
-      <StarSprinkle className="ks-star-sprinkle-cta" light />
       <h2 className="ks-headline-md">{title}</h2>
       <p className="ks-body-lg ks-muted">{text}</p>
       {to ? <PrimaryLink to={to}>{cta}</PrimaryLink> : <a className="ks-primary-link" href={href}>{cta}<ArrowRight size={16} /></a>}
