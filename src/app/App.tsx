@@ -27,6 +27,7 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { BrandStar } from "./components/BrandStar";
 import { StencilCrosshair } from "./components/StencilCrosshair";
+import { CustomCursor } from "./components/CustomCursor";
 import {
   observeScrollRoot,
   queueRefresh,
@@ -464,6 +465,7 @@ function AppLayout({
         </defs>
       </svg>
       <div className="ks-grain" aria-hidden="true" />
+      <CustomCursor />
       <Preloader
         onComplete={() => {
           setPreloaderDone(true);
@@ -557,13 +559,15 @@ function PageHero({
   kicker: string;
   title: string;
   text: string;
-  image?: string;
+  image?: string | null;
   children?: React.ReactNode;
 }) {
+  const hasImage = Boolean(image);
+
   return (
-    <section className="ks-page-hero">
-      <img className="ks-page-hero-image" src={image} alt="" aria-hidden="true" loading="eager" />
-      <div className="ks-page-hero-shade" aria-hidden="true" />
+    <section className={`ks-page-hero${hasImage ? "" : " ks-page-hero-no-image"}`}>
+      {image && <img className="ks-page-hero-image" src={image} alt="" aria-hidden="true" loading="eager" />}
+      {hasImage && <div className="ks-page-hero-shade" aria-hidden="true" />}
       <BrandStar variant={2} size={240} className="ks-page-hero-starfield" />
       <StarSprinkle className="ks-star-sprinkle-page-hero" />
       <motion.div
@@ -615,35 +619,43 @@ const homeServiceCards = [
 
 const homeMuralItems = [
   {
-    title: "Processo autoral",
+    title: "Orquídeas",
     category: "Vídeo de processo",
-    alt: "Processo criativo de tatuagem autoral",
-    processVideo: processVideos.artProcess,
+    alt: "Processo de criação de tatuagem de orquídeas",
+    processVideo: {
+      poster: "/assets/recent-projects/orquideas-poster.jpg",
+      src: "/assets/recent-projects/orquideas-processo.mp4",
+    },
   },
   {
-    title: "Escuta",
-    category: "01",
-    text: "Referências, intenção e corpo antes do desenho.",
+    title: "Columbina",
+    category: "Projeto autoral",
+    alt: "Tatuagem autoral Columbina com composição floral e olhar",
+    img: "/assets/recent-projects/columbina.jpg",
   },
   {
-    title: "Composição",
-    category: "02",
-    text: "Linhas, respiro e encaixe para a ideia ganhar forma.",
+    title: "Mandala autoral",
+    category: "Ornamental",
+    alt: "Tatuagem de mandala ornamental autoral",
+    img: "/assets/recent-projects/mandala.jpg",
   },
   {
-    title: "Traço",
-    category: "03",
-    text: "Um estudo visual para a arte conversar com a pele.",
+    title: "Orquídea",
+    category: "Fine line",
+    alt: "Tatuagem de orquídea em traço fino no pescoço",
+    img: "/assets/recent-projects/orquidea-pescoco.jpg",
   },
   {
-    title: "Presença",
-    category: "04",
-    text: "Detalhes autorais para uma tattoo com identidade.",
+    title: "Kira",
+    category: "Pet tattoo",
+    alt: "Tatuagem autoral de cachorro chamada Kira",
+    img: "/assets/recent-projects/kira.jpg",
   },
   {
-    title: "Cuidado",
-    category: "05",
-    text: "Orientação e acompanhamento em cada etapa.",
+    title: "Lua botânica",
+    category: "Projeto autoral",
+    alt: "Tatuagem autoral de lua, folhas e andorinha",
+    img: "/assets/recent-projects/lua-botanica.jpg",
   },
 ] as const;
 
@@ -708,6 +720,40 @@ function HomeSectionIntro({
 }
 
 function HomeHero() {
+  const preloaderDone = useContext(PreloaderDoneContext);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const heroTitle = "Arte na pele com identidade, cuidado e intenção.";
+
+  useEffect(() => {
+    if (!preloaderDone || !titleRef.current) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const words = titleRef.current.querySelectorAll<HTMLElement>(".ks-home-hero-word");
+
+    if (reduceMotion) {
+      gsap.set(words, { clearProps: "all" });
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        words,
+        { yPercent: 115, opacity: 0, rotate: 2 },
+        {
+          yPercent: 0,
+          opacity: 1,
+          rotate: 0,
+          duration: 1.05,
+          stagger: 0.075,
+          ease: "power4.out",
+          clearProps: "transform,opacity",
+        },
+      );
+    }, titleRef);
+
+    return () => ctx.revert();
+  }, [preloaderDone]);
+
   return (
     <section className="ks-home-hero">
       <img
@@ -725,7 +771,13 @@ function HomeHero() {
         transition={{ duration: 1, ease: EASE }}
       >
         <span className="ks-label-caps">Teresópolis · RJ</span>
-        <h1 className="ks-display-xl">Arte na pele com identidade, cuidado e intenção.</h1>
+        <h1 ref={titleRef} className="ks-display-xl ks-home-hero-title" aria-label={heroTitle}>
+          {heroTitle.split(" ").map((word, index) => (
+            <span className="ks-home-hero-word-wrap" aria-hidden="true" key={`${word}-${index}`}>
+              <span className="ks-home-hero-word">{word}</span>
+            </span>
+          ))}
+        </h1>
         <p className="ks-body-lg">
           Tatuagens autorais, flash tattoos e criações exclusivas pensadas para transformar ideias em arte.
         </p>
@@ -764,7 +816,7 @@ function EditorialSplitSection() {
       <div className="ks-editorial-split-media">
         <img
           src={tattooImages.tattooInProgress}
-          alt="Sessão de tatuagem em andamento"
+          alt="Karina Sarte"
           loading="lazy"
         />
       </div>
@@ -785,12 +837,20 @@ function EditorialWindowBridge() {
         <div className="ks-window-portal">
           <img
             src={tattooImages.tattooInProgress}
-            alt="Sessão de tatuagem em andamento"
+            alt="Karina Sarte"
             loading="lazy"
           />
         </div>
       </motion.div>
     </section>
+  );
+}
+
+function NumberedPlaceholder({ number }: { number: string }) {
+  return (
+    <div className="ks-numbered-placeholder" aria-hidden="true">
+      <span>{number}</span>
+    </div>
   );
 }
 
@@ -822,7 +882,7 @@ function HomeServicesSection() {
                       alt={card.title}
                     />
                   ) : (
-                    <img src={card.img} alt={card.title} loading="lazy" />
+                    <NumberedPlaceholder number={String(index).padStart(2, "0")} />
                   )}
                 </div>
               </div>
@@ -851,7 +911,7 @@ function MuralPortfolioPreview() {
         {homeMuralItems.map((item, index) => (
           <motion.div
             key={item.title}
-            className={`ks-mural-item${"processVideo" in item ? " ks-mural-item-featured" : " ks-mural-item-empty"}`}
+            className={`ks-mural-item${"processVideo" in item ? " ks-mural-item-featured" : " ks-mural-item-image"}`}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-8%" }}
@@ -866,6 +926,8 @@ function MuralPortfolioPreview() {
                     alt={item.alt}
                     loading="lazy"
                   />
+                ) : "img" in item ? (
+                  <img src={item.img} alt={item.alt} loading="lazy" />
                 ) : (
                   <div className="ks-mural-placeholder">
                     <span className="ks-mural-placeholder-label">{item.category}</span>
@@ -1273,7 +1335,7 @@ function ProductVisualCard({
 
   const content = (
     <>
-      <img src={group.img} alt={group.title} loading="lazy" />
+      <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
       <div className="ks-product-visual-overlay">
         <span className="ks-label-caps">{String(index + 1).padStart(2, "0")}</span>
         <h3>{group.title}</h3>
@@ -1427,11 +1489,11 @@ function AboutPage() {
         kicker="A artista"
         title="Sobre a Karina Sarte"
         text="Karina Sarte cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele."
-        image={tattooImages.heroAbout}
+        image={null}
       >
         <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
       </PageHero>
-      <section className="ks-section ks-two-col ks-section-cream">
+      <section className="ks-section ks-two-col ks-section-cream ks-about-main">
         <motion.div
           className="ks-preview-image"
           initial={{ opacity: 0, y: 24 }}
@@ -1441,21 +1503,21 @@ function AboutPage() {
         >
           <img
             src={tattooImages.artistTattooing}
-            alt="Artista realizando tatuagem"
+            alt="Karina Sarte"
             loading="lazy"
           />
         </motion.div>
         <div className="ks-stack">
           <blockquote className="ks-about-me-quote">
-            “Cada traço carrega intenção — a tattoo precisa conversar com quem você é e com o corpo que a recebe.”
+            “Em cada traço, coloco intenção. A tattoo precisa conversar com quem você é e com o corpo que a recebe.”
           </blockquote>
           <p className="ks-body-lg ks-muted">
-            Com estética autoral, traço fino e referências botânicas, a Karina Sarte constrói projetos que equilibram delicadeza e
-            presença. O atendimento começa com escuta: entender referências, proporções e o significado por trás da ideia.
+            Minha estética é autoral, com traço fino e referências botânicas. Construo projetos que equilibram delicadeza e
+            presença. Todo atendimento começa com escuta: quero entender suas referências, as proporções e o significado por trás da ideia.
           </p>
           <p className="ks-body-lg ks-muted">
-            Em Teresópolis, o estúdio é um espaço de criação e cuidado — da primeira mensagem à cicatrização, com
-            orientação clara em cada etapa.
+            Em Teresópolis, criei um espaço de criação e cuidado. Da primeira mensagem à cicatrização, acompanho cada etapa
+            com orientação clara e muita atenção.
           </p>
           <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
         </div>
@@ -1517,8 +1579,8 @@ function FlashPage() {
       />
       <section className="ks-section">
         <div className="ks-flash-page-grid">
-          {flashItems.map((item) => (
-            <FlashCard key={item.name} {...item} img={item.img} />
+          {flashItems.map((item, index) => (
+            <FlashCard key={item.name} {...item} img={item.img} index={index} />
           ))}
         </div>
       </section>
@@ -1589,7 +1651,7 @@ function ProductCategoryCard({
   const inner = (
     <>
       <div className="ks-products-category-media">
-        <img src={category.img} alt={category.title} loading="lazy" />
+        <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
       </div>
       <div className="ks-products-category-body">
         <span className="ks-label-caps ks-muted">{String(index + 1).padStart(2, "0")}</span>
@@ -1893,7 +1955,7 @@ function ImageGrid({ items }: { items: typeof galleryItems }) {
     <div className="ks-image-grid">
       {items.map((item, index) => (
         <article className="ks-image-card" key={item.title}>
-          <img src={item.img} alt={item.alt} loading="lazy" />
+          <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
           <BrandStar
             variant={brandStarVariant(index)}
             size={180}
@@ -1909,12 +1971,24 @@ function ImageGrid({ items }: { items: typeof galleryItems }) {
   );
 }
 
-function FlashCard({ name, status, text, img }: { name: string; status: string; text: string; img?: string }) {
+function FlashCard({
+  name,
+  status,
+  text,
+  img,
+  index,
+}: {
+  name: string;
+  status: string;
+  text: string;
+  img?: string;
+  index: number;
+}) {
   return (
     <article className="ks-flash-page-card">
       {img && (
         <div className="ks-flash-page-card-media">
-          <img src={img} alt={`Flash ${name}`} loading="lazy" />
+          <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
         </div>
       )}
       <div className="ks-flash-page-card-body">
