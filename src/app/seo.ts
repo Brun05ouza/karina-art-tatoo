@@ -76,6 +76,17 @@ export const PAGE_SEO: Record<string, PageSeo> = {
     changefreq: "weekly",
     priority: 0.9,
   },
+  "/reformulacoes": {
+    path: "/reformulacoes",
+    title: "Reformulação e Reconstrução de Tattoo | Karina Sarte",
+    description:
+      "Reformulação e reconstrução de tatuagens com Karina Sarte em Teresópolis, RJ. Aprimoramento de desenhos, linhas, composição e integração de novos detalhes.",
+    keywords:
+      "reformulação de tatuagem Teresópolis, reconstrução de tattoo RJ, melhorar tatuagem antiga, correção de tattoo, Karina Sarte",
+    breadcrumb: "Reformulações",
+    changefreq: "monthly",
+    priority: 0.8,
+  },
   "/flash-tattoos": {
     path: "/flash-tattoos",
     title: "Flash Tattoos Disponíveis | Karina Sarte — Teresópolis",

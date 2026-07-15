@@ -5,6 +5,7 @@
  * trocadas sem alterar os componentes que as consomem.
  */
 const localImages = {
+  hero: "/assets/hero.jpeg",
   tattoo: "/assets/hero-home.png",
   artist: "/assets/karina-sarte.png",
   process: "/assets/process/art-process-poster.jpg",
@@ -14,7 +15,7 @@ const localImages = {
 
 export const tattooImages = {
   /** Home / destaque */
-  hero: localImages.tattoo,
+  hero: localImages.hero,
   sessionWide: localImages.studioWide,
   sessionClose: localImages.process,
   tattooInProgress: localImages.artist,
@@ -38,6 +39,7 @@ export const tattooImages = {
 
   /** Heróis de páginas internas */
   heroPortfolio: localImages.tattoo,
+  heroReformulacoes: localImages.tattoo,
   heroFlash: localImages.tattoo,
   heroAbout: localImages.artist,
   heroProcess: localImages.process,

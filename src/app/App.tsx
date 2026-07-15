@@ -8,6 +8,9 @@ import {
   ArrowRight,
   BadgeCheck,
   HeartHandshake,
+  Play,
+  Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 import {
@@ -22,7 +25,6 @@ import {
 
 import { Preloader } from "./components/Preloader";
 import { HoverProcessMedia } from "./components/HoverProcessMedia";
-import { StudioScrollSection } from "./components/StudioScrollSection";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { BrandStar } from "./components/BrandStar";
@@ -48,6 +50,7 @@ gsap.registerPlugin(ScrollTrigger);
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const FLUID_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const WHATSAPP = "https://wa.me/5521990724477";
+const YOUTUBE_VIDEO = "https://youtu.be/zntCZqs4rEE";
 const PAGE_HERO_DEFAULT_IMAGE = tattooImages.sessionWide;
 
 /** Mocks únicos por flash (evita repetir a mesma foto) */
@@ -121,6 +124,7 @@ function SectionStarBreak({
 const SECTION_INTRO_TITLES: Record<string, string> = {
   "/sobre": "Sobre a Karina Sarte",
   "/portfolio": "Portfólio",
+  "/reformulacoes": "Reformulações",
   "/flash-tattoos": "Flash Tattoos",
   "/produtos": "Coleções da Karina Sarte",
   "/como-funciona": "Como funciona",
@@ -534,6 +538,8 @@ function AnimatedRoutes() {
             <Route path="/" element={<HomePage />} />
             <Route path="/sobre" element={<IntroPage path="/sobre"><AboutPage /></IntroPage>} />
             <Route path="/portfolio" element={<IntroPage path="/portfolio"><PortfolioPage /></IntroPage>} />
+            <Route path="/reformulacoes" element={<IntroPage path="/reformulacoes"><ReformulacoesPage /></IntroPage>} />
+            <Route path="/releituras" element={<Navigate to="/reformulacoes" replace />} />
             <Route path="/flash-tattoos" element={<IntroPage path="/flash-tattoos"><FlashPage /></IntroPage>} />
             <Route path="/produtos" element={<IntroPage path="/produtos"><ProductsPage /></IntroPage>} />
             <Route path="/como-funciona" element={<IntroPage path="/como-funciona"><ProcessPage /></IntroPage>} />
@@ -666,14 +672,6 @@ function HomePage() {
       <SectionStarBreak align="right" />
       <EditorialSplitSection />
       <EditorialWindowBridge />
-      <SectionStarBreak align="left" light />
-      <HomeSectionIntro
-        eyebrow="O estúdio"
-        title="Conheça o espaço onde a tattoo acontece."
-        text="Uma passagem pelo ambiente de criação, preparo e cuidado que acompanha cada sessão."
-        tone="dark"
-      />
-      <StudioScrollSection />
       <SectionStarBreak align="right" light />
       <HomeServicesSection />
       <SectionStarBreak align="left" light />
@@ -681,6 +679,7 @@ function HomePage() {
       <SectionStarBreak align="right" />
       <ProductsPreview />
       <SectionStarBreak align="left" />
+      <YoutubeFeatureSection />
       <CtaBand
         title="Vamos criar sua próxima tattoo?"
         text="Envie sua ideia, referências, tamanho aproximado e local do corpo. A Karina Sarte analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele."
@@ -688,34 +687,6 @@ function HomePage() {
         to="/orcamento"
       />
     </div>
-  );
-}
-
-function HomeSectionIntro({
-  eyebrow,
-  title,
-  text,
-  tone = "light",
-}: {
-  eyebrow: string;
-  title: string;
-  text: string;
-  tone?: "light" | "dark";
-}) {
-  return (
-    <section className={`ks-home-section-intro ks-home-section-intro-${tone}`}>
-      <motion.div
-        className="ks-home-section-intro-inner"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-12%" }}
-        transition={{ duration: 0.8, ease: EASE }}
-      >
-        <span className="ks-label-caps">{eyebrow}</span>
-        <h2 className="ks-headline-lg">{title}</h2>
-        <p className="ks-body-lg">{text}</p>
-      </motion.div>
-    </section>
   );
 }
 
@@ -1314,6 +1285,105 @@ function ProductsPreview() {
   );
 }
 
+function YoutubeFeatureSection() {
+  const trailerRef = useRef<HTMLVideoElement>(null);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+
+  const toggleTrailerSound = () => {
+    const nextSoundEnabled = !soundEnabled;
+    setSoundEnabled(nextSoundEnabled);
+
+    if (trailerRef.current) {
+      trailerRef.current.muted = !nextSoundEnabled;
+      if (nextSoundEnabled) void trailerRef.current.play();
+    }
+  };
+
+  return (
+    <section id="youtube" className="ks-youtube-feature" aria-labelledby="youtube-feature-title">
+      <div className="ks-youtube-feature-grid">
+        <motion.div
+          className="ks-youtube-feature-content"
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.8, ease: EASE }}
+        >
+          <span className="ks-label-caps ks-gold">Karina Sarte no YouTube</span>
+          <h2 id="youtube-feature-title" className="ks-headline-lg">Bastidores, rotina e arte na pele.</h2>
+          <p className="ks-body-lg ks-muted">
+            Acompanhe de perto a rotina da Karina, o espaço de criação e tudo o que acontece entre a primeira ideia e a tattoo finalizada.
+          </p>
+          <a
+            className="ks-primary-link ks-youtube-feature-cta"
+            href={YOUTUBE_VIDEO}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor="cta"
+          >
+            <Play size={16} fill="currentColor" />
+            Ver vídeo completo
+          </a>
+          <span className="ks-youtube-feature-meta">Tattoo vlog · rotina de estúdio · processo criativo</span>
+        </motion.div>
+
+        <motion.div
+          className="ks-youtube-feature-media"
+          initial={{ opacity: 0, y: 34 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-8%" }}
+          transition={{ duration: 0.9, delay: 0.12, ease: EASE }}
+        >
+          <a
+            className="ks-youtube-feature-thumb"
+            href={YOUTUBE_VIDEO}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Assistir ao Tattoo Vlog completo no YouTube"
+          >
+            <img
+              src="/assets/youtube/tattoo-vlog-thumb.jpeg"
+              alt="Karina Sarte no estúdio, capa do primeiro Tattoo Vlog"
+              loading="lazy"
+            />
+            <span>Assistir no YouTube <ArrowRight size={15} /></span>
+          </a>
+
+          <div className="ks-youtube-feature-trailer">
+            <div className="ks-youtube-feature-trailer-meta" aria-hidden="true">
+              <span>Trailer</span>
+              <span>00:17</span>
+            </div>
+            <video
+              ref={trailerRef}
+              autoPlay
+              muted={!soundEnabled}
+              loop
+              playsInline
+              preload="metadata"
+              poster="/assets/youtube/tattoo-vlog-thumb.jpeg"
+              aria-label="Trailer vertical do primeiro Tattoo Vlog da Karina Sarte"
+            >
+              <source src="/assets/youtube/tattoo-vlog-trailer.mp4" type="video/mp4" />
+            </video>
+            <button
+              type="button"
+              className="ks-youtube-feature-sound"
+              onClick={toggleTrailerSound}
+              aria-pressed={soundEnabled}
+              aria-label={soundEnabled ? "Desativar som do trailer" : "Ativar som do trailer"}
+              data-testid="youtube-sound-toggle"
+            >
+              {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
+              <span>{soundEnabled ? "Som ativado" : "Ativar som"}</span>
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 const MotionLink = motion.create(Link);
 
 function ProductVisualCard({
@@ -1565,6 +1635,188 @@ function PortfolioPage() {
         />
       </section>
     </>
+  );
+}
+
+const reformulacoesServices = [
+  {
+    title: "Reconstrução do desenho",
+    text: "A estrutura existente é redesenhada para recuperar formas, intenção e uma leitura mais clara na pele.",
+  },
+  {
+    title: "Correção e equilíbrio",
+    text: "Linhas, proporções, pesos e contrastes são ajustados para melhorar a composição sem apagar sua essência.",
+  },
+  {
+    title: "Ampliação e integração",
+    text: "Novos elementos podem completar o desenho e integrar a tattoo existente a uma composição mais bem resolvida.",
+  },
+] as const;
+
+const reformulacoesEvaluation = [
+  {
+    title: "Envie uma foto nítida",
+    text: "Fotografe a tattoo com luz natural, sem filtros e mostrando também a área ao redor.",
+  },
+  {
+    title: "Conte o que deseja mudar",
+    text: "Explique quais partes incomodam e o que você gostaria de melhorar, preservar ou acrescentar ao desenho.",
+  },
+  {
+    title: "Receba uma avaliação",
+    text: "Analiso pele, pigmento, tamanho e possibilidades antes de indicar o melhor caminho para o projeto.",
+  },
+] as const;
+
+type ReformulacaoPortfolioCase = {
+  title: string;
+  category: string;
+  before?: string;
+  after?: string;
+};
+
+const reformulacoesPortfolio: ReformulacaoPortfolioCase[] = [
+  { title: "Reconstrução de desenho", category: "Caso 01" },
+  { title: "Correção de composição", category: "Caso 02" },
+  { title: "Ampliação integrada", category: "Caso 03" },
+  { title: "Recuperação de linhas", category: "Caso 04" },
+  { title: "Reorganização de elementos", category: "Caso 05" },
+  { title: "Expansão do projeto", category: "Caso 06" },
+];
+
+function ReformulacoesPage() {
+  return (
+    <>
+      <PageHero
+        kicker="Reformulação · reconstrução · aprimoramento"
+        title="Reformulações"
+        text="Um novo projeto criado a partir da tattoo que você já tem, para melhorar desenho, composição e leitura sem apagar sua história."
+        image={tattooImages.heroReformulacoes}
+      >
+        <PrimaryLink to="/orcamento">Quero avaliar minha tattoo</PrimaryLink>
+      </PageHero>
+
+      <section className="ks-section ks-section-cream ks-reformulacoes-intro">
+        <BrandStar variant={3} size={260} className="ks-reformulacoes-intro-star" />
+        <div className="ks-reformulacoes-intro-grid">
+          <div className="ks-reformulacoes-intro-heading">
+            <span className="ks-label-caps">Reconstruir para evoluir</span>
+            <h2 className="ks-headline-lg">A tattoo continua sendo sua. O desenho evolui.</h2>
+            <p className="ks-body-lg ks-muted">
+              Partimos do desenho existente para corrigir, reorganizar e aprimorar o que já está na sua pele.
+            </p>
+          </div>
+
+          <div className="ks-reformulacoes-intro-panel">
+            <span className="ks-label-caps">Análise individual</span>
+            <p className="ks-body-lg">
+              A reformulação começa com uma leitura cuidadosa da tattoo atual: desenho, linhas, pigmento, cicatrização e
+              região do corpo.
+            </p>
+            <p className="ks-body-lg ks-muted">
+              A partir disso, reconstruímos o trabalho existente para chegar a uma versão mais equilibrada, coerente e
+              próxima do que você deseja levar na pele.
+            </p>
+            <div className="ks-reformulacoes-intro-points" aria-label="Pontos avaliados na reformulação">
+              <span>Desenho original</span>
+              <span>Linhas e proporções</span>
+              <span>Integração no corpo</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <SectionStarBreak align="right" />
+
+      <section className="ks-section ks-reformulacoes-portfolio">
+        <SectionTitle
+          eyebrow="Portfólio de reformulações"
+          title="A evolução de cada desenho"
+          text="Cada caso será apresentado com a tattoo original e o resultado depois da reconstrução, mantendo o antes e o depois lado a lado."
+        />
+        <div className="ks-reformulacoes-grid">
+          {reformulacoesPortfolio.map((item, index) => (
+            <article className="ks-reformulacao-case" key={item.category}>
+              <header className="ks-reformulacao-case-header">
+                <span className="ks-label-caps">{item.category}</span>
+                <h3>{item.title}</h3>
+              </header>
+              <div className="ks-reformulacao-compare">
+                <ReformulacaoPhoto label="Antes" src={item.before} index={index} />
+                <span className="ks-reformulacao-arrow" aria-hidden="true">
+                  <ArrowRight size={18} />
+                </span>
+                <ReformulacaoPhoto label="Depois" src={item.after} index={index + 1} />
+              </div>
+              <p className="ks-reformulacao-case-note">Fotos reais do processo serão adicionadas neste espaço.</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <SectionStarBreak align="left" />
+
+      <section className="ks-section ks-surface-band">
+        <SectionTitle
+          eyebrow="Possibilidades"
+          title="Como a tattoo pode evoluir"
+          text="A solução respeita o desenho que já existe e aquilo que você deseja melhorar nele."
+        />
+        <div className="ks-card-grid three">
+          {reformulacoesServices.map((service, index) => (
+            <MiniCard
+              key={service.title}
+              number={String(index + 1).padStart(2, "0")}
+              title={service.title}
+              text={service.text}
+            />
+          ))}
+        </div>
+      </section>
+
+      <SectionStarBreak align="right" />
+
+      <section className="ks-section ks-section-cream">
+        <SectionTitle
+          eyebrow="Primeiro passo"
+          title="Como pedir uma avaliação"
+          text="Algumas informações simples ajudam a entender o que é possível antes da conversa sobre desenho e valores."
+        />
+        <div className="ks-card-grid three">
+          {reformulacoesEvaluation.map((step, index) => (
+            <MiniCard
+              key={step.title}
+              number={String(index + 1).padStart(2, "0")}
+              title={step.title}
+              text={step.text}
+            />
+          ))}
+        </div>
+      </section>
+
+      <CtaBand
+        title="Vamos reconstruir e melhorar sua tattoo?"
+        text="Envie uma foto e conte o que você gostaria de ajustar. A avaliação de cada reformulação é feita de forma individual."
+        cta="Quero avaliar minha tattoo"
+        to="/orcamento"
+      />
+    </>
+  );
+}
+
+function ReformulacaoPhoto({ label, src, index }: { label: "Antes" | "Depois"; src?: string; index: number }) {
+  return (
+    <figure className="ks-reformulacao-photo">
+      <span className="ks-reformulacao-photo-label">{label}</span>
+      {src ? (
+        <img src={src} alt={`Tattoo ${label.toLowerCase()} da reformulação`} loading="lazy" />
+      ) : (
+        <div className="ks-reformulacao-photo-placeholder" aria-label={`Espaço para a foto de ${label.toLowerCase()}`}>
+          <BrandStar variant={brandStarVariant(index)} size={120} className="ks-reformulacao-photo-star" />
+          <span>Adicionar foto</span>
+        </div>
+      )}
+    </figure>
   );
 }
 

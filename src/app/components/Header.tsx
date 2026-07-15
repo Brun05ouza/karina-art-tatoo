@@ -9,6 +9,7 @@ const navLinks = [
   { label: "Início", href: "/" },
   { label: "Sobre", href: "/sobre" },
   { label: "Portfólio", href: "/portfolio" },
+  { label: "Reformulações", href: "/reformulacoes" },
   { label: "Flash Tattoos", href: "/flash-tattoos" },
   { label: "Produtos", href: "/produtos" },
 ];
