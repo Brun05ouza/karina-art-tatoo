@@ -1,0 +1,9 @@
+import { CollectionManager } from "../components/CollectionManager";
+import { AdminPage } from "../components/Primitives";
+import { reformulationsStore } from "../data/stores";
+import type { ReformulationItem } from "../data/types";
+
+const categories = ["Cobertura", "Revitalização", "Correção de linhas", "Ampliação", "Integração", "Releitura"];
+const empty: ReformulationItem = { id: "", order: 1, active: true, title: "", description: "", category: categories[0], status: "Rascunho", beforeImageUrl: "", afterImageUrl: "", problem: "", solution: "", internalNote: "", imageUrl: "", imageKey: "" };
+
+export function ReformulacoesPage() { return <AdminPage eyebrow="Antes e depois" title="Reformulações" description="Conte o problema, a solução e apresente o resultado de cada processo."><CollectionManager config={{ repository: reformulationsStore, singular: "Reformulação", emptyItem: empty, categories, image: (item) => item.afterImageUrl || item.beforeImageUrl, secondary: (item) => item.solution || item.description || item.category, fields: [{ key: "beforeImageUrl", label: "Imagem antes", type: "image", imageKey: "beforeImageKey" }, { key: "afterImageUrl", label: "Imagem depois", type: "image", imageKey: "afterImageKey" }, { key: "title", label: "Título" }, { key: "category", label: "Categoria", type: "select", options: categories }, { key: "problem", label: "Problema inicial", type: "textarea" }, { key: "solution", label: "Solução criada", type: "textarea" }, { key: "description", label: "Descrição curta", type: "textarea" }, { key: "internalNote", label: "Observação interna", type: "textarea", hint: "Não será publicada no site." }, { key: "status", label: "Status", type: "select", options: ["Publicado", "Rascunho", "Oculto"] }, { key: "active", label: "Caso ativo", type: "toggle" }, { key: "order", label: "Ordem", type: "number" }] }} /></AdminPage>; }
