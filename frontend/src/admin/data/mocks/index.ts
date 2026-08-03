@@ -68,7 +68,9 @@ export const mockHome: HomeDocument = {
     "Referências, memória e proporção do corpo viram um desenho pensado para ter presença na pele, com equilíbrio, identidade e cuidado em cada detalhe.",
   processButton: "Conhecer a artista",
   processButtonUrl: "/sobre",
-  processImageUrl: "/assets/hero-home.png",
+  // Mesmo arquivo que o site usa na coluna do Processo criativo
+  // (tattooImages.sessionClose).
+  processImageUrl: "/assets/process/art-process-poster.jpg",
   processSteps: [
     { id: "step-1", label: "01 · Referência", active: true, order: 1 },
     { id: "step-2", label: "02 · Desenho", active: true, order: 2 },

@@ -1,10 +1,18 @@
 import { ArrowRight, Play } from "lucide-react";
 import { StarGlyph } from "../../app/components/StarGlyph";
+// Módulo compartilhado com o site: a prévia mostra os mesmos trabalhos que a
+// home publica, sem importar o App.tsx (que traria GSAP e Lenis).
+import { galleryItems } from "../../app/portfolio-works";
 import type { HomeCard, HomeDocument } from "../data/types";
 import { SitePreviewFrame } from "./SitePreviewFrame";
 
 /** Mesmos itens de app/components/Header.tsx. */
 const NAV_LINKS = ["Início", "Sobre", "Portfólio", "Reformulações", "Flash Tattoos", "Produtos"];
+
+/** Retrato da artista na janela do Processo criativo, igual ao site. */
+const PORTRAIT_URL = "/assets/karina-sarte.png";
+/** Poster do vídeo de processo do primeiro card de Serviços, igual ao site. */
+const PROCESS_POSTER_URL = "/assets/process/art-process-poster.jpg";
 
 /**
  * Prévia da Home.
@@ -118,6 +126,16 @@ export function HomePreview({ value }: { value: HomeDocument }) {
             </div>
             <div className="ks-editorial-split-media">
               {value.processImageUrl ? <img src={value.processImageUrl} alt="" /> : null}
+              {/* A janela com o retrato mora dentro do bloco da foto, igual ao
+                  site: no desktop ela fica centrada na divisória, no mobile no
+                  canto inferior da foto. */}
+              <div className="ks-editorial-split-portal" aria-hidden="true">
+                <div className="ks-editorial-split-portal-card">
+                  <div className="ks-window-portal">
+                    <img src={PORTRAIT_URL} alt="" />
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -135,7 +153,18 @@ export function HomePreview({ value }: { value: HomeDocument }) {
                   <a className="ks-service-card">
                     <div className="ks-service-card-media">
                       <div className="ks-window-portal">
-                        <div className="ks-numbered-placeholder" aria-hidden="true"><span>{pad(index)}</span></div>
+                        {/* Igual ao site: o primeiro card traz o vídeo de processo
+                            (poster + dica de hover) e os seguintes são numerados
+                            a partir de 01. A mídia do card ainda não é editável
+                            no painel, então a regra é espelhada daqui. */}
+                        {index === 0 ? (
+                          <div className="ks-hover-process-media">
+                            <img className="ks-hover-process-poster" src={PROCESS_POSTER_URL} alt={card.title} draggable="false" />
+                            <span className="ks-hover-process-hint">Ver processo</span>
+                          </div>
+                        ) : (
+                          <div className="ks-numbered-placeholder" aria-hidden="true"><span>{pad(index)}</span></div>
+                        )}
                       </div>
                     </div>
                     <div className="ks-service-card-body">
@@ -157,16 +186,18 @@ export function HomePreview({ value }: { value: HomeDocument }) {
               <h2 className="ks-headline-lg"><Filled value={value.portfolioTitle} fallback="Título do portfólio" /></h2>
               <p className="ks-body-lg ks-muted"><Filled value={value.portfolioText} fallback="Texto do portfólio" /></p>
             </div>
+            {/* Os mesmos trabalhos que a home publica, do módulo compartilhado.
+                Antes eram quadros numerados, que não existem mais no site. */}
             <div className="ks-mural-grid">
-              {[0, 1, 2, 3, 4, 5].map((index) => (
-                <div className={`ks-mural-item ${index === 0 ? "ks-mural-item-featured" : "ks-mural-item-image"}`} key={index}>
+              {galleryItems.filter((work) => work.featured).map((work) => (
+                <div className={`ks-mural-item ${"processVideo" in work ? "ks-mural-item-featured" : "ks-mural-item-image"}`} key={work.title}>
                   <a className="ks-mural-item-link">
                     <div className="ks-mural-item-media">
-                      <div className="ks-numbered-placeholder" aria-hidden="true"><span>{pad(index + 1)}</span></div>
+                      <img src={work.img} alt={work.alt} loading="lazy" />
                     </div>
                     <div className="ks-mural-item-caption">
-                      <span>{value.portfolioMode === "manual" ? "Seleção manual" : "Seleção automática"}</span>
-                      <strong>Trabalho {pad(index + 1)}</strong>
+                      <span>{work.label}</span>
+                      <strong>{work.title}</strong>
                     </div>
                   </a>
                 </div>

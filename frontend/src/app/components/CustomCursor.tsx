@@ -9,16 +9,23 @@ export function CustomCursor() {
   const raf = useRef<number>(0);
   const visibleRef = useRef(false);
   const stateRef = useRef<CursorState>("default");
+  const enabledRef = useRef(false);
   const [visible, setVisible] = useState(false);
   const [pressed, setPressed] = useState(false);
   const [state, setState] = useState<CursorState>("default");
 
   useEffect(() => {
-    const canUseCustomCursor = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    /**
+     * No iPad com trackpad ou mouse o ponteiro PRIMÁRIO continua sendo o toque,
+     * então (hover: hover) e (pointer: fine) falham. As variantes any-* olham
+     * todos os dispositivos de entrada disponíveis e é isso que detecta o
+     * trackpad. Mantemos a checagem primária primeiro, que cobre o desktop.
+     */
+    const hasFinePointer =
+      window.matchMedia("(hover: hover) and (pointer: fine)").matches ||
+      window.matchMedia("(any-hover: hover) and (any-pointer: fine)").matches;
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!canUseCustomCursor || reduceMotion) return;
-
-    document.documentElement.classList.add("ks-custom-cursor-enabled");
+    if (!hasFinePointer || reduceMotion) return;
 
     const updateVisible = (next: boolean) => {
       if (visibleRef.current === next) return;
@@ -32,7 +39,38 @@ export function CustomCursor() {
       setState(next);
     };
 
-    const onMove = (event: MouseEvent) => {
+    const loop = () => {
+      current.current.x += (pointer.current.x - current.current.x) * 0.38;
+      current.current.y += (pointer.current.y - current.current.y) * 0.38;
+
+      if (mainRef.current) {
+        mainRef.current.style.transform = `translate3d(${current.current.x}px, ${current.current.y}px, 0) translate(-50%, -50%)`;
+      }
+
+      raf.current = requestAnimationFrame(loop);
+    };
+
+    /**
+     * Só escondemos o cursor nativo depois de ver um mouse de verdade. Num iPad
+     * que tem só Apple Pencil, any-pointer: fine também casa — e aí aplicar
+     * cursor: none sem nunca mostrar a estrela não faria sentido.
+     */
+    const enable = () => {
+      if (enabledRef.current) return;
+      enabledRef.current = true;
+      document.documentElement.classList.add("ks-custom-cursor-enabled");
+      raf.current = requestAnimationFrame(loop);
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      // Um toque de dedo no iPad também dispara mousemove/pointermove. Sem este
+      // filtro a estrela pularia para o ponto tocado e ficaria parada lá.
+      if (event.pointerType !== "mouse") {
+        updateVisible(false);
+        return;
+      }
+
+      enable();
       pointer.current = { x: event.clientX, y: event.clientY };
 
       if (!visibleRef.current) {
@@ -54,39 +92,31 @@ export function CustomCursor() {
       else updateState("default");
     };
 
-    const onDown = () => setPressed(true);
-    const onUp = () => setPressed(false);
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType === "mouse") setPressed(true);
+    };
+    const onPointerUp = () => setPressed(false);
     const onLeave = () => updateVisible(false);
-    const onEnter = (event: MouseEvent) => {
+    const onEnter = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
       if (event.target instanceof Element && event.target.closest("input, textarea, select, [contenteditable='true']")) return;
       updateVisible(true);
     };
 
-    const loop = () => {
-      current.current.x += (pointer.current.x - current.current.x) * 0.38;
-      current.current.y += (pointer.current.y - current.current.y) * 0.38;
-
-      if (mainRef.current) {
-        mainRef.current.style.transform = `translate3d(${current.current.x}px, ${current.current.y}px, 0) translate(-50%, -50%)`;
-      }
-
-      raf.current = requestAnimationFrame(loop);
-    };
-
-    raf.current = requestAnimationFrame(loop);
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mousedown", onDown);
-    window.addEventListener("mouseup", onUp);
-    document.addEventListener("mouseleave", onLeave);
-    document.addEventListener("mouseenter", onEnter);
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointerup", onPointerUp);
+    document.addEventListener("pointerleave", onLeave);
+    document.addEventListener("pointerenter", onEnter);
 
     return () => {
       document.documentElement.classList.remove("ks-custom-cursor-enabled");
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mousedown", onDown);
-      window.removeEventListener("mouseup", onUp);
-      document.removeEventListener("mouseleave", onLeave);
-      document.removeEventListener("mouseenter", onEnter);
+      enabledRef.current = false;
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointerup", onPointerUp);
+      document.removeEventListener("pointerleave", onLeave);
+      document.removeEventListener("pointerenter", onEnter);
       cancelAnimationFrame(raf.current);
     };
   }, []);

@@ -27,6 +27,8 @@ import { Preloader } from "./components/Preloader";
 import { HoverProcessMedia } from "./components/HoverProcessMedia";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
+import { AdminShortcut } from "./components/AdminShortcut";
+import { galleryItems, PORTFOLIO_CATEGORIES } from "./portfolio-works";
 import { BrandStar } from "./components/BrandStar";
 import { StencilCrosshair } from "./components/StencilCrosshair";
 import { CustomCursor } from "./components/CustomCursor";
@@ -142,11 +144,6 @@ function tattooChoiceMessage(tattooName: string) {
   return `Olá, Karina Sarte! Vim pelo site e escolhi a tattoo "${tattooName}". Gostaria de saber mais.`;
 }
 
-function filterPortfolioCategory(itemCategory: string, filter: string) {
-  if (filter === "Projetos Autorais") return itemCategory === "Autoral";
-  if (filter === "Cicatrizadas") return itemCategory === "Cicatrizada";
-  return itemCategory === filter;
-}
 
 function tattooStatusClass(status: string) {
   const normalized = status.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -156,46 +153,6 @@ function tattooStatusClass(status: string) {
   return "";
 }
 
-const galleryItems = [
-  {
-    title: "Fine line botânica",
-    category: "Fine Line",
-    img: tattooImages.fineLineBotanical,
-    alt: "Tatuagem botânica delicada em fine line",
-    processVideo: processVideos.artProcess,
-  },
-  {
-    title: "Traço ornamental",
-    category: "Autoral",
-    img: tattooImages.ornamental,
-    alt: "Projeto autoral de tatuagem ornamental",
-    processVideo: processVideos.artProcess,
-  },
-  {
-    title: "Freehand orgânico",
-    category: "Blackwork",
-    img: tattooImages.blackworkOrganic,
-    alt: "Tatuagem autoral em blackwork orgânico",
-  },
-  {
-    title: "Símbolos pequenos",
-    category: "Minimalista",
-    img: tattooImages.minimalSymbols,
-    alt: "Tatuagens pequenas e minimalistas",
-  },
-  {
-    title: "Floral cicatrizado",
-    category: "Cicatrizada",
-    img: tattooImages.floralHealed,
-    alt: "Tatuagem floral cicatrizada",
-  },
-  {
-    title: "Flash autoral",
-    category: "Flash Tattoo",
-    img: tattooImages.flashSheet,
-    alt: "Flash tattoo autoral em preto",
-  },
-];
 
 const flashItems = [
   {
@@ -469,6 +426,7 @@ function AppLayout({
         </defs>
       </svg>
       <div className="ks-grain" aria-hidden="true" />
+      <AdminShortcut />
       <CustomCursor />
       <Preloader
         onComplete={() => {
@@ -624,47 +582,6 @@ const homeServiceCards = [
   },
 ] as const;
 
-const homeMuralItems = [
-  {
-    title: "Orquídeas",
-    category: "Vídeo de processo",
-    alt: "Processo de criação de tatuagem de orquídeas",
-    processVideo: {
-      poster: "/assets/recent-projects/orquideas-poster.jpg",
-      src: "/assets/recent-projects/orquideas-processo.mp4",
-    },
-  },
-  {
-    title: "Columbina",
-    category: "Projeto autoral",
-    alt: "Tatuagem autoral Columbina com composição floral e olhar",
-    img: "/assets/recent-projects/columbina.jpg",
-  },
-  {
-    title: "Mandala autoral",
-    category: "Ornamental",
-    alt: "Tatuagem de mandala ornamental autoral",
-    img: "/assets/recent-projects/mandala.jpg",
-  },
-  {
-    title: "Orquídea",
-    category: "Fine line",
-    alt: "Tatuagem de orquídea em traço fino no pescoço",
-    img: "/assets/recent-projects/orquidea-pescoco.jpg",
-  },
-  {
-    title: "Kira",
-    category: "Pet tattoo",
-    alt: "Tatuagem autoral de cachorro chamada Kira",
-    img: "/assets/recent-projects/kira.jpg",
-  },
-  {
-    title: "Lua botânica",
-    category: "Projeto autoral",
-    alt: "Tatuagem autoral de lua, folhas e andorinha",
-    img: "/assets/recent-projects/lua-botanica.jpg",
-  },
-] as const;
 
 function HomePage() {
   return (
@@ -672,7 +589,6 @@ function HomePage() {
       <HomeHero />
       <SectionStarBreak align="right" />
       <EditorialSplitSection />
-      <EditorialWindowBridge />
       <SectionStarBreak align="right" light />
       <HomeServicesSection />
       <SectionStarBreak align="left" light />
@@ -794,33 +710,36 @@ function EditorialSplitSection() {
       </motion.div>
       <div className="ks-editorial-split-media">
         <img
-          src={tattooImages.tattooInProgress}
-          alt="Karina Sarte"
+          src={tattooImages.sessionClose}
+          alt="Processo de criação de uma tatuagem"
           loading="lazy"
         />
-      </div>
-    </section>
-  );
-}
-
-function EditorialWindowBridge() {
-  return (
-    <section className="ks-editorial-window-bridge" aria-label="Processo de tatuagem em destaque">
-      <motion.div
-        className="ks-editorial-window-bridge-card"
-        initial={{ opacity: 0, y: 34, rotate: -5 }}
-        whileInView={{ opacity: 1, y: 0, rotate: -2 }}
-        viewport={{ once: true, margin: "-8%" }}
-        transition={{ duration: 0.9, ease: EASE }}
-      >
-        <div className="ks-window-portal">
-          <img
-            src={tattooImages.tattooInProgress}
-            alt="Karina Sarte"
-            loading="lazy"
-          />
+        {/* A janela vive DENTRO do bloco da foto de propósito. Como irmã, em
+            coluna única ela reservava uma faixa de altura própria e, sendo
+            estreita, sobrava um bloco vazio ao lado — o "buraco" entre a foto e o
+            texto. Aqui ela é absoluta em relação à foto e não ocupa espaço.
+            Bônus no desktop: a foto é a coluna da direita, então a borda
+            esquerda dela É a divisória — left: 0 centra a janela no meio da seção.
+            O div externo posiciona e o interno anima: o motion escreve transform
+            inline e sobrescreveria o translate de centralização. */}
+        <div className="ks-editorial-split-portal" aria-hidden="true">
+          <motion.div
+            className="ks-editorial-split-portal-card"
+            initial={{ opacity: 0, y: 34, rotate: -5 }}
+            whileInView={{ opacity: 1, y: 0, rotate: -2 }}
+            viewport={{ once: true, margin: "-8%" }}
+            transition={{ duration: 0.9, ease: EASE }}
+          >
+            <div className="ks-window-portal">
+              <img
+                src={tattooImages.artistPortrait}
+                alt="Karina Sarte"
+                loading="lazy"
+              />
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
@@ -887,7 +806,7 @@ function MuralPortfolioPreview() {
         text="Um recorte do processo criativo, com o vídeo como destaque e cards editoriais para conduzir a navegação."
       />
       <div className="ks-mural-grid">
-        {homeMuralItems.map((item, index) => (
+        {galleryItems.filter((item) => item.featured).map((item, index) => (
           <motion.div
             key={item.title}
             className={`ks-mural-item${"processVideo" in item ? " ks-mural-item-featured" : " ks-mural-item-image"}`}
@@ -905,16 +824,14 @@ function MuralPortfolioPreview() {
                     alt={item.alt}
                     loading="lazy"
                   />
-                ) : "img" in item ? (
-                  <img src={item.img} alt={item.alt} loading="lazy" />
                 ) : (
-                  <div className="ks-mural-placeholder">
-                    <span className="ks-mural-placeholder-label">{item.category}</span>
-                  </div>
+                  <img src={item.img} alt={item.alt} loading="lazy" />
                 )}
               </div>
               <div className="ks-mural-item-caption">
-                <span>{item.category}</span>
+                {/* label é o rótulo descritivo ("Pet tattoo"); a categoria
+                    canônica serve ao filtro da página, não à legenda. */}
+                <span>{item.label}</span>
                 <strong>{item.title}</strong>
               </div>
             </Link>
@@ -1609,12 +1526,18 @@ function AboutPage() {
 }
 
 function PortfolioPage() {
-  const categories = ["Todos", "Fine Line", "Minimalista", "Blackwork", "Projetos Autorais", "Flash Tattoo", "Cicatrizadas"];
   const [activeCategory, setActiveCategory] = useState("Todos");
+  // Só mostramos filtros que têm trabalho publicado, na ordem canônica. Botão
+  // que não filtra nada é frustrante — e quando a Karina cadastrar trabalhos de
+  // outras categorias no painel, o filtro aparece sozinho.
+  const categories = [
+    "Todos",
+    ...PORTFOLIO_CATEGORIES.filter((category) => galleryItems.some((item) => item.category === category)),
+  ];
   const filteredItems =
     activeCategory === "Todos"
       ? galleryItems
-      : galleryItems.filter((item) => filterPortfolioCategory(item.category, activeCategory));
+      : galleryItems.filter((item) => item.category === activeCategory);
 
   return (
     <>
@@ -1637,7 +1560,13 @@ function PortfolioPage() {
             </button>
           ))}
         </div>
-        <ImageGrid items={filteredItems} />
+        {filteredItems.length > 0 ? (
+          <ImageGrid items={filteredItems} />
+        ) : (
+          <p className="ks-body-lg ks-muted" style={{ textAlign: "center" }} role="status">
+            Ainda não há trabalhos publicados nesta categoria.
+          </p>
+        )}
         <CtaBand
           title="Gostei desse estilo, quero um orçamento"
           text="Envie sua ideia e referências para construirmos uma proposta personalizada."
@@ -2232,14 +2161,29 @@ function ImageGrid({ items }: { items: typeof galleryItems }) {
     <div className="ks-image-grid">
       {items.map((item, index) => (
         <article className="ks-image-card" key={item.title}>
-          <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
-          <BrandStar
-            variant={brandStarVariant(index)}
-            size={180}
-            className="ks-card-starfield ks-brand-star-light"
+          {/* Antes daqui saía um NumberedPlaceholder: a página inteira mostrava
+              quadros numerados e o item.img nunca era renderizado. */}
+          {"processVideo" in item && item.processVideo ? (
+            <HoverProcessMedia
+              poster={item.processVideo.poster}
+              videoSrc={item.processVideo.src}
+              alt={item.alt}
+              loading={index < 2 ? "eager" : "lazy"}
+            />
+          ) : (
+            <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+          )}
+          {/* PNG em vez do BrandStar: os SVGs de estrela têm 1,6 a 3,2 MB cada, e
+              o CSS de .ks-card-starfield já define o tamanho. */}
+          <img
+            className="ks-brand-star ks-brand-star-light ks-card-starfield"
+            src="/assets/brand/star-karina-outline.png"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
           />
           <div className="ks-image-card-overlay">
-            <span className="ks-label-caps">{item.category}</span>
+            <span className="ks-label-caps">{item.label}</span>
             <h3>{item.title}</h3>
           </div>
         </article>

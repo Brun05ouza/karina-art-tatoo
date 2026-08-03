@@ -248,7 +248,18 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   to { transform: rotate(0deg); }
 }
 
-@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+/* Esconde a estrela quando NÃO existe nenhum ponteiro preciso com hover.
+   As variantes any-* são necessárias porque no iPad com trackpad o ponteiro
+   primário segue sendo o toque: (hover: none) e (pointer: coarse) casariam e
+   apagariam o cursor mesmo com o trackpad conectado. Espelha a checagem do
+   CustomCursor.tsx. */
+@media not all and (any-hover: hover) and (any-pointer: fine) {
+  .ks-star-cursor {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .ks-star-cursor {
     display: none;
   }
@@ -372,26 +383,42 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   filter: brightness(1.65) saturate(0.82) drop-shadow(0 2px 1px rgba(var(--ks-ink-rgb), 0.18));
 }
 
-/* Divisores estrelados entre as seções das páginas internas. */
-.ks-page-sections:not(.ks-page-sections-reformulacoes) > section:not(:first-child),
-.ks-route-content > section:not(:first-child) {
+/* ── Divisores estrelados entre seções ───────────────────────────────────────
+   Valem para as páginas internas (.ks-page-sections), para a home
+   (.ks-home-flow) e para rotas sem wrapper próprio (.ks-route-content).
+   Reformulações fica de fora porque traz as quebras explícitas no JSX.
+
+   Cada transição recebe DOIS grupos: o principal (::before) de um lado e um
+   secundário (::after), menor e mais discreto, do lado oposto. Os lados
+   alternam a cada seção para o ritmo não ficar mecânico.
+
+   :is() colapsa a lista de wrappers — antes cada regra repetia os seletores. */
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child) {
   position: relative;
 }
 
-.ks-page-sections:not(.ks-page-sections-reformulacoes) > section:not(:first-child)::before,
-.ks-route-content > section:not(:first-child)::before {
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child)::before,
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child)::after {
   content: "";
   position: absolute;
   top: 0;
   z-index: 8;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 2px 1px rgba(var(--ks-ink-rgb), 0.12));
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Grupo principal */
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child)::before {
   width: clamp(250px, 28vw, 430px);
   height: clamp(160px, 18vw, 260px);
+  opacity: 0.76;
   background-image:
     url("/assets/brand/star-karina-filled.png"),
     url("/assets/brand/star-karina-outline.png"),
     url("/assets/brand/star-karina-filled.png"),
     url("/assets/brand/star-karina-outline.png");
-  background-repeat: no-repeat;
   background-position:
     left 4% top 22%,
     left 43% top 0,
@@ -402,27 +429,52 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     24% auto,
     36% auto,
     18% auto;
-  opacity: 0.76;
-  filter: drop-shadow(0 2px 1px rgba(var(--ks-ink-rgb), 0.12));
-  transform: translateY(-50%);
-  pointer-events: none;
 }
 
-.ks-page-sections:not(.ks-page-sections-reformulacoes) > section:nth-of-type(even)::before,
-.ks-route-content > section:nth-of-type(even)::before {
+/* Grupo secundário, no lado oposto */
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child)::after {
+  width: clamp(165px, 19vw, 300px);
+  height: clamp(108px, 12vw, 185px);
+  opacity: 0.52;
+  background-image:
+    url("/assets/brand/star-karina-outline.png"),
+    url("/assets/brand/star-karina-filled.png"),
+    url("/assets/brand/star-karina-outline.png");
+  background-position:
+    left 8% top 34%,
+    left 54% top 2%,
+    right 2% bottom 14%;
+  background-size:
+    30% auto,
+    19% auto,
+    25% auto;
+}
+
+/* Lados alternados: principal e secundário sempre em bordas opostas. */
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:nth-of-type(even)::before {
   right: clamp(-54px, 3vw, 46px);
   transform: translateY(-50%) scaleX(-1);
 }
 
-.ks-page-sections:not(.ks-page-sections-reformulacoes) > section:nth-of-type(odd)::before,
-.ks-route-content > section:nth-of-type(odd)::before {
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:nth-of-type(even)::after {
+  left: clamp(-38px, 2vw, 34px);
+}
+
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:nth-of-type(odd)::before {
   left: clamp(-54px, 3vw, 46px);
 }
 
-.ks-page-sections > .ks-section-wine::before,
-.ks-page-sections > .ks-cta-band::before,
-.ks-route-content > .ks-section-wine::before,
-.ks-route-content > .ks-cta-band::before {
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:nth-of-type(odd)::after {
+  right: clamp(-38px, 2vw, 34px);
+  transform: translateY(-50%) scaleX(-1);
+}
+
+/* Sobre fundos escuros as estrelas precisam clarear para aparecer.
+   O seletor repete o wrapper e o :not(:first-child) da regra base de propósito:
+   sem isso a especificidade fica abaixo dela — (0,2,1) contra (0,3,1) — e o
+   filtro nunca aplica. Assim fica (0,4,1) e vence independente da ordem. */
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child):is(.ks-section-wine, .ks-cta-band, .ks-services-section)::before,
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child):is(.ks-section-wine, .ks-cta-band, .ks-services-section)::after {
   opacity: 0.64;
   filter: brightness(1.65) saturate(0.82) drop-shadow(0 2px 1px rgba(var(--ks-ink-rgb), 0.18));
 }
@@ -3134,18 +3186,73 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   }
   .ks-gallery-offset { margin-top: 0 !important; }
 
-  /* ── Card grids → single col ── */
-  .ks-image-grid,
+  /* ── Card grids de texto → uma coluna ── */
   .ks-card-grid.four,
   .ks-card-grid.three,
   .ks-step-grid {
     grid-template-columns: 1fr !important;
   }
-  .ks-image-card,
-  .ks-image-card img { min-height: 300px; }
   .ks-card,
   .ks-product-card,
   .ks-step { min-height: auto; }
+
+  /* ── Grade de fotos do portfólio → duas colunas ─────────────────────────────
+     Ficava em uma coluna: 6 fotos ocupavam 2838px de rolagem, uma por tela.
+     Duas colunas espelham o mural da home (que já era assim) e cortam a grade
+     para cerca de um terço da altura.
+     min-height: 0 é essencial — com 300px de altura mínima num card de ~167px de
+     largura, o object-fit: cover voltaria a recortar as fotos verticais. */
+  .ks-image-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px;
+  }
+
+  .ks-image-card,
+  .ks-image-card img {
+    min-height: 0;
+  }
+
+  /* Card pequeno pede legenda menor, senão o degradê engole a foto. */
+  .ks-image-card-overlay {
+    padding: 40px 12px 12px;
+  }
+
+  .ks-image-card h3 {
+    margin-top: 4px;
+    font-size: 16px;
+  }
+
+  .ks-image-card .ks-label-caps {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+  }
+
+  /* Sem estrela nos cards pequenos: a 94px ela cobria mais da metade da largura.
+     O mural da home também não usa. */
+  .ks-image-card .ks-card-starfield {
+    display: none;
+  }
+
+  /* Filtros: faixa rolável em vez de quebrar em duas linhas — e continua
+     funcionando quando houver as seis categorias. */
+  .ks-filter-row {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    margin-inline: -20px;
+    padding-inline: 20px;
+    padding-bottom: 4px;
+  }
+
+  .ks-filter-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ks-filter-row button {
+    flex: 0 0 auto;
+  }
 
   /* ── CTA band ── */
   .ks-cta-band { padding-inline: 20px; }
@@ -3330,7 +3437,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     max-width: none;
   }
 
-  .ks-editorial-split-media img {
+  .ks-editorial-split-media > img {
     min-height: min(72vw, 360px);
     object-position: center 32%;
   }
@@ -3552,6 +3659,39 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
 .ks-home-flow .ks-editorial-split-text {
   padding: clamp(56px, 8vw, 96px) clamp(24px, 5vw, 64px);
   background: var(--ks-surface-warm);
+}
+
+/* De 768px para cima a seção tem duas colunas e a janela fica centrada sobre a
+   divisória, invadindo a metade esquerda: reservamos espaço à direita para o
+   título não correr por baixo dela. Em ≤767px a seção empilha e o padding
+   padrão volta a valer. */
+/* Espaço à direita do texto só onde a seção realmente tem DUAS colunas e a
+   janela fica sobre a divisória, invadindo a metade do texto. Medido: duas
+   colunas acontecem acima de 1120px e na faixa 901–1220 em paisagem. Em retrato
+   até 1220px a seção é uma coluna só, a janela cai centralizada sobre a foto e
+   reservar 150px ali só estreitaria o texto sem motivo.
+
+   O combinador > eleva a especificidade para (0,3,0) de propósito: blocos mais
+   abaixo no arquivo redefinem `padding` pelo atalho com (0,2,0) e zerariam este
+   padding-right, deixando o título correr por baixo da janela. */
+@media (min-width: 1121px),
+       (min-width: 901px) and (max-width: 1220px) and (orientation: landscape) {
+  .ks-home-flow .ks-editorial-split > .ks-editorial-split-text {
+    padding-right: clamp(150px, 15vw, 230px);
+  }
+
+  /* Duas colunas: a janela sai do canto e vai para o centro da seção. Como a
+     foto é a coluna da direita, a borda esquerda dela é exatamente a divisória,
+     então left: 0 + translateX(-50%) centra a janela no meio da seção sem
+     depender da largura das colunas. */
+  .ks-home-flow .ks-editorial-split .ks-editorial-split-portal {
+    top: 50%;
+    bottom: auto;
+    left: 0;
+    right: auto;
+    height: min(78%, 470px);
+    transform: translate(-50%, -50%);
+  }
 }
 
 .ks-home-flow .ks-editorial-split-text::after {
@@ -4170,7 +4310,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   background: var(--ks-teal-dark);
 }
 
-.ks-editorial-split-media img {
+.ks-editorial-split-media > img {
   width: 100%;
   height: 100%;
   min-height: 420px;
@@ -4180,46 +4320,42 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   opacity: 0.55;
 }
 
-.ks-editorial-window-bridge {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  min-height: clamp(240px, 26vw, 360px);
-  padding: clamp(28px, 4vw, 54px) clamp(24px, 5vw, 64px);
-  background: linear-gradient(
-    to bottom,
-    var(--ks-purple-dark) 0%,
-    var(--ks-purple-deep) 38%,
-    var(--ks-purple-deep) 100%
-  );
-  overflow: visible;
-  isolation: isolate;
+/* Janela com o retrato da artista, posicionada dentro do bloco da foto.
+   A altura manda (e a largura vem do aspect-ratio) porque a seção tem altura
+   limitada: dimensionar pela largura estouraria o recorte.
+
+   PADRÃO = canto inferior direito da foto. É o comportamento seguro em qualquer
+   largura, inclusive nas várias faixas em que a seção é uma coluna só. A versão
+   centrada na divisória vem depois, restrita às faixas de duas colunas. */
+.ks-editorial-split-portal {
+  position: absolute;
+  right: clamp(14px, 3vw, 26px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 3;
+  height: min(56%, 320px);
+  aspect-ratio: 29 / 54;
+  pointer-events: none;
 }
 
-.ks-editorial-window-bridge::before {
-  display: none;
-}
-
-.ks-editorial-window-bridge-card {
-  position: relative;
-  z-index: 1;
-  width: min(25vw, 300px);
-  max-width: calc(100vw - 48px);
+.ks-editorial-split-portal-card {
+  width: 100%;
+  height: 100%;
   transform-origin: center;
 }
 
-.ks-editorial-window-bridge-card .ks-window-portal {
-  aspect-ratio: 29 / 54;
-  filter: drop-shadow(0 22px 28px rgba(var(--ks-ink-rgb), 0.25));
+.ks-editorial-split-portal .ks-window-portal {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  filter: drop-shadow(0 22px 34px rgba(var(--ks-ink-rgb), 0.34));
 }
 
-.ks-editorial-window-bridge-card .ks-window-portal::after {
-  opacity: 0.72;
-  filter: invert(1) brightness(0.92) drop-shadow(0 0 1px rgba(var(--ks-beige-light-rgb), 0.45));
+.ks-editorial-split-portal .ks-window-portal::after {
+  opacity: 0.78;
+  filter: invert(1) brightness(0.92) drop-shadow(0 0 2px rgba(var(--ks-ink-rgb), 0.55));
 }
 
-.ks-editorial-window-bridge-card .ks-window-portal > img {
+.ks-editorial-split-portal .ks-window-portal > img {
   object-position: center 24%;
   filter: grayscale(22%) sepia(12%) contrast(1.04);
 }
@@ -4787,6 +4923,12 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     overflow: hidden;
   }
 
+  /* A janela não precisa de regra aqui: sendo absoluta dentro da foto, ela
+     acompanha a foto em qualquer arranjo de colunas. Este arquivo tem 23 regras
+     concorrentes de grid-template-columns para .ks-editorial-split, várias
+     devolvendo duas colunas abaixo de 1120px — depender da contagem de colunas
+     era o que quebrava. */
+
   .ks-home-section-intro {
     padding-block: clamp(64px, 12vw, 96px);
   }
@@ -5172,7 +5314,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     min-height: 280px;
   }
 
-  .ks-editorial-split-media img {
+  .ks-editorial-split-media > img {
     min-height: 280px;
     object-position: center 38%;
   }
@@ -5198,19 +5340,9 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     letter-spacing: 0.14em;
   }
 
-  .ks-editorial-window-bridge {
-    min-height: 210px;
-    padding: 20px;
-  }
-
-  .ks-editorial-window-bridge::before {
-    left: 20px;
-    right: 20px;
-  }
-
-  .ks-editorial-window-bridge-card {
-    width: min(68vw, 260px);
-  }
+  /* A janela é absoluta dentro da foto e já cai no canto inferior direito pela
+     regra base — não precisa de nada aqui. Antes ela era irmã da foto e ficava
+     no fluxo, reservando uma faixa de altura que sobrava vazia ao lado dela. */
 
   .ks-home-hero-starfield,
   .ks-home-section-intro-starfield,
@@ -5276,23 +5408,38 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     width: 44px;
   }
 
-  .ks-page-sections:not(.ks-page-sections-reformulacoes) > section:not(:first-child)::before,
-  .ks-route-content > section:not(:first-child)::before {
+  :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child)::before {
     width: 230px;
     height: 156px;
     opacity: 0.66;
   }
 
-  .ks-page-sections:not(.ks-page-sections-reformulacoes) > section:nth-of-type(even)::before,
-  .ks-route-content > section:nth-of-type(even)::before {
+  /* No celular o grupo secundário fica bem menor: com pouca largura os dois
+     grupos se encontrariam no meio da tela. */
+  :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child)::after {
+    width: 132px;
+    height: 92px;
+    opacity: 0.4;
+  }
+
+  :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:nth-of-type(even)::before {
     right: -42px;
     transform: translateY(-48%) scaleX(-1);
   }
 
-  .ks-page-sections:not(.ks-page-sections-reformulacoes) > section:nth-of-type(odd)::before,
-  .ks-route-content > section:nth-of-type(odd)::before {
+  :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:nth-of-type(even)::after {
+    left: -26px;
+    transform: translateY(-48%);
+  }
+
+  :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:nth-of-type(odd)::before {
     left: -42px;
     transform: translateY(-48%);
+  }
+
+  :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:nth-of-type(odd)::after {
+    right: -26px;
+    transform: translateY(-48%) scaleX(-1);
   }
 
   .ks-card-starfield,
@@ -5633,7 +5780,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   }
 
   .ks-editorial-split-media,
-  .ks-editorial-split-media img {
+  .ks-editorial-split-media > img {
     min-height: 100%;
   }
 
