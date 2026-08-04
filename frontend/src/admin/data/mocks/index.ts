@@ -69,8 +69,8 @@ export const mockHome: HomeDocument = {
   processButton: "Conhecer a artista",
   processButtonUrl: "/sobre",
   // Mesmo arquivo que o site usa na coluna do Processo criativo
-  // (tattooImages.sessionClose).
-  processImageUrl: "/assets/process/art-process-poster.jpg",
+  // (tattooImages.artistDetail).
+  processImageUrl: "/assets/karina-sarte-detalhe.jpg",
   processSteps: [
     { id: "step-1", label: "01 · Referência", active: true, order: 1 },
     { id: "step-2", label: "02 · Desenho", active: true, order: 2 },

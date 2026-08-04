@@ -862,6 +862,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   max-width: min(960px, 72vw);
 }
 
+
 .ks-page-hero-starfield {
   position: absolute;
   top: clamp(118px, 18vh, 190px);
@@ -2050,7 +2051,8 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  /* 10px era muito apertado perto das grades vizinhas, que usam 24–28px. */
+  gap: clamp(14px, 1.8vw, 24px);
 }
 
 .ks-product-visual-card {
@@ -2058,8 +2060,41 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   display: block;
   overflow: hidden;
   aspect-ratio: 3 / 4;
+  /* Sem foto para preencher, um card de 533x710 (o que dava em 2 colunas) fica
+     um vazio enorme. O teto de altura deixa o card compacto e legível. */
+  max-height: 420px;
+  border: 1px solid rgba(var(--ks-ink-rgb), 0.14);
   text-decoration: none;
   background: var(--ks-surface-low);
+}
+
+/* Estrela da marca no lugar da foto ausente. */
+.ks-product-visual-mark {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, rgba(var(--ks-beige-light-rgb), 1), rgba(var(--ks-peach-rgb), 0.55));
+}
+
+/* Repete .ks-product-visual-card no seletor de propósito: existe uma regra
+   `.ks-product-visual-card img { width: 100%; height: 100% }`, herdada da foto de
+   produto que nunca era renderizada, com a mesma especificidade e mais abaixo no
+   arquivo — ela esticava a estrela para 130x411 e deformava o desenho. */
+.ks-product-visual-card .ks-product-visual-mark img {
+  width: 46%;
+  max-width: 130px;
+  height: auto;
+  opacity: 0.34;
+  filter: brightness(0) saturate(100%);
+  transform: rotate(-13deg);
+  transition: transform 0.6s ease, opacity 0.45s ease;
+}
+
+.ks-product-visual-card:hover .ks-product-visual-mark img {
+  opacity: 0.46;
+  transform: rotate(-8deg) scale(1.05);
 }
 
 .ks-product-visual-card img {
@@ -2159,6 +2194,8 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   line-height: 1.1;
 }
 
+/* Sempre visível: o texto era revelado no hover, e num toque não existe hover —
+   no celular a descrição e o botão simplesmente nunca apareciam. */
 .ks-product-visual-hover-text {
   margin: 0 0 14px;
   max-width: 28ch;
@@ -2166,14 +2203,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   font-size: 13px;
   font-weight: 300;
   line-height: 1.5;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.35s ease 0.05s, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.05s;
-}
-
-.ks-product-visual-card:hover .ks-product-visual-hover-text {
   opacity: 1;
-  transform: translateY(0);
 }
 
 .ks-product-visual-cta {
@@ -2188,10 +2218,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   font-size: var(--ks-text-ui-sm);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.35s ease 0.1s, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1) 0.1s,
-              background 0.25s ease, border-color 0.25s ease;
+  transition: background 0.25s ease, border-color 0.25s ease;
   width: fit-content;
 }
 
@@ -3094,6 +3121,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   .ks-page-hero-content {
     max-width: 100%;
   }
+
 
   .ks-page-hero-image {
     object-position: center 22%;
@@ -5594,9 +5622,17 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     font-size: clamp(16px, 5vw, 20px);
   }
 
-  .ks-product-visual-hover-text,
-  .ks-product-visual-cta {
-    display: none;
+  /* Uma coluna com card mais baixo: em 2 colunas o card fica 167x209 e nao
+     cabe titulo + descricao + botao. Antes a solucao era esconder os dois,
+     o que no celular apagava a informacao toda. */
+  .ks-products-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .ks-product-visual-card {
+    aspect-ratio: 3 / 2;
+    max-height: 250px;
   }
 }
 

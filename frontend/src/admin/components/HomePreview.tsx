@@ -9,8 +9,10 @@ import { SitePreviewFrame } from "./SitePreviewFrame";
 /** Mesmos itens de app/components/Header.tsx. */
 const NAV_LINKS = ["Início", "Sobre", "Portfólio", "Reformulações", "Flash Tattoos", "Produtos"];
 
-/** Retrato da artista na janela do Processo criativo, igual ao site. */
-const PORTRAIT_URL = "/assets/karina-sarte.png";
+/** Retrato da artista na janela do Processo criativo, igual ao site
+ *  (tattooImages.artistPortrait). Vertical de propósito: o molde em arco tem
+ *  aspecto 0,537 e o retrato quadrado antigo era recortado pela metade. */
+const PORTRAIT_URL = "/assets/karina-sarte-retrato.jpg";
 /** Poster do vídeo de processo do primeiro card de Serviços, igual ao site. */
 const PROCESS_POSTER_URL = "/assets/process/art-process-poster.jpg";
 

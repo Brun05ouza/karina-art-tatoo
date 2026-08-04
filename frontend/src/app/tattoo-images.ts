@@ -8,6 +8,13 @@ const localImages = {
   hero: "/assets/hero.jpeg",
   tattoo: "/assets/hero-home.png",
   artist: "/assets/karina-sarte.png",
+  /** Retrato vertical (1290x2293). O aspecto 0,563 casa com o molde de janela
+   *  em arco (29/54 = 0,537) — o artist quadrado era recortado pela metade. */
+  artistVertical: "/assets/karina-sarte-retrato.jpg",
+  /** Detalhe de mão, unhas, anéis e a tattoo de estrela no dedo (1290x2293).
+   *  Traz a marca "© Meta AI" no canto inferior direito; o enquadramento do
+   *  herói é escolhido para deixá-la fora do recorte. */
+  artistDetail: "/assets/karina-sarte-detalhe.jpg",
   process: "/assets/process/art-process-poster.jpg",
   studioWide: "/assets/session/frame-120.webp",
   studioDetail: "/assets/session/frame-241.webp",
@@ -20,8 +27,11 @@ export const tattooImages = {
   sessionClose: localImages.process,
   tattooInProgress: localImages.artist,
   lineDetail: localImages.tattoo,
-  artistTattooing: localImages.artist,
-  artistPortrait: localImages.artist,
+  artistTattooing: localImages.artistVertical,
+  /** Usado na janela em arco do Processo criativo, que pede foto vertical. */
+  artistPortrait: localImages.artistVertical,
+  /** Coluna de imagem do Processo criativo e herói do Sobre. */
+  artistDetail: localImages.artistDetail,
 
   /** Portfólio / galeria */
   fineLineBotanical: localImages.tattoo,
@@ -41,7 +51,7 @@ export const tattooImages = {
   heroPortfolio: localImages.tattoo,
   heroReformulacoes: localImages.tattoo,
   heroFlash: localImages.tattoo,
-  heroAbout: localImages.artist,
+  heroAbout: localImages.artistDetail,
   heroProcess: localImages.process,
   heroCare: localImages.studioWide,
   heroTestimonials: localImages.tattoo,

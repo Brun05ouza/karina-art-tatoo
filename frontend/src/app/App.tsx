@@ -519,19 +519,35 @@ function PageHero({
   title,
   text,
   image = PAGE_HERO_DEFAULT_IMAGE,
+  /**
+   * Sobrescreve o object-position do fundo. Serve para escolher que faixa da
+   * foto fica visível: o herói recorta bem, e em fotos verticais a diferença
+   * entre enquadrar a parte de cima ou a de baixo é grande.
+   */
+  imagePosition,
   children,
 }: {
   kicker: string;
   title: string;
   text: string;
   image?: string | null;
+  imagePosition?: string;
   children?: React.ReactNode;
 }) {
   const hasImage = Boolean(image);
 
   return (
     <section className={`ks-page-hero${hasImage ? "" : " ks-page-hero-no-image"}`}>
-      {image && <img className="ks-page-hero-image" src={image} alt="" aria-hidden="true" loading="eager" />}
+      {image && (
+        <img
+          className="ks-page-hero-image"
+          src={image}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          style={imagePosition ? { objectPosition: imagePosition } : undefined}
+        />
+      )}
       {hasImage && <div className="ks-page-hero-shade" aria-hidden="true" />}
       <BrandStar variant={2} size={240} className="ks-page-hero-starfield" />
       <StarSprinkle className="ks-star-sprinkle-page-hero" />
@@ -710,8 +726,8 @@ function EditorialSplitSection() {
       </motion.div>
       <div className="ks-editorial-split-media">
         <img
-          src={tattooImages.sessionClose}
-          alt="Processo de criação de uma tatuagem"
+          src={tattooImages.artistDetail}
+          alt="Karina Sarte — detalhe de mãos, unhas e anéis"
           loading="lazy"
         />
         {/* A janela vive DENTRO do bloco da foto de propósito. Como irmã, em
@@ -1333,7 +1349,12 @@ function ProductVisualCard({
 
   const content = (
     <>
-      <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
+      {/* Antes era um NumberedPlaceholder (quadro com grade). Como não existe
+          foto de produto no projeto, o card usa a estrela da marca em vez de
+          fingir uma imagem — e o PNG pesa 60 KB contra os 3,4 MB dos SVG. */}
+      <span className="ks-product-visual-mark" aria-hidden="true">
+        <img src="/assets/brand/star-karina-filled.png" alt="" loading="lazy" />
+      </span>
       <div className="ks-product-visual-overlay">
         <span className="ks-label-caps">{String(index + 1).padStart(2, "0")}</span>
         <h3>{group.title}</h3>
@@ -1487,7 +1508,11 @@ function AboutPage() {
         kicker="A artista"
         title="Sobre a Karina Sarte"
         text="Karina Sarte cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele."
-        image={null}
+        image={tattooImages.heroAbout}
+        /* Sobe a imagem (mostra mais da parte de baixo da foto) para centrar o
+           recorte nas unhas e na tattoo de estrela do dedo. Valor maior desce a
+           janela visível dentro da foto — 26% deixava o corpete ocupando o topo. */
+        imagePosition="center 36%"
       >
         <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
       </PageHero>
