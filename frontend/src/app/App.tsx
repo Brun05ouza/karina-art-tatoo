@@ -669,12 +669,6 @@ function HomeHero() {
         loading="eager"
         decoding="async"
       />
-      <img
-        className="ks-home-hero-eye"
-        src="/assets/brand/eye-purple.png"
-        alt=""
-        aria-hidden="true"
-      />
       <motion.div
         className="ks-home-hero-content"
         initial={{ opacity: 0, y: 28 }}

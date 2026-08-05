@@ -3085,13 +3085,6 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     opacity: 0.13;
   }
 
-  .ks-home-hero-eye {
-    right: -24px;
-    bottom: 118px;
-    width: clamp(110px, 34vw, 150px);
-    opacity: 0.58;
-  }
-
   .ks-cta-band-artwork {
     right: -42px;
     width: clamp(130px, 40vw, 180px);
@@ -3779,19 +3772,6 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   transform: scale(1.02);
 }
 
-.ks-home-hero-eye {
-  position: absolute;
-  right: clamp(20px, 7vw, 110px);
-  bottom: clamp(32px, 8vh, 86px);
-  z-index: 1;
-  width: clamp(150px, 18vw, 270px);
-  height: auto;
-  opacity: 0.82;
-  transform: rotate(-8deg);
-  filter: drop-shadow(0 16px 30px rgba(var(--ks-ink-rgb), 0.16));
-  pointer-events: none;
-}
-
 .ks-home-hero-content {
   position: relative;
   z-index: 2;
@@ -4159,13 +4139,24 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   }
 
   .ks-youtube-feature-media {
-    min-height: 540px;
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding-bottom: 30px;
   }
 
+  /* No celular, a thumbnail é a peça principal e o trailer vira uma prévia
+     compacta sobreposta no canto, preservando a composição do desktop. */
   .ks-youtube-feature-thumb {
-    left: 50%;
+    position: relative;
+    grid-area: 1 / 1;
+    align-self: start;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: 0;
     width: 100%;
-    transform: translateX(-50%) rotate(-1.5deg);
+    transform: rotate(-1deg);
   }
 
   .ks-youtube-feature-thumb span {
@@ -4176,11 +4167,41 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   }
 
   .ks-youtube-feature-trailer {
-    right: 50%;
-    width: min(220px, 58vw);
-    border-width: 4px;
-    border-radius: 22px;
-    transform: translateX(50%) rotate(1.5deg);
+    position: relative;
+    grid-area: 1 / 1;
+    align-self: start;
+    justify-self: end;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: -2px;
+    width: min(148px, 38%);
+    border-width: 3px;
+    border-radius: 18px;
+    transform: translateY(26px) rotate(1.5deg);
+  }
+
+  .ks-youtube-feature-trailer-meta {
+    top: 7px;
+    right: 7px;
+    left: 7px;
+    gap: 4px;
+    font-size: 7px;
+    letter-spacing: 0.1em;
+  }
+
+  .ks-youtube-feature-trailer-meta span {
+    padding: 5px 6px;
+  }
+
+  .ks-youtube-feature-sound {
+    bottom: 7px;
+    left: 7px;
+    gap: 5px;
+    min-height: 30px;
+    padding: 6px 8px;
+    font-size: 7px;
+    letter-spacing: 0.08em;
   }
 }
 
@@ -5017,9 +5038,11 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     height: auto;
   }
 
+  /* 3/3.6 também distorcia a máscara. A regra de ≤767px já cobre esta faixa e
+     vem depois no arquivo; mantida aqui apenas com o aspecto correto para o
+     arquivo não sugerir um valor errado. */
   .ks-service-card-media .ks-window-portal {
-    aspect-ratio: 3 / 3.6;
-    min-height: 240px;
+    aspect-ratio: 29 / 54;
   }
 
   .ks-mural-grid {
@@ -5556,11 +5579,16 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     padding-top: 10px;
   }
 
+  /* A moldura é uma máscara com mask-size: 185% 100% sobre um PNG quadrado, o
+     que só renderiza sem distorção quando a caixa tem aspecto 29/54 (0,537) —
+     o mesmo do desenho. O 3/3.85 (0,779) que estava aqui esticava a máscara 44%
+     na horizontal, e era isso que achatava o arco. Mantemos a altura que o card
+     já tinha e deixamos a largura ser derivada, então nada cresce. */
   .ks-service-card-media .ks-window-portal {
-    width: min(78vw, 340px);
-    height: auto;
+    width: auto;
+    height: min(58vh, 390px);
     min-height: 0;
-    aspect-ratio: 3 / 3.85;
+    aspect-ratio: 29 / 54;
   }
 
   .ks-service-card-body {
@@ -5643,9 +5671,11 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     padding-inline: 16px;
   }
 
+  /* Vem depois da regra de ≤767px, então precisa repetir o sizing pela altura —
+     senão volta a ser derivado da largura e o arco fica alto demais. */
   .ks-service-card-media .ks-window-portal {
-    width: min(82vw, 300px);
-    height: auto;
+    width: auto;
+    height: min(54vh, 330px);
   }
 
   .ks-mural-grid,
@@ -5841,5 +5871,23 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
 
   .ks-home-hero-content .ks-actions {
     margin-top: 24px;
+  }
+}
+
+/* ── Enquadramento do hero da home em telas retrato ──────────────────────────
+   A foto é paisagem (1600x1200, aspecto 1.333) e o hero em retrato tem aspecto
+   ~0.53: o object-fit: cover escala pela altura e descarta ~61% da largura.
+   Com o padrão "center center" sobrava a faixa 30%–70% da foto, que é justamente
+   o fundo vazio — o braço com a tattoo fica entre 60% e 80% (pico de pele em
+   65–70%). Deslocar para 75% traz a faixa para 45%–85%, centrada no braço.
+
+   Só em retrato: em paisagem o aspecto do hero passa o da foto, o recorte vira
+   vertical e um deslocamento no eixo X não teria efeito nenhum.
+
+   Vem no fim do arquivo de propósito: três regras anteriores fixam
+   "object-position: center center" para .ks-home-hero-bg, e a ordem decide. */
+@media (max-width: 1120px) and (orientation: portrait) {
+  .ks-home-hero-bg {
+    object-position: 75% center;
   }
 }

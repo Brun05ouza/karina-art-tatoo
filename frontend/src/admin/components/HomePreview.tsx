@@ -98,7 +98,6 @@ export function HomePreview({ value }: { value: HomeDocument }) {
         <div className="ks-home-flow">
           <section className="ks-home-hero">
             {value.heroImageUrl ? <img className="ks-home-hero-bg" src={value.heroImageUrl} alt="" aria-hidden="true" /> : null}
-            <img className="ks-home-hero-eye" src="/assets/brand/eye-purple.png" alt="" aria-hidden="true" />
             <div className="ks-home-hero-content">
               <span className="ks-label-caps"><Filled value={value.heroEyebrow} fallback="texto superior" /></span>
               <HeroTitle title={String(value.heroTitle ?? "")} />
