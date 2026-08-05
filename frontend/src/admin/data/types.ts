@@ -63,7 +63,7 @@ export type LinkButton = { id: string; label: string; url: string; icon: string;
 export type LinkHighlight = { id: string; title: string; text: string; url: string; active: boolean };
 
 /** Card editável das seções Serviços e Coleções da Home. */
-export type HomeCard = { id: string; title: string; text: string; url: string; cta: string; active: boolean; order: number };
+export type HomeCard = { id: string; title: string; text: string; url: string; cta: string; imageUrl?: string; active: boolean; order: number };
 /** Etapa do fluxo "01 · Referência" do bloco Processo criativo. */
 export type HomeStep = { id: string; label: string; active: boolean; order: number };
 
@@ -87,6 +87,7 @@ export type HomeDocument = {
   processButton: string;
   processButtonUrl: string;
   processImageUrl: string;
+  processPortraitUrl: string;
   processSteps: HomeStep[];
 
   servicesEyebrow: string;
@@ -113,6 +114,7 @@ export type HomeDocument = {
   youtubeUrl: string;
   youtubeMeta: string;
   youtubeThumbUrl: string;
+  youtubeTrailerUrl: string;
   youtubeActive: boolean;
 
   ctaTitle: string;
@@ -121,13 +123,21 @@ export type HomeDocument = {
   ctaButtonUrl: string;
 };
 
+export type AboutApproachCard = {
+  id: string;
+  active: boolean;
+  order: number;
+  title: string;
+  text: string;
+};
+
 export type AboutDocument = {
   eyebrow: string;
   title: string;
   intro: string;
+  heroImageUrl: string;
   biography: string;
-  approachTitle: string;
-  approachText: string;
+  approachCards: AboutApproachCard[];
   imageUrl: string;
   quote: string;
 };

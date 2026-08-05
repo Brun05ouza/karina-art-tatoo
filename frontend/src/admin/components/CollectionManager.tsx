@@ -30,6 +30,7 @@ export type CollectionConfig<T extends BaseItem> = {
   quickStatuses?: string[];
   secondary?(item: T): string;
   image?(item: T): string | undefined;
+  preview?: (items: T[]) => React.ReactNode;
 };
 
 export function CollectionManager<T extends BaseItem>({ config }: { config: CollectionConfig<T> }) {
@@ -99,8 +100,9 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
   if (loading) return <LoadingState />;
   if (error) return <ErrorState message={error} onRetry={reload} />;
 
-  return <>
-    <AdminCard className="ksa-collection-toolbar"><div className="ksa-toolbar"><SearchInput value={query} onChange={setQuery} placeholder={`Buscar ${config.singular.toLowerCase()}…`} /><AdminButton onClick={openNew}><Plus size={17} />Adicionar {config.singular.toLowerCase()}</AdminButton></div>{config.categories && <FilterChips values={config.categories} selected={category} onChange={setCategory} />}</AdminCard>
+  const content = (
+    <>
+      <AdminCard className="ksa-collection-toolbar"><div className="ksa-toolbar"><SearchInput value={query} onChange={setQuery} placeholder={`Buscar ${config.singular.toLowerCase()}…`} /><AdminButton onClick={openNew}><Plus size={17} />Adicionar {config.singular.toLowerCase()}</AdminButton></div>{config.categories && <FilterChips values={config.categories} selected={category} onChange={setCategory} />}</AdminCard>
 
     {filtered.length === 0 ? <EmptyState title={`Nenhum ${config.singular.toLowerCase()} encontrado`} text={query || category !== "Todos" ? "Ajuste a busca ou os filtros." : "Adicione o primeiro item para começar."} action={<AdminButton onClick={openNew}><Plus size={17} />Adicionar</AdminButton>} /> : <div className="ksa-list">{filtered.map((item, index) => {
       const image = config.image?.(item) || item.imageUrl;
@@ -122,5 +124,18 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
     })}</div><footer><AdminButton tone="ghost" onClick={closeEditor}>Cancelar</AdminButton><AdminButton onClick={() => void submit()} disabled={saving}>{saving ? "Salvando…" : "Salvar alterações"}</AdminButton></footer></aside></div>}
 
     <ConfirmDialog open={Boolean(deleteTarget)} title={`Excluir ${config.singular.toLowerCase()}?`} text={`“${deleteTarget?.title || "Este item"}” será removido dos rascunhos locais.`} onCancel={() => setDeleteTarget(null)} onConfirm={() => { if (!deleteTarget) return; void remove(deleteTarget.id).then(() => { show(`${config.singular} excluído.`); setDeleteTarget(null); }).catch((cause) => show(cause instanceof Error ? cause.message : "Não foi possível excluir.", "error")); }} />
-  </>;
+    </>
+  );
+
+  return config.preview ? (
+    <div className="ksa-editor-layout">
+      <div className="ksa-editor-main">
+        {content}
+      </div>
+      <aside className="ksa-preview-sticky">
+        <span className="ksa-eyebrow">Prévia ao vivo</span>
+        {config.preview(items)}
+      </aside>
+    </div>
+  ) : content;
 }

@@ -163,7 +163,7 @@ a { color: inherit; text-decoration: none; }
 .ksa-quick-links a:last-child { border-right: 0; }
 .ksa-quick-links a:hover { background: var(--ksa-surface-soft); }
 
-.ksa-field { display: grid; gap: 8px; min-width: 0; }
+.ksa-field { align-content: start; align-self: start; display: grid; gap: 8px; min-width: 0; }
 .ksa-label { color: var(--ksa-purple-dark); }
 .ksa-input, .ksa-textarea, .ksa-select { background: var(--ksa-surface); border: 1px solid var(--ksa-border-strong); border-radius: 3px; outline: 0; padding: 12px 13px; transition: .15s ease; width: 100%; }
 .ksa-input, .ksa-select { min-height: 45px; }
@@ -172,7 +172,7 @@ a { color: inherit; text-decoration: none; }
 .ksa-hint, .ksa-error { display: block; font-size: 11px; line-height: 1.5; }
 .ksa-hint { color: var(--ksa-text-muted); }
 .ksa-error { color: var(--ksa-danger); }
-.ksa-grid-2, .ksa-grid-3 { display: grid; gap: 20px; }
+.ksa-grid-2, .ksa-grid-3 { align-items: start; display: grid; gap: 20px; }
 .ksa-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .ksa-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .is-full { grid-column: 1 / -1; }
@@ -237,36 +237,54 @@ a { color: inherit; text-decoration: none; }
 .ksa-image-placeholder { align-items: center; color: var(--ksa-text-muted); display: flex; flex: 1; flex-direction: column; font-size: 12px; gap: 8px; justify-content: center; }
 .ksa-image-action { background: var(--ksa-purple-deep); border-radius: var(--ksa-radius-pill); color: white; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: .1em; padding: 11px 15px; text-transform: uppercase; }
 .ksa-image-action input { display: none; }
+.ksa-image-remove { align-self: center; flex: none; min-height: 38px; padding: 0; width: 38px; }
 
 .ksa-block { background: var(--ksa-surface); border: 1px solid var(--ksa-border); border-radius: var(--ksa-radius); margin-bottom: 13px; overflow: hidden; }
-.ksa-block-toggle { align-items: center; cursor: pointer; display: flex; justify-content: space-between; list-style: none; min-height: 76px; padding: 16px 22px; }
+.ksa-block-toggle { align-items: center; cursor: pointer; display: flex; justify-content: space-between; list-style: none; min-height: 68px; padding: 14px 20px; }
 .ksa-block-toggle::-webkit-details-marker { display: none; }
 .ksa-block-toggle strong { display: block; font-family: "Cormorant Garamond", serif; font-size: 25px; }
 .ksa-block-toggle span { color: var(--ksa-text-muted); display: block; font-size: 11px; margin-top: 3px; }
 .ksa-block-toggle > span { color: var(--ksa-purple-dark); font-size: 22px; transition: transform .2s; }
 .ksa-block[open] .ksa-block-toggle > span { transform: rotate(45deg); }
-.ksa-block-content { border-top: 1px solid var(--ksa-border); padding: 24px; }
+.ksa-block-content { border-top: 1px solid var(--ksa-border); padding: 20px; }
 .ksa-document-editor { container: ksa-editor / inline-size; padding-bottom: 86px; }
-.ksa-save-bar { align-items: center; background: rgba(255,255,255,.96); border: 1px solid var(--ksa-border); border-radius: var(--ksa-radius); bottom: 18px; box-shadow: var(--ksa-shadow); display: flex; justify-content: space-between; padding: 12px 14px 12px 19px; position: sticky; z-index: 18; }
-.ksa-save-bar span { color: var(--ksa-text-muted); font-size: 12px; }
+.ksa-document-editor .ksa-grid-2 { gap: 16px 18px; }
+.ksa-document-editor .ksa-textarea { min-height: 88px; }
+.ksa-save-bar { align-items: center; background: rgba(255,255,255,.96); border: 1px solid var(--ksa-border); border-radius: var(--ksa-radius); box-shadow: var(--ksa-shadow); display: flex; justify-content: space-between; padding: 12px 14px 12px 19px; position: static; z-index: 18; }
+.ksa-save-bar span { align-items: center; color: var(--ksa-text-muted); display: flex; font-size: 12px; gap: 9px; }
+.ksa-document-save { backdrop-filter: blur(12px); bottom: 18px; margin-top: 13px; position: sticky; top: auto; }
+.ksa-document-save span i { background: #7aab8b; border-radius: 50%; box-shadow: 0 0 0 4px rgba(122,171,139,.12); display: block; height: 7px; transition: .2s; width: 7px; }
+.ksa-document-save.is-dirty { border-color: rgba(109,75,119,.32); }
+.ksa-document-save.is-dirty span i { background: var(--ksa-purple-burnt); box-shadow: 0 0 0 4px rgba(109,75,119,.12); }
 
 .ksa-link-bio-layout { align-items: start; display: grid; gap: 34px; grid-template-columns: minmax(0, 1fr) 340px; }
 /* Formulário de um lado, prévia do outro. Empilha só quando não há largura
    para as duas colunas (celular, ou desktop muito estreito). */
 .ksa-editor-layout { display: grid; gap: 30px; grid-template-columns: 1fr; }
-.ksa-editor-layout .ksa-preview-sticky { max-width: 460px; position: static; }
+.ksa-editor-layout > * { min-width: 0; }
+.ksa-editor-layout .ksa-preview-sticky { max-width: 460px; position: static; width: 100%; }
 /* Dentro do layout de duas colunas o formulário fica mais estreito, então os
    campos empilham por padrão e voltam a duas colunas via container query. */
 .ksa-editor-layout .ksa-grid-2 { grid-template-columns: 1fr; }
+/* Ajusta as linhas da tabela para caberem na coluna estreita do layout dividido */
+.ksa-editor-layout .ksa-row { grid-template-columns: 72px minmax(0, 1fr) auto; }
+.ksa-editor-layout .ksa-row > .ksa-select { grid-column: 2; grid-row: 2; }
+.ksa-editor-layout .ksa-row-actions { grid-column: 3; grid-row: 1 / span 2; }
 .ksa-preview-sticky { position: sticky; top: 104px; }
 .ksa-preview-sticky > .ksa-eyebrow { margin-bottom: 11px; }
 
 @container ksa-page (min-width: 800px) {
-  .ksa-editor-layout { align-items: start; grid-template-columns: minmax(0, 1fr) 360px; }
+  .ksa-editor-layout { align-items: start; grid-template-columns: minmax(0, 1fr) clamp(380px, 40vw, 430px); }
   .ksa-editor-layout .ksa-preview-sticky { max-width: none; position: sticky; top: 104px; }
   /* Rolagem interna imitando a janela do navegador. Só faz sentido com a prévia
      fixa na lateral; empilhada, ela cresce à vontade. */
   .ksa-site-preview-screen { max-height: 68vh; overflow-y: auto; scrollbar-width: thin; }
+}
+
+/* Em desktops largos, o live assume o protagonismo da tela. Como os blocos
+   começam recolhidos, a coluna de navegação continua confortável com 42%. */
+@container ksa-page (min-width: 940px) {
+  .ksa-editor-layout { gap: 24px; grid-template-columns: minmax(360px, 42fr) minmax(500px, 58fr); }
 }
 
 /* Sobra largura na coluna do formulário (ex.: sidebar recolhida ou tela grande):
@@ -305,6 +323,36 @@ a { color: inherit; text-decoration: none; }
 .ksa-phone-highlights small { font-size: 7px; line-height: 1.35; margin-top: 3px; }
 .ksa-mini-editor { align-items: end; background: var(--ksa-surface-soft); border: 1px solid var(--ksa-border); border-radius: 6px; display: grid; gap: 12px; grid-template-columns: auto minmax(120px,1fr) minmax(140px,1.3fr) minmax(100px,.7fr) auto auto; padding: 13px; }
 .ksa-mini-editor-order { display: flex; flex-direction: column; }
+.ksa-stack.is-compact { gap: 7px; }
+.ksa-mini-editor.is-compact { align-items: center; gap: 8px; grid-template-columns: auto minmax(0, 1fr) auto auto; padding: 8px 10px; }
+.ksa-mini-editor.is-compact .ksa-mini-editor-order { flex-direction: row; }
+.ksa-mini-editor.is-compact .ksa-mini-editor-order button { height: 30px; width: 30px; }
+.ksa-mini-editor.is-compact .ksa-label { display: none; }
+.ksa-mini-editor.is-compact .ksa-input { min-height: 38px; padding-block: 8px; }
+.ksa-mini-editor.is-compact .ksa-switch { grid-column: auto; min-height: 38px; }
+.ksa-mini-editor.is-compact .ksa-icon-danger { height: 34px; width: 34px; }
+.ksa-repeater-add { justify-self: start; }
+.ksa-stack.is-card-list { gap: 10px; }
+.ksa-mini-editor.is-card { align-items: start; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)) auto auto; padding: 14px; }
+.ksa-mini-editor.is-card .ksa-mini-editor-order { flex-direction: row; grid-column: 1 / 3; grid-row: 1; }
+.ksa-mini-editor.is-card .ksa-switch { grid-column: 3; grid-row: 1; min-height: 38px; }
+.ksa-mini-editor.is-card > .ksa-icon-danger { grid-column: 4; grid-row: 1; }
+.ksa-mini-editor.is-card .ksa-repeater-image { grid-column: 1 / -1; grid-row: 2; }
+.ksa-mini-editor.is-card .ksa-repeater-image .ksa-image-picker-box { min-height: 112px; }
+.ksa-mini-editor.is-card .ksa-repeater-image .ksa-image-picker-box img { height: 112px; width: 112px; }
+.ksa-mini-editor.is-card .ksa-repeater-field--title { grid-column: 1 / -1; grid-row: 3; }
+.ksa-mini-editor.is-card .ksa-repeater-field--cta { grid-column: 1 / -1; grid-row: 4; }
+.ksa-mini-editor.is-card .ksa-repeater-field--text { grid-column: 1 / -1; grid-row: 5; }
+.ksa-mini-editor.is-card .ksa-repeater-field--url { grid-column: 1 / -1; grid-row: 6; }
+.ksa-mini-editor.is-card .ksa-textarea { min-height: 72px; }
+.ksa-stack.is-card-list > .ksa-btn { justify-self: start; }
+
+@container ksa-editor (min-width: 600px) {
+  .ksa-mini-editor.is-card .ksa-repeater-field--title { grid-column: 1; grid-row: 3; }
+  .ksa-mini-editor.is-card .ksa-repeater-field--cta { grid-column: 2; grid-row: 3; }
+  .ksa-mini-editor.is-card .ksa-repeater-field--text { grid-row: 4; }
+  .ksa-mini-editor.is-card .ksa-repeater-field--url { grid-row: 5; }
+}
 
 .ksa-state, .ksa-empty { align-items: center; background: var(--ksa-surface); border: 1px solid var(--ksa-border); border-radius: var(--ksa-radius); color: var(--ksa-text-muted); display: flex; flex-direction: column; justify-content: center; min-height: 270px; padding: 34px; text-align: center; }
 .ksa-state strong, .ksa-empty strong { color: var(--ksa-text); font-family: "Cormorant Garamond", serif; font-size: 27px; margin-top: 13px; }
@@ -378,11 +426,24 @@ a { color: inherit; text-decoration: none; }
   .ksa-editor-fields > div:first-child { grid-column: auto; }
   .ksa-image-picker-box { align-items: stretch; flex-direction: column; }
   .ksa-image-picker-box img { height: 180px; width: 100%; }
-  .ksa-save-bar { align-items: stretch; bottom: 8px; flex-direction: column; gap: 9px; }
-  .ksa-save-bar .ksa-btn { width: 100%; }
+  .ksa-image-remove { align-self: flex-start; }
+  .ksa-save-bar { gap: 9px; padding-left: 14px; }
+  .ksa-save-bar span { font-size: 10px; }
+  .ksa-save-bar .ksa-btn { min-height: 42px; padding-inline: 14px; width: auto; }
+  .ksa-document-save { bottom: 8px; top: auto; }
   .ksa-mini-editor { align-items: stretch; grid-template-columns: 1fr; }
   .ksa-mini-editor-order { flex-direction: row; }
   .ksa-mini-editor .ksa-switch { grid-column: auto; }
+  .ksa-mini-editor.is-compact { grid-template-columns: minmax(0, 1fr) auto auto; }
+  .ksa-mini-editor.is-compact .ksa-mini-editor-order { grid-column: 1 / -1; }
+  .ksa-mini-editor.is-card { grid-template-columns: minmax(0, 1fr) auto auto; }
+  .ksa-mini-editor.is-card .ksa-mini-editor-order { grid-column: 1; grid-row: 1; }
+  .ksa-mini-editor.is-card .ksa-switch { grid-column: 2; grid-row: 1; }
+  .ksa-mini-editor.is-card > .ksa-icon-danger { grid-column: 3; grid-row: 1; }
+  .ksa-mini-editor.is-card .ksa-repeater-field--title,
+  .ksa-mini-editor.is-card .ksa-repeater-field--cta,
+  .ksa-mini-editor.is-card .ksa-repeater-field--text,
+  .ksa-mini-editor.is-card .ksa-repeater-field--url { grid-column: 1 / -1; grid-row: auto; }
   .ksa-quick-links { grid-template-columns: 1fr; }
   .ksa-quick-links a { border-right: 0; }
   .ksa-login-panel { min-height: 310px; }
@@ -393,3 +454,23 @@ a { color: inherit; text-decoration: none; }
   .ksa-toast-host { bottom: 12px; left: 12px; right: 12px; }
   .ksa-toast { min-width: 0; width: 100%; }
 }
+
+/* ── Seletor de trabalhos do Portfólio (bloco da Home) ──────────────────── */
+.ksa-portfolio-selector { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+.ksa-portfolio-selector-card { align-items: stretch; background: var(--ksa-surface); border: 2px solid var(--ksa-border); border-radius: var(--ksa-radius); cursor: pointer; display: grid; gap: 0; overflow: hidden; position: relative; text-align: left; transition: border-color .18s ease, box-shadow .18s ease; }
+.ksa-portfolio-selector-card:hover { border-color: var(--ksa-purple-burnt); box-shadow: 0 4px 14px rgba(46,23,58,.12); }
+.ksa-portfolio-selector-card.is-selected { border-color: var(--ksa-purple-deep); box-shadow: 0 0 0 3px rgba(46,23,58,.1); }
+.ksa-portfolio-selector-thumb { aspect-ratio: 1 / 1; background: var(--ksa-surface-soft); overflow: hidden; width: 100%; }
+.ksa-portfolio-selector-thumb img { height: 100%; object-fit: cover; width: 100%; transition: transform .22s ease; }
+.ksa-portfolio-selector-card:hover .ksa-portfolio-selector-thumb img { transform: scale(1.04); }
+.ksa-portfolio-selector-placeholder { align-items: center; color: var(--ksa-lavender); display: flex; height: 100%; justify-content: center; width: 100%; }
+.ksa-portfolio-selector-info { padding: 8px 9px 6px; }
+.ksa-portfolio-selector-info strong { display: block; font-family: "Cormorant Garamond", serif; font-size: 14px; font-weight: 600; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ksa-portfolio-selector-info small { color: var(--ksa-text-muted); display: block; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: .06em; margin-top: 2px; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ksa-portfolio-selector-check { align-items: center; background: var(--ksa-purple-deep); border-radius: 50%; bottom: 8px; color: white; display: flex; font-size: 11px; font-weight: 700; height: 22px; justify-content: center; opacity: 0; position: absolute; right: 8px; transition: opacity .18s ease, transform .18s ease; transform: scale(.7); width: 22px; }
+.ksa-portfolio-selector-card.is-selected .ksa-portfolio-selector-check { opacity: 1; transform: scale(1); }
+.ksa-portfolio-selector-card.is-skeleton { aspect-ratio: 1 / 1.3; animation: ksa-pulse 1.3s ease-in-out infinite; background: var(--ksa-gray); border: none; cursor: default; }
+
+.ksa-portfolio-auto-note { align-items: flex-start; background: var(--ksa-surface-soft); border: 1px solid var(--ksa-border); border-radius: 6px; color: var(--ksa-text-muted); display: flex; font-size: 13px; gap: 9px; line-height: 1.55; padding: 12px 14px; }
+.ksa-portfolio-auto-note svg { color: var(--ksa-purple-burnt); flex: none; margin-top: 1px; }
+.ksa-portfolio-auto-note strong { color: var(--ksa-text); }

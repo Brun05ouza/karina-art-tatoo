@@ -15,6 +15,8 @@ export type DocumentField = {
   options?: string[];
   hint?: string;
   placeholder?: string;
+  rows?: number;
+  full?: boolean;
 };
 
 export type DocumentBlock<T = never> = {
@@ -58,14 +60,14 @@ export function DocumentEditor<T extends Record<string, unknown>>({ store, block
     }
   };
 
-  const editor = <div className="ksa-document-editor">{blocks.map((block, blockIndex) => <CollapsibleBlock key={block.title} title={block.title} summary={block.summary} defaultOpen={blockIndex === 0}><div className="ksa-grid-2">{(block.fields ?? []).map((field) => {
+  const editor = <div className="ksa-document-editor">{blocks.map((block) => <CollapsibleBlock key={block.title} title={block.title} summary={block.summary}><div className="ksa-grid-2">{(block.fields ?? []).map((field) => {
     const current = value[field.key];
     if (field.type === "image") return <div key={field.key} className="is-full"><ImagePicker label={field.label} value={String(current || "")} onChange={(url) => update({ [field.key]: url } as Partial<T>)} /></div>;
-    if (field.type === "toggle") return <Field key={field.key} label={field.label} hint={field.hint}><Toggle checked={Boolean(current)} onChange={(checked) => update({ [field.key]: checked } as Partial<T>)} label={Boolean(current) ? "Ativo" : "Inativo"} /></Field>;
-    if (field.type === "textarea") return <Field key={field.key} label={field.label} hint={field.hint}><TextArea rows={5} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} /></Field>;
-    if (field.type === "select") return <Field key={field.key} label={field.label} hint={field.hint}><SelectField value={String(current ?? "")} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)}>{field.options?.map((option) => <option key={option} value={option}>{option}</option>)}</SelectField></Field>;
-    return <Field key={field.key} label={field.label} hint={field.hint}><TextInput value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} /></Field>;
-  })}</div>{block.render?.(value, update)}</CollapsibleBlock>)}{children?.(value, update)}<div className="ksa-save-bar"><span>{dirty ? "Alterações ainda não salvas" : "Tudo salvo neste navegador"}</span><AdminButton onClick={() => void submit()} disabled={!dirty}><Save size={17} />Salvar alterações</AdminButton></div></div>;
+    if (field.type === "toggle") return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><Toggle checked={Boolean(current)} onChange={(checked) => update({ [field.key]: checked } as Partial<T>)} label={Boolean(current) ? "Ativo" : "Inativo"} /></Field>;
+    if (field.type === "textarea") return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><TextArea rows={field.rows ?? 3} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} /></Field>;
+    if (field.type === "select") return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><SelectField value={String(current ?? "")} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)}>{field.options?.map((option) => <option key={option} value={option}>{option}</option>)}</SelectField></Field>;
+    return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><TextInput value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} /></Field>;
+  })}</div>{block.render?.(value, update)}</CollapsibleBlock>)}{children?.(value, update)}<div className={`ksa-save-bar ksa-document-save ${dirty ? "is-dirty" : "is-saved"}`}><span aria-live="polite"><i aria-hidden="true" />{dirty ? "Alterações não salvas" : "Tudo salvo"}</span><AdminButton onClick={() => void submit()} disabled={!dirty}><Save size={17} />Salvar alterações</AdminButton></div></div>;
 
   if (!preview) return editor;
 

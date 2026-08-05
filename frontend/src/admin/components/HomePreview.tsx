@@ -1,4 +1,5 @@
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Play, Volume2, VolumeX } from "lucide-react";
+import { useState, useRef } from "react";
 import { StarGlyph } from "../../app/components/StarGlyph";
 // Módulo compartilhado com o site: a prévia mostra os mesmos trabalhos que a
 // home publica, sem importar o App.tsx (que traria GSAP e Lenis).
@@ -15,6 +16,16 @@ const NAV_LINKS = ["Início", "Sobre", "Portfólio", "Reformulações", "Flash T
 const PORTRAIT_URL = "/assets/karina-sarte-retrato.jpg";
 /** Poster do vídeo de processo do primeiro card de Serviços, igual ao site. */
 const PROCESS_POSTER_URL = "/assets/process/art-process-poster.jpg";
+const SERVICE_CARD_IMAGES: Record<string, string> = {
+  "service-1": PROCESS_POSTER_URL,
+  "service-2": "/assets/hero-home.png",
+  "service-3": "/assets/hero-home.png",
+  "service-4": PROCESS_POSTER_URL,
+};
+
+function serviceImage(card: HomeCard) {
+  return card.imageUrl ?? SERVICE_CARD_IMAGES[card.id] ?? "";
+}
 
 /**
  * Prévia da Home.
@@ -75,6 +86,19 @@ function StarBreak({ align, light }: { align: "left" | "right"; light?: boolean 
 }
 
 export function HomePreview({ value }: { value: HomeDocument }) {
+  const trailerRef = useRef<HTMLVideoElement>(null);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+
+  const toggleTrailerSound = () => {
+    const nextSoundEnabled = !soundEnabled;
+    setSoundEnabled(nextSoundEnabled);
+
+    if (trailerRef.current) {
+      trailerRef.current.muted = !nextSoundEnabled;
+      if (nextSoundEnabled) void trailerRef.current.play();
+    }
+  };
+
   const steps = [...(value.processSteps ?? [])].filter((step) => step.active).sort((a, b) => a.order - b.order);
   const services = activeSorted(value.serviceCards);
   const collections = activeSorted(value.collectionCards);
@@ -133,7 +157,7 @@ export function HomePreview({ value }: { value: HomeDocument }) {
               <div className="ks-editorial-split-portal" aria-hidden="true">
                 <div className="ks-editorial-split-portal-card">
                   <div className="ks-window-portal">
-                    <img src={PORTRAIT_URL} alt="" />
+                    <img src={value.processPortraitUrl || PORTRAIT_URL} alt="" />
                   </div>
                 </div>
               </div>
@@ -158,11 +182,13 @@ export function HomePreview({ value }: { value: HomeDocument }) {
                             (poster + dica de hover) e os seguintes são numerados
                             a partir de 01. A mídia do card ainda não é editável
                             no painel, então a regra é espelhada daqui. */}
-                        {index === 0 ? (
+                        {serviceImage(card) && index === 0 ? (
                           <div className="ks-hover-process-media">
-                            <img className="ks-hover-process-poster" src={PROCESS_POSTER_URL} alt={card.title} draggable="false" />
+                            <img className="ks-hover-process-poster" src={serviceImage(card)} alt={card.title} draggable="false" />
                             <span className="ks-hover-process-hint">Ver processo</span>
                           </div>
+                        ) : serviceImage(card) ? (
+                          <img src={serviceImage(card)} alt={card.title} draggable="false" />
                         ) : (
                           <div className="ks-numbered-placeholder" aria-hidden="true"><span>{pad(index)}</span></div>
                         )}
@@ -219,7 +245,11 @@ export function HomePreview({ value }: { value: HomeDocument }) {
             <div className="ks-products-grid">
               {collections.map((card, index) => (
                 <a className="ks-product-visual-card" key={card.id}>
-                  <div className="ks-numbered-placeholder" aria-hidden="true"><span>{pad(index + 1)}</span></div>
+                  {card.imageUrl ? (
+                    <img src={card.imageUrl} alt={card.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <div className="ks-numbered-placeholder" aria-hidden="true"><span>{pad(index + 1)}</span></div>
+                  )}
                   <div className="ks-product-visual-overlay">
                     <span className="ks-label-caps">{pad(index + 1)}</span>
                     <h3>{card.title}</h3>
@@ -254,6 +284,37 @@ export function HomePreview({ value }: { value: HomeDocument }) {
                     {value.youtubeThumbUrl ? <img src={value.youtubeThumbUrl} alt="" /> : null}
                     <span>Assistir no YouTube <ArrowRight size={15} /></span>
                   </a>
+
+                  {value.youtubeTrailerUrl ? (
+                    <div className="ks-youtube-feature-trailer">
+                      <div className="ks-youtube-feature-trailer-meta" aria-hidden="true">
+                        <span>Trailer</span>
+                        <span>00:17</span>
+                      </div>
+                      <video
+                        ref={trailerRef}
+                        autoPlay
+                        muted={!soundEnabled}
+                        loop
+                        playsInline
+                        preload="metadata"
+                        poster={value.youtubeThumbUrl}
+                        aria-label="Trailer vertical do primeiro Tattoo Vlog da Karina Sarte"
+                      >
+                        <source src={value.youtubeTrailerUrl} type="video/mp4" />
+                      </video>
+                      <button
+                        type="button"
+                        className="ks-youtube-feature-sound"
+                        onClick={toggleTrailerSound}
+                        aria-pressed={soundEnabled}
+                        aria-label={soundEnabled ? "Desativar som do trailer" : "Ativar som do trailer"}
+                      >
+                        {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
+                        <span>{soundEnabled ? "Som ativado" : "Ativar som"}</span>
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </section>

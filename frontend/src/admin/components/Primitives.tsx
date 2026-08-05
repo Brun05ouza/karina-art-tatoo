@@ -19,16 +19,16 @@ export function AdminCard({ title, description, action, children, className = ""
   </section>;
 }
 
-export function Field({ label, hint, error, children }: { label: string; hint?: string; error?: string; children: ReactNode }) {
-  return <label className="ksa-field"><span className="ksa-label">{label}</span>{children}{hint && <small className="ksa-hint">{hint}</small>}{error && <small className="ksa-error">{error}</small>}</label>;
+export function Field({ label, hint, error, children, className = "" }: { label: string; hint?: string; error?: string; children: ReactNode; className?: string }) {
+  return <label className={`ksa-field ${className}`}><span className="ksa-label">{label}</span>{children}{hint && <small className="ksa-hint">{hint}</small>}{error && <small className="ksa-error">{error}</small>}</label>;
 }
 
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) { return <input {...props} className={`ksa-input ${props.className || ""}`} />; }
 export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) { return <textarea {...props} className={`ksa-textarea ${props.className || ""}`} />; }
 export function SelectField(props: SelectHTMLAttributes<HTMLSelectElement>) { return <select {...props} className={`ksa-select ${props.className || ""}`} />; }
 
-export function Toggle({ checked, onChange, label }: { checked: boolean; onChange(value: boolean): void; label?: string }) {
-  return <button type="button" className={`ksa-switch ${checked ? "is-on" : ""}`} role="switch" aria-checked={checked} onClick={() => onChange(!checked)}><span />{label && <b>{label}</b>}</button>;
+export function Toggle({ checked, onChange, label, ariaLabel }: { checked: boolean; onChange(value: boolean): void; label?: string; ariaLabel?: string }) {
+  return <button type="button" className={`ksa-switch ${checked ? "is-on" : ""}`} role="switch" aria-checked={checked} aria-label={ariaLabel} onClick={() => onChange(!checked)}><span />{label && <b>{label}</b>}</button>;
 }
 
 export function AdminButton({ tone = "primary", size = "md", ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { tone?: "primary" | "ghost" | "danger"; size?: "sm" | "md" }) {

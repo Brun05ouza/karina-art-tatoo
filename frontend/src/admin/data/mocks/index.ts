@@ -71,6 +71,7 @@ export const mockHome: HomeDocument = {
   // Mesmo arquivo que o site usa na coluna do Processo criativo
   // (tattooImages.artistDetail).
   processImageUrl: "/assets/karina-sarte-detalhe.jpg",
+  processPortraitUrl: "/assets/karina-sarte-retrato.jpg",
   processSteps: [
     { id: "step-1", label: "01 · Referência", active: true, order: 1 },
     { id: "step-2", label: "02 · Desenho", active: true, order: 2 },
@@ -81,10 +82,10 @@ export const mockHome: HomeDocument = {
   servicesTitle: "O que você encontra por aqui",
   servicesText: "Projetos autorais, flash tattoos e produtos criados para quem busca arte com personalidade.",
   serviceCards: [
-    { id: "service-1", title: "Tatuagens Autorais", text: "Projetos personalizados criados a partir da sua ideia, referência e estilo.", url: "/portfolio", cta: "Ver projetos", active: true, order: 1 },
-    { id: "service-2", title: "Flash Tattoos", text: "Artes prontas e exclusivas, com disponibilidade limitada para tatuar.", url: "/flash-tattoos", cta: "Ver flashes", active: true, order: 2 },
-    { id: "service-3", title: "Produtos Autorais", text: "Produtos, prints e coleções criadas dentro do universo visual da Karina Sarte.", url: "/produtos", cta: "Ver produtos", active: true, order: 3 },
-    { id: "service-4", title: "Cuidados e Experiência", text: "Atendimento com cuidado, orientação e responsabilidade em todas as etapas.", url: "/cuidados", cta: "Saiba mais", active: true, order: 4 },
+    { id: "service-1", title: "Tatuagens Autorais", text: "Projetos personalizados criados a partir da sua ideia, referência e estilo.", url: "/portfolio", cta: "Ver projetos", imageUrl: "/assets/process/art-process-poster.jpg", active: true, order: 1 },
+    { id: "service-2", title: "Flash Tattoos", text: "Artes prontas e exclusivas, com disponibilidade limitada para tatuar.", url: "/flash-tattoos", cta: "Ver flashes", imageUrl: "/assets/hero-home.png", active: true, order: 2 },
+    { id: "service-3", title: "Produtos Autorais", text: "Produtos, prints e coleções criadas dentro do universo visual da Karina Sarte.", url: "/produtos", cta: "Ver produtos", imageUrl: "/assets/hero-home.png", active: true, order: 3 },
+    { id: "service-4", title: "Cuidados e Experiência", text: "Atendimento com cuidado, orientação e responsabilidade em todas as etapas.", url: "/cuidados", cta: "Saiba mais", imageUrl: "/assets/process/art-process-poster.jpg", active: true, order: 4 },
   ],
 
   portfolioEyebrow: "Portfólio",
@@ -99,10 +100,10 @@ export const mockHome: HomeDocument = {
     "Arte para usar, colecionar e levar na pele. Além das tatuagens, a Karina Sarte também cria produtos, artes, flashes e coleções exclusivas para quem se identifica com seu universo visual.",
   collectionsButton: "Ver mais produtos",
   collectionCards: [
-    { id: "collection-1", title: "Planos de Tattoo", text: "Opções para tattoos pequenas, projetos autorais e sessões personalizadas.", url: "/produtos", cta: "Consultar planos", active: true, order: 1 },
-    { id: "collection-2", title: "Flash Tattoos", text: "Artes prontas e disponíveis para tatuar, com disponibilidade limitada.", url: "/flash-tattoos", cta: "Ver flashes disponíveis", active: true, order: 2 },
-    { id: "collection-3", title: "Prints & Artes", text: "Impressões e artes autorais para colecionar.", url: "/produtos", cta: "Ver prints", active: true, order: 3 },
-    { id: "collection-4", title: "Adesivos", text: "Adesivos autorais do universo visual da Karina.", url: "/produtos", cta: "Ver adesivos", active: true, order: 4 },
+    { id: "collection-1", title: "Planos de Tattoo", text: "Opções para tattoos pequenas, projetos autorais e sessões personalizadas.", url: "/produtos", cta: "Consultar planos", imageUrl: "/assets/recent-projects/lua-botanica.jpg", active: true, order: 1 },
+    { id: "collection-2", title: "Flash Tattoos", text: "Artes prontas e disponíveis para tatuar, com disponibilidade limitada.", url: "/flash-tattoos", cta: "Ver flashes disponíveis", imageUrl: "/assets/brand/eye-heart.png", active: true, order: 2 },
+    { id: "collection-3", title: "Prints & Artes", text: "Impressões e artes autorais para colecionar.", url: "/produtos", cta: "Ver prints", imageUrl: "/assets/brand/products-hero-flower-eye.png", active: true, order: 3 },
+    { id: "collection-4", title: "Adesivos", text: "Adesivos autorais do universo visual da Karina.", url: "/produtos", cta: "Ver adesivos", imageUrl: "/assets/brand/products-hero-art.png", active: true, order: 4 },
   ],
 
   youtubeEyebrow: "Karina Sarte no YouTube",
@@ -113,6 +114,7 @@ export const mockHome: HomeDocument = {
   youtubeUrl: "https://youtu.be/zntCZqs4rEE",
   youtubeMeta: "Tattoo vlog · rotina de estúdio · processo criativo",
   youtubeThumbUrl: "/assets/youtube/tattoo-vlog-thumb.jpeg",
+  youtubeTrailerUrl: "/assets/youtube/tattoo-vlog-trailer.mp4",
   youtubeActive: true,
 
   ctaTitle: "Vamos criar sua próxima tattoo?",
@@ -122,14 +124,18 @@ export const mockHome: HomeDocument = {
 };
 
 export const mockAbout: AboutDocument = {
-  eyebrow: "Sobre",
-  title: "Karina Sarte",
-  intro: "Tatuadora e artista visual em Teresópolis, Rio de Janeiro.",
-  biography: "Meu trabalho nasce do encontro entre desenho, memória e corpo. Cada projeto é desenvolvido de forma autoral, respeitando a história e a anatomia de quem chega até o ateliê.",
-  approachTitle: "Um processo próximo e cuidadoso",
-  approachText: "Da primeira conversa aos cuidados depois da sessão, cada etapa recebe atenção individual.",
-  imageUrl: "/assets/karina-sarte.png",
-  quote: "A pele também pode guardar aquilo que escolhemos lembrar.",
+  eyebrow: "A artista",
+  title: "Sobre a Karina Sarte",
+  intro: "Karina Sarte cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele.",
+  heroImageUrl: "/assets/karina-sarte-detalhe.jpg",
+  biography: "Minha estética é autoral, com traço fino e referências botânicas. Construo projetos que equilibram delicadeza e presença. Todo atendimento começa com escuta: quero entender suas referências, as proporções e o significado por trás da ideia.\n\nEm Teresópolis, criei um espaço de criação e cuidado. Da primeira mensagem à cicatrização, acompanho cada etapa com orientação clara e muita atenção.",
+  approachCards: [
+    { id: "1", active: true, order: 1, title: "Processo criativo", text: "Penso cada projeto como uma conversa entre sua história, seu corpo e minha linguagem visual." },
+    { id: "2", active: true, order: 2, title: "Atendimento cuidadoso", text: "Escuto com calma desde a primeira mensagem para entender o que você quer levar na pele." },
+    { id: "3", active: true, order: 3, title: "Ambiente seguro", text: "Trabalho com materiais adequados, biossegurança e orientações claras em cada etapa." }
+  ],
+  imageUrl: "/assets/karina-sarte-retrato.jpg",
+  quote: "Em cada traço, coloco intenção. A tattoo precisa conversar com quem você é e com o corpo que a recebe.",
 };
 
 export const mockBastidores: BackstageDocument = {
