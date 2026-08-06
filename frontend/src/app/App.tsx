@@ -1612,21 +1612,6 @@ const reformulacoesServices = [
   },
 ] as const;
 
-const reformulacoesEvaluation = [
-  {
-    title: "Envie uma foto nítida",
-    text: "Fotografe a tattoo com luz natural, sem filtros e mostrando também a área ao redor.",
-  },
-  {
-    title: "Conte o que deseja mudar",
-    text: "Explique quais partes incomodam e o que você gostaria de melhorar, preservar ou acrescentar ao desenho.",
-  },
-  {
-    title: "Receba uma avaliação",
-    text: "Analiso pele, pigmento, tamanho e possibilidades antes de indicar o melhor caminho para o projeto.",
-  },
-] as const;
-
 type ReformulacaoPortfolioCase = {
   title: string;
   category: string;
@@ -1728,26 +1713,6 @@ function ReformulacoesPage() {
               number={String(index + 1).padStart(2, "0")}
               title={service.title}
               text={service.text}
-            />
-          ))}
-        </div>
-      </section>
-
-      <SectionStarBreak align="right" />
-
-      <section className="ks-section ks-section-cream">
-        <SectionTitle
-          eyebrow="Primeiro passo"
-          title="Como pedir uma avaliação"
-          text="Algumas informações simples ajudam a entender o que é possível antes da conversa sobre desenho e valores."
-        />
-        <div className="ks-card-grid three">
-          {reformulacoesEvaluation.map((step, index) => (
-            <MiniCard
-              key={step.title}
-              number={String(index + 1).padStart(2, "0")}
-              title={step.title}
-              text={step.text}
             />
           ))}
         </div>

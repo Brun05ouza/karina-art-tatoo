@@ -2,13 +2,16 @@ import type {
   AboutDocument,
   BackstageDocument,
   FaqItem,
+  FlashPageDocument,
   FlashTattoo,
   HomeDocument,
   LinkBioDocument,
   MediaItem,
   PortfolioItem,
   ProductItem,
+  ProductsPageDocument,
   ReformulationItem,
+  ReformulationsDocument,
   SettingsDocument,
 } from "../types";
 
@@ -43,6 +46,25 @@ export const mockFaqs: FaqItem[] = [
   { id: "faq-3", order: 3, active: true, title: "Como cuidar da tattoo?", answer: "As orientações completas são entregues ao final da sessão e variam conforme o projeto.", category: "Cuidados", status: "Publicado" },
   { id: "faq-4", order: 4, active: true, title: "Quais formas de pagamento?", answer: "O sinal reserva a data e o restante é combinado antes da sessão.", category: "Pagamento", status: "Rascunho" },
 ];
+
+export const mockFlashPage: FlashPageDocument = {
+  heroKicker: "Flash Tattoos",
+  heroTitle: "Flash Tattoos disponíveis",
+  heroText: "Artes autorais prontas para tatuar, com disponibilidade limitada.",
+  heroImageUrl: "",
+};
+
+export const mockProductsPage: ProductsPageDocument = {
+  heroKicker: "Coleções",
+  heroTitle: "Coleções da Karina Sarte",
+  heroText1: "Arte para usar, colecionar e levar na pele.",
+  heroText2: "Produtos autorais, planos, flashes, prints e criações exclusivas feitas para aproximar ainda mais a arte da Karina Sarte de quem acompanha seu trabalho.",
+  heroButton: "Consultar produtos pelo WhatsApp",
+  heroImageUrl: "/assets/brand/products-hero-flower-eye.png",
+  ctaTitle: "Quer levar a arte da Karina Sarte para além da pele?",
+  ctaText: "Consulte disponibilidade, valores e opções personalizadas pelo WhatsApp.",
+  ctaButton: "Consultar pelo WhatsApp",
+};
 
 export const mockMediaItems: MediaItem[] = [
   { id: "media-1", order: 1, active: true, title: "Hero da Home", description: "Imagem principal do site.", category: "Home", type: "Imagem", publicUrl: "/assets/hero-home.png", usage: "Home / Hero", imageUrl: "/assets/hero-home.png" },
@@ -136,6 +158,47 @@ export const mockAbout: AboutDocument = {
   ],
   imageUrl: "/assets/karina-sarte-retrato.jpg",
   quote: "Em cada traço, coloco intenção. A tattoo precisa conversar com quem você é e com o corpo que a recebe.",
+};
+
+/** Copy inicial igual à que está publicada hoje em /reformulacoes. */
+export const mockReformulacoesTextos: ReformulationsDocument = {
+  heroEyebrow: "Reformulação · reconstrução · aprimoramento",
+  heroTitle: "Reformulações",
+  heroText: "Um novo projeto criado a partir da tattoo que você já tem, para melhorar desenho, composição e leitura sem apagar sua história.",
+  heroButton: "Quero avaliar minha tattoo",
+  heroButtonUrl: "/orcamento",
+  heroImageUrl: "/assets/hero-home.png",
+
+  introEyebrow: "Reconstruir para evoluir",
+  introTitle: "A tattoo continua sendo sua. O desenho evolui.",
+  introText: "Partimos do desenho existente para corrigir, reorganizar e aprimorar o que já está na sua pele.",
+  panelEyebrow: "Análise individual",
+  panelTextOne: "A reformulação começa com uma leitura cuidadosa da tattoo atual: desenho, linhas, pigmento, cicatrização e região do corpo.",
+  panelTextTwo: "A partir disso, reconstruímos o trabalho existente para chegar a uma versão mais equilibrada, coerente e próxima do que você deseja levar na pele.",
+  panelPoints: [
+    { id: "ponto-1", label: "Desenho original", active: true, order: 1 },
+    { id: "ponto-2", label: "Linhas e proporções", active: true, order: 2 },
+    { id: "ponto-3", label: "Integração no corpo", active: true, order: 3 },
+  ],
+
+  portfolioEyebrow: "Portfólio de reformulações",
+  portfolioTitle: "A evolução de cada desenho",
+  portfolioText: "Cada caso será apresentado com a tattoo original e o resultado depois da reconstrução, mantendo o antes e o depois lado a lado.",
+  caseNote: "Fotos reais do processo serão adicionadas neste espaço.",
+
+  possibilitiesEyebrow: "Possibilidades",
+  possibilitiesTitle: "Como a tattoo pode evoluir",
+  possibilitiesText: "A solução respeita o desenho que já existe e aquilo que você deseja melhorar nele.",
+  possibilityCards: [
+    { id: "possib-1", active: true, order: 1, title: "Reconstrução do desenho", text: "A estrutura existente é redesenhada para recuperar formas, intenção e uma leitura mais clara na pele." },
+    { id: "possib-2", active: true, order: 2, title: "Correção e equilíbrio", text: "Linhas, proporções, pesos e contrastes são ajustados para melhorar a composição sem apagar sua essência." },
+    { id: "possib-3", active: true, order: 3, title: "Ampliação e integração", text: "Novos elementos podem completar o desenho e integrar a tattoo existente a uma composição mais bem resolvida." },
+  ],
+
+  ctaTitle: "Vamos reconstruir e melhorar sua tattoo?",
+  ctaText: "Envie uma foto e conte o que você gostaria de ajustar. A avaliação de cada reformulação é feita de forma individual.",
+  ctaButton: "Quero avaliar minha tattoo",
+  ctaButtonUrl: "/orcamento",
 };
 
 export const mockBastidores: BackstageDocument = {

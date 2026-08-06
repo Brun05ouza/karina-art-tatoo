@@ -1,5 +1,5 @@
 import { Save } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { DocumentStore } from "../data/repository";
 import { useDocument } from "../hooks/useDocument";
 import { useDirtyGuard } from "../hooks/useDirtyGuard";
@@ -41,18 +41,26 @@ export function DocumentEditor<T extends Record<string, unknown>>({ store, block
   const { value, setValue, loading, error, reload, save } = useDocument(store);
   const { dirty, setDirty } = useDirtyGuard();
   const { show } = useToast();
+  /**
+   * Alterações pendentes DESTE documento. O `dirty` do guarda é compartilhado com
+   * a tela inteira — em páginas que também têm uma coleção (Reformulações), editar
+   * um item acenderia a barra de salvar dos textos, que não tem nada a salvar.
+   */
+  const [documentDirty, setDocumentDirty] = useState(false);
 
   if (loading) return <LoadingState />;
   if (error || !value) return <ErrorState message={error || "Conteúdo indisponível."} onRetry={reload} />;
 
   const update = (patch: Partial<T>) => {
     setValue((current) => current ? ({ ...current, ...patch }) : current);
+    setDocumentDirty(true);
     setDirty(true);
   };
 
   const submit = async () => {
     try {
       await save(value);
+      setDocumentDirty(false);
       setDirty(false);
       show("Alterações salvas nos rascunhos.");
     } catch (cause) {
@@ -67,7 +75,7 @@ export function DocumentEditor<T extends Record<string, unknown>>({ store, block
     if (field.type === "textarea") return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><TextArea rows={field.rows ?? 3} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} /></Field>;
     if (field.type === "select") return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><SelectField value={String(current ?? "")} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)}>{field.options?.map((option) => <option key={option} value={option}>{option}</option>)}</SelectField></Field>;
     return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><TextInput value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} /></Field>;
-  })}</div>{block.render?.(value, update)}</CollapsibleBlock>)}{children?.(value, update)}<div className={`ksa-save-bar ksa-document-save ${dirty ? "is-dirty" : "is-saved"}`}><span aria-live="polite"><i aria-hidden="true" />{dirty ? "Alterações não salvas" : "Tudo salvo"}</span><AdminButton onClick={() => void submit()} disabled={!dirty}><Save size={17} />Salvar alterações</AdminButton></div></div>;
+  })}</div>{block.render?.(value, update)}</CollapsibleBlock>)}{children?.(value, update)}<div className={`ksa-save-bar ksa-document-save ${documentDirty ? "is-dirty" : "is-saved"}`}><span aria-live="polite"><i aria-hidden="true" />{documentDirty ? "Alterações não salvas" : "Tudo salvo"}</span><AdminButton onClick={() => void submit()} disabled={!documentDirty}><Save size={17} />Salvar alterações</AdminButton></div></div>;
 
   if (!preview) return editor;
 

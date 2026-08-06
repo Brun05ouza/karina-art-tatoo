@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { PortfolioItem } from "../data/types";
+import { PreviewHeroStars } from "./PreviewParts";
 import { SitePreviewFrame } from "./SitePreviewFrame";
 import { StarGlyph } from "../../app/components/StarGlyph";
 import { ArrowRight } from "lucide-react";
@@ -46,6 +47,7 @@ export function PortfolioPreview({ items }: { items: PortfolioItem[] }) {
             loading="eager"
           />
           <div className="ks-page-hero-shade" aria-hidden="true" />
+          <PreviewHeroStars />
           <div className="ks-page-hero-content">
             <span className="ks-label-caps ks-muted">Portfólio</span>
             <h1 className="ks-display-xl">Portfólio</h1>

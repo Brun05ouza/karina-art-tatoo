@@ -1,5 +1,5 @@
 import { ArrowDown, ArrowUp, Copy, Eye, EyeOff, Pencil, Plus, Trash2, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { BaseItem } from "../data/types";
 import type { Repository } from "../data/repository";
 import { useCollection } from "../hooks/useCollection";
@@ -31,6 +31,12 @@ export type CollectionConfig<T extends BaseItem> = {
   secondary?(item: T): string;
   image?(item: T): string | undefined;
   preview?: (items: T[]) => React.ReactNode;
+  /**
+   * Avisa a página a cada mudança na lista que a prévia deveria mostrar (itens
+   * salvos + rascunho em edição). Serve para telas que combinam esta coleção com
+   * um documento de textos e precisam de uma prévia única — ver ReformulacoesPage.
+   */
+  onPreviewItemsChange?: (items: T[]) => void;
 };
 
 export function CollectionManager<T extends BaseItem>({ config }: { config: CollectionConfig<T> }) {
@@ -48,6 +54,29 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
     return haystack.includes(query.trim().toLowerCase()) && (category === "Todos" || item.category === category);
   }), [items, query, category]);
 
+  /**
+   * O que a prévia recebe: os itens salvos COM o rascunho em edição aplicado
+   * por cima. Sem isso a prévia só mudava depois do "Salvar alterações" — o
+   * formulário trabalha num draft separado, que não estava chegando aqui.
+   *
+   * Item novo entra na lista (aparece só se estiver ativo/publicado, porque cada
+   * prévia aplica seus próprios filtros); item existente é substituído. A
+   * ordenação por `order` é reaplicada para que mexer no campo Ordem também
+   * reposicione o item ao vivo.
+   */
+  const previewItems = useMemo(() => {
+    if (!draft) return items;
+    const merged = items.some((item) => item.id === draft.id)
+      ? items.map((item) => (item.id === draft.id ? draft : item))
+      : [...items, draft];
+    return [...merged].sort((a, b) => a.order - b.order);
+  }, [items, draft]);
+
+  const notifyPreview = config.onPreviewItemsChange;
+  useEffect(() => {
+    notifyPreview?.(previewItems);
+  }, [notifyPreview, previewItems]);
+
   const openNew = () => {
     if (!confirmLeave()) return;
     setDraft({ ...config.emptyItem, id: `new:${crypto.randomUUID()}`, order: items.length + 1 });
@@ -63,6 +92,9 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
   const closeEditor = () => {
     if (!confirmLeave()) return;
     setDraft(null);
+    // Descartar o rascunho zera as alterações pendentes: sem isso o aviso de
+    // "alterações não salvas" continuava valendo para um formulário que já fechou.
+    setDirty(false);
   };
 
   const patchDraft = (key: string, value: unknown) => {
@@ -133,8 +165,8 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
         {content}
       </div>
       <aside className="ksa-preview-sticky">
-        <span className="ksa-eyebrow">Prévia ao vivo</span>
-        {config.preview(items)}
+        <span className="ksa-eyebrow">Prévia ao vivo{draft ? " · não salvo" : ""}</span>
+        {config.preview(previewItems)}
       </aside>
     </div>
   ) : content;

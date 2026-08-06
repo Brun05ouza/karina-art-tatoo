@@ -123,6 +123,52 @@ export type HomeDocument = {
   ctaButtonUrl: string;
 };
 
+/** Card numerado das seções "Possibilidades" e "Como pedir uma avaliação". */
+export type ReformulationCard = { id: string; title: string; text: string; active: boolean; order: number };
+/** Item da lista "Pontos avaliados na reformulação". */
+export type ReformulationPoint = { id: string; label: string; active: boolean; order: number };
+
+/**
+ * Textos fixos da página /reformulacoes (frontend/src/app/App.tsx):
+ * hero → introdução → portfólio de casos → possibilidades → CTA.
+ *
+ * Os casos em si ficam na coleção `reformulacoes` (ReformulationItem).
+ *
+ * Nem todo campo tem editor na tela: os títulos da grade de casos e a faixa final
+ * são fixos hoje, mas continuam aqui porque a prévia precisa renderizá-los.
+ */
+export type ReformulationsDocument = {
+  heroEyebrow: string;
+  heroTitle: string;
+  heroText: string;
+  heroButton: string;
+  heroButtonUrl: string;
+  heroImageUrl: string;
+
+  introEyebrow: string;
+  introTitle: string;
+  introText: string;
+  panelEyebrow: string;
+  panelTextOne: string;
+  panelTextTwo: string;
+  panelPoints: ReformulationPoint[];
+
+  portfolioEyebrow: string;
+  portfolioTitle: string;
+  portfolioText: string;
+  caseNote: string;
+
+  possibilitiesEyebrow: string;
+  possibilitiesTitle: string;
+  possibilitiesText: string;
+  possibilityCards: ReformulationCard[];
+
+  ctaTitle: string;
+  ctaText: string;
+  ctaButton: string;
+  ctaButtonUrl: string;
+};
+
 export type AboutApproachCard = {
   id: string;
   active: boolean;
