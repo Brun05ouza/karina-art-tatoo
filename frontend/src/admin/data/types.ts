@@ -28,12 +28,33 @@ export type FlashTattoo = BaseItem & {
   size: string;
 };
 
+/** Textos fixos da página /flash-tattoos (frontend/src/app/App.tsx): só o hero — o resto vem da coleção FlashTattoo. */
+export type FlashPageDocument = {
+  heroKicker: string;
+  heroTitle: string;
+  heroText: string;
+  heroImageUrl: string;
+};
+
 export type ProductItem = BaseItem & {
   category: string;
   status: PublishStatus;
   price: string;
   whatsappMessage: string;
   link: string;
+};
+
+/** Textos fixos da página /produtos (frontend/src/app/App.tsx): hero → CTA final. */
+export type ProductsPageDocument = {
+  heroKicker: string;
+  heroTitle: string;
+  heroText1: string;
+  heroText2: string;
+  heroButton: string;
+  heroImageUrl: string;
+  ctaTitle: string;
+  ctaText: string;
+  ctaButton: string;
 };
 
 export type ReformulationItem = BaseItem & {

@@ -1,7 +1,22 @@
 import type { FlashPageDocument, FlashTattoo } from "../data/types";
+import { PreviewHeroStars } from "./PreviewParts";
 import { SitePreviewFrame } from "./SitePreviewFrame";
 import { StarGlyph } from "../../app/components/StarGlyph";
 import { StencilCrosshair } from "../../app/components/StencilCrosshair";
+
+/**
+ * Prévia da página /flash-tattoos.
+ *
+ * O markup e as classes vêm de FlashPage/FlashCard/PageHero em
+ * frontend/src/app/App.tsx, e o CSS é o próprio kah-sarte.css (ver
+ * SitePreviewFrame). Ao mudar a página real, replique aqui.
+ *
+ * Diferença deliberada: no site publicado hoje, FlashCard recebe a foto do
+ * flash mas nunca a exibe — mostra sempre um número no lugar dela. Aqui a
+ * prévia mostra a foto de fato quando cadastrada, porque isso é o que faz
+ * sentido para quem está cadastrando a imagem no admin. A página pública
+ * ainda precisa desse ajuste para acompanhar (fora deste pedido).
+ */
 
 function WhatsAppIcon() {
   return (
@@ -12,8 +27,14 @@ function WhatsAppIcon() {
 }
 
 export function FlashTattoosPreview({ doc, items }: { doc: FlashPageDocument; items: FlashTattoo[] }) {
+  // Mesma regra de publicação das outras prévias.
+  const flashes = items
+    .filter((item) => item.active && item.status !== "Oculto")
+    .sort((a, b) => a.order - b.order);
+
   return (
     <SitePreviewFrame>
+      <div className="ks-grain" aria-hidden="true" />
       <header className="ks-header">
         <a className="ks-logo">
           <StarGlyph size={8} color="#2E173A" />
@@ -28,13 +49,14 @@ export function FlashTattoosPreview({ doc, items }: { doc: FlashPageDocument; it
           <a className="ks-nav-cta">Quero um orçamento</a>
         </nav>
       </header>
-      
-      <main>
+
+      <div className="ks-route-content">
         <section className={`ks-page-hero${!doc.heroImageUrl ? " ks-page-hero-no-image" : ""}`}>
           {doc.heroImageUrl && (
             <img className="ks-page-hero-image" src={doc.heroImageUrl} alt="" aria-hidden="true" loading="eager" />
           )}
           {doc.heroImageUrl && <div className="ks-page-hero-shade" aria-hidden="true" />}
+          <PreviewHeroStars />
           <div className="ks-page-hero-content">
             {doc.heroKicker && <span className="ks-label-caps ks-muted">{doc.heroKicker}</span>}
             <h1 className="ks-display-xl">{doc.heroTitle}</h1>
@@ -43,32 +65,40 @@ export function FlashTattoosPreview({ doc, items }: { doc: FlashPageDocument; it
         </section>
 
         <section className="ks-section">
-          <div className="ks-flash-page-grid">
-            {items.map((item, index) => (
-              <article className="ks-flash-page-card" key={item.id}>
-                {item.imageUrl ? (
-                  <div className="ks-flash-page-card-media">
-                    <img src={item.imageUrl} alt={item.title} loading="lazy" />
+          {flashes.length > 0 ? (
+            <div className="ks-flash-page-grid">
+              {flashes.map((item, index) => (
+                <article className="ks-flash-page-card" key={item.id}>
+                  {item.imageUrl ? (
+                    <div className="ks-flash-page-card-media">
+                      <img src={item.imageUrl} alt={item.title} loading="lazy" />
+                    </div>
+                  ) : (
+                    <div className="ks-flash-page-card-media">
+                      <div className="ks-numbered-placeholder" aria-hidden="true">
+                        <span>{String(index + 1).padStart(2, "0")}</span>
+                      </div>
+                    </div>
+                  )}
+                  <div className="ks-flash-page-card-body">
+                    <StencilCrosshair size={14} color="#806E85" />
+                    <span className={`ks-status ${(item.status || "Disponível").toLowerCase()}`}>
+                      {item.status || "Disponível"}
+                    </span>
+                    <h3>{item.title || "Flash sem nome"}</h3>
+                    <p>{item.description}</p>
+                    <a className="ks-primary-link">Quero esse flash <WhatsAppIcon /></a>
                   </div>
-                ) : (
-                  <div className="ks-flash-page-card-media ks-numbered-placeholder">
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                  </div>
-                )}
-                <div className="ks-flash-page-card-body">
-                  <StencilCrosshair size={14} color="#806E85" />
-                  <span className={`ks-status ${(item.status || "Disponível").toLowerCase()}`}>
-                    {item.status || "Disponível"}
-                  </span>
-                  <h3>{item.title || "Flash sem nome"}</h3>
-                  <p>{item.description}</p>
-                  <a className="ks-primary-link">Quero esse flash <WhatsAppIcon /></a>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="ks-body-lg ks-muted" style={{ textAlign: "center" }} role="status">
+              Nenhum flash disponível publicado ainda.
+            </p>
+          )}
         </section>
-      </main>
+      </div>
     </SitePreviewFrame>
   );
 }

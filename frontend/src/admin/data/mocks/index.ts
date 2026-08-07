@@ -47,11 +47,12 @@ export const mockFaqs: FaqItem[] = [
   { id: "faq-4", order: 4, active: true, title: "Quais formas de pagamento?", answer: "O sinal reserva a data e o restante é combinado antes da sessão.", category: "Pagamento", status: "Rascunho" },
 ];
 
+/** Copy inicial igual à que está publicada hoje em /flash-tattoos. */
 export const mockFlashPage: FlashPageDocument = {
   heroKicker: "Flash Tattoos",
   heroTitle: "Flash Tattoos disponíveis",
   heroText: "Artes autorais prontas para tatuar, com disponibilidade limitada.",
-  heroImageUrl: "",
+  heroImageUrl: "/assets/hero-home.png",
 };
 
 export const mockProductsPage: ProductsPageDocument = {
