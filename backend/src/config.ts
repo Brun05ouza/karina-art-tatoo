@@ -29,15 +29,13 @@ const envSchema = z
     DEV_ADMIN_EMAIL: z.string().optional(),
     DEV_ADMIN_PASSWORD: z.string().optional(),
 
-    // Opcionais no boot: validados no primeiro uso (ver requireDatabaseUrl/requireR2Config).
+    // Opcionais no boot: validados no primeiro uso (ver requireDatabaseUrl/requireSupabaseConfig).
     // Assim o servidor sobe apenas com as variáveis de autenticação, e as rotas
-    // que dependem de Neon/R2 respondem 503 com mensagem clara.
+    // que dependem de Neon/Supabase respondem 503 com mensagem clara.
     DATABASE_URL: z.string().startsWith("postgresql://").optional(),
-    R2_ACCOUNT_ID: z.string().min(1).optional(),
-    R2_ACCESS_KEY_ID: z.string().min(1).optional(),
-    R2_SECRET_ACCESS_KEY: z.string().min(1).optional(),
-    R2_BUCKET_NAME: z.string().min(1).optional(),
-    R2_PUBLIC_BASE_URL: z.url().optional(),
+    SUPABASE_URL: z.url().optional(),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+    SUPABASE_BUCKET: z.string().min(1).optional(),
   })
   .superRefine((value, ctx) => {
     if (value.NODE_ENV === "production" && value.DEV_ADMIN_ENABLED === "true") {
@@ -107,21 +105,17 @@ export function requireDatabaseUrl(): string {
   return env.DATABASE_URL;
 }
 
-export type R2Config = {
-  accountId: string;
-  accessKeyId: string;
-  secretAccessKey: string;
-  bucketName: string;
-  publicBaseUrl: string;
+export type SupabaseConfig = {
+  url: string;
+  serviceRoleKey: string;
+  bucket: string;
 };
 
-export function requireR2Config(): R2Config {
+export function requireSupabaseConfig(): SupabaseConfig {
   const missing = [
-    ["R2_ACCOUNT_ID", env.R2_ACCOUNT_ID],
-    ["R2_ACCESS_KEY_ID", env.R2_ACCESS_KEY_ID],
-    ["R2_SECRET_ACCESS_KEY", env.R2_SECRET_ACCESS_KEY],
-    ["R2_BUCKET_NAME", env.R2_BUCKET_NAME],
-    ["R2_PUBLIC_BASE_URL", env.R2_PUBLIC_BASE_URL],
+    ["SUPABASE_URL", env.SUPABASE_URL],
+    ["SUPABASE_SERVICE_ROLE_KEY", env.SUPABASE_SERVICE_ROLE_KEY],
+    ["SUPABASE_BUCKET", env.SUPABASE_BUCKET],
   ]
     .filter(([, value]) => !value)
     .map(([name]) => name as string);
@@ -129,11 +123,9 @@ export function requireR2Config(): R2Config {
   if (missing.length > 0) throw new ConfigError(missing.join(", "));
 
   return {
-    accountId: env.R2_ACCOUNT_ID!,
-    accessKeyId: env.R2_ACCESS_KEY_ID!,
-    secretAccessKey: env.R2_SECRET_ACCESS_KEY!,
-    bucketName: env.R2_BUCKET_NAME!,
-    publicBaseUrl: env.R2_PUBLIC_BASE_URL!,
+    url: env.SUPABASE_URL!,
+    serviceRoleKey: env.SUPABASE_SERVICE_ROLE_KEY!,
+    bucket: env.SUPABASE_BUCKET!,
   };
 }
 
@@ -141,14 +133,8 @@ export function hasDatabaseUrl(): boolean {
   return Boolean(env.DATABASE_URL);
 }
 
-export function hasR2Config(): boolean {
-  return Boolean(
-    env.R2_ACCOUNT_ID &&
-      env.R2_ACCESS_KEY_ID &&
-      env.R2_SECRET_ACCESS_KEY &&
-      env.R2_BUCKET_NAME &&
-      env.R2_PUBLIC_BASE_URL,
-  );
+export function hasSupabaseConfig(): boolean {
+  return Boolean(env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY && env.SUPABASE_BUCKET);
 }
 
 /**

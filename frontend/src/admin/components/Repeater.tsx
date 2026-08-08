@@ -2,7 +2,7 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { ImagePicker } from "./ImagePicker";
 import { AdminButton, Field, TextArea, TextInput, Toggle } from "./Primitives";
 
-export type RepeaterField = { key: string; label: string; type?: "text" | "textarea" | "image" };
+export type RepeaterField = { key: string; label: string; type?: "text" | "textarea" | "image"; hint?: string; folder?: string };
 
 type RepeaterItem = { id: string; active: boolean; order: number };
 
@@ -59,8 +59,8 @@ export function Repeater<T extends RepeaterItem>({
 
           {fields.map((field) => {
             const current = String((item as Record<string, unknown>)[field.key] ?? "");
-            if (field.type === "image") return <div className="ksa-repeater-image" key={field.key}><ImagePicker label={field.label} value={current} onChange={(url) => patch(item.id, { [field.key]: url } as Partial<T>)} /></div>;
-            return <Field key={field.key} label={field.label} className={cards ? `ksa-repeater-field--${field.key}` : ""}>
+            if (field.type === "image") return <div className="ksa-repeater-image" key={field.key}><ImagePicker label={field.label} description={field.hint} folder={field.folder} value={current} onChange={(url) => patch(item.id, { [field.key]: url } as Partial<T>)} /></div>;
+            return <Field key={field.key} label={field.label} hint={field.hint} className={cards ? `ksa-repeater-field--${field.key}` : ""}>
               {field.type === "textarea"
                 ? <TextArea aria-label={field.label} rows={3} value={current} onChange={(event) => patch(item.id, { [field.key]: event.target.value } as Partial<T>)} />
                 : <TextInput aria-label={field.label} value={current} onChange={(event) => patch(item.id, { [field.key]: event.target.value } as Partial<T>)} />}

@@ -1,22 +1,22 @@
 import { randomUUID } from "node:crypto";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { requireAdmin } from "../auth.js";
-import { requireR2Config } from "../config.js";
-import { getR2 } from "../r2.js";
+import { requireSupabaseConfig } from "../config.js";
+import { getSupabase } from "../supabase.js";
 
-const allowedImageTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"] as const;
-const imageExtensions: Record<(typeof allowedImageTypes)[number], string> = {
+const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif", "video/mp4", "video/webm"] as const;
+const extensionsByType: Record<(typeof allowedTypes)[number], string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
   "image/avif": "avif",
+  "video/mp4": "mp4",
+  "video/webm": "webm",
 };
 
 const uploadSchema = z.object({
-  contentType: z.enum(allowedImageTypes),
+  contentType: z.enum(allowedTypes),
   folder: z.string().regex(/^[a-z0-9][a-z0-9/-]{0,60}$/).default("site"),
 });
 
@@ -27,26 +27,23 @@ export async function uploadRoutes(app: FastifyInstance) {
       return reply.code(400).send({ error: "Formato ou pasta de upload inválidos." });
     }
 
-    const r2Config = requireR2Config();
-    const extension = imageExtensions[body.data.contentType];
+    const config = requireSupabaseConfig();
+    const extension = extensionsByType[body.data.contentType];
     const objectKey = `${body.data.folder}/${new Date().toISOString().slice(0, 10)}/${randomUUID()}.${extension}`;
-    const command = new PutObjectCommand({
-      Bucket: r2Config.bucketName,
-      Key: objectKey,
-      ContentType: body.data.contentType,
-      CacheControl: "public, max-age=31536000, immutable",
-    });
-    const uploadUrl = await getSignedUrl(getR2(), command, { expiresIn: 300 });
-    const publicUrl = `${r2Config.publicBaseUrl.replace(/\/$/, "")}/${objectKey}`;
+
+    const { data, error } = await getSupabase().storage.from(config.bucket).createSignedUploadUrl(objectKey);
+    if (error || !data) {
+      return reply.code(502).send({ error: "Não foi possível gerar o link de upload." });
+    }
+
+    const { data: publicUrlData } = getSupabase().storage.from(config.bucket).getPublicUrl(objectKey);
 
     return reply.send({
       objectKey,
-      publicUrl,
-      uploadUrl,
-      expiresIn: 300,
+      publicUrl: publicUrlData.publicUrl,
+      uploadUrl: data.signedUrl,
       requiredHeaders: {
         "Content-Type": body.data.contentType,
-        "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
   });

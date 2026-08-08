@@ -36,6 +36,14 @@ export type FlashPageDocument = {
   heroImageUrl: string;
 };
 
+/** Textos fixos da página /portfolio (frontend/src/app/App.tsx): só o hero — o resto vem da coleção PortfolioItem. */
+export type PortfolioPageDocument = {
+  heroKicker: string;
+  heroTitle: string;
+  heroText: string;
+  heroImageUrl: string;
+};
+
 export type ProductItem = BaseItem & {
   category: string;
   status: PublishStatus;
@@ -207,6 +215,8 @@ export type AboutDocument = {
   approachCards: AboutApproachCard[];
   imageUrl: string;
   quote: string;
+  behindScenesImageUrl: string;
+  behindScenesCaption: string;
 };
 
 export type BackstageDocument = {

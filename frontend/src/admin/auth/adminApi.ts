@@ -1,4 +1,4 @@
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
+export const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
 
 export type AdminUser = { email: string; role: "admin" };
 export type SessionResponse = {
@@ -7,10 +7,12 @@ export type SessionResponse = {
   devLoginAvailable: boolean;
 };
 
-type ApiOptions = RequestInit & { allowUnauthorized?: boolean };
+type ApiOptions = RequestInit & { allowUnauthorized?: boolean; treat404AsNull?: boolean };
 
-export async function adminFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
-  const { allowUnauthorized = false, headers, ...requestOptions } = options;
+export async function adminFetch<T>(path: string, options?: ApiOptions & { treat404AsNull?: false }): Promise<T>;
+export async function adminFetch<T>(path: string, options: ApiOptions & { treat404AsNull: true }): Promise<T | null>;
+export async function adminFetch<T>(path: string, options: ApiOptions = {}): Promise<T | null> {
+  const { allowUnauthorized = false, treat404AsNull = false, headers, ...requestOptions } = options;
   const response = await fetch(`${API_URL}${path}`, {
     ...requestOptions,
     credentials: "include",
@@ -24,6 +26,8 @@ export async function adminFetch<T>(path: string, options: ApiOptions = {}): Pro
   if (response.status === 401 && !allowUnauthorized) {
     window.dispatchEvent(new CustomEvent("ksa:unauthorized"));
   }
+
+  if (response.status === 404 && treat404AsNull) return null;
 
   if (!response.ok) {
     const payload = await response.json().catch(() => null) as { error?: string } | null;

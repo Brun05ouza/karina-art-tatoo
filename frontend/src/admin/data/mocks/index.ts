@@ -8,6 +8,7 @@ import type {
   LinkBioDocument,
   MediaItem,
   PortfolioItem,
+  PortfolioPageDocument,
   ProductItem,
   ProductsPageDocument,
   ReformulationItem,
@@ -52,6 +53,14 @@ export const mockFlashPage: FlashPageDocument = {
   heroKicker: "Flash Tattoos",
   heroTitle: "Flash Tattoos disponíveis",
   heroText: "Artes autorais prontas para tatuar, com disponibilidade limitada.",
+  heroImageUrl: "/assets/hero-home.png",
+};
+
+/** Copy inicial igual à que está publicada hoje em /portfolio. */
+export const mockPortfolioPage: PortfolioPageDocument = {
+  heroKicker: "Portfólio",
+  heroTitle: "Portfólio",
+  heroText: "Conheça tattoos, flashes e projetos autorais criados pela Karina Sarte.",
   heroImageUrl: "/assets/hero-home.png",
 };
 
@@ -159,6 +168,8 @@ export const mockAbout: AboutDocument = {
   ],
   imageUrl: "/assets/karina-sarte-retrato.jpg",
   quote: "Em cada traço, coloco intenção. A tattoo precisa conversar com quem você é e com o corpo que a recebe.",
+  behindScenesImageUrl: "",
+  behindScenesCaption: "Língua de fora, mão firme: é assim que uma borboleta nasce no tablet antes de virar tattoo.",
 };
 
 /** Copy inicial igual à que está publicada hoje em /reformulacoes. */

@@ -1,3 +1,4 @@
+import { MousePointerClick } from "lucide-react";
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 export function AdminPage({ eyebrow, title, description, actions, children }: { eyebrow?: string; title: string; description?: string; actions?: ReactNode; children: ReactNode }) {
@@ -38,6 +39,85 @@ export function AdminButton({ tone = "primary", size = "md", ...props }: ButtonH
 export function StatusBadge({ status = "Rascunho" }: { status?: string }) {
   const slug = status.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
   return <span className={`ksa-badge ksa-badge--${slug}`}>{status}</span>;
+}
+
+/**
+ * Cartão que junta o texto do botão e o destino dele num único bloco, com
+ * nomes em linguagem simples — a cliente edita "o que aparece" e "para onde
+ * leva" sem se deparar com dois campos soltos chamados "Botão" e "URL".
+ */
+export function ButtonLinkCard({
+  title,
+  hint,
+  optional,
+  textLabel = "Texto do botão",
+  textValue,
+  onTextChange,
+  linkValue,
+  onLinkChange,
+  linkHint = "Endereço da página para onde o botão leva, por exemplo /orcamento.",
+}: {
+  title: string;
+  hint?: string;
+  optional?: boolean;
+  textLabel?: string;
+  textValue: string;
+  onTextChange(value: string): void;
+  linkValue: string;
+  onLinkChange(value: string): void;
+  linkHint?: string;
+}) {
+  return (
+    <div className="ksa-button-card">
+      <div className="ksa-button-card-head">
+        <span className="ksa-button-card-icon"><MousePointerClick size={15} /></span>
+        <div>
+          <strong>{title}{optional && <em>opcional</em>}</strong>
+          {hint && <p>{hint}</p>}
+        </div>
+      </div>
+      <div className="ksa-button-card-fields">
+        <Field label={textLabel}><TextInput value={textValue} onChange={(event) => onTextChange(event.target.value)} /></Field>
+        <Field label="Para onde ele leva" hint={linkHint}><TextInput value={linkValue} onChange={(event) => onLinkChange(event.target.value)} /></Field>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Escolha entre 2–3 opções como cartões clicáveis, cada um com uma frase
+ * explicando a consequência — substitui um <select> com valores técnicos
+ * (ex.: "automatico"/"manual") por algo que se lê como uma decisão.
+ */
+export function OptionCards<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange(next: T): void;
+  options: { value: T; label: string; description: string }[];
+}) {
+  return (
+    <div className="ksa-option-cards" role="radiogroup">
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          role="radio"
+          aria-checked={value === option.value}
+          className={`ksa-option-card ${value === option.value ? "is-selected" : ""}`}
+          onClick={() => onChange(option.value)}
+        >
+          <span className="ksa-option-card-dot" aria-hidden="true" />
+          <span>
+            <strong>{option.label}</strong>
+            <p>{option.description}</p>
+          </span>
+        </button>
+      ))}
+    </div>
+  );
 }
 
 export function CollapsibleBlock({ title, summary, children, defaultOpen = false }: { title: string; summary?: string; children: ReactNode; defaultOpen?: boolean }) {

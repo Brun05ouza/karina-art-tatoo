@@ -102,6 +102,14 @@ export function AboutPreview({ value }: { value: AboutDocument }) {
             <a className="ks-primary-link" style={{ marginTop: "2rem" }}>Quero criar minha tattoo <ArrowRight size={16} /></a>
           </div>
         </section>
+        {value.behindScenesImageUrl && (
+          <section className="ks-section ks-about-behind-scenes">
+            <figure className="ks-about-behind-scenes-frame">
+              <img src={value.behindScenesImageUrl} alt="" loading="lazy" />
+              <figcaption><Filled value={value.behindScenesCaption} fallback="Uma legenda descontraída aqui." /></figcaption>
+            </figure>
+          </section>
+        )}
         <FeatureStrip cards={value.approachCards} />
       </div>
     </SitePreviewFrame>

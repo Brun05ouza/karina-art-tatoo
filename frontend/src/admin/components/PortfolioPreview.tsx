@@ -1,11 +1,11 @@
 import { useState } from "react";
-import type { PortfolioItem } from "../data/types";
+import type { PortfolioItem, PortfolioPageDocument } from "../data/types";
 import { PreviewHeroStars } from "./PreviewParts";
 import { SitePreviewFrame } from "./SitePreviewFrame";
 import { StarGlyph } from "../../app/components/StarGlyph";
 import { ArrowRight } from "lucide-react";
 
-export function PortfolioPreview({ items }: { items: PortfolioItem[] }) {
+export function PortfolioPreview({ doc, items }: { doc: PortfolioPageDocument; items: PortfolioItem[] }) {
   const [activeCategory, setActiveCategory] = useState("Todos");
 
   const publishedItems = items.filter((item) => item.active && item.status !== "Oculto");
@@ -38,20 +38,16 @@ export function PortfolioPreview({ items }: { items: PortfolioItem[] }) {
       </header>
 
       <div className="ks-route-content">
-        <section className="ks-page-hero">
-          <img
-            className="ks-page-hero-image"
-            src="/assets/hero-home.png"
-            alt=""
-            aria-hidden="true"
-            loading="eager"
-          />
-          <div className="ks-page-hero-shade" aria-hidden="true" />
+        <section className={`ks-page-hero${!doc.heroImageUrl ? " ks-page-hero-no-image" : ""}`}>
+          {doc.heroImageUrl && (
+            <img className="ks-page-hero-image" src={doc.heroImageUrl} alt="" aria-hidden="true" loading="eager" />
+          )}
+          {doc.heroImageUrl && <div className="ks-page-hero-shade" aria-hidden="true" />}
           <PreviewHeroStars />
           <div className="ks-page-hero-content">
-            <span className="ks-label-caps ks-muted">Portfólio</span>
-            <h1 className="ks-display-xl">Portfólio</h1>
-            <p className="ks-body-lg">Conheça tattoos, flashes e projetos autorais criados pela Karina Sarte.</p>
+            {doc.heroKicker && <span className="ks-label-caps ks-muted">{doc.heroKicker}</span>}
+            <h1 className="ks-display-xl">{doc.heroTitle}</h1>
+            <p className="ks-body-lg">{doc.heroText}</p>
           </div>
         </section>
 

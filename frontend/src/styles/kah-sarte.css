@@ -1201,6 +1201,36 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   margin-top: 8px;
 }
 
+.ks-about-behind-scenes {
+  display: flex;
+  justify-content: center;
+  padding-top: 0;
+}
+
+.ks-about-behind-scenes-frame {
+  margin: 0;
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+}
+
+.ks-about-behind-scenes-frame img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(46, 23, 58, 0.16);
+}
+
+.ks-about-behind-scenes-frame figcaption {
+  margin-top: 20px;
+  color: var(--ks-primary);
+  font-family: var(--ks-font-body-accent);
+  font-size: clamp(18px, 2.4vw, 24px);
+  font-style: italic;
+  line-height: 1.4;
+}
+
 .ks-section-title {
   position: relative;
   isolation: isolate;

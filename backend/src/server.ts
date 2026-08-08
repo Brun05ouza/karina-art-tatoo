@@ -2,7 +2,7 @@ import Fastify, { type FastifyError } from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
-import { allowedOrigins, ConfigError, env, hasDatabaseUrl, hasR2Config } from "./config.js";
+import { allowedOrigins, ConfigError, env, hasDatabaseUrl, hasSupabaseConfig } from "./config.js";
 import { adminAuthRoutes } from "./routes/admin-auth.js";
 import { contentRoutes } from "./routes/content.js";
 import { mediaRoutes } from "./routes/media.js";
@@ -19,7 +19,7 @@ const app = Fastify({
         "req.headers.cookie",
         "res.headers.set-cookie",
         "DATABASE_URL",
-        "R2_SECRET_ACCESS_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
       ],
       censor: "[REDACTED]",
     },
@@ -65,7 +65,7 @@ app.setNotFoundHandler(async (_request, reply) => {
 app.setErrorHandler<FastifyError>(async (error, request, reply) => {
   request.log.error({ err: error }, "request failed");
 
-  // Recurso opcional não configurado (DATABASE_URL, R2_*): a mensagem precisa
+  // Recurso opcional não configurado (DATABASE_URL, SUPABASE_*): a mensagem precisa
   // chegar ao cliente, então não pode cair no mascaramento de 5xx abaixo.
   if (error instanceof ConfigError) {
     return reply.code(error.statusCode).send({ error: error.message });
@@ -82,8 +82,8 @@ try {
   if (!hasDatabaseUrl()) {
     app.log.warn("DATABASE_URL ausente: /api/content e /api/media responderão 503.");
   }
-  if (!hasR2Config()) {
-    app.log.warn("Credenciais R2 ausentes: /api/uploads/presign responderá 503.");
+  if (!hasSupabaseConfig()) {
+    app.log.warn("Credenciais Supabase ausentes: /api/uploads/presign responderá 503.");
   }
 } catch (error) {
   app.log.error(error);

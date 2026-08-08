@@ -163,21 +163,22 @@ a { color: inherit; text-decoration: none; }
 .ksa-quick-links a:last-child { border-right: 0; }
 .ksa-quick-links a:hover { background: var(--ksa-surface-soft); }
 
-.ksa-field { align-content: start; align-self: start; display: grid; gap: 8px; min-width: 0; }
-.ksa-label { color: var(--ksa-purple-dark); }
-.ksa-input, .ksa-textarea, .ksa-select { background: var(--ksa-surface); border: 1px solid var(--ksa-border-strong); border-radius: 3px; outline: 0; padding: 12px 13px; transition: .15s ease; width: 100%; }
-.ksa-input, .ksa-select { min-height: 45px; }
-.ksa-textarea { line-height: 1.55; min-height: 112px; resize: vertical; }
+.ksa-field { align-content: start; align-self: start; display: grid; gap: 6px; min-width: 0; }
+.ksa-label { color: var(--ksa-purple-dark); letter-spacing: .1em; }
+.ksa-input, .ksa-textarea, .ksa-select { background: var(--ksa-surface); border: 1px solid var(--ksa-border-strong); border-radius: 6px; outline: 0; padding: 9px 12px; transition: .15s ease; width: 100%; }
+.ksa-input, .ksa-select { min-height: 38px; }
+.ksa-textarea { line-height: 1.45; min-height: 76px; resize: vertical; }
 .ksa-input:focus, .ksa-textarea:focus, .ksa-select:focus { border-color: var(--ksa-purple-burnt); box-shadow: 0 0 0 3px rgba(46,23,58,.08); }
 .ksa-hint, .ksa-error { display: block; font-size: 11px; line-height: 1.5; }
 .ksa-hint { color: var(--ksa-text-muted); }
 .ksa-error { color: var(--ksa-danger); }
-.ksa-grid-2, .ksa-grid-3 { align-items: start; display: grid; gap: 20px; }
+.ksa-grid-2, .ksa-grid-3 { align-items: start; display: grid; gap: 14px; }
 .ksa-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .ksa-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .is-full { grid-column: 1 / -1; }
 /* Lista de cards dentro de um bloco do editor, abaixo dos campos simples. */
 .ksa-block-list { border-top: 1px solid var(--ksa-border); display: grid; gap: 13px; margin-top: 22px; padding-top: 20px; }
+.ksa-block-list-note { color: var(--ksa-text-muted); font-size: 12px; margin: -7px 0 0; }
 .ksa-stack { display: grid; gap: 14px; }
 .ksa-muted { color: var(--ksa-text-muted); font-size: 13px; margin: 0; }
 
@@ -233,7 +234,7 @@ a { color: inherit; text-decoration: none; }
 .ksa-editor > footer { align-items: center; background: var(--ksa-surface); border-top: 1px solid var(--ksa-border); display: flex; gap: 10px; justify-content: flex-end; margin-top: auto; padding: 16px 26px; }
 .ksa-image-picker { display: grid; gap: 8px; }
 .ksa-image-picker-box { align-items: center; background: var(--ksa-surface-soft); border: 1px dashed var(--ksa-border-strong); border-radius: 6px; display: flex; gap: 10px; min-height: 140px; overflow: hidden; padding: 12px; position: relative; }
-.ksa-image-picker-box img { border-radius: 4px; height: 150px; object-fit: cover; width: 180px; }
+.ksa-image-picker-box img, .ksa-image-picker-box video { border-radius: 4px; height: 150px; object-fit: cover; width: 180px; }
 .ksa-image-placeholder { align-items: center; color: var(--ksa-text-muted); display: flex; flex: 1; flex-direction: column; font-size: 12px; gap: 8px; justify-content: center; }
 .ksa-image-action { background: var(--ksa-purple-deep); border-radius: var(--ksa-radius-pill); color: white; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: .1em; padding: 11px 15px; text-transform: uppercase; }
 .ksa-image-action input { display: none; }
@@ -246,10 +247,24 @@ a { color: inherit; text-decoration: none; }
 .ksa-block-toggle span { color: var(--ksa-text-muted); display: block; font-size: 11px; margin-top: 3px; }
 .ksa-block-toggle > span { color: var(--ksa-purple-dark); font-size: 22px; transition: transform .2s; }
 .ksa-block[open] .ksa-block-toggle > span { transform: rotate(45deg); }
-.ksa-block-content { border-top: 1px solid var(--ksa-border); padding: 20px; }
+.ksa-block-content { border-top: 1px solid var(--ksa-border); padding: 18px 20px; }
+
+/* Cartão "botão + link": junta os dois campos com um rótulo em linguagem
+   simples, para ficar claro que um depende do outro. */
+.ksa-button-card { background: var(--ksa-surface-soft); border: 1px solid var(--ksa-border); border-radius: 8px; padding: 14px 16px; }
+.ksa-button-card + .ksa-button-card { margin-top: 12px; }
+.ksa-button-card-head { align-items: flex-start; display: flex; gap: 10px; margin-bottom: 12px; }
+.ksa-button-card-icon { align-items: center; background: var(--ksa-surface); border-radius: 50%; color: var(--ksa-purple-burnt); display: flex; flex: none; height: 30px; justify-content: center; width: 30px; }
+.ksa-button-card-head strong { color: var(--ksa-purple-dark); font-family: "Cormorant Garamond", serif; font-size: 18px; }
+.ksa-button-card-head strong em { color: var(--ksa-text-muted); font-family: "IBM Plex Mono", monospace; font-size: 10px; font-style: normal; letter-spacing: .08em; margin-left: 8px; text-transform: uppercase; }
+.ksa-button-card-head p { color: var(--ksa-text-muted); font-size: 12px; margin: 2px 0 0; }
+.ksa-button-card-fields { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@container ksa-editor (max-width: 480px) {
+  .ksa-button-card-fields { grid-template-columns: 1fr; }
+}
 .ksa-document-editor { container: ksa-editor / inline-size; padding-bottom: 86px; }
-.ksa-document-editor .ksa-grid-2 { gap: 16px 18px; }
-.ksa-document-editor .ksa-textarea { min-height: 88px; }
+.ksa-document-editor .ksa-grid-2 { gap: 12px 16px; }
+.ksa-document-editor .ksa-textarea { min-height: 64px; }
 .ksa-save-bar { align-items: center; background: rgba(255,255,255,.96); border: 1px solid var(--ksa-border); border-radius: var(--ksa-radius); box-shadow: var(--ksa-shadow); display: flex; justify-content: space-between; padding: 12px 14px 12px 19px; position: static; z-index: 18; }
 .ksa-save-bar span { align-items: center; color: var(--ksa-text-muted); display: flex; font-size: 12px; gap: 9px; }
 .ksa-document-save { backdrop-filter: blur(12px); bottom: 18px; margin-top: 13px; position: sticky; top: auto; }
@@ -425,7 +440,7 @@ a { color: inherit; text-decoration: none; }
   .ksa-editor-fields { grid-template-columns: 1fr; padding: 18px; }
   .ksa-editor-fields > div:first-child { grid-column: auto; }
   .ksa-image-picker-box { align-items: stretch; flex-direction: column; }
-  .ksa-image-picker-box img { height: 180px; width: 100%; }
+  .ksa-image-picker-box img, .ksa-image-picker-box video { height: 180px; width: 100%; }
   .ksa-image-remove { align-self: flex-start; }
   .ksa-save-bar { gap: 9px; padding-left: 14px; }
   .ksa-save-bar span { font-size: 10px; }
@@ -470,7 +485,20 @@ a { color: inherit; text-decoration: none; }
 .ksa-portfolio-selector-check { align-items: center; background: var(--ksa-purple-deep); border-radius: 50%; bottom: 8px; color: white; display: flex; font-size: 11px; font-weight: 700; height: 22px; justify-content: center; opacity: 0; position: absolute; right: 8px; transition: opacity .18s ease, transform .18s ease; transform: scale(.7); width: 22px; }
 .ksa-portfolio-selector-card.is-selected .ksa-portfolio-selector-check { opacity: 1; transform: scale(1); }
 .ksa-portfolio-selector-card.is-skeleton { aspect-ratio: 1 / 1.3; animation: ksa-pulse 1.3s ease-in-out infinite; background: var(--ksa-gray); border: none; cursor: default; }
+.ksa-portfolio-selector-add { align-items: center; border-style: dashed; color: var(--ksa-text-muted); font-size: 12px; gap: 8px; justify-content: center; min-height: 100%; padding: 16px 10px; text-decoration: none; }
+.ksa-portfolio-selector-add:hover { background: var(--ksa-surface-soft); border-color: var(--ksa-purple-burnt); color: var(--ksa-purple-dark); }
+.ksa-portfolio-selector-add-icon { align-items: center; background: var(--ksa-surface-soft); border-radius: 50%; color: var(--ksa-purple-burnt); display: flex; height: 34px; justify-content: center; width: 34px; }
+.ksa-portfolio-selector-add:hover .ksa-portfolio-selector-add-icon { background: var(--ksa-surface); }
 
-.ksa-portfolio-auto-note { align-items: flex-start; background: var(--ksa-surface-soft); border: 1px solid var(--ksa-border); border-radius: 6px; color: var(--ksa-text-muted); display: flex; font-size: 13px; gap: 9px; line-height: 1.55; padding: 12px 14px; }
-.ksa-portfolio-auto-note svg { color: var(--ksa-purple-burnt); flex: none; margin-top: 1px; }
-.ksa-portfolio-auto-note strong { color: var(--ksa-text); }
+/* Cartões de opção: decisão em vez de <select> com valores técnicos. */
+.ksa-option-cards { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ksa-option-card { align-items: flex-start; background: var(--ksa-surface); border: 1px solid var(--ksa-border-strong); border-radius: 8px; cursor: pointer; display: flex; font-family: inherit; gap: 10px; padding: 12px 14px; text-align: left; transition: .15s ease; }
+.ksa-option-card:hover { border-color: var(--ksa-purple-burnt); }
+.ksa-option-card.is-selected { background: var(--ksa-surface-soft); border-color: var(--ksa-purple-burnt); box-shadow: 0 0 0 3px rgba(46,23,58,.08); }
+.ksa-option-card-dot { border: 2px solid var(--ksa-border-strong); border-radius: 50%; flex: none; height: 16px; margin-top: 3px; width: 16px; transition: .15s ease; }
+.ksa-option-card.is-selected .ksa-option-card-dot { background: radial-gradient(circle, var(--ksa-purple-burnt) 0 42%, transparent 44%); border-color: var(--ksa-purple-burnt); }
+.ksa-option-card strong { color: var(--ksa-purple-dark); display: block; font-size: 14px; }
+.ksa-option-card p { color: var(--ksa-text-muted); font-size: 12px; margin: 3px 0 0; }
+@container ksa-editor (max-width: 480px) {
+  .ksa-option-cards { grid-template-columns: 1fr; }
+}

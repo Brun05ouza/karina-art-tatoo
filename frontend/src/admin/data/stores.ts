@@ -1,4 +1,5 @@
 import { createLocalDocumentStore, createLocalRepository } from "./localStore";
+import { createRemoteDocumentStore } from "./remoteStore";
 import {
   mockAbout,
   mockBastidores,
@@ -9,6 +10,7 @@ import {
   mockLinkBio,
   mockMediaItems,
   mockPortfolioItems,
+  mockPortfolioPage,
   mockProducts,
   mockProductsPage,
   mockReformulacoes,
@@ -23,10 +25,11 @@ export const reformulationsStore = createLocalRepository("reformulacoes", mockRe
 export const faqStore = createLocalRepository("faq", mockFaqs);
 export const mediaStore = createLocalRepository("midia", mockMediaItems);
 
-export const homeStore = createLocalDocumentStore("home", mockHome);
+export const homeStore = createRemoteDocumentStore("home", mockHome);
 export const flashPageStore = createLocalDocumentStore("flash-page", mockFlashPage);
+export const portfolioPageStore = createLocalDocumentStore("portfolio-page", mockPortfolioPage);
 export const productsPageStore = createLocalDocumentStore("products-page", mockProductsPage);
-export const aboutStore = createLocalDocumentStore("sobre", mockAbout);
+export const aboutStore = createRemoteDocumentStore("sobre", mockAbout);
 export const reformulationsTextStore = createLocalDocumentStore("reformulacoes-textos", mockReformulacoesTextos);
 export const backstageStore = createLocalDocumentStore("bastidores", mockBastidores);
 export const linkBioStore = createLocalDocumentStore("link-bio", mockLinkBio);

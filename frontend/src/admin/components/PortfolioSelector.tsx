@@ -1,4 +1,5 @@
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Plus } from "lucide-react";
+import { Link } from "react-router";
 import { useCollection } from "../hooks/useCollection";
 import { portfolioStore } from "../data/stores";
 
@@ -29,15 +30,6 @@ export function PortfolioSelector({ selectedIds, onChange }: Props) {
           <div key={i} className="ksa-portfolio-selector-card is-skeleton" />
         ))}
       </div>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <p className="ksa-muted">
-        Nenhum trabalho cadastrado no Portfólio. Adicione itens na seção{" "}
-        <strong>Portfólio</strong> para selecioná-los aqui.
-      </p>
     );
   }
 
@@ -75,6 +67,10 @@ export function PortfolioSelector({ selectedIds, onChange }: Props) {
             </button>
           );
         })}
+      <Link to="/admin/portfolio" className="ksa-portfolio-selector-card ksa-portfolio-selector-add" title="Ir para o Portfólio e cadastrar um novo trabalho">
+        <span className="ksa-portfolio-selector-add-icon"><Plus size={22} /></span>
+        <span>Adicionar trabalho</span>
+      </Link>
     </div>
   );
 }

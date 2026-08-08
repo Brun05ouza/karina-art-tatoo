@@ -1,14 +1,13 @@
-import { HeadObjectCommand } from "@aws-sdk/client-s3";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { requireAdmin } from "../auth.js";
-import { requireR2Config } from "../config.js";
+import { requireSupabaseConfig } from "../config.js";
 import { sql } from "../db.js";
-import { getR2 } from "../r2.js";
+import { getSupabase } from "../supabase.js";
 
 const mediaSchema = z.object({
   objectKey: z.string().min(1).max(500).regex(/^[a-z0-9][a-z0-9/._-]+$/),
-  contentType: z.enum(["image/jpeg", "image/png", "image/webp", "image/avif"]),
+  contentType: z.enum(["image/jpeg", "image/png", "image/webp", "image/avif", "video/mp4", "video/webm"]),
   altText: z.string().trim().max(300).optional(),
 });
 
@@ -32,23 +31,22 @@ export async function mediaRoutes(app: FastifyInstance) {
     const body = mediaSchema.safeParse(request.body);
     if (!body.success) return reply.code(400).send({ error: "Metadados de imagem inválidos." });
 
-    // Resolvidos fora do try: um ConfigError (credenciais R2 ausentes) cairia no
+    // Resolvido fora do try: um ConfigError (credenciais Supabase ausentes) cairia no
     // catch abaixo e viraria o 400 enganoso "a imagem ainda não existe".
-    const r2 = getR2();
-    const r2Config = requireR2Config();
+    const config = requireSupabaseConfig();
+    const supabase = getSupabase();
 
-    try {
-      await r2.send(
-        new HeadObjectCommand({
-          Bucket: r2Config.bucketName,
-          Key: body.data.objectKey,
-        }),
-      );
-    } catch {
+    const lastSlash = body.data.objectKey.lastIndexOf("/");
+    const folder = lastSlash >= 0 ? body.data.objectKey.slice(0, lastSlash) : "";
+    const filename = lastSlash >= 0 ? body.data.objectKey.slice(lastSlash + 1) : body.data.objectKey;
+
+    const { data: listing, error: listError } = await supabase.storage.from(config.bucket).list(folder, { search: filename });
+    if (listError || !listing?.some((entry) => entry.name === filename)) {
       return reply.code(400).send({ error: "A imagem ainda não existe no bucket." });
     }
 
-    const publicUrl = `${r2Config.publicBaseUrl.replace(/\/$/, "")}/${body.data.objectKey}`;
+    const { data: publicUrlData } = supabase.storage.from(config.bucket).getPublicUrl(body.data.objectKey);
+    const publicUrl = publicUrlData.publicUrl;
     const rows = await sql`
       INSERT INTO media_assets (object_key, public_url, content_type, alt_text)
       VALUES (

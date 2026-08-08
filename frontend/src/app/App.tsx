@@ -45,6 +45,8 @@ import {
 } from "./scroll";
 import { tattooImages } from "./tattoo-images";
 import { processVideos } from "./process-videos";
+import { useHomeContent, type HomeContent } from "./home-content";
+import { useAboutContent } from "./about-content";
 import { applyPageSeo, FAQ_ITEMS } from "./seo";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -52,7 +54,6 @@ gsap.registerPlugin(ScrollTrigger);
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const FLUID_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const WHATSAPP = "https://wa.me/5521990724477";
-const YOUTUBE_VIDEO = "https://youtu.be/zntCZqs4rEE";
 const PAGE_HERO_DEFAULT_IMAGE = tattooImages.sessionWide;
 
 /** Mocks únicos por flash (evita repetir a mesma foto) */
@@ -566,68 +567,38 @@ function PageHero({
   );
 }
 
-const homeServiceCards = [
-  {
-    title: "Tatuagens Autorais",
-    text: "Projetos personalizados criados a partir da sua ideia, referência e estilo.",
-    img: tattooImages.cardAutoral,
-    to: "/portfolio",
-    cta: "Ver projetos",
-    processVideo: processVideos.artProcess,
-  },
-  {
-    title: "Flash Tattoos",
-    text: "Artes prontas e exclusivas, com disponibilidade limitada para tatuar.",
-    img: tattooImages.cardFlash,
-    to: "/flash-tattoos",
-    cta: "Ver flashes",
-  },
-  {
-    title: "Produtos Autorais",
-    text: "Produtos, prints e coleções criadas dentro do universo visual da Karina Sarte.",
-    img: tattooImages.cardPrint,
-    to: "/produtos",
-    cta: "Ver produtos",
-  },
-  {
-    title: "Cuidados e Experiência",
-    text: "Atendimento com cuidado, orientação e responsabilidade em todas as etapas.",
-    img: tattooImages.cardCare,
-    to: "/cuidados",
-    cta: "Saiba mais",
-  },
-] as const;
-
 
 function HomePage() {
+  const home = useHomeContent();
+
   return (
     <div className="ks-home-flow">
-      <HomeHero />
+      <HomeHero data={home} />
       <SectionStarBreak align="right" />
-      <EditorialSplitSection />
+      <EditorialSplitSection data={home} />
       <SectionStarBreak align="right" light />
-      <HomeServicesSection />
+      <HomeServicesSection data={home} />
       <SectionStarBreak align="left" light />
-      <MuralPortfolioPreview />
+      <MuralPortfolioPreview data={home} />
       <SectionStarBreak align="right" />
-      <ProductsPreview />
+      <ProductsPreview data={home} />
       <SectionStarBreak align="left" />
-      <YoutubeFeatureSection />
+      {home.youtubeActive && <YoutubeFeatureSection data={home} />}
       <CtaBand
-        title="Vamos criar sua próxima tattoo?"
-        text="Envie sua ideia, referências, tamanho aproximado e local do corpo. A Karina Sarte analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele."
-        cta="Quero um orçamento"
-        to="/orcamento"
+        title={home.ctaTitle}
+        text={home.ctaText}
+        cta={home.ctaButton}
+        to={home.ctaButtonUrl}
         artwork="/assets/brand/eye-heart.png"
       />
     </div>
   );
 }
 
-function HomeHero() {
+function HomeHero({ data }: { data: HomeContent }) {
   const preloaderDone = useContext(PreloaderDoneContext);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const heroTitle = "Arte na pele com identidade, cuidado e intenção.";
+  const heroTitle = data.heroTitle;
 
   useEffect(() => {
     if (!preloaderDone || !titleRef.current) return;
@@ -661,21 +632,23 @@ function HomeHero() {
 
   return (
     <section className="ks-home-hero">
-      <img
-        className="ks-home-hero-bg"
-        src={tattooImages.hero}
-        alt=""
-        aria-hidden="true"
-        loading="eager"
-        decoding="async"
-      />
+      {data.heroImageUrl && (
+        <img
+          className="ks-home-hero-bg"
+          src={data.heroImageUrl}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          decoding="async"
+        />
+      )}
       <motion.div
         className="ks-home-hero-content"
         initial={{ opacity: 0, y: 28 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: EASE }}
       >
-        <span className="ks-label-caps">Teresópolis · RJ</span>
+        <span className="ks-label-caps">{data.heroEyebrow}</span>
         <h1 ref={titleRef} className="ks-display-xl ks-home-hero-title" aria-label={heroTitle}>
           {heroTitle.split(" ").map((word, index) => (
             <span className="ks-home-hero-word-wrap" aria-hidden="true" key={`${word}-${index}`}>
@@ -683,19 +656,19 @@ function HomeHero() {
             </span>
           ))}
         </h1>
-        <p className="ks-body-lg">
-          Tatuagens autorais, flash tattoos e criações exclusivas pensadas para transformar ideias em arte.
-        </p>
+        <p className="ks-body-lg">{data.heroText}</p>
         <div className="ks-actions">
-          <PrimaryLink to="/orcamento">Quero fazer um orçamento</PrimaryLink>
-          <TextLink to="/portfolio">Ver portfólio</TextLink>
+          <PrimaryLink to={data.heroButtonUrl}>{data.heroButton}</PrimaryLink>
+          {data.heroSecondaryButton && <TextLink to={data.heroSecondaryUrl}>{data.heroSecondaryButton}</TextLink>}
         </div>
       </motion.div>
     </section>
   );
 }
 
-function EditorialSplitSection() {
+function EditorialSplitSection({ data }: { data: HomeContent }) {
+  const steps = [...data.processSteps].filter((step) => step.active).sort((a, b) => a.order - b.order);
+
   return (
     <section className="ks-editorial-split">
       <motion.div
@@ -705,25 +678,24 @@ function EditorialSplitSection() {
         viewport={{ once: true, margin: "-10%" }}
         transition={{ duration: 0.9, ease: EASE }}
       >
-        <span className="ks-label-caps ks-gold">Processo criativo</span>
-        <h2 className="ks-headline-lg">Da conversa nasce uma composição autoral.</h2>
-        <p className="ks-body-lg ks-muted">
-          Referências, memória e proporção do corpo viram um desenho pensado para ter presença na pele, com equilíbrio,
-          identidade e cuidado em cada detalhe.
-        </p>
-        <div className="ks-editorial-process" aria-label="Fluxo de criação">
-          <span>01 · Referência</span>
-          <span>02 · Desenho</span>
-          <span>03 · Pele</span>
-        </div>
-        <PrimaryLink to="/sobre">Conhecer a artista</PrimaryLink>
+        <span className="ks-label-caps ks-gold">{data.processEyebrow}</span>
+        <h2 className="ks-headline-lg">{data.processTitle}</h2>
+        <p className="ks-body-lg ks-muted">{data.processText}</p>
+        {steps.length > 0 && (
+          <div className="ks-editorial-process" aria-label="Fluxo de criação">
+            {steps.map((step) => <span key={step.id}>{step.label}</span>)}
+          </div>
+        )}
+        <PrimaryLink to={data.processButtonUrl}>{data.processButton}</PrimaryLink>
       </motion.div>
       <div className="ks-editorial-split-media">
-        <img
-          src={tattooImages.artistDetail}
-          alt="Karina Sarte — detalhe de mãos, unhas e anéis"
-          loading="lazy"
-        />
+        {data.processImageUrl && (
+          <img
+            src={data.processImageUrl}
+            alt="Karina Sarte — detalhe de mãos, unhas e anéis"
+            loading="lazy"
+          />
+        )}
         {/* A janela vive DENTRO do bloco da foto de propósito. Como irmã, em
             coluna única ela reservava uma faixa de altura própria e, sendo
             estreita, sobrava um bloco vazio ao lado — o "buraco" entre a foto e o
@@ -741,11 +713,13 @@ function EditorialSplitSection() {
             transition={{ duration: 0.9, ease: EASE }}
           >
             <div className="ks-window-portal">
-              <img
-                src={tattooImages.artistPortrait}
-                alt="Karina Sarte"
-                loading="lazy"
-              />
+              {data.processPortraitUrl && (
+                <img
+                  src={data.processPortraitUrl}
+                  alt="Karina Sarte"
+                  loading="lazy"
+                />
+              )}
             </div>
           </motion.div>
         </div>
@@ -762,33 +736,37 @@ function NumberedPlaceholder({ number }: { number: string }) {
   );
 }
 
-function HomeServicesSection() {
+function HomeServicesSection({ data }: { data: HomeContent }) {
+  const cards = [...data.serviceCards].filter((card) => card.active).sort((a, b) => a.order - b.order);
+
   return (
     <section className="ks-services-section">
-      <SectionTitle
-        eyebrow="Serviços"
-        title="O que você encontra por aqui"
-        text="Projetos autorais, flash tattoos e produtos criados para quem busca arte com personalidade."
-      />
+      <SectionTitle eyebrow={data.servicesEyebrow} title={data.servicesTitle} text={data.servicesText} />
       <div className="ks-services-grid">
-        {homeServiceCards.map((card, index) => (
+        {cards.map((card, index) => (
           <motion.div
-            key={card.title}
+            key={card.id}
             className="ks-service-grid-item"
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-8%" }}
             transition={{ duration: 0.65, delay: index * 0.08, ease: EASE }}
           >
-            <Link className="ks-service-card" to={card.to}>
+            <Link className="ks-service-card" to={card.url}>
               <div className="ks-service-card-media">
                 <div className="ks-window-portal">
-                  {"processVideo" in card && card.processVideo ? (
+                  {/* O primeiro card traz o vídeo de processo (ainda fixo no
+                      código, id "service-1" — não é editável no painel), mas só
+                      enquanto houver imagem cadastrada nele: removê-la some com
+                      o vídeo também, em vez de ele ficar "preso" na tela. */}
+                  {card.id === "service-1" && card.imageUrl ? (
                     <HoverProcessMedia
-                      poster={card.processVideo.poster}
-                      videoSrc={card.processVideo.src}
+                      poster={processVideos.artProcess.poster}
+                      videoSrc={processVideos.artProcess.src}
                       alt={card.title}
                     />
+                  ) : card.imageUrl ? (
+                    <img src={card.imageUrl} alt={card.title} loading="lazy" />
                   ) : (
                     <NumberedPlaceholder number={String(index).padStart(2, "0")} />
                   )}
@@ -807,14 +785,10 @@ function HomeServicesSection() {
   );
 }
 
-function MuralPortfolioPreview() {
+function MuralPortfolioPreview({ data }: { data: HomeContent }) {
   return (
     <section className="ks-mural-section">
-      <SectionTitle
-        eyebrow="Portfólio"
-        title="Trabalhos recentes"
-        text="Um recorte do processo criativo, com o vídeo como destaque e cards editoriais para conduzir a navegação."
-      />
+      <SectionTitle eyebrow={data.portfolioEyebrow} title={data.portfolioTitle} text={data.portfolioText} />
       <div className="ks-mural-grid">
         {galleryItems.filter((item) => item.featured).map((item, index) => (
           <motion.div
@@ -1197,30 +1171,34 @@ function CareHomeSection() {
   );
 }
 
-function ProductsPreview() {
+function ProductsPreview({ data }: { data: HomeContent }) {
+  const cards = [...data.collectionCards].filter((card) => card.active).sort((a, b) => a.order - b.order);
+
   return (
     <section className="ks-section ks-products-preview ks-section-cream">
       <div className="ks-products-header">
-        <span className="ks-label-caps ks-gold">Coleções</span>
-        <h2 className="ks-headline-lg">Coleções da Karina Sarte</h2>
-        <p className="ks-body-lg ks-muted" style={{ marginTop: 16, maxWidth: 640 }}>
-          Arte para usar, colecionar e levar na pele. Além das tatuagens, a Karina Sarte também cria produtos, artes, flashes e
-          coleções exclusivas para quem se identifica com seu universo visual.
-        </p>
+        <span className="ks-label-caps ks-gold">{data.collectionsEyebrow}</span>
+        <h2 className="ks-headline-lg">{data.collectionsTitle}</h2>
+        <p className="ks-body-lg ks-muted" style={{ marginTop: 16, maxWidth: 640 }}>{data.collectionsText}</p>
       </div>
       <div className="ks-products-grid">
-        {productGroups.map((group, index) => (
-          <ProductVisualCard key={group.title} group={group} index={index} to="/produtos" />
+        {cards.map((card, index) => (
+          <ProductVisualCard
+            key={card.id}
+            group={{ title: card.title, hoverText: card.text, cta: card.cta, imageUrl: card.imageUrl }}
+            index={index}
+            to={card.url}
+          />
         ))}
       </div>
       <div className="ks-center-action" style={{ marginTop: "clamp(28px, 4vw, 48px)" }}>
-        <ProductsEntryLink>Ver mais produtos</ProductsEntryLink>
+        <ProductsEntryLink>{data.collectionsButton}</ProductsEntryLink>
       </div>
     </section>
   );
 }
 
-function YoutubeFeatureSection() {
+function YoutubeFeatureSection({ data }: { data: HomeContent }) {
   const trailerRef = useRef<HTMLVideoElement>(null);
   const [soundEnabled, setSoundEnabled] = useState(false);
 
@@ -1244,25 +1222,22 @@ function YoutubeFeatureSection() {
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.8, ease: EASE }}
         >
-          <span className="ks-label-caps ks-gold">Karina Sarte no YouTube</span>
+          <span className="ks-label-caps ks-gold">{data.youtubeEyebrow}</span>
           <h2 id="youtube-feature-title" className="ks-headline-lg ks-youtube-feature-title">
-            <span>Bastidores, rotina</span>
-            <span>e arte na pele.</span>
+            <span>{data.youtubeTitle}</span>
           </h2>
-          <p className="ks-body-lg ks-muted">
-            Acompanhe de perto a rotina da Karina, o espaço de criação e tudo o que acontece entre a primeira ideia e a tattoo finalizada.
-          </p>
+          <p className="ks-body-lg ks-muted">{data.youtubeText}</p>
           <a
             className="ks-primary-link ks-youtube-feature-cta"
-            href={YOUTUBE_VIDEO}
+            href={data.youtubeUrl}
             target="_blank"
             rel="noopener noreferrer"
             data-cursor="cta"
           >
             <Play size={16} fill="currentColor" />
-            Ver vídeo completo
+            {data.youtubeButton}
           </a>
-          <span className="ks-youtube-feature-meta">Tattoo vlog · rotina de estúdio · processo criativo</span>
+          <span className="ks-youtube-feature-meta">{data.youtubeMeta}</span>
         </motion.div>
 
         <motion.div
@@ -1274,48 +1249,52 @@ function YoutubeFeatureSection() {
         >
           <a
             className="ks-youtube-feature-thumb"
-            href={YOUTUBE_VIDEO}
+            href={data.youtubeUrl}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Assistir ao Tattoo Vlog completo no YouTube"
           >
-            <img
-              src="/assets/youtube/tattoo-vlog-thumb.jpeg"
-              alt="Karina Sarte no estúdio, capa do primeiro Tattoo Vlog"
-              loading="lazy"
-            />
+            {data.youtubeThumbUrl && (
+              <img
+                src={data.youtubeThumbUrl}
+                alt="Karina Sarte no estúdio, capa do primeiro Tattoo Vlog"
+                loading="lazy"
+              />
+            )}
             <span>Assistir no YouTube <ArrowRight size={15} /></span>
           </a>
 
-          <div className="ks-youtube-feature-trailer">
-            <div className="ks-youtube-feature-trailer-meta" aria-hidden="true">
-              <span>Trailer</span>
-              <span>00:17</span>
+          {data.youtubeTrailerUrl && (
+            <div className="ks-youtube-feature-trailer">
+              <div className="ks-youtube-feature-trailer-meta" aria-hidden="true">
+                <span>Trailer</span>
+                <span>00:17</span>
+              </div>
+              <video
+                ref={trailerRef}
+                autoPlay
+                muted={!soundEnabled}
+                loop
+                playsInline
+                preload="metadata"
+                poster={data.youtubeThumbUrl || undefined}
+                aria-label="Trailer vertical do primeiro Tattoo Vlog da Karina Sarte"
+              >
+                <source src={data.youtubeTrailerUrl} type="video/mp4" />
+              </video>
+              <button
+                type="button"
+                className="ks-youtube-feature-sound"
+                onClick={toggleTrailerSound}
+                aria-pressed={soundEnabled}
+                aria-label={soundEnabled ? "Desativar som do trailer" : "Ativar som do trailer"}
+                data-testid="youtube-sound-toggle"
+              >
+                {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
+                <span>{soundEnabled ? "Som ativado" : "Ativar som"}</span>
+              </button>
             </div>
-            <video
-              ref={trailerRef}
-              autoPlay
-              muted={!soundEnabled}
-              loop
-              playsInline
-              preload="metadata"
-              poster="/assets/youtube/tattoo-vlog-thumb.jpeg"
-              aria-label="Trailer vertical do primeiro Tattoo Vlog da Karina Sarte"
-            >
-              <source src="/assets/youtube/tattoo-vlog-trailer.mp4" type="video/mp4" />
-            </video>
-            <button
-              type="button"
-              className="ks-youtube-feature-sound"
-              onClick={toggleTrailerSound}
-              aria-pressed={soundEnabled}
-              aria-label={soundEnabled ? "Desativar som do trailer" : "Ativar som do trailer"}
-              data-testid="youtube-sound-toggle"
-            >
-              {soundEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
-              <span>{soundEnabled ? "Som ativado" : "Ativar som"}</span>
-            </button>
-          </div>
+          )}
         </motion.div>
       </div>
     </section>
@@ -1329,7 +1308,7 @@ function ProductVisualCard({
   index,
   to,
 }: {
-  group: (typeof productGroups)[0];
+  group: { title: string; hoverText: string; cta: string; imageUrl?: string };
   index: number;
   to?: string;
 }) {
@@ -1343,12 +1322,15 @@ function ProductVisualCard({
 
   const content = (
     <>
-      {/* Antes era um NumberedPlaceholder (quadro com grade). Como não existe
-          foto de produto no projeto, o card usa a estrela da marca em vez de
-          fingir uma imagem — e o PNG pesa 60 KB contra os 3,4 MB dos SVG. */}
-      <span className="ks-product-visual-mark" aria-hidden="true">
-        <img src="/assets/brand/star-karina-filled.png" alt="" loading="lazy" />
-      </span>
+      {group.imageUrl ? (
+        <img src={group.imageUrl} alt={group.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      ) : (
+        // Sem foto cadastrada: a estrela da marca substitui o quadro numerado,
+        // já que o PNG pesa 60 KB contra os 3,4 MB dos SVG do brasão.
+        <span className="ks-product-visual-mark" aria-hidden="true">
+          <img src="/assets/brand/star-karina-filled.png" alt="" loading="lazy" />
+        </span>
+      )}
       <div className="ks-product-visual-overlay">
         <span className="ks-label-caps">{String(index + 1).padStart(2, "0")}</span>
         <h3>{group.title}</h3>
@@ -1496,13 +1478,16 @@ function TattooGalleryModal({
 }
 
 function AboutPage() {
+  const about = useAboutContent();
+  const cards = [...about.approachCards].filter((card) => card.active).sort((a, b) => a.order - b.order);
+
   return (
     <>
       <PageHero
-        kicker="A artista"
-        title="Sobre a Karina Sarte"
-        text="Karina Sarte cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele."
-        image={tattooImages.heroAbout}
+        kicker={about.eyebrow}
+        title={about.title}
+        text={about.intro}
+        image={about.heroImageUrl}
         /* Sobe a imagem (mostra mais da parte de baixo da foto) para centrar o
            recorte nas unhas e na tattoo de estrela do dedo. Valor maior desce a
            janela visível dentro da foto — 26% deixava o corpete ocupando o topo. */
@@ -1518,28 +1503,37 @@ function AboutPage() {
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.9, ease: EASE }}
         >
-          <img
-            src={tattooImages.artistTattooing}
-            alt="Karina Sarte"
-            loading="lazy"
-          />
+          {about.imageUrl && (
+            <img
+              src={about.imageUrl}
+              alt="Karina Sarte"
+              loading="lazy"
+            />
+          )}
         </motion.div>
         <div className="ks-stack">
-          <blockquote className="ks-about-me-quote">
-            “Em cada traço, coloco intenção. A tattoo precisa conversar com quem você é e com o corpo que a recebe.”
-          </blockquote>
-          <p className="ks-body-lg ks-muted">
-            Minha estética é autoral, com traço fino e referências botânicas. Construo projetos que equilibram delicadeza e
-            presença. Todo atendimento começa com escuta: quero entender suas referências, as proporções e o significado por trás da ideia.
-          </p>
-          <p className="ks-body-lg ks-muted">
-            Em Teresópolis, criei um espaço de criação e cuidado. Da primeira mensagem à cicatrização, acompanho cada etapa
-            com orientação clara e muita atenção.
-          </p>
+          <blockquote className="ks-about-me-quote">“{about.quote}”</blockquote>
+          <p className="ks-body-lg ks-muted" style={{ whiteSpace: "pre-line" }}>{about.biography}</p>
           <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
         </div>
       </section>
-      <FeatureStrip />
+      {/* Seção fixa da página — sempre existe, com ou sem foto cadastrada,
+          igual ao Hero. Não é uma aba que só aparece se tiver imagem. */}
+      <section className={`ks-section ks-about-behind-scenes${about.behindScenesImageUrl ? "" : " ks-about-behind-scenes-no-image"}`}>
+        <motion.figure
+          className="ks-about-behind-scenes-frame"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ duration: 0.9, ease: EASE }}
+        >
+          {about.behindScenesImageUrl && (
+            <img src={about.behindScenesImageUrl} alt="Karina Sarte no dia a dia do ateliê" loading="lazy" />
+          )}
+          {about.behindScenesCaption && <figcaption>{about.behindScenesCaption}</figcaption>}
+        </motion.figure>
+      </section>
+      <FeatureStrip cards={cards} />
     </>
   );
 }
@@ -2295,21 +2289,15 @@ function ProductFaq({ full = false }: { full?: boolean }) {
   );
 }
 
-function FeatureStrip() {
-  const features = [
-    ["Processo criativo", "Penso cada projeto como uma conversa entre sua história, seu corpo e minha linguagem visual."],
-    ["Atendimento cuidadoso", "Escuto com calma desde a primeira mensagem para entender o que você quer levar na pele."],
-    ["Ambiente seguro", "Trabalho com materiais adequados, biossegurança e orientações claras em cada etapa."],
-  ] as const;
-
+function FeatureStrip({ cards }: { cards: { id: string; title: string; text: string }[] }) {
   return (
     <section className="ks-section ks-surface-band">
       <div className="ks-card-grid three">
-        {features.map(([title, text]) => (
-          <article className="ks-card" key={title}>
+        {cards.map((card) => (
+          <article className="ks-card" key={card.id}>
             <HeartHandshake size={18} />
-            <h3>{title}</h3>
-            <p>{text}</p>
+            <h3>{card.title}</h3>
+            <p>{card.text}</p>
           </article>
         ))}
       </div>

@@ -1,5 +1,6 @@
 import { ArrowRight, Play, Volume2, VolumeX } from "lucide-react";
 import { useState, useRef } from "react";
+import { HoverProcessMedia } from "../../app/components/HoverProcessMedia";
 import { StarGlyph } from "../../app/components/StarGlyph";
 // Módulo compartilhado com o site: a prévia mostra os mesmos trabalhos que a
 // home publica, sem importar o App.tsx (que traria GSAP e Lenis).
@@ -10,10 +11,6 @@ import { SitePreviewFrame } from "./SitePreviewFrame";
 /** Mesmos itens de app/components/Header.tsx. */
 const NAV_LINKS = ["Início", "Sobre", "Portfólio", "Reformulações", "Flash Tattoos", "Produtos"];
 
-/** Retrato da artista na janela do Processo criativo, igual ao site
- *  (tattooImages.artistPortrait). Vertical de propósito: o molde em arco tem
- *  aspecto 0,537 e o retrato quadrado antigo era recortado pela metade. */
-const PORTRAIT_URL = "/assets/karina-sarte-retrato.jpg";
 /** Poster do vídeo de processo do primeiro card de Serviços, igual ao site. */
 const PROCESS_POSTER_URL = "/assets/process/art-process-poster.jpg";
 const SERVICE_CARD_IMAGES: Record<string, string> = {
@@ -157,7 +154,7 @@ export function HomePreview({ value }: { value: HomeDocument }) {
               <div className="ks-editorial-split-portal" aria-hidden="true">
                 <div className="ks-editorial-split-portal-card">
                   <div className="ks-window-portal">
-                    <img src={value.processPortraitUrl || PORTRAIT_URL} alt="" />
+                    {value.processPortraitUrl ? <img src={value.processPortraitUrl} alt="" /> : null}
                   </div>
                 </div>
               </div>
@@ -217,10 +214,14 @@ export function HomePreview({ value }: { value: HomeDocument }) {
                 Antes eram quadros numerados, que não existem mais no site. */}
             <div className="ks-mural-grid">
               {galleryItems.filter((work) => work.featured).map((work) => (
-                <div className={`ks-mural-item ${"processVideo" in work ? "ks-mural-item-featured" : "ks-mural-item-image"}`} key={work.title}>
+                <div className={`ks-mural-item ${"processVideo" in work && work.processVideo ? "ks-mural-item-featured" : "ks-mural-item-image"}`} key={work.title}>
                   <a className="ks-mural-item-link">
                     <div className="ks-mural-item-media">
-                      <img src={work.img} alt={work.alt} loading="lazy" />
+                      {"processVideo" in work && work.processVideo ? (
+                        <HoverProcessMedia poster={work.processVideo.poster} videoSrc={work.processVideo.src} alt={work.alt} loading="lazy" />
+                      ) : (
+                        <img src={work.img} alt={work.alt} loading="lazy" />
+                      )}
                     </div>
                     <div className="ks-mural-item-caption">
                       <span>{work.label}</span>
