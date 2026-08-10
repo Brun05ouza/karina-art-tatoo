@@ -1,4 +1,4 @@
-import { CircleHelp, FileText, GalleryVerticalEnd, Home, Image, LayoutDashboard, Link2, Package, RefreshCcw, Settings, Sparkles, Video } from "lucide-react";
+import { CircleHelp, FileText, GalleryVerticalEnd, Home, LayoutDashboard, Link2, Package, RefreshCcw, Sparkles } from "lucide-react";
 
 export const NAV_ITEMS = [
   { to: "/admin", label: "Visão geral", icon: LayoutDashboard, exact: true },
@@ -8,11 +8,8 @@ export const NAV_ITEMS = [
   { to: "/admin/reformulacoes", label: "Reformulações", icon: RefreshCcw },
   { to: "/admin/flash-tattoos", label: "Flash tattoos", icon: Sparkles },
   { to: "/admin/produtos", label: "Produtos", icon: Package },
-  { to: "/admin/bastidores", label: "Bastidores", icon: Video },
   { to: "/admin/faq", label: "Perguntas", icon: CircleHelp },
   { to: "/admin/link-bio", label: "Link da bio", icon: Link2 },
-  { to: "/admin/midia", label: "Mídia", icon: Image },
-  { to: "/admin/configuracoes", label: "Configurações", icon: Settings },
 ] as const;
 
 export function titleForPath(pathname: string) {

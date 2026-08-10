@@ -1,0 +1,183 @@
+import { RotateCcw, Save } from "lucide-react";
+import { useMemo, useState, type ReactNode } from "react";
+import type { DocumentBlock, DocumentField } from "./DocumentEditor";
+import { ImagePicker } from "./ImagePicker";
+import { AdminButton, CollapsibleBlock, Field, InternalLinkInput, SelectField, TextArea, TextInput, Toggle } from "./Primitives";
+import { ErrorState, LoadingState } from "./States";
+import type { DocumentStore } from "../data/repository";
+import { useDocument } from "../hooks/useDocument";
+import { useDirtyGuard } from "../hooks/useDirtyGuard";
+import { useToast } from "../hooks/useToast";
+
+export type VisualEditorPreviewTools = {
+  activeSection: string;
+  focusToken: number;
+  onSelectSection(section: string): void;
+};
+
+type VisualDocumentEditorProps<T> = {
+  store: DocumentStore<T>;
+  blocks: DocumentBlock<T>[];
+  preview: (value: T, tools: VisualEditorPreviewTools) => ReactNode;
+};
+
+export function VisualDocumentEditor<T extends Record<string, unknown>>({ store, blocks, preview }: VisualDocumentEditorProps<T>) {
+  const { value, setValue, loading, error, reload, save } = useDocument(store);
+  const { setDirty } = useDirtyGuard();
+  const { show } = useToast();
+  const [documentDirty, setDocumentDirty] = useState(false);
+  const [activeSection, setActiveSection] = useState(blocks[0]?.title ?? "");
+  const [previewFocusToken, setPreviewFocusToken] = useState(0);
+
+  const activeBlock = useMemo(() => blocks.find((block) => block.title === activeSection) ?? blocks[0], [activeSection, blocks]);
+
+  if (loading) return <LoadingState />;
+  if (error || !value) return <ErrorState message={error || "Conteúdo indisponível."} onRetry={reload} />;
+
+  const update = (patch: Partial<T>) => {
+    setValue((current) => current ? ({ ...current, ...patch }) : current);
+    setDocumentDirty(true);
+    setDirty(true);
+  };
+
+  const submit = async () => {
+    try {
+      await save(value);
+      setDocumentDirty(false);
+      setDirty(false);
+      show("Alterações salvas nos rascunhos.");
+    } catch (cause) {
+      show(cause instanceof Error ? cause.message : "Não foi possível salvar.", "error");
+    }
+  };
+
+  const discardChanges = async () => {
+    try {
+      await reload();
+      setDocumentDirty(false);
+      setDirty(false);
+      show("Alterações descartadas.");
+    } catch (cause) {
+      show(cause instanceof Error ? cause.message : "Não foi possível descartar as alterações.", "error");
+    }
+  };
+
+  const selectSection = (section: string) => {
+    setActiveSection(section);
+    setPreviewFocusToken((current) => current + 1);
+  };
+
+  return (
+    <div className="ksa-visual-editor">
+      <div className="ksa-visual-topline">
+        <div>
+          <span className="ksa-eyebrow">Editor visual</span>
+          <h2>Edite olhando para o site</h2>
+          <p>Clique numa seção da prévia ou escolha pela trilha abaixo. O painel ao lado mostra só os campos daquele trecho.</p>
+          {documentDirty ? <small className="ksa-visual-change-note">Mudanças em rascunho — salve quando terminar ou descarte para voltar ao último conteúdo salvo.</small> : null}
+        </div>
+        <div className={`ksa-save-bar ksa-visual-save ${documentDirty ? "is-dirty" : "is-saved"}`}>
+          <span aria-live="polite"><i aria-hidden="true" />{documentDirty ? "Mudanças prontas para salvar" : "Tudo salvo"}</span>
+          <div className="ksa-visual-save-actions">
+            {documentDirty ? <AdminButton tone="ghost" onClick={() => void discardChanges()}><RotateCcw size={16} />Descartar</AdminButton> : null}
+            <AdminButton onClick={() => void submit()} disabled={!documentDirty}><Save size={17} />Salvar</AdminButton>
+          </div>
+        </div>
+      </div>
+
+      <div className="ksa-visual-rail" aria-label="Seções da página">
+        {blocks.map((block, index) => (
+          <button
+            key={block.title}
+            type="button"
+            className={block.title === activeBlock?.title ? "is-active" : ""}
+            onClick={() => selectSection(block.title)}
+          >
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            {block.title}
+          </button>
+        ))}
+      </div>
+
+      <div className="ksa-visual-workbench">
+        <section className="ksa-visual-canvas" aria-label="Prévia editável da página">
+          {preview(value, { activeSection: activeBlock?.title ?? activeSection, focusToken: previewFocusToken, onSelectSection: selectSection })}
+        </section>
+
+        {activeBlock ? (
+          <aside className="ksa-visual-inspector">
+            <CollapsibleBlock title={activeBlock.title} summary={activeBlock.summary} defaultOpen>
+              <div className="ksa-grid-2">
+                {(activeBlock.fields ?? []).map((field) => (
+                  <FieldControl<T> key={field.key} field={field} value={value} update={update} />
+                ))}
+              </div>
+              {activeBlock.render?.(value, update)}
+            </CollapsibleBlock>
+          </aside>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function FieldControl<T extends Record<string, unknown>>({ field, value, update }: { field: DocumentField; value: T; update(patch: Partial<T>): void }) {
+  const current = value[field.key];
+  const className = field.full ? "is-full" : "";
+
+  if (field.type === "image") {
+    return (
+      <div className="is-full">
+        <ImagePicker label={field.label} folder={field.folder} value={String(current || "")} onChange={(url, key) => update({ [field.key]: url, ...(field.imageKey ? { [field.imageKey]: key } : {}) } as Partial<T>)} />
+      </div>
+    );
+  }
+
+  if (field.type === "toggle") {
+    return (
+      <Field className={className} label={field.label} hint={field.hint}>
+        <Toggle checked={Boolean(current)} onChange={(checked) => update({ [field.key]: checked } as Partial<T>)} label={Boolean(current) ? "Ativo" : "Inativo"} />
+      </Field>
+    );
+  }
+
+  if (field.type === "textarea") {
+    return (
+      <Field className={className} label={field.label} hint={field.hint}>
+        <TextArea rows={field.rows ?? 3} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} />
+      </Field>
+    );
+  }
+
+  if (field.type === "select") {
+    return (
+      <Field className={className} label={field.label} hint={field.hint}>
+        <SelectField value={String(current ?? "")} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)}>
+          {field.options?.map((option) => <option key={option} value={option}>{option}</option>)}
+        </SelectField>
+      </Field>
+    );
+  }
+
+  if (isInternalLinkField(field)) {
+    return (
+      <Field className={className} label={field.label} hint={field.hint}>
+        <InternalLinkInput value={String(current ?? "")} onChange={(next) => update({ [field.key]: next } as Partial<T>)} />
+      </Field>
+    );
+  }
+
+  return (
+    <Field className={className} label={field.label} hint={field.hint}>
+      <TextInput value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} />
+    </Field>
+  );
+}
+
+function isInternalLinkField(field: DocumentField) {
+  const key = field.key.toLowerCase();
+  if (field.type === "internalLink") return true;
+  if (field.type || !key.endsWith("url")) return false;
+  if (key.includes("image") || key.includes("video") || key.includes("thumb") || key.includes("trailer") || key.includes("youtube")) return false;
+  return key.includes("button") || field.label.toLowerCase().includes("link");
+}

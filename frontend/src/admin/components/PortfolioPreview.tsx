@@ -1,12 +1,38 @@
-import { useState } from "react";
+import { ArrowRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { StarGlyph } from "../../app/components/StarGlyph";
 import type { PortfolioItem, PortfolioPageDocument } from "../data/types";
 import { PreviewHeroStars } from "./PreviewParts";
 import { SitePreviewFrame } from "./SitePreviewFrame";
-import { StarGlyph } from "../../app/components/StarGlyph";
-import { ArrowRight } from "lucide-react";
+import type { VisualEditorPreviewTools } from "./VisualDocumentEditor";
 
-export function PortfolioPreview({ doc, items }: { doc: PortfolioPageDocument; items: PortfolioItem[] }) {
+function editableClass(base: string, section: string, editor?: VisualEditorPreviewTools) {
+  if (!editor) return base;
+  return `${base} ksa-editable-section${editor.activeSection === section ? " is-active" : ""}`;
+}
+
+function EditButton({ section, editor }: { section: string; editor?: VisualEditorPreviewTools }) {
+  if (!editor) return null;
+  return <button type="button" className="ksa-preview-edit-button" onClick={() => editor.onSelectSection(section)}>Editar {section}</button>;
+}
+
+export function PortfolioPreview({ doc, items, editor }: { doc: PortfolioPageDocument; items: PortfolioItem[]; editor?: VisualEditorPreviewTools }) {
   const [activeCategory, setActiveCategory] = useState("Todos");
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  const bindSection = (section: string) => (node: HTMLElement | null) => {
+    sectionRefs.current[section] = node;
+  };
+
+  useEffect(() => {
+    if (!editor?.activeSection) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      sectionRefs.current[editor.activeSection]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [editor?.activeSection, editor?.focusToken]);
 
   const publishedItems = items.filter((item) => item.active && item.status !== "Oculto");
 
@@ -21,7 +47,7 @@ export function PortfolioPreview({ doc, items }: { doc: PortfolioPageDocument; i
       : publishedItems.filter((item) => item.category === activeCategory);
 
   return (
-    <SitePreviewFrame>
+    <SitePreviewFrame clickToActivate={Boolean(editor)}>
       <header className="ks-header">
         <a className="ks-logo">
           <StarGlyph size={8} color="#2E173A" />
@@ -38,7 +64,8 @@ export function PortfolioPreview({ doc, items }: { doc: PortfolioPageDocument; i
       </header>
 
       <div className="ks-route-content">
-        <section className={`ks-page-hero${!doc.heroImageUrl ? " ks-page-hero-no-image" : ""}`}>
+        <section ref={bindSection("Hero")} className={editableClass(`ks-page-hero${!doc.heroImageUrl ? " ks-page-hero-no-image" : ""}`, "Hero", editor)}>
+          <EditButton section="Hero" editor={editor} />
           {doc.heroImageUrl && (
             <img className="ks-page-hero-image" src={doc.heroImageUrl} alt="" aria-hidden="true" loading="eager" />
           )}
@@ -51,7 +78,8 @@ export function PortfolioPreview({ doc, items }: { doc: PortfolioPageDocument; i
           </div>
         </section>
 
-        <section className="ks-section">
+        <section ref={bindSection("Trabalhos")} className={editableClass("ks-section", "Trabalhos", editor)}>
+          <EditButton section="Trabalhos" editor={editor} />
           <div className="ks-filter-row">
             {categories.map((category) => (
               <button

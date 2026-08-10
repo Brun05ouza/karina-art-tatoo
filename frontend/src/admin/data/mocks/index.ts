@@ -37,8 +37,8 @@ export const mockProducts: ProductItem[] = [
 ];
 
 export const mockReformulacoes: ReformulationItem[] = [
-  { id: "reform-1", order: 1, active: true, title: "Cobertura botânica", description: "Releitura com folhagens e novas linhas.", category: "Cobertura", status: "Publicado", beforeImageUrl: "", afterImageUrl: "/assets/recent-projects/orquidea-pescoco.jpg", problem: "Traços antigos sem definição.", solution: "Composição botânica criada para integrar a tattoo existente.", internalNote: "Solicitar foto cicatrizada.", imageUrl: "/assets/recent-projects/orquidea-pescoco.jpg", imageKey: "" },
-  { id: "reform-2", order: 2, active: true, title: "Renovação ornamental", description: "Redesenho e recuperação de contraste.", category: "Revitalização", status: "Publicado", beforeImageUrl: "", afterImageUrl: "/assets/recent-projects/mandala.jpg", problem: "Pigmento desgastado.", solution: "Reforço de contraste e inclusão de elementos ornamentais.", internalNote: "", imageUrl: "/assets/recent-projects/mandala.jpg", imageKey: "" },
+  { id: "reform-1", order: 1, active: true, title: "Cobertura botânica", description: "Releitura com folhagens e novas linhas.", category: "Cobertura", status: "Publicado", beforeImageUrl: "", afterImageUrl: "", problem: "Traços antigos sem definição.", solution: "Composição botânica criada para integrar a tattoo existente.", internalNote: "Solicitar foto cicatrizada.", imageUrl: "", imageKey: "" },
+  { id: "reform-2", order: 2, active: true, title: "Renovação ornamental", description: "Redesenho e recuperação de contraste.", category: "Revitalização", status: "Publicado", beforeImageUrl: "", afterImageUrl: "", problem: "Pigmento desgastado.", solution: "Reforço de contraste e inclusão de elementos ornamentais.", internalNote: "", imageUrl: "", imageKey: "" },
 ];
 
 export const mockFaqs: FaqItem[] = [
@@ -224,11 +224,15 @@ export const mockBastidores: BackstageDocument = {
   active: true,
 };
 
-export const mockLinkBio: LinkBioDocument = {
+const mockLinkBioLegacy: LinkBioDocument = {
+  eyebrow: "Link da bio",
   name: "Karina Sarte",
   bio: "Tatuagem autoral · Teresópolis, RJ",
   avatarUrl: "/assets/karina-sarte.png",
+  backgroundUrl: "/assets/link-bio/background.jpg",
   instagram: "@karinasarte",
+  footerLabel: "Site completo",
+  footerUrl: "/",
   buttons: [
     { id: "link-1", label: "Solicitar orçamento", url: "/orcamento", icon: "MessageCircle", active: true, order: 1 },
     { id: "link-2", label: "Ver portfólio", url: "/portfolio", icon: "Images", active: true, order: 2 },
@@ -239,6 +243,35 @@ export const mockLinkBio: LinkBioDocument = {
     { id: "highlight-1", title: "Agenda", text: "Consulte as próximas datas disponíveis.", url: "/orcamento", active: true },
     { id: "highlight-2", title: "Novos flashes", text: "Desenhos disponíveis uma única vez.", url: "/flash-tattoos", active: true },
     { id: "highlight-3", title: "Ateliê", text: "Conheça o espaço e o processo.", url: "/sobre", active: true },
+  ],
+};
+
+export const mockLinkBio: LinkBioDocument = {
+  eyebrow: "Link da bio",
+  name: "Karina Sarte",
+  bio: "Tatuagem autoral · Teresópolis, RJ",
+  avatarUrl: "/assets/karina-sarte.png",
+  backgroundUrl: "/assets/link-bio/background.jpg",
+  instagram: "@karinasarte",
+  footerLabel: "Site completo",
+  footerUrl: "/",
+  buttons: [
+    {
+      id: "link-1",
+      label: "Solicitar orçamento",
+      url: "https://wa.me/5521990724477?text=Ol%C3%A1%2C%20Karina%20Sarte%21%20Vim%20pela%20bio%20do%20site%20e%20queria%20fazer%20um%20or%C3%A7amento.",
+      icon: "WhatsApp",
+      active: true,
+      order: 1,
+    },
+    { id: "link-2", label: "Ver portfólio", url: "/portfolio", icon: "Images", active: true, order: 2 },
+    { id: "link-3", label: "Flash tattoos", url: "/flash-tattoos", icon: "Sparkles", active: true, order: 3 },
+    { id: "link-4", label: "Produtos", url: "/produtos", icon: "ShoppingBag", active: true, order: 4 },
+  ],
+  highlights: [
+    { id: "section-1", title: "Sobre", text: "Conheça a artista, o ateliê e o processo.", url: "/sobre", active: true, order: 1 },
+    { id: "section-2", title: "Reformulações", text: "Veja como uma tattoo pode evoluir.", url: "/reformulacoes", active: true, order: 2 },
+    { id: "section-3", title: "FAQ", text: "Dúvidas sobre orçamento, sessão e cuidados.", url: "/faq", active: true, order: 3 },
   ],
 };
 

@@ -1,27 +1,38 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CollectionManager } from "../components/CollectionManager";
-import { DocumentEditor, type DocumentBlock } from "../components/DocumentEditor";
+import type { DocumentBlock } from "../components/DocumentEditor";
 import { AdminPage, Field, TextArea, TextInput } from "../components/Primitives";
 import { ReformulacoesPreview } from "../components/ReformulacoesPreview";
+import { VisualDocumentEditor } from "../components/VisualDocumentEditor";
 import { reformulationsStore, reformulationsTextStore } from "../data/stores";
-import type { ReformulationCard, ReformulationItem, ReformulationsDocument } from "../data/types";
+import type { ReformulationCard, ReformulationItem, ReformulationPoint, ReformulationsDocument } from "../data/types";
 
 const categories = ["Cobertura", "Revitalização", "Correção de linhas", "Ampliação", "Integração", "Releitura"];
 
-const empty: ReformulationItem = { id: "", order: 1, active: true, title: "", description: "", category: categories[0], status: "Rascunho", beforeImageUrl: "", afterImageUrl: "", problem: "", solution: "", internalNote: "", imageUrl: "", imageKey: "" };
+const empty: ReformulationItem = {
+  id: "",
+  order: 1,
+  active: true,
+  title: "",
+  description: "",
+  category: categories[0],
+  status: "Rascunho",
+  beforeImageUrl: "",
+  afterImageUrl: "",
+  problem: "",
+  solution: "",
+  internalNote: "",
+  imageUrl: "",
+  imageKey: "",
+};
 
-/** Altera um card mantendo a lista na mesma ordem. */
 const patchCard = (cards: ReformulationCard[], id: string, changes: Partial<ReformulationCard>) =>
   cards.map((card) => (card.id === id ? { ...card, ...changes } : card));
 
-/**
- * Três blocos, na ordem das seções publicadas em /reformulacoes:
- * Hero → Introdução → Possibilidades.
- *
- * Os títulos da grade de casos e a faixa final ("Vamos reconstruir…") não têm
- * editor de propósito — são fixos e a prévia os lê direto do documento.
- */
-const BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
+const patchPoint = (points: ReformulationPoint[], id: string, changes: Partial<ReformulationPoint>) =>
+  points.map((point) => (point.id === id ? { ...point, ...changes } : point));
+
+const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
   {
     title: "Hero",
     summary: "Textos e imagem da primeira dobra",
@@ -30,13 +41,13 @@ const BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
       { key: "heroTitle", label: "Título principal" },
       { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 3, full: true },
       { key: "heroButton", label: "Texto do botão" },
-      { key: "heroButtonUrl", label: "Link do botão" },
-      { key: "heroImageUrl", label: "Imagem de fundo", type: "image" },
+      { key: "heroButtonUrl", label: "Link do botão", type: "internalLink" },
+      { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "reformulacoes/hero" },
     ],
   },
   {
     title: "Introdução",
-    summary: "Seção logo abaixo do hero — só textos",
+    summary: "Seção logo abaixo do hero",
     fields: [
       { key: "introEyebrow", label: "Texto superior" },
       { key: "introTitle", label: "Título", type: "textarea", rows: 2 },
@@ -44,6 +55,33 @@ const BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
       { key: "panelEyebrow", label: "Título do painel ao lado" },
       { key: "panelTextOne", label: "Primeiro parágrafo do painel", type: "textarea", rows: 3, full: true },
       { key: "panelTextTwo", label: "Segundo parágrafo do painel", type: "textarea", rows: 3, full: true },
+    ],
+    render: (value, update) => (
+      <div className="ksa-block-list">
+        <span className="ksa-label">Pontos avaliados</span>
+        <div className="ksa-grid-2">
+          {[...value.panelPoints]
+            .sort((a, b) => a.order - b.order)
+            .map((point, index) => (
+              <Field label={`${String(index + 1).padStart(2, "0")} · Ponto`} key={point.id}>
+                <TextInput
+                  value={point.label}
+                  onChange={(event) => update({ panelPoints: patchPoint(value.panelPoints, point.id, { label: event.target.value }) })}
+                />
+              </Field>
+            ))}
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Casos",
+    summary: "Textos e cards de antes/depois",
+    fields: [
+      { key: "portfolioEyebrow", label: "Texto superior" },
+      { key: "portfolioTitle", label: "Título" },
+      { key: "portfolioText", label: "Texto", type: "textarea", rows: 3, full: true },
+      { key: "caseNote", label: "Nota exibida nos casos", type: "textarea", rows: 2, full: true },
     ],
   },
   {
@@ -79,31 +117,29 @@ const BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
       </div>
     ),
   },
+  {
+    title: "Chamada final",
+    summary: "Convite no fim da página",
+    fields: [
+      { key: "ctaTitle", label: "Título" },
+      { key: "ctaText", label: "Texto", type: "textarea", rows: 3, full: true },
+      { key: "ctaButton", label: "Texto do botão" },
+      { key: "ctaButtonUrl", label: "Link do botão", type: "internalLink" },
+    ],
+  },
 ];
 
-/**
- * A tela junta as duas fontes de conteúdo da página: os textos das seções
- * (documento, nos blocos que abrem e fecham) e os casos antes/depois (coleção).
- *
- * Os casos ficam num estado local aqui só para alimentar a prévia — assim uma
- * única prévia mostra o resultado das duas edições ao vivo, em vez de dois
- * iframes desencontrados.
- */
 export function ReformulacoesPage() {
   const [casos, setCasos] = useState<ReformulationItem[]>([]);
 
-  return (
-    <AdminPage
-      eyebrow="Antes e depois"
-      title="Reformulações"
-      description="Edite os textos das seções e cadastre os casos com o antes e o depois."
-    >
-      <DocumentEditor<ReformulationsDocument>
-        store={reformulationsTextStore}
-        blocks={BLOCKS}
-        preview={(doc) => <ReformulacoesPreview doc={doc} items={casos} />}
-      >
-        {() => (
+  const blocks = useMemo<DocumentBlock<ReformulationsDocument>[]>(() => {
+    const casesBlock = TEXT_BLOCKS.find((block) => block.title === "Casos");
+    return TEXT_BLOCKS.map((block) => {
+      if (block.title !== "Casos" || !casesBlock) return block;
+
+      return {
+        ...casesBlock,
+        render: () => (
           <div className="ksa-block-list">
             <span className="ksa-label">Casos de reformulação</span>
             <CollectionManager
@@ -116,23 +152,36 @@ export function ReformulacoesPage() {
                 secondary: (item) => item.solution || item.description || item.category,
                 onPreviewItemsChange: setCasos,
                 fields: [
-                  { key: "beforeImageUrl", label: "Imagem antes", type: "image", imageKey: "beforeImageKey" },
-                  { key: "afterImageUrl", label: "Imagem depois", type: "image", imageKey: "afterImageKey" },
+                  { key: "beforeImageUrl", label: "Imagem antes", type: "image", imageKey: "beforeImageKey", folder: "reformulacoes/antes" },
+                  { key: "afterImageUrl", label: "Imagem depois", type: "image", imageKey: "afterImageKey", folder: "reformulacoes/depois" },
                   { key: "title", label: "Título" },
-                  { key: "category", label: "Categoria", type: "select", options: categories },
+                  { key: "category", label: "Categoria", type: "select", options: categories, allowCustom: true },
                   { key: "problem", label: "Problema inicial", type: "textarea" },
                   { key: "solution", label: "Solução criada", type: "textarea" },
                   { key: "description", label: "Descrição curta", type: "textarea" },
                   { key: "internalNote", label: "Observação interna", type: "textarea", hint: "Não será publicada no site." },
                   { key: "status", label: "Status", type: "select", options: ["Publicado", "Rascunho", "Oculto"] },
                   { key: "active", label: "Caso ativo", type: "toggle" },
-                  { key: "order", label: "Ordem", type: "number" },
                 ],
               }}
             />
           </div>
-        )}
-      </DocumentEditor>
+        ),
+      };
+    });
+  }, []);
+
+  return (
+    <AdminPage
+      eyebrow="Antes e depois"
+      title="Reformulações"
+      description="A prévia agora é a área principal: selecione uma seção e ajuste os textos ou casos no inspector."
+    >
+      <VisualDocumentEditor<ReformulationsDocument>
+        store={reformulationsTextStore}
+        blocks={blocks}
+        preview={(doc, tools) => <ReformulacoesPreview doc={doc} items={casos} editor={tools} />}
+      />
     </AdminPage>
   );
 }

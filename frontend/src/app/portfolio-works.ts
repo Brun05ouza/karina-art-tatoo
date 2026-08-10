@@ -1,19 +1,6 @@
-/**
- * Dados do portfólio — fonte única compartilhada.
- *
- * Vive fora do App.tsx porque a prévia ao vivo da área administrativa também
- * consome estes dados, e importar o App.tsx de lá arrastaria GSAP, Lenis e as
- * páginas públicas inteiras para o bundle do admin.
- *
- * TODO(neon): virá de GET /api/content/portfolio.
- */
+import { useEffect, useState } from "react";
+import { tattooImages } from "./tattoo-images";
 
-/**
- * Categorias do portfólio, na mesma ordem e com os mesmos rótulos usados na área
- * administrativa. Manter idênticos elimina a tradução que existia aqui antes
- * (o item dizia "Autoral" e o filtro "Projetos Autorais") e é o que permitirá
- * ligar a página ao banco sem mapeamento no meio.
- */
 export const PORTFOLIO_CATEGORIES = [
   "Fine Line",
   "Minimalista",
@@ -23,19 +10,50 @@ export const PORTFOLIO_CATEGORIES = [
   "Cicatrizadas",
 ] as const;
 
-/**
- * Fonte única do portfólio: alimenta a página /portfolio e o bloco "Trabalhos
- * recentes" da home. Antes eram dois arrays separados, e o da página apontava
- * seis vezes para a mesma foto.
- *
- * - `category` é canônica (PORTFOLIO_CATEGORIES) e serve ao filtro.
- * - `label` é o rótulo mostrado no card, mais descritivo que a categoria.
- * - `featured` marca o que aparece na home, espelhando "destaque na Home" do
- *   painel administrativo.
- *
- * As fotos e os textos são os que já existiam em /assets/recent-projects.
- */
-export const galleryItems = [
+export type PortfolioWork = {
+  id?: string;
+  title: string;
+  category: string;
+  label: string;
+  img: string;
+  alt: string;
+  featured: boolean;
+  order?: number;
+  processVideo?: {
+    poster: string;
+    src: string;
+  };
+};
+
+type RemotePortfolioItem = {
+  id: string;
+  order: number;
+  active: boolean;
+  title: string;
+  description?: string;
+  category?: string;
+  status?: string;
+  bodyLocation?: string;
+  style?: string;
+  featured?: boolean;
+  imageUrl?: string;
+};
+
+export type PortfolioPageContent = {
+  heroKicker: string;
+  heroTitle: string;
+  heroText: string;
+  heroImageUrl: string;
+};
+
+export const defaultPortfolioPageContent: PortfolioPageContent = {
+  heroKicker: "Portfólio",
+  heroTitle: "Portfólio",
+  heroText: "Conheça tattoos, flashes e projetos autorais criados pela Karina Sarte.",
+  heroImageUrl: tattooImages.heroPortfolio,
+};
+
+export const galleryItems: PortfolioWork[] = [
   {
     title: "Orquídeas",
     category: "Projetos Autorais",
@@ -89,4 +107,70 @@ export const galleryItems = [
     featured: true,
   },
 ];
-export type PortfolioWork = (typeof galleryItems)[number];
+
+const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
+
+function toPortfolioWorks(items: RemotePortfolioItem[]): PortfolioWork[] {
+  return [...items]
+    .filter((item) => item.active && item.status !== "Oculto")
+    .sort((a, b) => a.order - b.order)
+    .map((item) => ({
+      id: item.id,
+      title: item.title || "Trabalho sem título",
+      category: item.category || "Projetos Autorais",
+      label: item.style || item.category || "Projeto autoral",
+      img: item.imageUrl || "",
+      alt: item.description || item.title || "Trabalho de portfólio",
+      featured: Boolean(item.featured),
+      order: item.order,
+    }));
+}
+
+export function usePortfolioItems(staticFallback = false): PortfolioWork[] {
+  const [items, setItems] = useState<PortfolioWork[]>(staticFallback ? galleryItems : []);
+
+  useEffect(() => {
+    let active = true;
+
+    fetch(`${API_URL}/api/content/portfolio`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((entry: { value?: RemotePortfolioItem[] } | null) => {
+        if (!active) return;
+        if (Array.isArray(entry?.value)) {
+          setItems(toPortfolioWorks(entry.value));
+        } else if (!staticFallback) {
+          setItems([]);
+        }
+      })
+      .catch(() => {
+        if (active && !staticFallback) setItems([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [staticFallback]);
+
+  return items;
+}
+
+export function usePortfolioPageContent(): PortfolioPageContent {
+  const [data, setData] = useState<PortfolioPageContent>(defaultPortfolioPageContent);
+
+  useEffect(() => {
+    let active = true;
+
+    fetch(`${API_URL}/api/content/portfolio-page`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((entry: { value?: Partial<PortfolioPageContent> } | null) => {
+        if (active && entry?.value) setData({ ...defaultPortfolioPageContent, ...entry.value });
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return data;
+}

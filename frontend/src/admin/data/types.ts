@@ -89,7 +89,7 @@ export type MediaItem = BaseItem & {
 };
 
 export type LinkButton = { id: string; label: string; url: string; icon: string; active: boolean; order: number };
-export type LinkHighlight = { id: string; title: string; text: string; url: string; active: boolean };
+export type LinkHighlight = { id: string; title: string; text: string; url: string; active: boolean; order?: number };
 
 /** Card editável das seções Serviços e Coleções da Home. */
 export type HomeCard = { id: string; title: string; text: string; url: string; cta: string; imageUrl?: string; active: boolean; order: number };
@@ -231,10 +231,14 @@ export type BackstageDocument = {
 };
 
 export type LinkBioDocument = {
+  eyebrow: string;
   name: string;
   bio: string;
   avatarUrl: string;
+  backgroundUrl: string;
   instagram: string;
+  footerLabel: string;
+  footerUrl: string;
   buttons: LinkButton[];
   highlights: LinkHighlight[];
 };

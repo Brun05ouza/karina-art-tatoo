@@ -1,22 +1,10 @@
+import { useEffect, useRef } from "react";
 import type { FlashPageDocument, FlashTattoo } from "../data/types";
 import { PreviewHeroStars } from "./PreviewParts";
 import { SitePreviewFrame } from "./SitePreviewFrame";
 import { StarGlyph } from "../../app/components/StarGlyph";
 import { StencilCrosshair } from "../../app/components/StencilCrosshair";
-
-/**
- * Prévia da página /flash-tattoos.
- *
- * O markup e as classes vêm de FlashPage/FlashCard/PageHero em
- * frontend/src/app/App.tsx, e o CSS é o próprio kah-sarte.css (ver
- * SitePreviewFrame). Ao mudar a página real, replique aqui.
- *
- * Diferença deliberada: no site publicado hoje, FlashCard recebe a foto do
- * flash mas nunca a exibe — mostra sempre um número no lugar dela. Aqui a
- * prévia mostra a foto de fato quando cadastrada, porque isso é o que faz
- * sentido para quem está cadastrando a imagem no admin. A página pública
- * ainda precisa desse ajuste para acompanhar (fora deste pedido).
- */
+import type { VisualEditorPreviewTools } from "./VisualDocumentEditor";
 
 function WhatsAppIcon() {
   return (
@@ -26,14 +14,47 @@ function WhatsAppIcon() {
   );
 }
 
-export function FlashTattoosPreview({ doc, items }: { doc: FlashPageDocument; items: FlashTattoo[] }) {
-  // Mesma regra de publicação das outras prévias.
+function editableClass(base: string, section: string, editor?: VisualEditorPreviewTools) {
+  if (!editor) return base;
+  return `${base} ksa-editable-section${editor.activeSection === section ? " is-active" : ""}`;
+}
+
+function EditButton({ section, editor }: { section: string; editor?: VisualEditorPreviewTools }) {
+  if (!editor) return null;
+  return <button type="button" className="ksa-preview-edit-button" onClick={() => editor.onSelectSection(section)}>Editar {section}</button>;
+}
+
+export function FlashTattoosPreview({
+  doc,
+  items,
+  editor,
+}: {
+  doc: FlashPageDocument;
+  items: FlashTattoo[];
+  editor?: VisualEditorPreviewTools;
+}) {
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  const bindSection = (section: string) => (node: HTMLElement | null) => {
+    sectionRefs.current[section] = node;
+  };
+
+  useEffect(() => {
+    if (!editor?.activeSection) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      sectionRefs.current[editor.activeSection]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [editor?.activeSection, editor?.focusToken]);
+
   const flashes = items
     .filter((item) => item.active && item.status !== "Oculto")
     .sort((a, b) => a.order - b.order);
 
   return (
-    <SitePreviewFrame>
+    <SitePreviewFrame clickToActivate={Boolean(editor)}>
       <div className="ks-grain" aria-hidden="true" />
       <header className="ks-header">
         <a className="ks-logo">
@@ -50,36 +71,34 @@ export function FlashTattoosPreview({ doc, items }: { doc: FlashPageDocument; it
         </nav>
       </header>
 
-      <div className="ks-route-content">
-        <section className={`ks-page-hero${!doc.heroImageUrl ? " ks-page-hero-no-image" : ""}`}>
-          {doc.heroImageUrl && (
-            <img className="ks-page-hero-image" src={doc.heroImageUrl} alt="" aria-hidden="true" loading="eager" />
-          )}
-          {doc.heroImageUrl && <div className="ks-page-hero-shade" aria-hidden="true" />}
+      <div className="ks-page-sections ks-page-sections-flash-tattoos">
+        <section ref={bindSection("Hero")} className={editableClass(`ks-page-hero${!doc.heroImageUrl ? " ks-page-hero-no-image" : ""}`, "Hero", editor)}>
+          <EditButton section="Hero" editor={editor} />
+          {doc.heroImageUrl ? <img className="ks-page-hero-image" src={doc.heroImageUrl} alt="" aria-hidden="true" loading="eager" /> : null}
+          {doc.heroImageUrl ? <div className="ks-page-hero-shade" aria-hidden="true" /> : null}
           <PreviewHeroStars />
           <div className="ks-page-hero-content">
-            {doc.heroKicker && <span className="ks-label-caps ks-muted">{doc.heroKicker}</span>}
+            {doc.heroKicker ? <span className="ks-label-caps ks-muted">{doc.heroKicker}</span> : null}
             <h1 className="ks-display-xl">{doc.heroTitle}</h1>
             <p className="ks-body-lg">{doc.heroText}</p>
           </div>
         </section>
 
-        <section className="ks-section">
+        <section ref={bindSection("Catálogo")} className={editableClass("ks-section", "Catálogo", editor)}>
+          <EditButton section="Catálogo" editor={editor} />
           {flashes.length > 0 ? (
             <div className="ks-flash-page-grid">
               {flashes.map((item, index) => (
                 <article className="ks-flash-page-card" key={item.id}>
-                  {item.imageUrl ? (
-                    <div className="ks-flash-page-card-media">
-                      <img src={item.imageUrl} alt={item.title} loading="lazy" />
-                    </div>
-                  ) : (
-                    <div className="ks-flash-page-card-media">
+                  <div className="ks-flash-page-card-media">
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt={item.title} loading={index < 2 ? "eager" : "lazy"} />
+                    ) : (
                       <div className="ks-numbered-placeholder" aria-hidden="true">
                         <span>{String(index + 1).padStart(2, "0")}</span>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                   <div className="ks-flash-page-card-body">
                     <StencilCrosshair size={14} color="#806E85" />
                     <span className={`ks-status ${(item.status || "Disponível").toLowerCase()}`}>

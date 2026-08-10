@@ -1,7 +1,10 @@
+import { ArrowRight } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { useFaqItems } from "../../app/faq-content";
+import { StarGlyph } from "../../app/components/StarGlyph";
 import type { ProductsPageDocument, ProductItem } from "../data/types";
 import { SitePreviewFrame } from "./SitePreviewFrame";
-import { StarGlyph } from "../../app/components/StarGlyph";
-import { ArrowRight } from "lucide-react";
+import type { VisualEditorPreviewTools } from "./VisualDocumentEditor";
 
 function WhatsAppIcon() {
   return (
@@ -11,9 +14,48 @@ function WhatsAppIcon() {
   );
 }
 
-export function ProductsPreview({ doc, items }: { doc: ProductsPageDocument; items: ProductItem[] }) {
+function editableClass(base: string, section: string, editor?: VisualEditorPreviewTools) {
+  if (!editor) return base;
+  return `${base} ksa-editable-section${editor.activeSection === section ? " is-active" : ""}`;
+}
+
+function EditButton({ section, editor }: { section: string; editor?: VisualEditorPreviewTools }) {
+  if (!editor) return null;
+  return <button type="button" className="ksa-preview-edit-button" onClick={() => editor.onSelectSection(section)}>Editar {section}</button>;
+}
+
+export function ProductsPreview({
+  doc,
+  items,
+  editor,
+}: {
+  doc: ProductsPageDocument;
+  items: ProductItem[];
+  editor?: VisualEditorPreviewTools;
+}) {
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+  const faqItems = useFaqItems();
+
+  const bindSection = (section: string) => (node: HTMLElement | null) => {
+    sectionRefs.current[section] = node;
+  };
+
+  useEffect(() => {
+    if (!editor?.activeSection) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      sectionRefs.current[editor.activeSection]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [editor?.activeSection, editor?.focusToken]);
+
+  const products = items
+    .filter((item) => item.active && item.status !== "Oculto")
+    .sort((a, b) => a.order - b.order);
+
   return (
-    <SitePreviewFrame>
+    <SitePreviewFrame clickToActivate={Boolean(editor)}>
       <header className="ks-header">
         <a className="ks-logo">
           <StarGlyph size={8} color="#2E173A" />
@@ -25,58 +67,71 @@ export function ProductsPreview({ doc, items }: { doc: ProductsPageDocument; ite
           <a className="ks-nav-item">Portfólio</a>
           <a className="ks-nav-item">Reformulações</a>
           <a className="ks-nav-item">Flash Tattoos</a>
+          <a className="ks-nav-item active">Produtos</a>
           <a className="ks-nav-cta">Quero um orçamento</a>
         </nav>
       </header>
-      
-      <main>
-        <section className="ks-products-page-hero">
+
+      <div className="ks-page-sections ks-page-sections-produtos">
+        <section ref={bindSection("Hero")} className={editableClass("ks-products-page-hero", "Hero", editor)}>
+          <EditButton section="Hero" editor={editor} />
           <div className="ks-products-page-hero-content">
-            {doc.heroKicker && <span className="ks-label-caps ks-gold">{doc.heroKicker}</span>}
+            {doc.heroKicker ? <span className="ks-label-caps ks-gold">{doc.heroKicker}</span> : null}
             <h1 className="ks-display-xl">{doc.heroTitle}</h1>
-            {doc.heroText1 && (
+            {doc.heroText1 ? (
               <p className="ks-body-lg ks-muted" style={{ maxWidth: 680, marginTop: 18 }}>
                 {doc.heroText1}
               </p>
-            )}
-            {doc.heroText2 && (
+            ) : null}
+            {doc.heroText2 ? (
               <p className="ks-body-lg ks-muted" style={{ maxWidth: 720, marginTop: 12 }}>
                 {doc.heroText2}
               </p>
-            )}
-            {doc.heroButton && (
+            ) : null}
+            {doc.heroButton ? (
               <a className="ks-primary-link" style={{ marginTop: 28 }}>
                 {doc.heroButton} <WhatsAppIcon />
               </a>
-            )}
+            ) : null}
           </div>
-          {doc.heroImageUrl && (
+          {doc.heroImageUrl ? (
             <figure className="ks-products-page-hero-media">
               <img src={doc.heroImageUrl} alt="" loading="eager" />
             </figure>
-          )}
+          ) : null}
         </section>
 
-        <section className="ks-section ks-products-catalog">
-          <div className="ks-products-category-grid">
-            {items.map((item, index) => (
-              <article className="ks-products-category-card" key={item.id}>
-                <div className="ks-products-category-media">
-                  <div className="ks-numbered-placeholder">
-                    <span>{String(index + 1).padStart(2, "0")}</span>
+        <section ref={bindSection("Catálogo")} className={editableClass("ks-section ks-products-catalog", "Catálogo", editor)}>
+          <EditButton section="Catálogo" editor={editor} />
+          {products.length > 0 ? (
+            <div className="ks-products-category-grid">
+              {products.map((item, index) => (
+                <article className="ks-products-category-card" key={item.id}>
+                  <div className="ks-products-category-media">
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt={item.title} loading={index < 2 ? "eager" : "lazy"} />
+                    ) : (
+                      <div className="ks-numbered-placeholder">
+                        <span>{String(index + 1).padStart(2, "0")}</span>
+                      </div>
+                    )}
                   </div>
-                </div>
-                <div className="ks-products-category-body">
-                  <span className="ks-label-caps ks-muted">{String(index + 1).padStart(2, "0")}</span>
-                  <h2 className="ks-headline-md">{item.title || "Coleção sem título"}</h2>
-                  <p className="ks-body-md ks-muted">{item.description}</p>
-                  <span className="ks-products-category-cta">
-                    Consultar <ArrowRight size={14} />
-                  </span>
-                </div>
-              </article>
-            ))}
-          </div>
+                  <div className="ks-products-category-body">
+                    <span className="ks-label-caps ks-muted">{String(index + 1).padStart(2, "0")}</span>
+                    <h2 className="ks-headline-md">{item.title || "Coleção sem título"}</h2>
+                    <p className="ks-body-md ks-muted">{item.description}</p>
+                    <span className="ks-products-category-cta">
+                      {item.price || "Consultar"} <ArrowRight size={14} />
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="ks-body-lg ks-muted" style={{ textAlign: "center" }} role="status">
+              Nenhum produto publicado ainda.
+            </p>
+          )}
         </section>
 
         <section className="ks-section ks-surface-band">
@@ -103,14 +158,10 @@ export function ProductsPreview({ doc, items }: { doc: ProductsPageDocument; ite
             <p className="ks-body-lg ks-muted">Informações essenciais para consulta, reserva e atendimento.</p>
           </header>
           <div className="ks-faq-list">
-            {[
-              ["Qual é o prazo de entrega?", "O envio das artes exclusivas ocorre após o pagamento e o prazo..."],
-              ["Vocês enviam para todo o Brasil?", "Para produtos físicos, enviamos para todo o território nacional..."],
-              ["Como funciona a reserva do Flash?", "O sinal garante a reserva. Sem ele, a arte pode ser disponibilizada..."]
-            ].map(([q, a], i) => (
-              <div key={q} className="ks-faq-item">
+            {faqItems.slice(0, 4).map((item) => (
+              <div key={item.id || item.title} className="ks-faq-item">
                 <button className="ks-faq-question" aria-expanded={false}>
-                  <span>{q}</span>
+                  <span>{item.title}</span>
                   <span className="ks-faq-icon">+</span>
                 </button>
               </div>
@@ -118,7 +169,8 @@ export function ProductsPreview({ doc, items }: { doc: ProductsPageDocument; ite
           </div>
         </section>
 
-        <section className="ks-cta-band">
+        <section ref={bindSection("Chamada final")} className={editableClass("ks-cta-band", "Chamada final", editor)}>
+          <EditButton section="Chamada final" editor={editor} />
           <div className="ks-cta-band-content">
             <h2 className="ks-headline-lg">{doc.ctaTitle}</h2>
             <p className="ks-body-lg">{doc.ctaText}</p>
@@ -127,7 +179,7 @@ export function ProductsPreview({ doc, items }: { doc: ProductsPageDocument; ite
             </a>
           </div>
         </section>
-      </main>
+      </div>
     </SitePreviewFrame>
   );
 }

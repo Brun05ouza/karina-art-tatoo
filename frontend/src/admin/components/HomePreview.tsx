@@ -1,5 +1,5 @@
 import { ArrowRight, Play, Volume2, VolumeX } from "lucide-react";
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HoverProcessMedia } from "../../app/components/HoverProcessMedia";
 import { StarGlyph } from "../../app/components/StarGlyph";
 // Módulo compartilhado com o site: a prévia mostra os mesmos trabalhos que a
@@ -7,6 +7,7 @@ import { StarGlyph } from "../../app/components/StarGlyph";
 import { galleryItems } from "../../app/portfolio-works";
 import type { HomeCard, HomeDocument } from "../data/types";
 import { SitePreviewFrame } from "./SitePreviewFrame";
+import type { VisualEditorPreviewTools } from "./VisualDocumentEditor";
 
 /** Mesmos itens de app/components/Header.tsx. */
 const NAV_LINKS = ["Início", "Sobre", "Portfólio", "Reformulações", "Flash Tattoos", "Produtos"];
@@ -43,6 +44,16 @@ function Filled({ value, fallback }: { value: unknown; fallback: string }) {
   const text = value == null ? "" : String(value).trim();
   if (text) return <>{text}</>;
   return <em className="ksa-empty">{fallback}</em>;
+}
+
+function editableClass(base: string, section: string, editor?: VisualEditorPreviewTools) {
+  if (!editor) return base;
+  return `${base} ksa-editable-section${editor.activeSection === section ? " is-active" : ""}`;
+}
+
+function EditButton({ section, editor }: { section: string; editor?: VisualEditorPreviewTools }) {
+  if (!editor) return null;
+  return <button type="button" className="ksa-preview-edit-button" onClick={() => editor.onSelectSection(section)}>Editar {section}</button>;
 }
 
 function activeSorted(cards: HomeCard[]) {
@@ -82,9 +93,24 @@ function StarBreak({ align, light }: { align: "left" | "right"; light?: boolean 
   );
 }
 
-export function HomePreview({ value }: { value: HomeDocument }) {
+export function HomePreview({ value, editor }: { value: HomeDocument; editor?: VisualEditorPreviewTools }) {
   const trailerRef = useRef<HTMLVideoElement>(null);
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const [soundEnabled, setSoundEnabled] = useState(false);
+
+  const bindSection = (section: string) => (node: HTMLElement | null) => {
+    sectionRefs.current[section] = node;
+  };
+
+  useEffect(() => {
+    if (!editor?.activeSection) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      sectionRefs.current[editor.activeSection]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [editor?.activeSection, editor?.focusToken]);
 
   const toggleTrailerSound = () => {
     const nextSoundEnabled = !soundEnabled;
@@ -101,7 +127,7 @@ export function HomePreview({ value }: { value: HomeDocument }) {
   const collections = activeSorted(value.collectionCards);
 
   return (
-    <SitePreviewFrame>
+    <SitePreviewFrame clickToActivate={Boolean(editor)}>
       {/* Cromo presente em todas as páginas do site: grão, cabeçalho fixo e o
           botão flutuante de WhatsApp. Não é editável, entra só por fidelidade. */}
       <div className="ks-grain" aria-hidden="true" />
@@ -117,7 +143,8 @@ export function HomePreview({ value }: { value: HomeDocument }) {
 
       <div className="ks-route-content">
         <div className="ks-home-flow">
-          <section className="ks-home-hero">
+          <section ref={bindSection("Hero")} className={editableClass("ks-home-hero", "Hero", editor)}>
+            <EditButton section="Hero" editor={editor} />
             {value.heroImageUrl ? <img className="ks-home-hero-bg" src={value.heroImageUrl} alt="" aria-hidden="true" /> : null}
             <div className="ks-home-hero-content">
               <span className="ks-label-caps"><Filled value={value.heroEyebrow} fallback="texto superior" /></span>
@@ -134,7 +161,8 @@ export function HomePreview({ value }: { value: HomeDocument }) {
 
           <StarBreak align="right" />
 
-          <section className="ks-editorial-split">
+          <section ref={bindSection("Processo criativo")} className={editableClass("ks-editorial-split", "Processo criativo", editor)}>
+            <EditButton section="Processo criativo" editor={editor} />
             <div className="ks-editorial-split-text">
               <span className="ks-label-caps ks-gold"><Filled value={value.processEyebrow} fallback="processo criativo" /></span>
               <h2 className="ks-headline-lg"><Filled value={value.processTitle} fallback="Título do processo criativo" /></h2>
@@ -163,7 +191,8 @@ export function HomePreview({ value }: { value: HomeDocument }) {
 
           <StarBreak align="right" light />
 
-          <section className="ks-services-section">
+          <section ref={bindSection("Serviços")} className={editableClass("ks-services-section", "Serviços", editor)}>
+            <EditButton section="Serviços" editor={editor} />
             <div className="ks-section-title">
               <span className="ks-label-caps ks-gold"><Filled value={value.servicesEyebrow} fallback="serviços" /></span>
               <h2 className="ks-headline-lg"><Filled value={value.servicesTitle} fallback="Título dos serviços" /></h2>
@@ -204,7 +233,8 @@ export function HomePreview({ value }: { value: HomeDocument }) {
 
           <StarBreak align="left" light />
 
-          <section className="ks-mural-section">
+          <section ref={bindSection("Portfólio")} className={editableClass("ks-mural-section", "Portfólio", editor)}>
+            <EditButton section="Portfólio" editor={editor} />
             <div className="ks-section-title">
               <span className="ks-label-caps ks-gold"><Filled value={value.portfolioEyebrow} fallback="portfólio" /></span>
               <h2 className="ks-headline-lg"><Filled value={value.portfolioTitle} fallback="Título do portfólio" /></h2>
@@ -235,7 +265,8 @@ export function HomePreview({ value }: { value: HomeDocument }) {
 
           <StarBreak align="right" />
 
-          <section className="ks-section ks-products-preview ks-section-cream">
+          <section ref={bindSection("Coleções")} className={editableClass("ks-section ks-products-preview ks-section-cream", "Coleções", editor)}>
+            <EditButton section="Coleções" editor={editor} />
             <div className="ks-products-header">
               <span className="ks-label-caps ks-gold"><Filled value={value.collectionsEyebrow} fallback="coleções" /></span>
               <h2 className="ks-headline-lg"><Filled value={value.collectionsTitle} fallback="Título das coleções" /></h2>
@@ -268,7 +299,8 @@ export function HomePreview({ value }: { value: HomeDocument }) {
           <StarBreak align="left" />
 
           {value.youtubeActive ? (
-            <section className="ks-youtube-feature">
+            <section ref={bindSection("YouTube")} className={editableClass("ks-youtube-feature", "YouTube", editor)}>
+              <EditButton section="YouTube" editor={editor} />
               <div className="ks-youtube-feature-grid">
                 <div className="ks-youtube-feature-content">
                   <span className="ks-label-caps ks-gold"><Filled value={value.youtubeEyebrow} fallback="youtube" /></span>
@@ -321,7 +353,8 @@ export function HomePreview({ value }: { value: HomeDocument }) {
             </section>
           ) : null}
 
-          <section className="ks-cta-band">
+          <section ref={bindSection("Chamada final")} className={editableClass("ks-cta-band", "Chamada final", editor)}>
+            <EditButton section="Chamada final" editor={editor} />
             <img className="ks-cta-band-artwork" src="/assets/brand/eye-heart.png" alt="" aria-hidden="true" />
             <h2 className="ks-headline-md"><Filled value={value.ctaTitle} fallback="Título da chamada final" /></h2>
             <p className="ks-body-lg ks-muted"><Filled value={value.ctaText} fallback="Texto da chamada final" /></p>

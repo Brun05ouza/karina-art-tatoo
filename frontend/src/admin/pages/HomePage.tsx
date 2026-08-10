@@ -1,9 +1,10 @@
-import { DocumentEditor, type DocumentBlock } from "../components/DocumentEditor";
+import type { DocumentBlock } from "../components/DocumentEditor";
 import { ImagePicker } from "../components/ImagePicker";
 import { HomePreview } from "../components/HomePreview";
 import { PortfolioSelector } from "../components/PortfolioSelector";
 import { AdminPage, ButtonLinkCard, OptionCards } from "../components/Primitives";
 import { VideoPicker } from "../components/VideoPicker";
+import { VisualDocumentEditor } from "../components/VisualDocumentEditor";
 import { Repeater, type RepeaterField } from "../components/Repeater";
 import { homeStore } from "../data/stores";
 import type { HomeCard, HomeDocument } from "../data/types";
@@ -12,7 +13,7 @@ import type { HomeCard, HomeDocument } from "../data/types";
 const CARD_FIELDS = [
   { key: "title", label: "Título" },
   { key: "text", label: "Descrição", type: "textarea" as const },
-  { key: "url", label: "Link", hint: "Página para onde o card leva ao ser clicado. Ex.: /portfolio" },
+  { key: "url", label: "Link", type: "internalLink" as const, hint: "Página ou âncora para onde o card leva ao ser clicado. Ex.: /portfolio" },
   { key: "cta", label: "Texto do link", hint: "Texto pequeno no fim do card, ex.: Ver mais" },
 ];
 
@@ -203,6 +204,7 @@ const BLOCKS: DocumentBlock<HomeDocument>[] = [
           linkValue={String(value.youtubeUrl ?? "")}
           onLinkChange={(youtubeUrl) => update({ youtubeUrl })}
           linkHint="Endereço do vídeo no YouTube."
+          internalLinks={false}
         />
 
         <span className="ksa-label">Imagens e vídeo</span>
@@ -237,8 +239,8 @@ const BLOCKS: DocumentBlock<HomeDocument>[] = [
 
 export function HomePage() {
   return (
-    <AdminPage eyebrow="Página inicial" title="Home" description="Edite cada seção da página inicial na mesma ordem em que ela aparece no site.">
-      <DocumentEditor<HomeDocument> store={homeStore} blocks={BLOCKS} preview={(value) => <HomePreview value={value} />} />
+    <AdminPage eyebrow="Página inicial" title="Home" description="A prévia agora é a área principal: selecione uma seção no site e ajuste os campos no inspetor.">
+      <VisualDocumentEditor<HomeDocument> store={homeStore} blocks={BLOCKS} preview={(value, editor) => <HomePreview value={value} editor={editor} />} />
     </AdminPage>
   );
 }

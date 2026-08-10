@@ -6,18 +6,20 @@ import { useCollection } from "../hooks/useCollection";
 import { useDirtyGuard } from "../hooks/useDirtyGuard";
 import { useToast } from "../hooks/useToast";
 import { ImagePicker } from "./ImagePicker";
-import { AdminButton, AdminCard, Field, SelectField, StatusBadge, TextArea, TextInput, Toggle } from "./Primitives";
+import { AdminButton, AdminCard, Field, InternalLinkInput, SelectField, StatusBadge, TextArea, TextInput, Toggle } from "./Primitives";
 import { FilterChips, SearchInput } from "./SearchFilter";
 import { ConfirmDialog, EmptyState, ErrorState, LoadingState } from "./States";
 
 export type CollectionField = {
   key: string;
   label: string;
-  type?: "text" | "textarea" | "select" | "number" | "toggle" | "image";
+  type?: "text" | "textarea" | "select" | "number" | "toggle" | "image" | "internalLink" | "currency";
   options?: string[];
+  allowCustom?: boolean;
   hint?: string;
   placeholder?: string;
   imageKey?: string;
+  folder?: string;
   full?: boolean;
 };
 
@@ -53,6 +55,26 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
     const haystack = [item.title, item.description, item.category, item.status].filter(Boolean).join(" ").toLowerCase();
     return haystack.includes(query.trim().toLowerCase()) && (category === "Todos" || item.category === category);
   }), [items, query, category]);
+
+  const filterCategories = useMemo(() => {
+    if (!config.categories) return [];
+    const values = new Set(["Todos", ...config.categories]);
+    items.forEach((item) => {
+      if (item.category) values.add(item.category);
+    });
+    return Array.from(values);
+  }, [config.categories, items]);
+
+  const optionsForField = (field: CollectionField) => {
+    const values = new Set(field.options || []);
+    items.forEach((item) => {
+      const value = item[field.key];
+      if (typeof value === "string" && value.trim()) values.add(value.trim());
+    });
+    const draftValue = draft?.[field.key];
+    if (typeof draftValue === "string" && draftValue.trim()) values.add(draftValue.trim());
+    return Array.from(values);
+  };
 
   /**
    * O que a prévia recebe: os itens salvos COM o rascunho em edição aplicado
@@ -134,7 +156,7 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
 
   const content = (
     <>
-      <AdminCard className="ksa-collection-toolbar"><div className="ksa-toolbar"><SearchInput value={query} onChange={setQuery} placeholder={`Buscar ${config.singular.toLowerCase()}…`} /><AdminButton onClick={openNew}><Plus size={17} />Adicionar {config.singular.toLowerCase()}</AdminButton></div>{config.categories && <FilterChips values={config.categories} selected={category} onChange={setCategory} />}</AdminCard>
+      <AdminCard className="ksa-collection-toolbar"><div className="ksa-toolbar"><SearchInput value={query} onChange={setQuery} placeholder={`Buscar ${config.singular.toLowerCase()}…`} /><AdminButton onClick={openNew}><Plus size={17} />Adicionar {config.singular.toLowerCase()}</AdminButton></div>{config.categories && <FilterChips values={filterCategories} selected={category} onChange={setCategory} />}</AdminCard>
 
     {filtered.length === 0 ? <EmptyState title={`Nenhum ${config.singular.toLowerCase()} encontrado`} text={query || category !== "Todos" ? "Ajuste a busca ou os filtros." : "Adicione o primeiro item para começar."} action={<AdminButton onClick={openNew}><Plus size={17} />Adicionar</AdminButton>} /> : <div className="ksa-list">{filtered.map((item, index) => {
       const image = config.image?.(item) || item.imageUrl;
@@ -148,14 +170,17 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
 
     {draft && <div className="ksa-drawer-backdrop" onMouseDown={(event) => event.target === event.currentTarget && closeEditor()}><aside className="ksa-editor" aria-label={`Editar ${config.singular}`}><header><div><span className="ksa-eyebrow">{draft.id.startsWith("new:") ? "Novo item" : "Editar item"}</span><h2>{draft.title || config.singular}</h2></div><button onClick={closeEditor} aria-label="Fechar"><X /></button></header><div className="ksa-editor-fields">{config.fields.map((field) => {
       const current = draft[field.key];
-      if (field.type === "image") return <div className={field.full ? "is-full" : ""} key={field.key}><ImagePicker label={field.label} value={String(current || "")} onChange={(url, key) => { patchDraft(field.key, url); patchDraft(field.imageKey || "imageKey", key); }} /></div>;
+      if (field.type === "image") return <div className={field.full ? "is-full" : ""} key={field.key}><ImagePicker label={field.label} folder={field.folder} value={String(current || "")} onChange={(url, key) => { patchDraft(field.key, url); patchDraft(field.imageKey || "imageKey", key); }} /></div>;
       if (field.type === "toggle") return <Field label={field.label} hint={field.hint} key={field.key}><Toggle checked={Boolean(current)} onChange={(value) => patchDraft(field.key, value)} label={Boolean(current) ? "Ativo" : "Inativo"} /></Field>;
       if (field.type === "textarea") return <Field label={field.label} hint={field.hint} key={field.key}><TextArea rows={4} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => patchDraft(field.key, event.target.value)} /></Field>;
+      if (field.type === "currency") return <Field label={field.label} hint={field.hint} key={field.key}><CurrencyInput value={String(current ?? "")} placeholder={field.placeholder} onChange={(next) => patchDraft(field.key, next)} /></Field>;
+      if (field.type === "select" && field.allowCustom) return <Field label={field.label} hint={field.hint} key={field.key}><ChoicePicker value={String(current ?? "")} options={optionsForField(field)} placeholder={field.placeholder || `Selecionar ${field.label.toLowerCase()}`} onChange={(next) => patchDraft(field.key, next)} /></Field>;
       if (field.type === "select") return <Field label={field.label} hint={field.hint} key={field.key}><SelectField value={String(current ?? "")} onChange={(event) => patchDraft(field.key, event.target.value)}>{field.options?.map((option) => <option key={option}>{option}</option>)}</SelectField></Field>;
+      if (field.type === "internalLink" || field.key === "link" || field.key === "url") return <Field label={field.label} hint={field.hint} key={field.key}><InternalLinkInput value={String(current ?? "")} onChange={(next) => patchDraft(field.key, next)} /></Field>;
       return <Field label={field.label} hint={field.hint} key={field.key}><TextInput type={field.type === "number" ? "number" : "text"} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => patchDraft(field.key, field.type === "number" ? Number(event.target.value) : event.target.value)} /></Field>;
     })}</div><footer><AdminButton tone="ghost" onClick={closeEditor}>Cancelar</AdminButton><AdminButton onClick={() => void submit()} disabled={saving}>{saving ? "Salvando…" : "Salvar alterações"}</AdminButton></footer></aside></div>}
 
-    <ConfirmDialog open={Boolean(deleteTarget)} title={`Excluir ${config.singular.toLowerCase()}?`} text={`“${deleteTarget?.title || "Este item"}” será removido dos rascunhos locais.`} onCancel={() => setDeleteTarget(null)} onConfirm={() => { if (!deleteTarget) return; void remove(deleteTarget.id).then(() => { show(`${config.singular} excluído.`); setDeleteTarget(null); }).catch((cause) => show(cause instanceof Error ? cause.message : "Não foi possível excluir.", "error")); }} />
+    <ConfirmDialog open={Boolean(deleteTarget)} title={`Excluir ${config.singular.toLowerCase()}?`} text={`“${deleteTarget?.title || "Este item"}” será removido do banco de dados e deixará de aparecer no site.`} onCancel={() => setDeleteTarget(null)} onConfirm={() => { if (!deleteTarget) return; void remove(deleteTarget.id).then(() => { show(`${config.singular} excluído.`); setDeleteTarget(null); }).catch((cause) => show(cause instanceof Error ? cause.message : "Não foi possível excluir.", "error")); }} />
     </>
   );
 
@@ -170,4 +195,111 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
       </aside>
     </div>
   ) : content;
+}
+
+function ChoicePicker({
+  value,
+  options,
+  placeholder,
+  onChange,
+}: {
+  value: string;
+  options: string[];
+  placeholder: string;
+  onChange: (value: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [customValue, setCustomValue] = useState("");
+  const normalizedOptions = useMemo(() => Array.from(new Set(options.filter(Boolean))).sort((a, b) => a.localeCompare(b, "pt-BR")), [options]);
+
+  const addCustom = () => {
+    const next = customValue.trim();
+    if (!next) return;
+    onChange(next);
+    setCustomValue("");
+    setOpen(false);
+  };
+
+  return (
+    <div className="ksa-choice-picker">
+      <button type="button" className={`ksa-choice-trigger${open ? " is-open" : ""}`} onClick={() => setOpen((current) => !current)}>
+        <span>
+          <strong>{value || placeholder}</strong>
+          <small>{value ? "Selecionado" : "Escolha uma opção ou crie uma nova"}</small>
+        </span>
+        <Plus size={15} />
+      </button>
+      {open && (
+        <div className="ksa-choice-menu">
+          <div className="ksa-choice-options">
+            {normalizedOptions.map((option) => (
+              <button
+                type="button"
+                key={option}
+                className={option === value ? "is-selected" : ""}
+                onClick={() => {
+                  onChange(option);
+                  setOpen(false);
+                }}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+          <div className="ksa-choice-add">
+            <TextInput
+              value={customValue}
+              placeholder="Novo valor"
+              onChange={(event) => setCustomValue(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  addCustom();
+                }
+              }}
+            />
+            <button type="button" className="ksa-choice-add-button" onClick={addCustom} aria-label="Adicionar opção">
+              <Plus size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function formatCurrencyFromDigits(digits: string) {
+  const cents = Number(digits || "0");
+  if (!cents) return "";
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(cents / 100);
+}
+
+function CurrencyInput({
+  value,
+  placeholder,
+  onChange,
+}: {
+  value: string;
+  placeholder?: string;
+  onChange: (value: string) => void;
+}) {
+  const handleChange = (raw: string) => {
+    const digits = raw.replace(/\D/g, "");
+    onChange(formatCurrencyFromDigits(digits));
+  };
+
+  return (
+    <div className="ksa-currency-input">
+      <span aria-hidden="true">R$</span>
+      <TextInput
+        inputMode="numeric"
+        value={value.replace(/^R\$\s?/, "")}
+        placeholder={placeholder || "0,00"}
+        onChange={(event) => handleChange(event.target.value)}
+      />
+    </div>
+  );
 }

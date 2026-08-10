@@ -1,5 +1,128 @@
-import { MousePointerClick } from "lucide-react";
+import { Check, ChevronDown, MousePointerClick } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+
+const INTERNAL_LINK_GROUPS = [
+  {
+    label: "Páginas",
+    options: [
+      { value: "/", label: "Início" },
+      { value: "/sobre", label: "Sobre" },
+      { value: "/portfolio", label: "Portfólio" },
+      { value: "/reformulacoes", label: "Reformulações" },
+      { value: "/flash-tattoos", label: "Flash tattoos" },
+      { value: "/produtos", label: "Produtos" },
+      { value: "/orcamento", label: "Orçamento" },
+      { value: "/faq", label: "FAQ" },
+    ],
+  },
+  {
+    label: "Âncoras da Home",
+    options: [
+      { value: "/#hero", label: "Hero da Home" },
+      { value: "/#sobre-mim", label: "Sobre mim na Home" },
+      { value: "/#youtube", label: "YouTube na Home" },
+    ],
+  },
+];
+
+const INTERNAL_LINKS = INTERNAL_LINK_GROUPS.flatMap((group) => group.options);
+const CUSTOM_LINK_VALUE = "__custom__";
+
+export function InternalLinkInput({ value, onChange, placeholder = "/orcamento ou /#youtube", ariaLabel = "Destino do link" }: { value: string; onChange(value: string): void; placeholder?: string; ariaLabel?: string }) {
+  const selected = INTERNAL_LINKS.some((option) => option.value === value) ? value : CUSTOM_LINK_VALUE;
+  const selectedOption = INTERNAL_LINKS.find((option) => option.value === value);
+  const [open, setOpen] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const close = (event: MouseEvent) => {
+      if (!pickerRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
+
+  return (
+    <div className="ksa-internal-link">
+      <div className="ksa-internal-link-control is-select">
+        <span>Destino rápido</span>
+        <div className="ksa-link-picker" ref={pickerRef}>
+          <button
+            type="button"
+            className={`ksa-link-picker-trigger ${open ? "is-open" : ""}`}
+            aria-haspopup="listbox"
+            aria-expanded={open}
+            onClick={() => setOpen((current) => !current)}
+          >
+            <span>
+              <strong>{selectedOption?.label ?? (value ? "Personalizado" : "Selecionar")}</strong>
+              <small>{selectedOption?.value ?? (value || "Escolha uma página")}</small>
+            </span>
+            <ChevronDown size={16} />
+          </button>
+
+          {open && (
+            <div className="ksa-link-picker-menu" role="listbox" aria-label="Destinos internos">
+              <button
+                type="button"
+                role="option"
+                aria-selected={selected === CUSTOM_LINK_VALUE}
+                className={`ksa-link-picker-option is-custom ${selected === CUSTOM_LINK_VALUE ? "is-selected" : ""}`}
+                onClick={() => setOpen(false)}
+              >
+                <span>
+                  <strong>Personalizado</strong>
+                  <small>Usar o valor digitado ao lado</small>
+                </span>
+                {selected === CUSTOM_LINK_VALUE && <Check size={14} />}
+              </button>
+
+              {INTERNAL_LINK_GROUPS.map((group) => (
+                <div className="ksa-link-picker-group" key={group.label}>
+                  <span>{group.label}</span>
+                  {group.options.map((option) => (
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={value === option.value}
+                      className={`ksa-link-picker-option ${value === option.value ? "is-selected" : ""}`}
+                      key={option.value}
+                      onClick={() => {
+                        onChange(option.value);
+                        setOpen(false);
+                      }}
+                    >
+                      <span>
+                        <strong>{option.label}</strong>
+                        <small>{option.value}</small>
+                      </span>
+                      {value === option.value && <Check size={14} />}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="ksa-internal-link-control">
+        <span>Valor do link</span>
+        <TextInput aria-label={ariaLabel} value={value} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} />
+      </div>
+    </div>
+  );
+}
 
 export function AdminPage({ eyebrow, title, description, actions, children }: { eyebrow?: string; title: string; description?: string; actions?: ReactNode; children: ReactNode }) {
   return (
@@ -56,6 +179,7 @@ export function ButtonLinkCard({
   linkValue,
   onLinkChange,
   linkHint = "Endereço da página para onde o botão leva, por exemplo /orcamento.",
+  internalLinks = true,
 }: {
   title: string;
   hint?: string;
@@ -66,6 +190,7 @@ export function ButtonLinkCard({
   linkValue: string;
   onLinkChange(value: string): void;
   linkHint?: string;
+  internalLinks?: boolean;
 }) {
   return (
     <div className="ksa-button-card">
@@ -78,7 +203,11 @@ export function ButtonLinkCard({
       </div>
       <div className="ksa-button-card-fields">
         <Field label={textLabel}><TextInput value={textValue} onChange={(event) => onTextChange(event.target.value)} /></Field>
-        <Field label="Para onde ele leva" hint={linkHint}><TextInput value={linkValue} onChange={(event) => onLinkChange(event.target.value)} /></Field>
+        <Field label="Para onde ele leva" hint={linkHint}>
+          {internalLinks
+            ? <InternalLinkInput value={linkValue} onChange={onLinkChange} />
+            : <TextInput value={linkValue} onChange={(event) => onLinkChange(event.target.value)} />}
+        </Field>
       </div>
     </div>
   );
@@ -120,6 +249,8 @@ export function OptionCards<T extends string>({
   );
 }
 
-export function CollapsibleBlock({ title, summary, children, defaultOpen = false }: { title: string; summary?: string; children: ReactNode; defaultOpen?: boolean }) {
-  return <details className="ksa-block" open={defaultOpen}><summary className="ksa-block-toggle"><div><strong>{title}</strong>{summary && <span>{summary}</span>}</div><span aria-hidden="true">＋</span></summary><div className="ksa-block-content">{children}</div></details>;
+export function CollapsibleBlock({ title, summary, children, defaultOpen = false, index }: { title: string; summary?: string; children: ReactNode; defaultOpen?: boolean; index?: number }) {
+  const sectionNumber = index ? index.toString().padStart(2, "0") : null;
+
+  return <details className="ksa-block" open={defaultOpen}><summary className="ksa-block-toggle">{sectionNumber && <span className="ksa-block-index">{sectionNumber}</span>}<div className="ksa-block-copy"><strong>{title}</strong>{summary && <span>{summary}</span>}</div><span className="ksa-block-action" aria-hidden="true">＋</span></summary><div className="ksa-block-content">{children}</div></details>;
 }

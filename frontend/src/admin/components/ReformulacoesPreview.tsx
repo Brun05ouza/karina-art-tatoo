@@ -1,29 +1,14 @@
 import { ArrowRight } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { BrandStar } from "../../app/components/BrandStar";
 import { StarGlyph } from "../../app/components/StarGlyph";
 import type { ReformulationCard, ReformulationItem, ReformulationsDocument } from "../data/types";
 import { PreviewHeroStars, PreviewStarBreak } from "./PreviewParts";
 import { SitePreviewFrame } from "./SitePreviewFrame";
+import type { VisualEditorPreviewTools } from "./VisualDocumentEditor";
 
-/**
- * Prévia da página /reformulacoes.
- *
- * O markup e as classes vêm de ReformulacoesPage em frontend/src/app/App.tsx, e o
- * CSS é o próprio kah-sarte.css (ver SitePreviewFrame). Ao mudar a página real,
- * replique aqui.
- *
- * Recebe as duas fontes de conteúdo da tela: `doc` (os textos das seções) e
- * `items` (os casos antes/depois), ambos no estado em edição — então a prévia
- * reflete cada tecla digitada, antes de salvar.
- *
- * A observação interna de cada caso NÃO é renderizada de propósito: ela existe
- * para uso da Karina e não é publicada.
- */
-
-/** Mesma regra de App.tsx: alterna as duas variantes de estrela por índice. */
 const variantePorIndice = (index: number) => (index % 2 === 0 ? 2 : 3) as 2 | 3;
 
-/** Reproduz MiniCard de App.tsx. */
 function MiniCard({ number, title, text }: { number: string; title: string; text: string }) {
   return (
     <article className="ks-card">
@@ -34,7 +19,6 @@ function MiniCard({ number, title, text }: { number: string; title: string; text
   );
 }
 
-/** Reproduz ReformulacaoPhoto de App.tsx, incluindo o estado sem foto. */
 function Foto({ label, src, index }: { label: "Antes" | "Depois"; src?: string; index: number }) {
   return (
     <figure className="ks-reformulacao-photo">
@@ -51,15 +35,47 @@ function Foto({ label, src, index }: { label: "Antes" | "Depois"; src?: string; 
   );
 }
 
-/** Cards ativos, na ordem, já com a numeração que a página real deriva do índice. */
 const cardsAtivos = (cards: ReformulationCard[]) =>
   [...cards]
     .filter((card) => card.active)
     .sort((a, b) => a.order - b.order)
     .map((card, index) => ({ ...card, number: String(index + 1).padStart(2, "0") }));
 
-export function ReformulacoesPreview({ doc, items }: { doc: ReformulationsDocument; items: ReformulationItem[] }) {
-  // Mesma regra de publicação das outras prévias.
+function editableClass(base: string, section: string, editor?: VisualEditorPreviewTools) {
+  if (!editor) return base;
+  return `${base} ksa-editable-section${editor.activeSection === section ? " is-active" : ""}`;
+}
+
+function EditButton({ section, editor }: { section: string; editor?: VisualEditorPreviewTools }) {
+  if (!editor) return null;
+  return <button type="button" className="ksa-preview-edit-button" onClick={() => editor.onSelectSection(section)}>Editar {section}</button>;
+}
+
+export function ReformulacoesPreview({
+  doc,
+  items,
+  editor,
+}: {
+  doc: ReformulationsDocument;
+  items: ReformulationItem[];
+  editor?: VisualEditorPreviewTools;
+}) {
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  const bindSection = (section: string) => (node: HTMLElement | null) => {
+    sectionRefs.current[section] = node;
+  };
+
+  useEffect(() => {
+    if (!editor?.activeSection) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      sectionRefs.current[editor.activeSection]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [editor?.activeSection, editor?.focusToken]);
+
   const casos = items
     .filter((item) => item.active && item.status !== "Oculto")
     .sort((a, b) => a.order - b.order);
@@ -68,7 +84,7 @@ export function ReformulacoesPreview({ doc, items }: { doc: ReformulationsDocume
   const pontos = [...doc.panelPoints].filter((point) => point.active).sort((a, b) => a.order - b.order);
 
   return (
-    <SitePreviewFrame>
+    <SitePreviewFrame clickToActivate={Boolean(editor)}>
       <div className="ks-grain" aria-hidden="true" />
       <header className="ks-header">
         <span className="ks-logo"><StarGlyph size={8} color="#2E173A" /> Karina Sarte</span>
@@ -82,11 +98,11 @@ export function ReformulacoesPreview({ doc, items }: { doc: ReformulationsDocume
         </nav>
       </header>
 
-      <div className="ks-route-content">
-        <div className="ks-page-sections ks-page-sections-reformulacoes">
-          <section className="ks-page-hero">
-            <img className="ks-page-hero-image" src={doc.heroImageUrl} alt="" aria-hidden="true" loading="eager" />
-            <div className="ks-page-hero-shade" aria-hidden="true" />
+      <div className="ks-page-sections ks-page-sections-reformulacoes">
+          <section ref={bindSection("Hero")} className={editableClass(`ks-page-hero${!doc.heroImageUrl ? " ks-page-hero-no-image" : ""}`, "Hero", editor)}>
+            <EditButton section="Hero" editor={editor} />
+            {doc.heroImageUrl ? <img className="ks-page-hero-image" src={doc.heroImageUrl} alt="" aria-hidden="true" loading="eager" /> : null}
+            {doc.heroImageUrl ? <div className="ks-page-hero-shade" aria-hidden="true" /> : null}
             <PreviewHeroStars />
             <div className="ks-page-hero-content">
               <span className="ks-label-caps ks-muted">{doc.heroEyebrow}</span>
@@ -96,7 +112,8 @@ export function ReformulacoesPreview({ doc, items }: { doc: ReformulationsDocume
             </div>
           </section>
 
-          <section className="ks-section ks-section-cream ks-reformulacoes-intro">
+          <section ref={bindSection("Introdução")} className={editableClass("ks-section ks-section-cream ks-reformulacoes-intro", "Introdução", editor)}>
+            <EditButton section="Introdução" editor={editor} />
             <BrandStar variant={3} size={260} className="ks-reformulacoes-intro-star" />
             <div className="ks-reformulacoes-intro-grid">
               <div className="ks-reformulacoes-intro-heading">
@@ -119,7 +136,8 @@ export function ReformulacoesPreview({ doc, items }: { doc: ReformulationsDocume
 
           <PreviewStarBreak align="right" />
 
-          <section className="ks-section ks-reformulacoes-portfolio">
+          <section ref={bindSection("Casos")} className={editableClass("ks-section ks-reformulacoes-portfolio", "Casos", editor)}>
+            <EditButton section="Casos" editor={editor} />
             <div className="ks-section-title">
               <span className="ks-label-caps ks-gold">{doc.portfolioEyebrow}</span>
               <h2 className="ks-headline-lg">{doc.portfolioTitle}</h2>
@@ -141,11 +159,6 @@ export function ReformulacoesPreview({ doc, items }: { doc: ReformulationsDocume
                       </span>
                       <Foto label="Depois" src={caso.afterImageUrl} index={index} />
                     </div>
-                    {/*
-                      A página real mostra a mesma nota em todos os casos — os textos de Problema e
-                      Solução ainda não são publicados. Mostrá-los aqui faria a prévia prometer algo
-                      que o site não exibe.
-                    */}
                     {doc.caseNote ? <p className="ks-reformulacao-case-note">{doc.caseNote}</p> : null}
                   </article>
                 ))}
@@ -159,7 +172,8 @@ export function ReformulacoesPreview({ doc, items }: { doc: ReformulationsDocume
 
           <PreviewStarBreak align="left" />
 
-          <section className="ks-section ks-surface-band">
+          <section ref={bindSection("Possibilidades")} className={editableClass("ks-section ks-surface-band", "Possibilidades", editor)}>
+            <EditButton section="Possibilidades" editor={editor} />
             <div className="ks-section-title">
               <span className="ks-label-caps ks-gold">{doc.possibilitiesEyebrow}</span>
               <h2 className="ks-headline-lg">{doc.possibilitiesTitle}</h2>
@@ -172,12 +186,12 @@ export function ReformulacoesPreview({ doc, items }: { doc: ReformulationsDocume
             </div>
           </section>
 
-          <section className="ks-cta-band">
+          <section ref={bindSection("Chamada final")} className={editableClass("ks-cta-band", "Chamada final", editor)}>
+            <EditButton section="Chamada final" editor={editor} />
             <h2 className="ks-headline-md">{doc.ctaTitle}</h2>
             <p className="ks-body-lg ks-muted">{doc.ctaText}</p>
             <a className="ks-primary-link">{doc.ctaButton}<ArrowRight size={16} /></a>
           </section>
-        </div>
       </div>
     </SitePreviewFrame>
   );

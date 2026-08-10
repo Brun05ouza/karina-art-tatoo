@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { uploadImage } from "../data/mediaStore";
 import { AdminButton } from "./Primitives";
 
-export function ImagePicker({ value, onChange, label = "Imagem", description, folder = "site" }: { value?: string; onChange(url: string, key: string): void; label?: string; description?: string; folder?: string }) {
+export function ImagePicker({ value, onChange, label = "Imagem", description, folder = "admin/uploads" }: { value?: string; onChange(url: string, key: string): void; label?: string; description?: string; folder?: string }) {
   const [preview, setPreview] = useState(value || "");
   const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);

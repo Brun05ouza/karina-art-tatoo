@@ -5,16 +5,18 @@ import { useDocument } from "../hooks/useDocument";
 import { useDirtyGuard } from "../hooks/useDirtyGuard";
 import { useToast } from "../hooks/useToast";
 import { ImagePicker } from "./ImagePicker";
-import { AdminButton, CollapsibleBlock, Field, SelectField, TextArea, TextInput, Toggle } from "./Primitives";
+import { AdminButton, CollapsibleBlock, Field, InternalLinkInput, SelectField, TextArea, TextInput, Toggle } from "./Primitives";
 import { ErrorState, LoadingState } from "./States";
 
 export type DocumentField = {
   key: string;
   label: string;
-  type?: "text" | "textarea" | "select" | "toggle" | "image";
+  type?: "text" | "textarea" | "select" | "toggle" | "image" | "internalLink";
   options?: string[];
   hint?: string;
   placeholder?: string;
+  folder?: string;
+  imageKey?: string;
   rows?: number;
   full?: boolean;
 };
@@ -68,14 +70,94 @@ export function DocumentEditor<T extends Record<string, unknown>>({ store, block
     }
   };
 
-  const editor = <div className="ksa-document-editor">{blocks.map((block) => <CollapsibleBlock key={block.title} title={block.title} summary={block.summary}><div className="ksa-grid-2">{(block.fields ?? []).map((field) => {
-    const current = value[field.key];
-    if (field.type === "image") return <div key={field.key} className="is-full"><ImagePicker label={field.label} value={String(current || "")} onChange={(url) => update({ [field.key]: url } as Partial<T>)} /></div>;
-    if (field.type === "toggle") return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><Toggle checked={Boolean(current)} onChange={(checked) => update({ [field.key]: checked } as Partial<T>)} label={Boolean(current) ? "Ativo" : "Inativo"} /></Field>;
-    if (field.type === "textarea") return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><TextArea rows={field.rows ?? 3} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} /></Field>;
-    if (field.type === "select") return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><SelectField value={String(current ?? "")} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)}>{field.options?.map((option) => <option key={option} value={option}>{option}</option>)}</SelectField></Field>;
-    return <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}><TextInput value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} /></Field>;
-  })}</div>{block.render?.(value, update)}</CollapsibleBlock>)}{children?.(value, update)}<div className={`ksa-save-bar ksa-document-save ${documentDirty ? "is-dirty" : "is-saved"}`}><span aria-live="polite"><i aria-hidden="true" />{documentDirty ? "Alterações não salvas" : "Tudo salvo"}</span><AdminButton onClick={() => void submit()} disabled={!documentDirty}><Save size={17} />Salvar alterações</AdminButton></div></div>;
+  const isInternalLinkField = (field: DocumentField) => {
+    const key = field.key.toLowerCase();
+    if (field.type === "internalLink") return true;
+    if (field.type || !key.endsWith("url")) return false;
+    if (key.includes("image") || key.includes("video") || key.includes("thumb") || key.includes("trailer") || key.includes("youtube")) return false;
+    return key.includes("button") || field.label.toLowerCase().includes("link");
+  };
+
+  const editor = (
+    <div className="ksa-document-editor">
+      <div className="ksa-document-guide">
+        <div>
+          <span className="ksa-eyebrow">Roteiro da página</span>
+          <h2>Escolha uma seção para editar</h2>
+          <p>Os blocos seguem a mesma ordem em que aparecem no site. Abra só o trecho que quer ajustar e acompanhe o resultado na prévia.</p>
+        </div>
+        <strong>{blocks.length.toString().padStart(2, "0")} seções</strong>
+      </div>
+
+      <div className="ksa-block-stack">
+        {blocks.map((block, index) => (
+          <CollapsibleBlock key={block.title} title={block.title} summary={block.summary} index={index + 1}>
+            <div className="ksa-grid-2">
+              {(block.fields ?? []).map((field) => {
+                const current = value[field.key];
+
+                if (field.type === "image") {
+                  return (
+                    <div key={field.key} className="is-full">
+                      <ImagePicker label={field.label} folder={field.folder} value={String(current || "")} onChange={(url, key) => update({ [field.key]: url, ...(field.imageKey ? { [field.imageKey]: key } : {}) } as Partial<T>)} />
+                    </div>
+                  );
+                }
+
+                if (field.type === "toggle") {
+                  return (
+                    <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}>
+                      <Toggle checked={Boolean(current)} onChange={(checked) => update({ [field.key]: checked } as Partial<T>)} label={Boolean(current) ? "Ativo" : "Inativo"} />
+                    </Field>
+                  );
+                }
+
+                if (field.type === "textarea") {
+                  return (
+                    <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}>
+                      <TextArea rows={field.rows ?? 3} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} />
+                    </Field>
+                  );
+                }
+
+                if (field.type === "select") {
+                  return (
+                    <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}>
+                      <SelectField value={String(current ?? "")} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)}>
+                        {field.options?.map((option) => <option key={option} value={option}>{option}</option>)}
+                      </SelectField>
+                    </Field>
+                  );
+                }
+
+                if (isInternalLinkField(field)) {
+                  return (
+                    <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}>
+                      <InternalLinkInput value={String(current ?? "")} onChange={(next) => update({ [field.key]: next } as Partial<T>)} />
+                    </Field>
+                  );
+                }
+
+                return (
+                  <Field key={field.key} className={field.full ? "is-full" : ""} label={field.label} hint={field.hint}>
+                    <TextInput value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} />
+                  </Field>
+                );
+              })}
+            </div>
+            {block.render?.(value, update)}
+          </CollapsibleBlock>
+        ))}
+      </div>
+
+      {children?.(value, update)}
+
+      <div className={`ksa-save-bar ksa-document-save ${documentDirty ? "is-dirty" : "is-saved"}`}>
+        <span aria-live="polite"><i aria-hidden="true" />{documentDirty ? "Alterações não salvas" : "Tudo salvo"}</span>
+        <AdminButton onClick={() => void submit()} disabled={!documentDirty}><Save size={17} />Salvar alterações</AdminButton>
+      </div>
+    </div>
+  );
 
   if (!preview) return editor;
 

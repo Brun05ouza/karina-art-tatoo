@@ -8,10 +8,15 @@ import {
   ArrowRight,
   BadgeCheck,
   HeartHandshake,
+  Images,
+  LinkIcon,
   Play,
+  ShoppingBag,
+  Sparkles,
   Volume2,
   VolumeX,
   X,
+  Youtube,
 } from "lucide-react";
 import {
   BrowserRouter,
@@ -28,7 +33,12 @@ import { HoverProcessMedia } from "./components/HoverProcessMedia";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { AdminShortcut } from "./components/AdminShortcut";
-import { galleryItems, PORTFOLIO_CATEGORIES } from "./portfolio-works";
+import { useFlashItems, useFlashPageContent } from "./flash-content";
+import { useFaqItems } from "./faq-content";
+import { galleryItems, PORTFOLIO_CATEGORIES, usePortfolioItems, usePortfolioPageContent, type PortfolioWork } from "./portfolio-works";
+import { useProductItems, useProductsPageContent, type ProductCatalogItem } from "./products-content";
+import { useReformulationCases, useReformulationsContent } from "./reformulations-content";
+import { useLinkBioContent, type LinkBioButton } from "./link-bio-content.ts";
 import { BrandStar } from "./components/BrandStar";
 import { StencilCrosshair } from "./components/StencilCrosshair";
 import { CustomCursor } from "./components/CustomCursor";
@@ -47,7 +57,7 @@ import { tattooImages } from "./tattoo-images";
 import { processVideos } from "./process-videos";
 import { useHomeContent, type HomeContent } from "./home-content";
 import { useAboutContent } from "./about-content";
-import { applyPageSeo, FAQ_ITEMS } from "./seo";
+import { applyPageSeo } from "./seo";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -399,6 +409,8 @@ function AppLayout({
 }) {
   const [productsTransition, setProductsTransition] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isBioRoute = location.pathname === "/bio";
 
   const startProductsTransition = useCallback(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -427,27 +439,29 @@ function AppLayout({
         </defs>
       </svg>
       <div className="ks-grain" aria-hidden="true" />
-      <AdminShortcut />
-      <CustomCursor />
-      <Preloader
-        onComplete={() => {
-          setPreloaderDone(true);
-          window.setTimeout(() => refreshScrollMetrics(), 100);
-        }}
-      />
+      {!isBioRoute && <AdminShortcut />}
+      {!isBioRoute && <CustomCursor />}
+      {!isBioRoute && (
+        <Preloader
+          onComplete={() => {
+            setPreloaderDone(true);
+            window.setTimeout(() => refreshScrollMetrics(), 100);
+          }}
+        />
+      )}
       <div
         className="ks-shell"
         style={{
-          opacity: preloaderDone ? 1 : 0,
+          opacity: isBioRoute || preloaderDone ? 1 : 0,
           transition: "opacity 0.6s ease",
         }}
       >
         <PreloaderDoneContext.Provider value={preloaderDone}>
           <ProductsNavContext.Provider value={startProductsTransition}>
-            <Header />
+            {!isBioRoute && <Header />}
             <AnimatedRoutes />
-            <Footer />
-            <FloatingWhatsApp />
+            {!isBioRoute && <Footer />}
+            {!isBioRoute && <FloatingWhatsApp />}
           </ProductsNavContext.Provider>
         </PreloaderDoneContext.Provider>
       </div>
@@ -507,6 +521,7 @@ function AnimatedRoutes() {
             <Route path="/depoimentos" element={<IntroPage path="/depoimentos"><TestimonialsPage /></IntroPage>} />
             <Route path="/faq" element={<IntroPage path="/faq"><FaqPage /></IntroPage>} />
             <Route path="/orcamento" element={<BudgetPage />} />
+            <Route path="/bio" element={<LinkBioPublicPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </motion.div>
@@ -1527,10 +1542,15 @@ function AboutPage() {
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.9, ease: EASE }}
         >
-          {about.behindScenesImageUrl && (
+          {about.behindScenesImageUrl ? (
             <img src={about.behindScenesImageUrl} alt="Karina Sarte no dia a dia do ateliê" loading="lazy" />
+          ) : (
+            <div className="ks-about-behind-scenes-placeholder" aria-hidden="true">
+              <img src="/assets/brand/star-karina-filled.png" alt="" />
+              <img src="/assets/brand/star-karina-outline.png" alt="" />
+            </div>
           )}
-          {about.behindScenesCaption && <figcaption>{about.behindScenesCaption}</figcaption>}
+          <figcaption>{about.behindScenesCaption || "Um recorte real do processo, do ateliê e da rotina por trás de cada criação."}</figcaption>
         </motion.figure>
       </section>
       <FeatureStrip cards={cards} />
@@ -1540,25 +1560,30 @@ function AboutPage() {
 
 function PortfolioPage() {
   const [activeCategory, setActiveCategory] = useState("Todos");
-  // Só mostramos filtros que têm trabalho publicado, na ordem canônica. Botão
-  // que não filtra nada é frustrante — e quando a Karina cadastrar trabalhos de
-  // outras categorias no painel, o filtro aparece sozinho.
+  const portfolioItems = usePortfolioItems(false);
+  const portfolioPage = usePortfolioPageContent();
+  // Só mostramos filtros que têm trabalho publicado. Mantemos a ordem canônica e
+  // adicionamos automaticamente categorias criadas no admin.
+  const portfolioCategorySet = new Set(portfolioItems.map((item) => item.category).filter(Boolean));
+  const canonicalCategories = PORTFOLIO_CATEGORIES.filter((category) => portfolioCategorySet.has(category));
+  const customCategories = Array.from(portfolioCategorySet).filter((category) => !PORTFOLIO_CATEGORIES.some((canonical) => canonical === category));
   const categories = [
     "Todos",
-    ...PORTFOLIO_CATEGORIES.filter((category) => galleryItems.some((item) => item.category === category)),
+    ...canonicalCategories,
+    ...customCategories,
   ];
   const filteredItems =
     activeCategory === "Todos"
-      ? galleryItems
-      : galleryItems.filter((item) => item.category === activeCategory);
+      ? portfolioItems
+      : portfolioItems.filter((item) => item.category === activeCategory);
 
   return (
     <>
       <PageHero
-        kicker="Portfólio"
-        title="Portfólio"
-        text="Conheça tattoos, flashes e projetos autorais criados pela Karina Sarte."
-        image={tattooImages.heroPortfolio}
+        kicker={portfolioPage.heroKicker}
+        title={portfolioPage.heroTitle}
+        text={portfolioPage.heroText}
+        image={portfolioPage.heroImageUrl}
       />
       <section className="ks-section">
         <div className="ks-filter-row">
@@ -1591,74 +1616,44 @@ function PortfolioPage() {
   );
 }
 
-const reformulacoesServices = [
-  {
-    title: "Reconstrução do desenho",
-    text: "A estrutura existente é redesenhada para recuperar formas, intenção e uma leitura mais clara na pele.",
-  },
-  {
-    title: "Correção e equilíbrio",
-    text: "Linhas, proporções, pesos e contrastes são ajustados para melhorar a composição sem apagar sua essência.",
-  },
-  {
-    title: "Ampliação e integração",
-    text: "Novos elementos podem completar o desenho e integrar a tattoo existente a uma composição mais bem resolvida.",
-  },
-] as const;
-
-type ReformulacaoPortfolioCase = {
-  title: string;
-  category: string;
-  before?: string;
-  after?: string;
-};
-
-const reformulacoesPortfolio: ReformulacaoPortfolioCase[] = [
-  { title: "Reconstrução de desenho", category: "Caso 01" },
-  { title: "Correção de composição", category: "Caso 02" },
-  { title: "Ampliação integrada", category: "Caso 03" },
-  { title: "Recuperação de linhas", category: "Caso 04" },
-  { title: "Reorganização de elementos", category: "Caso 05" },
-  { title: "Expansão do projeto", category: "Caso 06" },
-];
-
 function ReformulacoesPage() {
+  const content = useReformulationsContent();
+  const reformulacoes = useReformulationCases();
+  const pontos = [...content.panelPoints].filter((point) => point.active).sort((a, b) => a.order - b.order);
+  const possibilidades = [...content.possibilityCards].filter((card) => card.active).sort((a, b) => a.order - b.order);
+
   return (
     <>
       <PageHero
-        kicker="Reformulação · reconstrução · aprimoramento"
-        title="Reformulações"
-        text="Um novo projeto criado a partir da tattoo que você já tem, para melhorar desenho, composição e leitura sem apagar sua história."
-        image={tattooImages.heroReformulacoes}
+        kicker={content.heroEyebrow}
+        title={content.heroTitle}
+        text={content.heroText}
+        image={content.heroImageUrl}
       >
-        <PrimaryLink to="/orcamento">Quero avaliar minha tattoo</PrimaryLink>
+        <PrimaryLink to={content.heroButtonUrl || "/orcamento"}>{content.heroButton}</PrimaryLink>
       </PageHero>
 
       <section className="ks-section ks-section-cream ks-reformulacoes-intro">
         <BrandStar variant={3} size={260} className="ks-reformulacoes-intro-star" />
         <div className="ks-reformulacoes-intro-grid">
           <div className="ks-reformulacoes-intro-heading">
-            <span className="ks-label-caps">Reconstruir para evoluir</span>
-            <h2 className="ks-headline-lg">A tattoo continua sendo sua. O desenho evolui.</h2>
+            <span className="ks-label-caps">{content.introEyebrow}</span>
+            <h2 className="ks-headline-lg">{content.introTitle}</h2>
             <p className="ks-body-lg ks-muted">
-              Partimos do desenho existente para corrigir, reorganizar e aprimorar o que já está na sua pele.
+              {content.introText}
             </p>
           </div>
 
           <div className="ks-reformulacoes-intro-panel">
-            <span className="ks-label-caps">Análise individual</span>
+            <span className="ks-label-caps">{content.panelEyebrow}</span>
             <p className="ks-body-lg">
-              A reformulação começa com uma leitura cuidadosa da tattoo atual: desenho, linhas, pigmento, cicatrização e
-              região do corpo.
+              {content.panelTextOne}
             </p>
             <p className="ks-body-lg ks-muted">
-              A partir disso, reconstruímos o trabalho existente para chegar a uma versão mais equilibrada, coerente e
-              próxima do que você deseja levar na pele.
+              {content.panelTextTwo}
             </p>
             <div className="ks-reformulacoes-intro-points" aria-label="Pontos avaliados na reformulação">
-              <span>Desenho original</span>
-              <span>Linhas e proporções</span>
-              <span>Integração no corpo</span>
+              {pontos.map((point) => <span key={point.id}>{point.label}</span>)}
             </div>
           </div>
         </div>
@@ -1668,25 +1663,25 @@ function ReformulacoesPage() {
 
       <section className="ks-section ks-reformulacoes-portfolio">
         <SectionTitle
-          eyebrow="Portfólio de reformulações"
-          title="A evolução de cada desenho"
-          text="Cada caso será apresentado com a tattoo original e o resultado depois da reconstrução, mantendo o antes e o depois lado a lado."
+          eyebrow={content.portfolioEyebrow}
+          title={content.portfolioTitle}
+          text={content.portfolioText}
         />
         <div className="ks-reformulacoes-grid">
-          {reformulacoesPortfolio.map((item, index) => (
-            <article className="ks-reformulacao-case" key={item.category}>
+          {reformulacoes.map((item, index) => (
+            <article className="ks-reformulacao-case" key={item.id}>
               <header className="ks-reformulacao-case-header">
                 <span className="ks-label-caps">{item.category}</span>
                 <h3>{item.title}</h3>
               </header>
               <div className="ks-reformulacao-compare">
-                <ReformulacaoPhoto label="Antes" src={item.before} index={index} />
+                <ReformulacaoPhoto label="Antes" src={item.beforeImageUrl} index={index} />
                 <span className="ks-reformulacao-arrow" aria-hidden="true">
                   <ArrowRight size={18} />
                 </span>
-                <ReformulacaoPhoto label="Depois" src={item.after} index={index + 1} />
+                <ReformulacaoPhoto label="Depois" src={item.afterImageUrl} index={index + 1} />
               </div>
-              <p className="ks-reformulacao-case-note">Fotos reais do processo serão adicionadas neste espaço.</p>
+              {content.caseNote ? <p className="ks-reformulacao-case-note">{content.caseNote}</p> : null}
             </article>
           ))}
         </div>
@@ -1696,14 +1691,14 @@ function ReformulacoesPage() {
 
       <section className="ks-section ks-surface-band">
         <SectionTitle
-          eyebrow="Possibilidades"
-          title="Como a tattoo pode evoluir"
-          text="A solução respeita o desenho que já existe e aquilo que você deseja melhorar nele."
+          eyebrow={content.possibilitiesEyebrow}
+          title={content.possibilitiesTitle}
+          text={content.possibilitiesText}
         />
         <div className="ks-card-grid three">
-          {reformulacoesServices.map((service, index) => (
+          {possibilidades.map((service, index) => (
             <MiniCard
-              key={service.title}
+              key={service.id}
               number={String(index + 1).padStart(2, "0")}
               title={service.title}
               text={service.text}
@@ -1713,10 +1708,10 @@ function ReformulacoesPage() {
       </section>
 
       <CtaBand
-        title="Vamos reconstruir e melhorar sua tattoo?"
-        text="Envie uma foto e conte o que você gostaria de ajustar. A avaliação de cada reformulação é feita de forma individual."
-        cta="Quero avaliar minha tattoo"
-        to="/orcamento"
+        title={content.ctaTitle}
+        text={content.ctaText}
+        cta={content.ctaButton}
+        to={content.ctaButtonUrl || "/orcamento"}
       />
     </>
   );
@@ -1739,20 +1734,36 @@ function ReformulacaoPhoto({ label, src, index }: { label: "Antes" | "Depois"; s
 }
 
 function FlashPage() {
+  const page = useFlashPageContent();
+  const flashes = useFlashItems();
+
   return (
     <>
       <PageHero
-        kicker="Flash Tattoos"
-        title="Flash Tattoos disponíveis"
-        text="Artes autorais prontas para tatuar, com disponibilidade limitada."
-        image={tattooImages.heroFlash}
+        kicker={page.heroKicker}
+        title={page.heroTitle}
+        text={page.heroText}
+        image={page.heroImageUrl}
       />
       <section className="ks-section">
-        <div className="ks-flash-page-grid">
-          {flashItems.map((item, index) => (
-            <FlashCard key={item.name} {...item} img={item.img} index={index} />
-          ))}
-        </div>
+        {flashes.length > 0 ? (
+          <div className="ks-flash-page-grid">
+            {flashes.map((item, index) => (
+              <FlashCard
+                key={item.id}
+                name={item.title || "Flash sem nome"}
+                status={item.status || "Disponível"}
+                text={item.description || ""}
+                img={item.imageUrl}
+                index={index}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="ks-body-lg ks-muted" style={{ textAlign: "center" }} role="status">
+            Nenhum flash disponível publicado ainda.
+          </p>
+        )}
       </section>
     </>
   );
@@ -1761,6 +1772,8 @@ function FlashPage() {
 function ProductsPage() {
   const location = useLocation();
   const stagger = Boolean((location.state as { fromProductsTransition?: boolean } | null)?.fromProductsTransition);
+  const page = useProductsPageContent();
+  const products = useProductItems();
 
   return (
     <>
@@ -1771,54 +1784,67 @@ function ProductsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: EASE }}
         >
-          <span className="ks-label-caps ks-gold">Coleções</span>
-          <h1 className="ks-display-xl">Coleções da Karina Sarte</h1>
-          <p className="ks-body-lg ks-muted" style={{ maxWidth: 680, marginTop: 18 }}>
-            Arte para usar, colecionar e levar na pele.
-          </p>
-          <p className="ks-body-lg ks-muted" style={{ maxWidth: 720, marginTop: 12 }}>
-            Produtos autorais, planos, flashes, prints e criações exclusivas feitas para aproximar ainda mais a arte da
-            Karina Sarte de quem acompanha seu trabalho.
-          </p>
-          <a className="ks-primary-link" href={wa(WA_PRODUCTS)} style={{ marginTop: 28 }}>
-            Consultar produtos pelo WhatsApp <WhatsAppIcon />
-          </a>
+          {page.heroKicker ? <span className="ks-label-caps ks-gold">{page.heroKicker}</span> : null}
+          <h1 className="ks-display-xl">{page.heroTitle}</h1>
+          {page.heroText1 ? (
+            <p className="ks-body-lg ks-muted" style={{ maxWidth: 680, marginTop: 18 }}>
+              {page.heroText1}
+            </p>
+          ) : null}
+          {page.heroText2 ? (
+            <p className="ks-body-lg ks-muted" style={{ maxWidth: 720, marginTop: 12 }}>
+              {page.heroText2}
+            </p>
+          ) : null}
+          {page.heroButton ? (
+            <a className="ks-primary-link" href={wa(WA_PRODUCTS)} style={{ marginTop: 28 }}>
+              {page.heroButton} <WhatsAppIcon />
+            </a>
+          ) : null}
         </motion.div>
-        <motion.figure
-          className="ks-products-page-hero-media"
-          initial={{ opacity: 0, scale: 1.02 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, ease: EASE }}
-        >
-          <img
-            src="/assets/brand/products-hero-flower-eye.png"
-            alt="Ilustração autoral de flores envolvendo um olho"
-            loading="eager"
-            decoding="async"
-          />
-        </motion.figure>
+        {page.heroImageUrl ? (
+          <motion.figure
+            className="ks-products-page-hero-media"
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.9, ease: EASE }}
+          >
+            <img
+              src={page.heroImageUrl}
+              alt=""
+              loading="eager"
+              decoding="async"
+            />
+          </motion.figure>
+        ) : null}
       </section>
       <section className="ks-section ks-products-catalog">
-        <motion.div
-          className="ks-products-category-grid"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: stagger ? 0.12 : 0.06 } },
-          }}
-        >
-          {productCategories.map((category, index) => (
-            <ProductCategoryCard key={category.title} category={category} index={index} />
-          ))}
-        </motion.div>
+        {products.length > 0 ? (
+          <motion.div
+            className="ks-products-category-grid"
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: stagger ? 0.12 : 0.06 } },
+            }}
+          >
+            {products.map((product, index) => (
+              <ProductCategoryCard key={product.id} category={product} index={index} />
+            ))}
+          </motion.div>
+        ) : (
+          <p className="ks-body-lg ks-muted" style={{ textAlign: "center" }} role="status">
+            Nenhum produto publicado ainda.
+          </p>
+        )}
       </section>
       <HowToBuy />
       <ProductFaq />
       <CtaBand
-        title="Quer levar a arte da Karina Sarte para além da pele?"
-        text="Consulte disponibilidade, valores e opções personalizadas pelo WhatsApp."
-        cta="Consultar pelo WhatsApp"
+        title={page.ctaTitle}
+        text={page.ctaText}
+        cta={page.ctaButton}
         href={wa(WA_PRODUCTS)}
       />
     </>
@@ -1829,20 +1855,25 @@ function ProductCategoryCard({
   category,
   index,
 }: {
-  category: (typeof productCategories)[number];
+  category: ProductCatalogItem;
   index: number;
 }) {
+  const cta = category.price || "Consultar";
   const inner = (
     <>
       <div className="ks-products-category-media">
-        <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
+        {category.imageUrl ? (
+          <img src={category.imageUrl} alt={category.title} loading={index < 2 ? "eager" : "lazy"} />
+        ) : (
+          <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
+        )}
       </div>
       <div className="ks-products-category-body">
         <span className="ks-label-caps ks-muted">{String(index + 1).padStart(2, "0")}</span>
         <h2 className="ks-headline-md">{category.title}</h2>
         <p className="ks-body-md ks-muted">{category.description}</p>
         <span className="ks-products-category-cta">
-          {category.cta} <ArrowRight size={14} />
+          {cta} <ArrowRight size={14} />
         </span>
       </div>
     </>
@@ -1856,10 +1887,10 @@ function ProductCategoryCard({
         visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: EASE } },
       }}
     >
-      {"link" in category && category.link ? (
+      {category.link ? (
         <Link to={category.link}>{inner}</Link>
       ) : (
-        <a href={wa(category.message)} target="_blank" rel="noopener noreferrer">
+        <a href={wa(category.whatsappMessage || WA_PRODUCTS)} target="_blank" rel="noopener noreferrer">
           {inner}
         </a>
       )}
@@ -2026,6 +2057,109 @@ function FaqPage() {
   );
 }
 
+function LinkBioPublicPage() {
+  const navigate = useNavigate();
+  const content = useLinkBioContent();
+  const buttons = [...content.buttons].filter((item) => item.active).sort((a, b) => a.order - b.order);
+
+  useEffect(() => {
+    const isDesktop = window.matchMedia("(min-width: 900px) and (pointer: fine)").matches;
+    if (isDesktop) navigate("/", { replace: true });
+  }, [navigate]);
+
+  const backgroundStyle = {
+    "--ks-link-bio-background": `url("${content.backgroundUrl || "/assets/link-bio/background.jpg"}")`,
+  } as Record<string, string>;
+
+  return (
+    <section className="ks-link-bio-page" aria-label="Link da bio Karina Sarte" style={backgroundStyle}>
+      <img className="ks-link-bio-star star-1" src="/assets/brand/star-karina-filled.png" alt="" aria-hidden="true" />
+      <img className="ks-link-bio-star star-2" src="/assets/brand/star-karina-outline.png" alt="" aria-hidden="true" />
+      <img className="ks-link-bio-star star-3" src="/assets/brand/star-karina-filled.png" alt="" aria-hidden="true" />
+
+      <motion.div
+        className="ks-link-bio-card"
+        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.65, ease: EASE }}
+      >
+        <div className="ks-link-bio-profile">
+          <div className="ks-link-bio-avatar-wrap">
+            <img className="ks-link-bio-avatar" src={content.avatarUrl} alt={content.name} />
+          </div>
+          <span className="ks-label-caps">{content.eyebrow}</span>
+          <h1>{content.name}</h1>
+          <p>{content.bio}</p>
+        </div>
+
+        <div className="ks-link-bio-links">
+          {buttons.map((button, index) => (
+            <BioAction key={button.id} button={button} index={index} />
+          ))}
+        </div>
+
+        {isExternalLink(content.footerUrl) ? (
+          <a className="ks-link-bio-site-link" href={content.footerUrl} target="_blank" rel="noopener noreferrer">
+            {content.footerLabel} <ArrowRight size={14} />
+          </a>
+        ) : (
+          <Link className="ks-link-bio-site-link" to={content.footerUrl || "/"}>
+            {content.footerLabel} <ArrowRight size={14} />
+          </Link>
+        )}
+      </motion.div>
+    </section>
+  );
+}
+
+function BioAction({ button, index }: { button: LinkBioButton; index: number }) {
+  const content = (
+    <>
+      <span className="ks-link-bio-action-icon">{bioIcon(button.icon)}</span>
+      <span>{button.label}</span>
+      <ArrowRight size={16} />
+    </>
+  );
+  const className = `ks-link-bio-action${index === 0 ? " is-primary" : ""}`;
+
+  if (isExternalLink(button.url)) {
+    return (
+      <a className={className} href={button.url} target="_blank" rel="noopener noreferrer">
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link className={className} to={button.url || "/"}>
+      {content}
+    </Link>
+  );
+}
+
+function bioIcon(icon: string) {
+  const normalized = icon.toLowerCase();
+  if (normalized.includes("message") || normalized.includes("whatsapp") || normalized.includes("zap")) return <WhatsAppIcon />;
+  if (normalized.includes("tiktok")) return <TikTokIcon />;
+  if (normalized.includes("youtube")) return <Youtube size={18} />;
+  if (normalized.includes("image")) return <Images size={18} />;
+  if (normalized.includes("spark")) return <Sparkles size={18} />;
+  if (normalized.includes("shop")) return <ShoppingBag size={18} />;
+  return <LinkIcon size={18} />;
+}
+
+function TikTokIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M16.6 3c.35 2.4 1.75 4.05 4.05 4.2v3.25c-1.34.13-2.52-.3-3.98-1.18v6.08c0 7.72-8.42 10.14-11.8 4.6-2.17-3.56-.84-9.8 6.12-10.05v3.43c-.44.07-.91.18-1.34.33-1.29.44-2.02 1.26-1.82 2.7.39 2.76 5.45 3.57 5.03-1.82V3h3.74Z" />
+    </svg>
+  );
+}
+
+function isExternalLink(url: string) {
+  return /^(https?:|mailto:|tel:|whatsapp:)/i.test(url);
+}
+
 function BudgetPage() {
   const [form, setForm] = useState({
     name: "",
@@ -2134,11 +2268,11 @@ function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string
   );
 }
 
-function ImageGrid({ items }: { items: typeof galleryItems }) {
+function ImageGrid({ items }: { items: PortfolioWork[] }) {
   return (
     <div className="ks-image-grid">
       {items.map((item, index) => (
-        <article className="ks-image-card" key={item.title}>
+        <article className="ks-image-card" key={item.id || item.title}>
           {/* Antes daqui saía um NumberedPlaceholder: a página inteira mostrava
               quadros numerados e o item.img nunca era renderizado. */}
           {"processVideo" in item && item.processVideo ? (
@@ -2148,8 +2282,10 @@ function ImageGrid({ items }: { items: typeof galleryItems }) {
               alt={item.alt}
               loading={index < 2 ? "eager" : "lazy"}
             />
-          ) : (
+          ) : item.img ? (
             <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+          ) : (
+            <div className="ks-numbered-placeholder"><span>{String(item.order ?? index + 1).padStart(2, "0")}</span></div>
           )}
           {/* PNG em vez do BrandStar: os SVGs de estrela têm 1,6 a 3,2 MB cada, e
               o CSS de .ks-card-starfield já define o tamanho. */}
@@ -2185,11 +2321,13 @@ function FlashCard({
 }) {
   return (
     <article className="ks-flash-page-card">
-      {img && (
-        <div className="ks-flash-page-card-media">
+      <div className="ks-flash-page-card-media">
+        {img ? (
+          <img src={img} alt={name} loading={index < 2 ? "eager" : "lazy"} />
+        ) : (
           <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
-        </div>
-      )}
+        )}
+      </div>
       <div className="ks-flash-page-card-body">
         <StencilCrosshair size={14} color="#806E85" />
         <span className={`ks-status ${status.toLowerCase()}`}>{status}</span>
@@ -2238,17 +2376,19 @@ function StepSection({ steps }: { steps: string[] }) {
 }
 
 function ProductFaq({ full = false }: { full?: boolean }) {
-  const questions = FAQ_ITEMS;
+  const questions = useFaqItems();
   const [open, setOpen] = useState<number | null>(null);
   const list = questions.slice(0, full ? questions.length : 4);
+
+  if (list.length === 0) return null;
 
   return (
     <section className="ks-section">
       <SectionTitle eyebrow="FAQ" title={full ? "Dúvidas frequentes" : "FAQ rápido sobre produtos"} text="Informações essenciais para consulta, reserva e atendimento." />
       <div className="ks-faq-list">
-        {list.map(([q, a], i) => (
+        {list.map((item, i) => (
           <motion.div
-            key={q}
+            key={item.id || item.title}
             className={`ks-faq-item${open === i ? " open" : ""}`}
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -2260,7 +2400,7 @@ function ProductFaq({ full = false }: { full?: boolean }) {
               onClick={() => setOpen(open === i ? null : i)}
               aria-expanded={open === i}
             >
-              <span>{q}</span>
+              <span>{item.title}</span>
               <motion.span
                 className="ks-faq-icon"
                 animate={{ rotate: open === i ? 45 : 0 }}
@@ -2278,7 +2418,7 @@ function ProductFaq({ full = false }: { full?: boolean }) {
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.4, ease: EASE }}
                 >
-                  <p>{a}</p>
+                  <p>{item.answer}</p>
                 </motion.div>
               )}
             </AnimatePresence>

@@ -1,27 +1,11 @@
 import { ArrowRight, HeartHandshake } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { StarGlyph } from "../../app/components/StarGlyph";
 import type { AboutDocument } from "../data/types";
 import { SitePreviewFrame } from "./SitePreviewFrame";
-import { StarGlyph } from "../../app/components/StarGlyph";
+import type { VisualEditorPreviewTools } from "./VisualDocumentEditor";
 
 const NAV_LINKS = ["Início", "Sobre", "Portfólio", "Reformulações", "Flash Tattoos", "Produtos"];
-
-function FeatureStrip({ cards = [] }: { cards?: { title: string; text: string }[] }) {
-  if (cards.length === 0) return null;
-
-  return (
-    <section className="ks-section ks-surface-band">
-      <div className="ks-card-grid three">
-        {cards.map((card, index) => (
-          <article className="ks-card" key={index}>
-            <HeartHandshake size={18} />
-            <h3><Filled value={card.title} fallback="Título" /></h3>
-            <p><Filled value={card.text} fallback="Texto explicativo" /></p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 function Filled({ value, fallback }: { value: unknown; fallback: string }) {
   const text = value == null ? "" : String(value).trim();
@@ -29,9 +13,41 @@ function Filled({ value, fallback }: { value: unknown; fallback: string }) {
   return <em className="ksa-empty">{fallback}</em>;
 }
 
-export function AboutPreview({ value }: { value: AboutDocument }) {
+function editableClass(base: string, section: string, editor?: VisualEditorPreviewTools) {
+  if (!editor) return base;
+  return `${base} ksa-editable-section${editor.activeSection === section ? " is-active" : ""}`;
+}
+
+function EditButton({ section, editor }: { section: string; editor?: VisualEditorPreviewTools }) {
+  if (!editor) return null;
+  return <button type="button" className="ksa-preview-edit-button" onClick={() => editor.onSelectSection(section)}>Editar {section}</button>;
+}
+
+function activeCards(cards: AboutDocument["approachCards"]) {
+  return [...(cards ?? [])].filter((card) => card.active).sort((a, b) => a.order - b.order);
+}
+
+export function AboutPreview({ value, editor }: { value: AboutDocument; editor?: VisualEditorPreviewTools }) {
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  const bindSection = (section: string) => (node: HTMLElement | null) => {
+    sectionRefs.current[section] = node;
+  };
+
+  useEffect(() => {
+    if (!editor?.activeSection) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      sectionRefs.current[editor.activeSection]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [editor?.activeSection, editor?.focusToken]);
+
+  const approachCards = activeCards(value.approachCards);
+
   return (
-    <SitePreviewFrame>
+    <SitePreviewFrame clickToActivate={Boolean(editor)}>
       <div className="ks-grain" aria-hidden="true" />
       <header className="ks-header">
         <span className="ks-logo"><StarGlyph size={8} color="#2E173A" /> Karina Sarte</span>
@@ -44,7 +60,8 @@ export function AboutPreview({ value }: { value: AboutDocument }) {
       </header>
 
       <div className="ks-route-content">
-        <section className={`ks-page-hero${value.heroImageUrl ? "" : " ks-page-hero-no-image"}`}>
+        <section ref={bindSection("Abertura")} className={editableClass(`ks-page-hero${value.heroImageUrl ? "" : " ks-page-hero-no-image"}`, "Abertura", editor)}>
+          <EditButton section="Abertura" editor={editor} />
           {value.heroImageUrl ? (
             <img
               className="ks-page-hero-image"
@@ -55,9 +72,7 @@ export function AboutPreview({ value }: { value: AboutDocument }) {
               style={{ objectPosition: "center 36%" }}
             />
           ) : (
-            <div className="ks-page-hero-image ks-numbered-placeholder" aria-hidden="true">
-              <span>Imagem de fundo</span>
-            </div>
+            <div className="ks-page-hero-image" aria-hidden="true" />
           )}
           <div className="ks-page-hero-shade" aria-hidden="true" />
           <div className="ks-page-hero-content">
@@ -74,7 +89,8 @@ export function AboutPreview({ value }: { value: AboutDocument }) {
           </div>
         </section>
 
-        <section className="ks-section ks-two-col ks-section-cream ks-about-main">
+        <section ref={bindSection("Biografia")} className={editableClass("ks-section ks-two-col ks-section-cream ks-about-main", "Biografia", editor)}>
+          <EditButton section="Biografia" editor={editor} />
           <div className="ks-preview-image">
             {value.imageUrl ? (
               <img src={value.imageUrl} alt="" loading="lazy" />
@@ -91,26 +107,39 @@ export function AboutPreview({ value }: { value: AboutDocument }) {
             <p className="ks-body-lg ks-muted" style={{ whiteSpace: "pre-line" }}>
               <Filled value={value.biography} fallback="Sua história e experiência aqui." />
             </p>
-
-            <div style={{ marginTop: "2rem" }}>
-              <h3 className="ks-headline-sm"><Filled value={value.approachTitle} fallback="Um processo próximo e cuidadoso" /></h3>
-              <p className="ks-body-lg ks-muted" style={{ marginTop: "1rem", whiteSpace: "pre-line" }}>
-                <Filled value={value.approachText} fallback="Como você atende e guia a cliente." />
-              </p>
-            </div>
-            
             <a className="ks-primary-link" style={{ marginTop: "2rem" }}>Quero criar minha tattoo <ArrowRight size={16} /></a>
           </div>
         </section>
-        {value.behindScenesImageUrl && (
-          <section className="ks-section ks-about-behind-scenes">
+
+        {(editor || value.behindScenesImageUrl) ? (
+          <section ref={bindSection("Bastidores")} className={editableClass("ks-section ks-about-behind-scenes", "Bastidores", editor)}>
+            <EditButton section="Bastidores" editor={editor} />
             <figure className="ks-about-behind-scenes-frame">
-              <img src={value.behindScenesImageUrl} alt="" loading="lazy" />
+              {value.behindScenesImageUrl ? (
+                <img src={value.behindScenesImageUrl} alt="" loading="lazy" />
+              ) : (
+                <div className="ks-about-behind-scenes-placeholder" aria-hidden="true">
+                  <img src="/assets/brand/star-karina-filled.png" alt="" />
+                  <img src="/assets/brand/star-karina-outline.png" alt="" />
+                </div>
+              )}
               <figcaption><Filled value={value.behindScenesCaption} fallback="Uma legenda descontraída aqui." /></figcaption>
             </figure>
           </section>
-        )}
-        <FeatureStrip cards={value.approachCards} />
+        ) : null}
+
+        <section ref={bindSection("Abordagem")} className={editableClass("ks-section ks-surface-band", "Abordagem", editor)}>
+          <EditButton section="Abordagem" editor={editor} />
+          <div className="ks-card-grid three">
+            {(approachCards.length ? approachCards : [{ title: "", text: "" }]).map((card, index) => (
+              <article className="ks-card" key={index}>
+                <HeartHandshake size={18} />
+                <h3><Filled value={card.title} fallback="Título" /></h3>
+                <p><Filled value={card.text} fallback="Texto explicativo" /></p>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
     </SitePreviewFrame>
   );
