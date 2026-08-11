@@ -1,7 +1,15 @@
 const isAdminRoute = window.location.pathname.startsWith("/admin");
 
+async function loadAdminApp() {
+  await import("./entry-admin");
+}
+
+async function loadPublicApp() {
+  await import("./entry-public");
+}
+
 if (isAdminRoute) {
-  void import("./entry-admin");
+  void loadAdminApp();
 } else {
-  void import("./entry-public");
+  void loadPublicApp();
 }
