@@ -1,5 +1,5 @@
 import { Check, ChevronDown, MousePointerClick } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 const INTERNAL_LINK_GROUPS = [
@@ -30,10 +30,12 @@ const INTERNAL_LINKS = INTERNAL_LINK_GROUPS.flatMap((group) => group.options);
 const CUSTOM_LINK_VALUE = "__custom__";
 
 export function InternalLinkInput({ value, onChange, placeholder = "/orcamento ou /#youtube", ariaLabel = "Destino do link" }: { value: string; onChange(value: string): void; placeholder?: string; ariaLabel?: string }) {
-  const selected = INTERNAL_LINKS.some((option) => option.value === value) ? value : CUSTOM_LINK_VALUE;
+  const isInternalValue = INTERNAL_LINKS.some((option) => option.value === value);
+  const selected = isInternalValue ? value : CUSTOM_LINK_VALUE;
   const selectedOption = INTERNAL_LINKS.find((option) => option.value === value);
   const [open, setOpen] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -53,6 +55,15 @@ export function InternalLinkInput({ value, onChange, placeholder = "/orcamento o
     };
   }, [open]);
 
+  const selectCustom = () => {
+    if (isInternalValue) onChange("");
+    setOpen(false);
+    window.requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    });
+  };
+
   return (
     <div className="ksa-internal-link">
       <div className="ksa-internal-link-control is-select">
@@ -66,8 +77,8 @@ export function InternalLinkInput({ value, onChange, placeholder = "/orcamento o
             onClick={() => setOpen((current) => !current)}
           >
             <span>
-              <strong>{selectedOption?.label ?? (value ? "Personalizado" : "Selecionar")}</strong>
-              <small>{selectedOption?.value ?? (value || "Escolha uma página")}</small>
+              <strong>{selectedOption?.label ?? "Personalizado"}</strong>
+              <small>{selectedOption?.value ?? (value || "Digite o link ao lado")}</small>
             </span>
             <ChevronDown size={16} />
           </button>
@@ -79,7 +90,7 @@ export function InternalLinkInput({ value, onChange, placeholder = "/orcamento o
                 role="option"
                 aria-selected={selected === CUSTOM_LINK_VALUE}
                 className={`ksa-link-picker-option is-custom ${selected === CUSTOM_LINK_VALUE ? "is-selected" : ""}`}
-                onClick={() => setOpen(false)}
+                onClick={selectCustom}
               >
                 <span>
                   <strong>Personalizado</strong>
@@ -118,7 +129,7 @@ export function InternalLinkInput({ value, onChange, placeholder = "/orcamento o
       </div>
       <div className="ksa-internal-link-control">
         <span>Valor do link</span>
-        <TextInput aria-label={ariaLabel} value={value} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} />
+        <TextInput ref={inputRef} aria-label={ariaLabel} value={value} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} />
       </div>
     </div>
   );
@@ -147,7 +158,9 @@ export function Field({ label, hint, error, children, className = "" }: { label:
   return <label className={`ksa-field ${className}`}><span className="ksa-label">{label}</span>{children}{hint && <small className="ksa-hint">{hint}</small>}{error && <small className="ksa-error">{error}</small>}</label>;
 }
 
-export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) { return <input {...props} className={`ksa-input ${props.className || ""}`} />; }
+export const TextInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function TextInput(props, ref) {
+  return <input {...props} ref={ref} className={`ksa-input ${props.className || ""}`} />;
+});
 export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) { return <textarea {...props} className={`ksa-textarea ${props.className || ""}`} />; }
 export function SelectField(props: SelectHTMLAttributes<HTMLSelectElement>) { return <select {...props} className={`ksa-select ${props.className || ""}`} />; }
 

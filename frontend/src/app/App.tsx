@@ -57,6 +57,7 @@ import {
 import { tattooImages } from "./tattoo-images";
 import { processVideos } from "./process-videos";
 import { useHomeContent, type HomeContent } from "./home-content";
+import { useSiteModeContent, type SiteModeContent } from "./site-mode-content";
 import { useAboutContent } from "./about-content";
 import { applyPageSeo } from "./seo";
 
@@ -77,7 +78,7 @@ const flashMocks = [
   tattooImages.blackworkOrganic,
 ] as const;
 
-const WA_DEFAULT = "Olá, Karina Sarte! Vim pelo site e queria fazer um orçamento.";
+const WA_DEFAULT = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo.";
 const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
 
 const ProductsNavContext = createContext<(() => void) | null>(null);
@@ -146,7 +147,7 @@ const SECTION_INTRO_TITLES: Record<string, string> = {
   "/depoimentos": "Depoimentos",
   "/faq": "FAQ",
 };
-const BUDGET_WHATSAPP_INTRO = "Olá, Karina Sarte! Vim pelo site e queria fazer um orçamento de tattoo ✨";
+const BUDGET_WHATSAPP_INTRO = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo ✨";
 
 function productWhatsAppMessage(productName: string) {
   return `Olá, Karina Sarte! Vim pelo site e me interessei por ${productName}. Gostaria de saber mais.`;
@@ -412,6 +413,9 @@ function AppLayout({
   const navigate = useNavigate();
   const location = useLocation();
   const isBioRoute = location.pathname === "/bio";
+  const siteMode = useSiteModeContent();
+  const isDevelopmentHome = location.pathname === "/" && siteMode.developmentMode;
+  const shouldShowSiteChrome = !isBioRoute && !isDevelopmentHome;
 
   const startProductsTransition = useCallback(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -441,8 +445,8 @@ function AppLayout({
       </svg>
       <div className="ks-grain" aria-hidden="true" />
       {!isBioRoute && <AdminShortcut />}
-      {!isBioRoute && <CustomCursor />}
-      {!isBioRoute && (
+      {shouldShowSiteChrome && <CustomCursor />}
+      {shouldShowSiteChrome && (
         <Preloader
           onComplete={() => {
             setPreloaderDone(true);
@@ -453,16 +457,16 @@ function AppLayout({
       <div
         className="ks-shell"
         style={{
-          opacity: isBioRoute || preloaderDone ? 1 : 0,
+          opacity: isBioRoute || isDevelopmentHome || preloaderDone ? 1 : 0,
           transition: "opacity 0.6s ease",
         }}
       >
         <PreloaderDoneContext.Provider value={preloaderDone}>
           <ProductsNavContext.Provider value={startProductsTransition}>
-            {!isBioRoute && <Header />}
-            <AnimatedRoutes />
-            {!isBioRoute && <Footer />}
-            {!isBioRoute && <FloatingWhatsApp />}
+            {shouldShowSiteChrome && <Header />}
+            <AnimatedRoutes siteMode={siteMode} />
+            {shouldShowSiteChrome && <Footer />}
+            {shouldShowSiteChrome && <FloatingWhatsApp />}
           </ProductsNavContext.Provider>
         </PreloaderDoneContext.Provider>
       </div>
@@ -471,7 +475,7 @@ function AppLayout({
   );
 }
 
-function AnimatedRoutes() {
+function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
   const location = useLocation();
   const hasSectionIntro = Boolean(SECTION_INTRO_TITLES[location.pathname]);
 
@@ -510,7 +514,7 @@ function AnimatedRoutes() {
           }}
         >
           <Routes location={location}>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomePage siteMode={siteMode} />} />
             <Route path="/sobre" element={<IntroPage path="/sobre"><AboutPage /></IntroPage>} />
             <Route path="/portfolio" element={<IntroPage path="/portfolio"><PortfolioPage /></IntroPage>} />
             <Route path="/reformulacoes" element={<IntroPage path="/reformulacoes"><ReformulacoesPage /></IntroPage>} />
@@ -542,6 +546,7 @@ function PageHero({
    * entre enquadrar a parte de cima ou a de baixo é grande.
    */
   imagePosition,
+  showStars = true,
   children,
 }: {
   kicker: string;
@@ -549,6 +554,7 @@ function PageHero({
   text: string;
   image?: string | null;
   imagePosition?: string;
+  showStars?: boolean;
   children?: React.ReactNode;
 }) {
   const hasImage = Boolean(image);
@@ -566,8 +572,12 @@ function PageHero({
         />
       )}
       {hasImage && <div className="ks-page-hero-shade" aria-hidden="true" />}
-      <BrandStar variant={2} size={240} className="ks-page-hero-starfield" />
-      <StarSprinkle className="ks-star-sprinkle-page-hero" />
+      {showStars ? (
+        <>
+          <BrandStar variant={2} size={240} className="ks-page-hero-starfield" />
+          <StarSprinkle className="ks-star-sprinkle-page-hero" />
+        </>
+      ) : null}
       <motion.div
         className="ks-page-hero-content"
         initial={{ opacity: 0, y: 24 }}
@@ -584,8 +594,12 @@ function PageHero({
 }
 
 
-function HomePage() {
+function HomePage({ siteMode }: { siteMode: SiteModeContent }) {
   const home = useHomeContent();
+
+  if (siteMode.developmentMode) {
+    return <DevelopmentHomePage data={siteMode} />;
+  }
 
   return (
     <div className="ks-home-flow">
@@ -608,6 +622,46 @@ function HomePage() {
         artwork="/assets/brand/eye-heart.png"
       />
     </div>
+  );
+}
+
+function DevelopmentHomePage({ data }: { data: SiteModeContent }) {
+  const featureImage = data.developmentImageUrl === "/assets/karina-sarte.png"
+    ? "/assets/link-bio/background.jpg"
+    : data.developmentImageUrl;
+
+  return (
+    <section className="ks-development-home">
+      <motion.div
+        className="ks-development-home-card"
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: EASE }}
+      >
+        <div className="ks-development-home-image">
+          <img src={featureImage} alt="Karina Sarte" loading="eager" decoding="async" />
+        </div>
+        <div className="ks-development-home-content">
+          <div className="ks-development-home-starfield" aria-hidden="true">
+            <img src="/assets/brand/star-karina-filled.png" alt="" />
+            <img src="/assets/brand/star-karina-outline.png" alt="" />
+            <img src="/assets/brand/star-karina-filled.png" alt="" />
+            <img src="/assets/brand/star-karina-outline.png" alt="" />
+            <img src="/assets/brand/star-karina-filled.png" alt="" />
+          </div>
+          <div className="ks-development-home-avatar">
+            <img src="/assets/karina-sarte.png" alt="Karina Sarte" loading="eager" decoding="async" />
+          </div>
+          <span className="ks-label-caps">{data.developmentEyebrow}</span>
+          <h1 className="ks-display-xl">{data.developmentTitle}</h1>
+          <p className="ks-body-lg">{data.developmentText}</p>
+          <a className="ks-primary-link" href={data.developmentButtonUrl} target="_blank" rel="noopener noreferrer">
+            {data.developmentButton}
+            <ArrowRight size={16} />
+          </a>
+        </div>
+      </motion.div>
+    </section>
   );
 }
 
@@ -2231,7 +2285,8 @@ function BudgetPage() {
         kicker={content.heroKicker}
         title={content.heroTitle}
         text={content.heroText}
-        image={content.heroImageUrl || tattooImages.heroBudget}
+        image={content.heroImageUrl || null}
+        showStars={false}
       />
       <section className="ks-section ks-budget-section">
         <div className="ks-budget-intro">

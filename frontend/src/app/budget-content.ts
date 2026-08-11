@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { tattooImages } from "./tattoo-images";
 
 export type BudgetPageContent = {
   heroKicker: string;
@@ -27,26 +26,26 @@ export type BudgetPageContent = {
 
 export const defaultBudgetPageContent: BudgetPageContent = {
   heroKicker: "Orçamento",
-  heroTitle: "Vamos criar sua próxima tattoo?",
-  heroText: "Envie sua ideia, referências, tamanho aproximado e local do corpo. A Karina Sarte analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele.",
-  heroImageUrl: tattooImages.heroBudget,
+  heroTitle: "Me conta a sua ideia?",
+  heroText: "Me manda suas referências, o local do corpo, o tamanho aproximado e tudo que você já imaginou. Com esse contexto eu consigo entender o desenho com cuidado e te orientar pelo WhatsApp.",
+  heroImageUrl: "",
 
   introEyebrow: "Briefing inicial",
-  introTitle: "Quanto mais contexto, mais certeiro fica o orçamento.",
-  introText: "Não precisa ter tudo fechado. A ideia é reunir as informações principais para a Karina entender o desenho, o corpo e o caminho visual antes de te responder.",
+  introTitle: "Quanto mais você me conta, melhor eu consigo te orientar.",
+  introText: "Não precisa chegar com tudo fechado. Pode me mandar uma ideia solta, referências, dúvidas e o que você sente que combina com você — eu organizo o caminho a partir disso.",
 
-  stepOneTitle: "Você envia o briefing",
-  stepOneText: "Conta a ideia com o máximo de contexto que tiver.",
-  stepTwoTitle: "Karina analisa",
-  stepTwoText: "Ela entende estilo, proporção, local do corpo e complexidade.",
-  stepThreeTitle: "Resposta no WhatsApp",
-  stepThreeText: "Você recebe orientação inicial e próximos passos.",
+  stepOneTitle: "Me conta a ideia",
+  stepOneText: "Escreve do seu jeito: tema, referências, estilo, tamanho e onde você imagina tatuar.",
+  stepTwoTitle: "Eu analiso com calma",
+  stepTwoText: "Olho proporção, detalhes, encaixe no corpo e o melhor caminho para o desenho funcionar na pele.",
+  stepThreeTitle: "Te respondo no WhatsApp",
+  stepThreeText: "Depois te retorno com orientação inicial, próximos passos e tudo que eu precisar alinhar com você.",
 
-  formEyebrow: "Enviar para WhatsApp",
-  formTitle: "Conte sua ideia",
-  submitHelper: "O formulário abre uma conversa pronta no WhatsApp da Karina.",
-  submitButton: "Chamar no WhatsApp",
-  whatsappIntro: "Olá, Karina Sarte! Vim pelo site e queria fazer um orçamento de tattoo ✨",
+  formEyebrow: "Me chama no WhatsApp",
+  formTitle: "Conta pra mim",
+  submitHelper: "Ao enviar, eu recebo sua mensagem já organizada no WhatsApp.",
+  submitButton: "Enviar para a Karina",
+  whatsappIntro: "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo ✨",
 };
 
 const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");

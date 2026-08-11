@@ -2,11 +2,6 @@ import "dotenv/config";
 import { z } from "zod";
 import { isValidHashFormat } from "./password.js";
 
-const emailField = z.preprocess(
-  (value) => (typeof value === "string" ? value.trim().toLowerCase() : value),
-  z.email().max(200),
-);
-
 const envSchema = z
   .object({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -17,17 +12,11 @@ const envSchema = z
     // Token para integrações servidor-servidor. Nunca vai para o navegador.
     ADMIN_API_TOKEN: z.string().min(32),
 
-    // Login do painel administrativo.
-    ADMIN_EMAIL: emailField,
+    // Login do painel administrativo. Os e-mails autorizados ficam na tabela admin_users.
     ADMIN_PASSWORD_HASH: z
       .string()
       .refine(isValidHashFormat, "formato de hash scrypt inválido (gere com: npm run admin:hash)"),
     ADMIN_SESSION_SECRET: z.string().min(32),
-
-    // Login de desenvolvimento. Impossível em produção (ver superRefine abaixo).
-    DEV_ADMIN_ENABLED: z.enum(["true", "false"]).default("false"),
-    DEV_ADMIN_EMAIL: z.string().optional(),
-    DEV_ADMIN_PASSWORD: z.string().optional(),
 
     // Opcionais no boot: validados no primeiro uso (ver requireDatabaseUrl/requireSupabaseConfig).
     // Assim o servidor sobe apenas com as variáveis de autenticação, e as rotas
@@ -38,22 +27,6 @@ const envSchema = z
     SUPABASE_BUCKET: z.string().min(1).optional(),
   })
   .superRefine((value, ctx) => {
-    if (value.NODE_ENV === "production" && value.DEV_ADMIN_ENABLED === "true") {
-      ctx.addIssue({
-        code: "custom",
-        path: ["DEV_ADMIN_ENABLED"],
-        message: "DEV_ADMIN_ENABLED não pode estar ativo em produção.",
-      });
-    }
-
-    if (value.DEV_ADMIN_ENABLED === "true" && (!value.DEV_ADMIN_EMAIL || !value.DEV_ADMIN_PASSWORD)) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["DEV_ADMIN_EMAIL"],
-        message: "DEV_ADMIN_EMAIL e DEV_ADMIN_PASSWORD são obrigatórios quando DEV_ADMIN_ENABLED=true.",
-      });
-    }
-
     // Com cookies de sessão (credentials: true), a allowlist de origens passa a
     // fazer parte do controle de acesso: uma origem local em produção viraria
     // superfície de ataque.
@@ -135,18 +108,4 @@ export function hasDatabaseUrl(): boolean {
 
 export function hasSupabaseConfig(): boolean {
   return Boolean(env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY && env.SUPABASE_BUCKET);
-}
-
-/**
- * O login de desenvolvimento só existe fora de produção. Esta função é a
- * segunda de quatro travas (as outras: recusa de boot no superRefine acima,
- * rota não registrada e recheck no handler).
- */
-export function isDevLoginEnabled(): boolean {
-  return (
-    !isProduction &&
-    env.DEV_ADMIN_ENABLED === "true" &&
-    Boolean(env.DEV_ADMIN_EMAIL) &&
-    Boolean(env.DEV_ADMIN_PASSWORD)
-  );
 }

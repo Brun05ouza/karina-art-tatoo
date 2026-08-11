@@ -8,6 +8,7 @@ import {
   mockPortfolioPage,
   mockProductsPage,
   mockReformulacoesTextos,
+  mockSiteMode,
 } from "./mocks";
 
 export const portfolioStore = createRemoteRepository("portfolio", []);
@@ -24,3 +25,4 @@ export const aboutStore = createRemoteDocumentStore("sobre", mockAbout);
 export const reformulationsTextStore = createRemoteDocumentStore("reformulacoes-textos", mockReformulacoesTextos);
 export const linkBioStore = createRemoteDocumentStore("link-bio", mockLinkBio);
 export const budgetPageStore = createRemoteDocumentStore("budget-page", mockBudgetPage);
+export const siteModeStore = createRemoteDocumentStore("site-mode", mockSiteMode);

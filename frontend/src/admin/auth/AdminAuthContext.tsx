@@ -2,7 +2,6 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import {
   getAdminSession,
   loginAdmin,
-  loginAdminDevelopment,
   logoutAdmin,
   type AdminUser,
   type SessionResponse,
@@ -13,10 +12,8 @@ type AuthStatus = "checking" | "anonymous" | "authenticated";
 type AdminAuthValue = {
   status: AuthStatus;
   user: AdminUser | null;
-  devLoginAvailable: boolean;
   serverUnavailable: boolean;
   login(email: string, password: string): Promise<void>;
-  devLogin(): Promise<void>;
   logout(): Promise<void>;
   retry(): Promise<void>;
 };
@@ -26,14 +23,12 @@ const AdminAuthContext = createContext<AdminAuthValue | null>(null);
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("checking");
   const [user, setUser] = useState<AdminUser | null>(null);
-  const [devLoginAvailable, setDevLoginAvailable] = useState(false);
   const [serverUnavailable, setServerUnavailable] = useState(false);
   const checked = useRef(false);
 
   const applySession = useCallback((session: SessionResponse) => {
     setUser(session.user ?? null);
     setStatus(session.authenticated ? "authenticated" : "anonymous");
-    setDevLoginAvailable(session.devLoginAvailable);
     setServerUnavailable(false);
   }, []);
 
@@ -67,10 +62,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     applySession(await loginAdmin(email, password));
   }, [applySession]);
 
-  const devLogin = useCallback(async () => {
-    applySession(await loginAdminDevelopment());
-  }, [applySession]);
-
   const logout = useCallback(async () => {
     try {
       await logoutAdmin();
@@ -81,9 +72,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AdminAuthContext.Provider
-      value={{ status, user, devLoginAvailable, serverUnavailable, login, devLogin, logout, retry }}
-    >
+    <AdminAuthContext.Provider value={{ status, user, serverUnavailable, login, logout, retry }}>
       {children}
     </AdminAuthContext.Provider>
   );

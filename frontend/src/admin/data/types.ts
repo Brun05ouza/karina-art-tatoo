@@ -281,3 +281,13 @@ export type SettingsDocument = {
   whatsappProducts: string;
   whatsappReformulation: string;
 };
+
+export type SiteModeDocument = {
+  developmentMode: boolean;
+  developmentEyebrow: string;
+  developmentTitle: string;
+  developmentText: string;
+  developmentImageUrl: string;
+  developmentButton: string;
+  developmentButtonUrl: string;
+};

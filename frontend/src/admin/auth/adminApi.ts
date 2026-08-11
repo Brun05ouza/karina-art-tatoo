@@ -4,7 +4,6 @@ export type AdminUser = { email: string; role: "admin" };
 export type SessionResponse = {
   authenticated: boolean;
   user?: AdminUser;
-  devLoginAvailable: boolean;
 };
 
 type ApiOptions = RequestInit & { allowUnauthorized?: boolean; treat404AsNull?: boolean };
@@ -46,16 +45,6 @@ export function loginAdmin(email: string, password: string) {
   return adminFetch<SessionResponse>("/api/admin/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),
-    allowUnauthorized: true,
-  });
-}
-
-export function loginAdminDevelopment() {
-  if (!import.meta.env.DEV) {
-    throw new Error("Acesso local indisponível.");
-  }
-  return adminFetch<SessionResponse>("/api/admin/dev-login", {
-    method: "POST",
     allowUnauthorized: true,
   });
 }

@@ -26,6 +26,7 @@ function WhatsAppIcon() {
 
 export function BudgetPreview({ doc, editor }: { doc: BudgetPageDocument; editor?: VisualEditorPreviewTools }) {
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+  const heroImage = doc.heroImageUrl;
   const steps = [
     { title: doc.stepOneTitle, text: doc.stepOneText },
     { title: doc.stepTwoTitle, text: doc.stepTwoText },
@@ -64,10 +65,20 @@ export function BudgetPreview({ doc, editor }: { doc: BudgetPageDocument; editor
         </nav>
       </header>
 
-      <section ref={bindSection("Hero")} className={editableClass("ks-page-hero", "Hero", editor)} style={{ backgroundImage: `url(${doc.heroImageUrl})` }}>
+      <section ref={bindSection("Hero")} className={editableClass(`ks-page-hero${heroImage ? "" : " ks-page-hero-no-image"}`, "Hero", editor)}>
         <EditButton section="Hero" editor={editor} />
+        {heroImage ? (
+          <img
+            className="ks-page-hero-image"
+            src={heroImage}
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+          />
+        ) : null}
+        {heroImage ? <div className="ks-page-hero-shade" aria-hidden="true" /> : null}
         <div className="ks-page-hero-content">
-          <span className="ks-label-caps ks-gold">{doc.heroKicker}</span>
+          <span className="ks-label-caps ks-muted">{doc.heroKicker}</span>
           <h1 className="ks-display-xl">{doc.heroTitle}</h1>
           <p className="ks-body-lg">{doc.heroText}</p>
         </div>
@@ -93,7 +104,7 @@ export function BudgetPreview({ doc, editor }: { doc: BudgetPageDocument; editor
           </div>
         </div>
 
-        <form ref={bindSection("Formulário")} className={editableClass("ks-budget-form", "Formulário", editor)}>
+        <form ref={bindSection("Formulário")} className={editableClass("ks-budget-form", "Formulário", editor)} onSubmit={(event) => event.preventDefault()}>
           <EditButton section="Formulário" editor={editor} />
           <div className="ks-budget-form-header">
             <span className="ks-budget-form-icon"><HeartHandshake size={20} /></span>
@@ -108,27 +119,41 @@ export function BudgetPreview({ doc, editor }: { doc: BudgetPageDocument; editor
               <span className="ks-budget-label">Nome</span>
               <input className="ks-budget-input" placeholder="Seu nome" readOnly />
             </label>
+
             <label className="ks-budget-field">
               <span className="ks-budget-label">WhatsApp</span>
               <input className="ks-budget-input" placeholder="(21) 99999-9999" readOnly />
             </label>
+
             <label className="ks-budget-field is-full">
               <span className="ks-budget-label">Ideia da tattoo</span>
-              <textarea className="ks-budget-textarea" rows={4} placeholder="Ex.: quero uma tattoo botânica delicada..." readOnly />
+              <textarea className="ks-budget-textarea" rows={4} placeholder="Ex.: quero uma tattoo botânica delicada, com flores e um olho no centro..." readOnly />
             </label>
+
             <label className="ks-budget-field">
               <span className="ks-budget-label">Local do corpo</span>
               <input className="ks-budget-input" placeholder="Braço, costela, costas..." readOnly />
             </label>
+
             <label className="ks-budget-field">
               <span className="ks-budget-label">Tamanho aproximado</span>
               <input className="ks-budget-input" placeholder="Ex.: 8 cm, palma da mão..." readOnly />
+            </label>
+
+            <label className="ks-budget-field is-full">
+              <span className="ks-budget-label">Referências</span>
+              <textarea className="ks-budget-textarea is-compact" rows={3} placeholder="Cole links, descreva imagens ou diga o estilo que você gosta." readOnly />
+            </label>
+
+            <label className="ks-budget-field is-full">
+              <span className="ks-budget-label">Observações</span>
+              <textarea className="ks-budget-textarea is-compact" rows={3} placeholder="Disponibilidade, dúvidas, cobertura, cicatriz, primeira tattoo..." readOnly />
             </label>
           </div>
 
           <div className="ks-budget-submit-row">
             <p>{doc.submitHelper}</p>
-            <span className="ks-primary-link">{doc.submitButton} <WhatsAppIcon /></span>
+            <button type="button" className="ks-primary-link">{doc.submitButton} <WhatsAppIcon /></button>
           </div>
         </form>
       </section>

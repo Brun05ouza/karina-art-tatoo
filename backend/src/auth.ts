@@ -1,5 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { findAdminUserByEmail, passwordVersionFromHash } from "./admin-users.js";
 import { allowedOrigins, env } from "./config.js";
 import { readCookie, SESSION_COOKIE_NAME, verifySessionCookie, type AdminIdentity } from "./session.js";
 
@@ -40,7 +41,7 @@ export function isTrustedRequestOrigin(request: FastifyRequest): boolean {
   return false;
 }
 
-export function authenticateRequest(request: FastifyRequest): AdminIdentity | null {
+export async function authenticateRequest(request: FastifyRequest): Promise<AdminIdentity | null> {
   const authorization = request.headers.authorization;
 
   // 1) Token servidor-servidor. Se o header existe, ele é a única via avaliada:
@@ -61,11 +62,15 @@ export function authenticateRequest(request: FastifyRequest): AdminIdentity | nu
 
   if (!isSafeMethod(request.method) && !isTrustedRequestOrigin(request)) return null;
 
+  const user = await findAdminUserByEmail(identity.email);
+  if (!user) return null;
+  if (identity.passwordVersion !== passwordVersionFromHash(user.passwordHash)) return null;
+
   return identity;
 }
 
 export async function requireAdmin(request: FastifyRequest, reply: FastifyReply) {
-  const identity = authenticateRequest(request);
+  const identity = await authenticateRequest(request);
 
   if (!identity) {
     return reply.code(401).send({ error: "Não autorizado." });

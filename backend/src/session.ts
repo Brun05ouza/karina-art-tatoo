@@ -1,11 +1,9 @@
 /**
- * Sessão administrativa em cookie httpOnly assinado (stateless, sem store).
+ * Sessão administrativa em cookie httpOnly assinado.
  *
  * Formato do valor: <payloadBase64Url>.<hmacBase64Url>
- * A assinatura é HMAC-SHA256 sobre a string já codificada do payload — nunca
- * sobre o JSON re-serializado, para não depender de canonicalização.
  */
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { env, isProduction } from "./config.js";
 
@@ -15,17 +13,13 @@ const TTL_SECONDS = 12 * 60 * 60;
 const MAX_COOKIE_VALUE_LENGTH = 1024;
 const MAX_COOKIE_HEADER_LENGTH = 4096;
 
-/**
- * O prefixo __Host- em produção faz o navegador recusar o cookie sem Secure,
- * sem Path=/ ou com atributo Domain — impedindo que um subdomínio comprometido
- * sobrescreva a sessão.
- */
 export const SESSION_COOKIE_NAME = isProduction ? "__Host-ks_admin_session" : "ks_admin_session";
 
 export type AdminIdentity = {
   email: string;
   role: "admin";
   via: "cookie" | "token";
+  passwordVersion?: string;
 };
 
 const claimsSchema = z.object({
@@ -41,19 +35,11 @@ function nowSeconds(): number {
   return Math.floor(Date.now() / 1000);
 }
 
-/**
- * "Password version": derivada do hash da senha. Trocar ADMIN_PASSWORD_HASH
- * invalida todas as sessões vivas sem precisar de lista de revogação.
- */
-function currentPasswordVersion(): string {
-  return createHash("sha256").update(env.ADMIN_PASSWORD_HASH).digest("hex").slice(0, 16);
-}
-
 function sign(payload: string): Buffer {
   return createHmac("sha256", env.ADMIN_SESSION_SECRET).update(payload).digest();
 }
 
-export function createSessionValue(email: string): string {
+export function createSessionValue(email: string, passwordVersion: string): string {
   const issuedAt = nowSeconds();
   const claims = {
     v: SESSION_VERSION,
@@ -61,7 +47,7 @@ export function createSessionValue(email: string): string {
     eml: email,
     iat: issuedAt,
     exp: issuedAt + TTL_SECONDS,
-    pv: currentPasswordVersion(),
+    pv: passwordVersion,
   };
 
   const payload = Buffer.from(JSON.stringify(claims), "utf8").toString("base64url");
@@ -82,7 +68,6 @@ export function verifySessionCookie(raw: string): AdminIdentity | null {
   const received = Buffer.from(signature, "base64url");
   const expected = sign(payload);
 
-  // timingSafeEqual lança com tamanhos diferentes — checar antes.
   if (received.length !== expected.length || !timingSafeEqual(received, expected)) return null;
 
   let claims: unknown;
@@ -92,17 +77,20 @@ export function verifySessionCookie(raw: string): AdminIdentity | null {
     return null;
   }
 
-  // Mesmo com a assinatura válida, não confiamos na forma do objeto.
   const parsed = claimsSchema.safeParse(claims);
   if (!parsed.success) return null;
 
   const now = nowSeconds();
   if (parsed.data.v !== SESSION_VERSION) return null;
-  if (parsed.data.pv !== currentPasswordVersion()) return null;
   if (parsed.data.exp <= now) return null;
   if (parsed.data.iat > now + 60) return null;
 
-  return { email: parsed.data.eml, role: "admin", via: "cookie" };
+  return {
+    email: parsed.data.eml,
+    role: "admin",
+    via: "cookie",
+    passwordVersion: parsed.data.pv,
+  };
 }
 
 export function buildSessionCookie(value: string): string {
@@ -123,10 +111,6 @@ export function buildClearedSessionCookie(): string {
   return attributes.join("; ");
 }
 
-/**
- * Parser estrito de cookie. A primeira ocorrência vence, como nos navegadores
- * (o cookie de path mais específico é enviado primeiro).
- */
 export function readCookie(header: string | undefined, name: string): string | null {
   if (!header || header.length > MAX_COOKIE_HEADER_LENGTH) return null;
 

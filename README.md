@@ -43,7 +43,6 @@ O site público e o painel são bundles separados. Abrir `/` não baixa o códig
 | POST | `/api/admin/login` | Valida e-mail/senha e cria cookie httpOnly |
 | POST | `/api/admin/logout` | Limpa a sessão; sempre idempotente |
 | GET | `/api/admin/session` | Retorna o estado atual; sempre responde 200 |
-| POST | `/api/admin/dev-login` | Existe somente quando o login local está habilitado |
 
 As rotas que alteram conteúdo aceitam o cookie administrativo ou `Authorization: Bearer SEU_TOKEN`. Se o header `Authorization` for enviado e estiver incorreto, a API não tenta usar o cookie como alternativa.
 
@@ -56,7 +55,8 @@ As rotas que alteram conteúdo aceitam o cookie administrativo ou `Authorization
 O banco começa com:
 
 - `content_entries`: textos e coleções em JSON;
-- `media_assets`: metadados das imagens armazenadas no R2.
+- `media_assets`: metadados das imagens armazenadas no R2;
+- `admin_users`: usuários autorizados do painel administrativo.
 
 Sem `DATABASE_URL`, o backend continua disponível para login, mas as rotas dependentes do banco respondem `503` com uma mensagem de configuração.
 
@@ -75,7 +75,6 @@ O fluxo previsto é: solicitar uma URL `PUT` de cinco minutos em `/api/uploads/p
 - Restrinja `CORS_ORIGINS` aos domínios reais e o token R2 ao bucket necessário.
 - O cookie usa `HttpOnly`, `SameSite=Lax`, expiração absoluta de 12 horas e assinatura HMAC. Em produção, usa também `Secure` e o prefixo `__Host-`.
 - A API precisa ficar no mesmo domínio registrável do site, por exemplo `karinasarte.com.br` e `api.karinasarte.com.br`. Outro domínio exigiria `SameSite=None` e uma estratégia adicional de CSRF.
-- `DEV_ADMIN_ENABLED=true` é recusado quando `NODE_ENV=production`.
 - O servidor limita tentativas de login, taxa global, tamanho de JSON, origens e tipos de imagem.
 - O deploy do frontend precisa redirecionar rotas desconhecidas para `index.html`, permitindo atualizar páginas como `/admin/portfolio` diretamente.
 

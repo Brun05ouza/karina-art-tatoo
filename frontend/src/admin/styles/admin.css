@@ -42,23 +42,31 @@ a { color: inherit; text-decoration: none; }
 .ksa-eyebrow, .ksa-label { display: block; font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; }
 .ksa-eyebrow { color: var(--ksa-purple-burnt); margin-bottom: 9px; }
 
-.ksa-login { display: grid; min-height: 100vh; grid-template-columns: minmax(0, 1.05fr) minmax(420px, .95fr); overflow: hidden; position: relative; }
+.ksa-login { background: var(--ksa-purple-deep); display: grid; min-height: 100vh; grid-template-columns: minmax(0, 1.05fr) minmax(420px, .95fr); overflow: hidden; position: relative; }
 .ksa-login-panel { background: var(--ksa-purple-deep); color: var(--ksa-white); display: flex; flex-direction: column; justify-content: space-between; padding: clamp(32px, 5vw, 76px); position: relative; overflow: hidden; }
-.ksa-login-panel::after { content: ""; position: absolute; width: 480px; height: 480px; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; right: -180px; bottom: -200px; box-shadow: 0 0 0 70px rgba(255,255,255,.025), 0 0 0 140px rgba(255,255,255,.018); }
+.ksa-login-panel-bg { filter: grayscale(.14) contrast(1.05) brightness(.58); height: 100%; inset: 0; object-fit: cover; object-position: center; opacity: .54; position: absolute; transform: scale(1.03); width: 100%; }
+.ksa-login-panel::before { background: linear-gradient(128deg, rgba(46, 23, 58, .97) 0%, rgba(46, 23, 58, .86) 45%, rgba(17, 16, 20, .62) 100%); content: ""; inset: 0; position: absolute; z-index: 0; }
+.ksa-login-panel::after { content: ""; position: absolute; width: 480px; height: 480px; border: 1px solid rgba(255,255,255,.16); border-radius: 50%; right: -180px; bottom: -200px; box-shadow: 0 0 0 70px rgba(255,255,255,.035), 0 0 0 140px rgba(255,255,255,.022); z-index: 0; }
+.ksa-login-section-stars { inset: 0; overflow: hidden; pointer-events: none; position: absolute; z-index: 2; }
+.ksa-login-section-stars img { filter: drop-shadow(0 16px 26px rgba(46, 23, 58, .18)); height: auto; position: absolute; width: clamp(58px, 8vw, 118px); }
+.ksa-login-section-stars .star-1 { left: 4.5%; opacity: .58; top: 10%; transform: rotate(-10deg); width: clamp(54px, 7vw, 96px); }
+.ksa-login-section-stars .star-2 { left: 38%; opacity: .34; top: 16%; transform: rotate(12deg); width: clamp(42px, 5vw, 72px); }
+.ksa-login-section-stars .star-3 { opacity: .18; right: 6%; top: 17%; transform: rotate(4deg); width: clamp(96px, 12vw, 156px); }
+.ksa-login-section-stars .star-4 { bottom: 24%; opacity: .2; right: 21%; transform: rotate(-12deg); width: clamp(42px, 5vw, 76px); }
+.ksa-login-section-stars .star-5 { bottom: -5%; left: 44%; opacity: .2; transform: rotate(17deg); width: clamp(116px, 14vw, 190px); }
 .ksa-login-brand { font-family: "Kah Sarte Display", "Barriecito", cursive; font-size: 26px; letter-spacing: .08em; position: relative; z-index: 1; }
 .ksa-login-brand span { font-family: sans-serif; font-size: 15px; margin-right: 7px; opacity: .65; }
 .ksa-login-copy { max-width: 630px; position: relative; z-index: 1; }
 .ksa-login-copy .ksa-eyebrow { color: var(--ksa-lavender); }
 .ksa-login-copy h1 { font-family: "Cormorant Garamond", serif; font-size: clamp(48px, 6vw, 88px); font-weight: 400; letter-spacing: -.04em; line-height: .94; margin: 0 0 28px; }
 .ksa-login-copy p { color: rgba(247,245,246,.68); font-family: "Cormorant Garamond", serif; font-size: 23px; line-height: 1.45; max-width: 520px; }
-.ksa-login-form-wrap { align-items: center; background: var(--ksa-bg); display: flex; justify-content: center; padding: 40px; }
-.ksa-login-form { display: grid; gap: 22px; max-width: 430px; width: 100%; }
+.ksa-login-form-wrap { align-items: center; background: radial-gradient(circle at 81% 22%, rgba(128, 47, 162, .13), transparent 28%), radial-gradient(circle at 28% 76%, rgba(46, 23, 58, .1), transparent 30%), var(--ksa-bg); display: flex; justify-content: center; padding: 40px; position: relative; overflow: hidden; }
+.ksa-login-form { background: rgba(247, 245, 246, .78); border: 1px solid rgba(46, 23, 58, .12); border-radius: 34px; box-shadow: 0 30px 90px rgba(46, 23, 58, .13); display: grid; gap: 22px; max-width: 470px; padding: clamp(28px, 4vw, 46px); position: relative; width: 100%; z-index: 1; }
 .ksa-login-form header { margin-bottom: 9px; }
 .ksa-login-form h2 { font-family: "Cormorant Garamond", serif; font-size: 44px; font-weight: 500; letter-spacing: -.03em; margin: 0 0 8px; }
 .ksa-login-form header p, .ksa-login-form > small { color: var(--ksa-text-muted); line-height: 1.55; margin: 0; }
 .ksa-login-form > small { font-size: 12px; text-align: center; }
 .ksa-login-submit { justify-content: space-between !important; width: 100%; }
-.ksa-local-access { background: none; border: 0; color: var(--ksa-purple-burnt); font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .13em; text-decoration: underline; text-underline-offset: 4px; text-transform: uppercase; }
 .ksa-password-field { position: relative; }
 .ksa-password-field .ksa-input { padding-right: 48px; }
 .ksa-password-field button { background: none; border: 0; display: grid; place-items: center; position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; }
@@ -153,6 +161,22 @@ a { color: inherit; text-decoration: none; }
 
 .ksa-dashboard-hero { background: linear-gradient(125deg, var(--ksa-purple-deep), var(--ksa-purple-dark)); border-radius: var(--ksa-radius); color: var(--ksa-white); margin-bottom: 22px; min-height: 170px; overflow: hidden; padding: 32px; position: relative; }
 .ksa-dashboard-hero p { font-family: "Cormorant Garamond", serif; font-size: 25px; line-height: 1.4; margin: 0; max-width: 640px; position: relative; z-index: 1; }
+.ksa-dashboard-hero-message { animation: ksa-message-reload .34s ease both; padding-right: 72px; }
+.ksa-dashboard-hero-refresh { align-items: center; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.3); border-radius: 999px; bottom: 24px; color: var(--ksa-white); cursor: pointer; display: inline-flex; height: 46px; justify-content: center; padding: 0; position: absolute; right: 24px; transition: transform .18s ease, background .18s ease, border-color .18s ease; width: 46px; z-index: 2; }
+.ksa-dashboard-hero-refresh:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.48); transform: translateY(-1px) rotate(14deg); }
+.ksa-dashboard-hero-refresh:active { transform: scale(.94) rotate(80deg); }
+@keyframes ksa-message-reload {
+  from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.ksa-development-mode-card .ksa-card-head { align-items: flex-start; gap: 18px; }
+.ksa-development-mode-card .ksa-switch { background: var(--ksa-surface-soft); border: 1px solid var(--ksa-border); border-radius: var(--ksa-radius-pill); padding: 8px 13px; white-space: nowrap; }
+.ksa-development-mode-preview { align-items: center; background: linear-gradient(135deg, rgba(48,20,63,.06), rgba(255,255,255,.86)); border: 1px solid var(--ksa-border); border-radius: 24px; display: grid; gap: 18px; grid-template-columns: 84px 1fr; padding: 18px; }
+.ksa-development-mode-preview img { aspect-ratio: 1; border: 4px solid var(--ksa-white); border-radius: 50%; box-shadow: 0 16px 38px rgba(46,23,58,.14); height: 84px; object-fit: cover; width: 84px; }
+.ksa-development-mode-preview span { color: var(--ksa-purple-burnt); display: block; font-family: var(--ksa-font-mono); font-size: 10px; font-weight: 700; letter-spacing: .14em; margin-bottom: 6px; text-transform: uppercase; }
+.ksa-development-mode-preview strong { color: var(--ksa-text); display: block; font-family: "Cormorant Garamond", serif; font-size: 26px; line-height: 1.05; margin-bottom: 6px; }
+.ksa-development-mode-preview p { color: var(--ksa-text-muted); margin: 0 0 10px; max-width: 620px; }
+.ksa-development-mode-preview small { color: var(--ksa-text-soft); font-size: 12px; }
 .ksa-star-decor { inset: 0; pointer-events: none; position: absolute; }
 .ksa-star-decor svg { opacity: .17; position: absolute; right: 9%; top: 18%; }
 .ksa-star-decor svg:nth-child(2) { right: 23%; top: 58%; }
@@ -676,6 +700,7 @@ a { color: inherit; text-decoration: none; }
   .ksa-login-copy h1 { font-size: clamp(42px, 8vw, 64px); margin-bottom: 15px; max-width: 700px; }
   .ksa-login-copy p { font-size: 19px; }
   .ksa-login-form-wrap { padding: 48px 26px; }
+  .ksa-login-form { max-width: 560px; }
 }
 
 @media (max-width: 680px) {
@@ -734,6 +759,7 @@ a { color: inherit; text-decoration: none; }
   .ksa-login-copy h1 { font-size: 42px; }
   .ksa-login-copy p { display: none; }
   .ksa-login-form-wrap { padding: 38px 20px; }
+  .ksa-login-form { border-radius: 26px; padding: 26px 20px; }
   .ksa-login-form h2 { font-size: 38px; }
   .ksa-toast-host { bottom: 12px; left: 12px; right: 12px; }
   .ksa-toast { min-width: 0; width: 100%; }

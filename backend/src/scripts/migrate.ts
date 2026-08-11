@@ -1,15 +1,27 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
+import { ensureDefaultAdminUsers } from "../admin-users.js";
 import { sql } from "../db.js";
 
-const migrationUrl = new URL("../../migrations/001_initial.sql", import.meta.url);
-const migration = await readFile(migrationUrl, "utf8");
-const statements = migration
-  .split(";")
-  .map((statement) => statement.trim())
-  .filter(Boolean);
+const migrationsUrl = new URL("../../migrations/", import.meta.url);
+const files = (await readdir(migrationsUrl))
+  .filter((file) => file.endsWith(".sql"))
+  .sort((a, b) => a.localeCompare(b));
 
-for (const statement of statements) {
-  await sql.query(statement);
+for (const file of files) {
+  const migration = await readFile(new URL(file, migrationsUrl), "utf8");
+  const statements = migration
+    .split(";")
+    .map((statement) => statement.trim())
+    .filter(Boolean);
+
+  for (const statement of statements) {
+    await sql.query(statement);
+  }
+
+  console.log(`Migração aplicada: ${file}`);
 }
+
+await ensureDefaultAdminUsers();
+console.log("Usuários administrativos padrão garantidos.");
 
 console.log("Migração concluída com sucesso.");

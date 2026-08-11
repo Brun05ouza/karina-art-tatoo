@@ -20,7 +20,8 @@ export function AdminShortcut() {
       // event.code em vez de event.key: com Shift pressionado o key vira "A", e
       // em teclados não-ABNT/QWERTY o caractere pode mudar. O code aponta para a
       // tecla física e é estável em qualquer layout.
-      if (event.code !== "KeyA") return;
+      const isAKey = event.code === "KeyA" || event.key.toLowerCase() === "a";
+      if (!isAKey) return;
       if (!event.shiftKey || event.altKey || event.repeat) return;
       if (!event.ctrlKey && !event.metaKey) return;
 
