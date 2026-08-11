@@ -80,6 +80,7 @@ const flashMocks = [
 
 const WA_DEFAULT = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo.";
 const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
+const DEVELOPMENT_HOME_FALLBACK_IMAGE = "/assets/link-bio/background.jpg";
 
 const ProductsNavContext = createContext<(() => void) | null>(null);
 const PreloaderDoneContext = createContext(false);
@@ -639,7 +640,7 @@ function HomePage({ siteMode }: { siteMode: SiteModeContent }) {
 }
 
 function DevelopmentHomePage({ data }: { data: SiteModeContent }) {
-  const featureImage = data.developmentImageUrl.trim();
+  const featureImage = data.developmentImageUrl.trim() || DEVELOPMENT_HOME_FALLBACK_IMAGE;
 
   return (
     <section className="ks-development-home">

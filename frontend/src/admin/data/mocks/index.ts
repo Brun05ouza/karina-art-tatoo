@@ -321,7 +321,7 @@ export const mockSiteMode: SiteModeDocument = {
   developmentEyebrow: "Karina Sarte",
   developmentTitle: "Esse site está em desenvolvimento",
   developmentText: "Estou preparando esse espaço com carinho. Em breve tudo aparece por aqui com mais detalhes, arte e intenção.",
-  developmentImageUrl: "",
+  developmentImageUrl: "/assets/link-bio/background.jpg",
   developmentButton: "Falar comigo no WhatsApp",
   developmentButtonUrl: "https://wa.me/5521990724477?text=Oi%2C%20Karina%21%20Vim%20pelo%20site%20e%20queria%20falar%20com%20voc%C3%AA.",
 };
