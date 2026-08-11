@@ -81,6 +81,7 @@ const flashMocks = [
 const WA_DEFAULT = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo.";
 const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
 const DEVELOPMENT_HOME_FALLBACK_IMAGE = "/assets/link-bio/background.jpg";
+const DEVELOPMENT_HOME_PROFILE_IMAGE = "/assets/karina-sarte.png";
 
 const ProductsNavContext = createContext<(() => void) | null>(null);
 const PreloaderDoneContext = createContext(false);
@@ -640,7 +641,7 @@ function HomePage({ siteMode }: { siteMode: SiteModeContent }) {
 }
 
 function DevelopmentHomePage({ data }: { data: SiteModeContent }) {
-  const featureImage = data.developmentImageUrl.trim() || DEVELOPMENT_HOME_FALLBACK_IMAGE;
+  const featureImage = DEVELOPMENT_HOME_FALLBACK_IMAGE;
 
   return (
     <section className="ks-development-home">
@@ -664,6 +665,9 @@ function DevelopmentHomePage({ data }: { data: SiteModeContent }) {
             <img src="/assets/brand/star-karina-filled.png" alt="" />
           </div>
           <span className="ks-label-caps">{data.developmentEyebrow}</span>
+          <div className="ks-development-home-avatar">
+            <img src={DEVELOPMENT_HOME_PROFILE_IMAGE} alt="Karina Sarte" loading="eager" decoding="async" />
+          </div>
           <h1 className="ks-display-xl">{data.developmentTitle}</h1>
           <p className="ks-body-lg">{data.developmentText}</p>
           <a className="ks-primary-link" href={data.developmentButtonUrl} target="_blank" rel="noopener noreferrer">

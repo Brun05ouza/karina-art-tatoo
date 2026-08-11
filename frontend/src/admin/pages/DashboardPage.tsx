@@ -91,7 +91,7 @@ export function DashboardPage() {
     ["Editar Home", "/admin/home"],
     ["Revisar produtos", "/admin/produtos"],
   ];
-  const developmentPreviewImage = siteMode?.developmentImageUrl?.trim() || DEVELOPMENT_HOME_FALLBACK_IMAGE;
+  const developmentPreviewImage = DEVELOPMENT_HOME_FALLBACK_IMAGE;
 
   return (
     <AdminPage
