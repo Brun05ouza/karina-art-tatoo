@@ -2,9 +2,9 @@ import { ArrowRight, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { HoverProcessMedia } from "../../app/components/HoverProcessMedia";
 import { StarGlyph } from "../../app/components/StarGlyph";
-// Módulo compartilhado com o site: a prévia mostra os mesmos trabalhos que a
-// home publica, sem importar o App.tsx (que traria GSAP e Lenis).
-import { galleryItems } from "../../app/portfolio-works";
+// Módulo compartilhado com o site: a prévia consulta a mesma coleção salva no
+// banco, sem importar o App.tsx (que traria GSAP e Lenis).
+import { usePortfolioItems, type PortfolioWork } from "../../app/portfolio-works";
 import type { HomeCard, HomeDocument } from "../data/types";
 import { SitePreviewFrame } from "./SitePreviewFrame";
 import type { VisualEditorPreviewTools } from "./VisualDocumentEditor";
@@ -35,8 +35,6 @@ function serviceImage(card: HomeCard) {
  * Diferenças que permanecem, por construção:
  * - as animações de entrada (motion/GSAP) não rodam; a prévia mostra o estado
  *   final, que é como a seção fica depois de revelada;
- * - os itens de Portfólio são numerados como placeholder enquanto a curadoria
- *   não vem do banco.
  */
 
 /** Marca campo vazio sem deixar buraco. A classe é declarada dentro do iframe. */
@@ -97,6 +95,7 @@ export function HomePreview({ value, editor }: { value: HomeDocument; editor?: V
   const trailerRef = useRef<HTMLVideoElement>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const portfolioItems = usePortfolioItems(false);
 
   const bindSection = (section: string) => (node: HTMLElement | null) => {
     sectionRefs.current[section] = node;
@@ -125,6 +124,11 @@ export function HomePreview({ value, editor }: { value: HomeDocument; editor?: V
   const steps = [...(value.processSteps ?? [])].filter((step) => step.active).sort((a, b) => a.order - b.order);
   const services = activeSorted(value.serviceCards);
   const collections = activeSorted(value.collectionCards);
+  const manualPortfolioItems = (value.portfolioIds ?? [])
+    .map((id) => portfolioItems.find((item) => item.id === id))
+    .filter((item): item is PortfolioWork => Boolean(item));
+  const automaticPortfolioItems = portfolioItems.filter((item) => item.featured);
+  const displayedPortfolioItems = (value.portfolioMode === "manual" ? manualPortfolioItems : automaticPortfolioItems).slice(0, 6);
 
   return (
     <SitePreviewFrame clickToActivate={Boolean(editor)}>
@@ -240,11 +244,11 @@ export function HomePreview({ value, editor }: { value: HomeDocument; editor?: V
               <h2 className="ks-headline-lg"><Filled value={value.portfolioTitle} fallback="Título do portfólio" /></h2>
               <p className="ks-body-lg ks-muted"><Filled value={value.portfolioText} fallback="Texto do portfólio" /></p>
             </div>
-            {/* Os mesmos trabalhos que a home publica, do módulo compartilhado.
-                Antes eram quadros numerados, que não existem mais no site. */}
+            {/* Mesma seleção da home publicada: dados do banco, modo automático
+                por destaque ou a ordem escolhida manualmente. */}
             <div className="ks-mural-grid">
-              {galleryItems.filter((work) => work.featured).map((work) => (
-                <div className={`ks-mural-item ${"processVideo" in work && work.processVideo ? "ks-mural-item-featured" : "ks-mural-item-image"}`} key={work.title}>
+              {displayedPortfolioItems.map((work) => (
+                <div className={`ks-mural-item ${"processVideo" in work && work.processVideo ? "ks-mural-item-featured" : "ks-mural-item-image"}`} key={work.id || work.title}>
                   <a className="ks-mural-item-link">
                     <div className="ks-mural-item-media">
                       {"processVideo" in work && work.processVideo ? (

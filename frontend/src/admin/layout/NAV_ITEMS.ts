@@ -1,4 +1,4 @@
-import { CircleHelp, FileText, GalleryVerticalEnd, Home, LayoutDashboard, Link2, MessageCircle, Package, RefreshCcw, Sparkles } from "lucide-react";
+import { CircleHelp, FileText, GalleryVerticalEnd, Home, LayoutDashboard, Link2, MessageCircle, Package, RefreshCcw, SlidersHorizontal, Sparkles } from "lucide-react";
 
 export const NAV_ITEMS = [
   { to: "/admin", label: "Visão geral", icon: LayoutDashboard, exact: true },
@@ -11,6 +11,7 @@ export const NAV_ITEMS = [
   { to: "/admin/orcamento", label: "Orçamento", icon: MessageCircle },
   { to: "/admin/faq", label: "Perguntas", icon: CircleHelp },
   { to: "/admin/link-bio", label: "Link da bio", icon: Link2 },
+  { to: "/admin/suporte", label: "Contato dev", icon: SlidersHorizontal },
 ] as const;
 
 export function titleForPath(pathname: string) {

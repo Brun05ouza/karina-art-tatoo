@@ -76,13 +76,6 @@ export function VisualDocumentEditor<T extends Record<string, unknown>>({ store,
           <p>Clique numa seção da prévia ou escolha pela trilha abaixo. O painel ao lado mostra só os campos daquele trecho.</p>
           {documentDirty ? <small className="ksa-visual-change-note">Mudanças em rascunho — salve quando terminar ou descarte para voltar ao último conteúdo salvo.</small> : null}
         </div>
-        <div className={`ksa-save-bar ksa-visual-save ${documentDirty ? "is-dirty" : "is-saved"}`}>
-          <span aria-live="polite"><i aria-hidden="true" />{documentDirty ? "Mudanças prontas para salvar" : "Tudo salvo"}</span>
-          <div className="ksa-visual-save-actions">
-            {documentDirty ? <AdminButton tone="ghost" onClick={() => void discardChanges()}><RotateCcw size={16} />Descartar</AdminButton> : null}
-            <AdminButton onClick={() => void submit()} disabled={!documentDirty}><Save size={17} />Salvar</AdminButton>
-          </div>
-        </div>
       </div>
 
       <div className="ksa-visual-rail" aria-label="Seções da página">
@@ -116,6 +109,14 @@ export function VisualDocumentEditor<T extends Record<string, unknown>>({ store,
             </CollapsibleBlock>
           </aside>
         ) : null}
+      </div>
+
+      <div className={`ksa-save-bar ksa-document-save ksa-visual-save ${documentDirty ? "is-dirty" : "is-saved"}`}>
+        <span aria-live="polite"><i aria-hidden="true" />{documentDirty ? "Mudanças prontas para salvar" : "Tudo salvo"}</span>
+        <div className="ksa-visual-save-actions">
+          {documentDirty ? <AdminButton tone="ghost" onClick={() => void discardChanges()}><RotateCcw size={16} />Descartar</AdminButton> : null}
+          <AdminButton onClick={() => void submit()} disabled={!documentDirty}><Save size={17} />Salvar</AdminButton>
+        </div>
       </div>
     </div>
   );

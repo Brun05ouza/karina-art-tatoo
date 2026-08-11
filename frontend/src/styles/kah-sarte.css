@@ -5970,18 +5970,38 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   }
 
   .ks-home-flow .ks-product-visual-card {
-    min-height: 218px;
+    display: grid;
+    grid-template-rows: clamp(190px, 52vw, 250px) auto;
+    min-height: 0;
     max-height: none;
     aspect-ratio: auto;
+    border-color: rgba(var(--ks-plum-rgb), 0.22);
+    border-radius: 20px;
+    background: var(--ks-plum);
+    box-shadow: 0 16px 34px rgba(var(--ks-ink-rgb), 0.12);
+  }
+
+  .ks-home-flow .ks-products-preview .ks-product-visual-card > img {
+    position: relative;
+    inset: auto;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 46% !important;
+    filter: grayscale(34%) contrast(1.03) brightness(0.92);
+    transform: none;
   }
 
   .ks-home-flow .ks-product-visual-overlay {
+    position: relative;
+    inset: auto;
+    min-height: 202px;
+    justify-content: center;
     padding: 18px;
     background: linear-gradient(
-      145deg,
-      rgba(var(--ks-ink-rgb), 0.94) 0%,
-      rgba(var(--ks-plum-rgb), 0.88) 48%,
-      rgba(var(--ks-ink-rgb), 0.42) 100%
+      135deg,
+      rgba(var(--ks-plum-rgb), 1) 0%,
+      rgba(var(--ks-ink-rgb), 0.97) 100%
     );
   }
 
@@ -6025,6 +6045,42 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   .ks-products-category-body p {
     font-size: 16px;
     line-height: 1.5;
+  }
+}
+
+/* Em celulares largos, o formato editorial horizontal reduz a altura da
+   seção sem espremer a imagem ou transformar a foto em mero fundo. */
+@media (min-width: 480px) and (max-width: 767px) {
+  .ks-home-flow .ks-product-visual-card {
+    grid-template-columns: minmax(0, 46%) minmax(0, 54%);
+    grid-template-rows: minmax(286px, auto);
+  }
+
+  .ks-home-flow .ks-products-preview .ks-product-visual-card > img {
+    min-height: 100%;
+    object-position: center center !important;
+  }
+
+  .ks-home-flow .ks-product-visual-overlay {
+    min-width: 0;
+    min-height: 286px;
+    padding: 20px;
+  }
+
+  .ks-home-flow .ks-product-visual-overlay h3 {
+    max-width: 100%;
+    font-size: clamp(22px, 5vw, 27px);
+  }
+
+  .ks-home-flow .ks-product-visual-hover-text {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .ks-home-flow .ks-product-visual-cta {
+    padding-inline: 12px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
   }
 }
 

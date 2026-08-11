@@ -1396,6 +1396,8 @@ function ProductVisualCard({
     className: "ks-product-visual-card",
     initial: { opacity: 0, y: 32 },
     whileInView: { opacity: 1, y: 0 },
+    whileHover: { y: -6 },
+    whileTap: { scale: 0.985 },
     viewport: { once: true, margin: "-8%" },
     transition: { duration: 0.7, delay: index * 0.08, ease: EASE },
   };
@@ -1403,7 +1405,17 @@ function ProductVisualCard({
   const content = (
     <>
       {group.imageUrl ? (
-        <img src={group.imageUrl} alt={group.title} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <motion.img
+          src={group.imageUrl}
+          alt={group.title}
+          loading="lazy"
+          initial={{ opacity: 0.62, scale: 1.055 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.035 }}
+          viewport={{ once: true, margin: "-12%" }}
+          transition={{ duration: 0.9, delay: 0.08 + index * 0.07, ease: EASE }}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
       ) : (
         // Sem foto cadastrada: a estrela da marca substitui o quadro numerado,
         // já que o PNG pesa 60 KB contra os 3,4 MB dos SVG do brasão.
@@ -1411,14 +1423,49 @@ function ProductVisualCard({
           <img src="/assets/brand/star-karina-filled.png" alt="" loading="lazy" />
         </span>
       )}
-      <div className="ks-product-visual-overlay">
-        <span className="ks-label-caps">{String(index + 1).padStart(2, "0")}</span>
-        <h3>{group.title}</h3>
-        <p className="ks-product-visual-hover-text">{group.hoverText}</p>
-        <span className="ks-product-visual-cta">
+      <motion.div
+        className="ks-product-visual-overlay"
+        initial={{ opacity: 0.74 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-12%" }}
+        transition={{ duration: 0.65, delay: 0.12 + index * 0.07, ease: EASE }}
+      >
+        <motion.span
+          className="ks-label-caps"
+          initial={{ opacity: 0, x: -12 }}
+          whileInView={{ opacity: 0.9, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.48, delay: 0.16 + index * 0.07, ease: EASE }}
+        >
+          {String(index + 1).padStart(2, "0")}
+        </motion.span>
+        <motion.h3
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.56, delay: 0.22 + index * 0.07, ease: EASE }}
+        >
+          {group.title}
+        </motion.h3>
+        <motion.p
+          className="ks-product-visual-hover-text"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.56, delay: 0.29 + index * 0.07, ease: EASE }}
+        >
+          {group.hoverText}
+        </motion.p>
+        <motion.span
+          className="ks-product-visual-cta"
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.36 + index * 0.07, ease: EASE }}
+        >
           {group.cta} <ArrowRight size={12} />
-        </span>
-      </div>
+        </motion.span>
+      </motion.div>
     </>
   );
 

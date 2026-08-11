@@ -17,6 +17,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { PortfolioPage } from "./pages/PortfolioPage";
 import { ProductsPage } from "./pages/ProductsPage";
 import { ReformulacoesPage } from "./pages/ReformulacoesPage";
+import { SupportPage } from "./pages/SupportPage";
 
 export function AdminApp() {
   useEffect(() => {
@@ -50,6 +51,7 @@ export function AdminApp() {
                 <Route path="orcamento" element={<BudgetPage />} />
                 <Route path="faq" element={<FaqPage />} />
                 <Route path="link-bio" element={<LinkBioPage />} />
+                <Route path="suporte" element={<SupportPage />} />
               </Route>
             </Route>
             <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
