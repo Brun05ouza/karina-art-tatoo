@@ -80,7 +80,7 @@ const flashMocks = [
 
 const WA_DEFAULT = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo.";
 const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
-const DEVELOPMENT_HOME_FALLBACK_IMAGE = "/assets/link-bio/background.jpg";
+const DEVELOPMENT_HOME_FALLBACK_IMAGE = "/assets/development/karina-waist-dev.jpg";
 const DEVELOPMENT_HOME_PROFILE_IMAGE = "/assets/karina-sarte.png";
 
 const ProductsNavContext = createContext<(() => void) | null>(null);

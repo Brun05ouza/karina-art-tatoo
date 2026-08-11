@@ -7,7 +7,7 @@ import { StarDecor } from "../components/StarDecor";
 import { faqStore, flashStore, portfolioStore, productsStore, siteModeStore } from "../data/stores";
 import type { SiteModeDocument } from "../data/types";
 
-const DEVELOPMENT_HOME_FALLBACK_IMAGE = "/assets/link-bio/background.jpg";
+const DEVELOPMENT_HOME_FALLBACK_IMAGE = "/assets/development/karina-waist-dev.jpg";
 
 const MOTIVATIONAL_MESSAGES = [
   "Respira. Um passo de cada vez também leva longe.",
