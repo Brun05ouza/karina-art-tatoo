@@ -31,10 +31,10 @@ function isSafeMethod(method: string): boolean {
  * SameSite=None. Verificar a origem custa pouco e fecha essa brecha.
  */
 export function isTrustedRequestOrigin(request: FastifyRequest): boolean {
-  if (request.headers["sec-fetch-site"] === "cross-site") return false;
-
   const origin = request.headers.origin;
   if (origin) return allowedOrigins.has(origin.replace(/\/$/, ""));
+
+  if (request.headers["sec-fetch-site"] === "cross-site") return false;
 
   // Um navegador sempre envia Origin em método que altera estado. A ausência
   // aqui significa cliente não-navegador — que deve usar o token, não o cookie.
