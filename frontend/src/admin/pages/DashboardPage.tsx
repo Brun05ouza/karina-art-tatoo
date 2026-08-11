@@ -89,9 +89,7 @@ export function DashboardPage() {
     ["Editar Home", "/admin/home"],
     ["Revisar produtos", "/admin/produtos"],
   ];
-  const developmentPreviewImage = siteMode?.developmentImageUrl === "/assets/karina-sarte.png"
-    ? "/assets/link-bio/background.jpg"
-    : siteMode?.developmentImageUrl || "/assets/link-bio/background.jpg";
+  const developmentPreviewImage = siteMode?.developmentImageUrl?.trim() ?? "";
 
   return (
     <AdminPage
@@ -140,7 +138,13 @@ export function DashboardPage() {
         }
       >
         <div className="ksa-development-mode-preview">
-          <img src={developmentPreviewImage} alt="" />
+          {developmentPreviewImage ? (
+            <img src={developmentPreviewImage} alt="" />
+          ) : (
+            <span className="ksa-development-mode-preview-empty" aria-hidden="true">
+              <Sparkles size={22} />
+            </span>
+          )}
           <div>
             <span>{siteMode?.developmentMode ? "Visitantes vendo aviso" : "Site normal no ar"}</span>
             <strong>{siteMode?.developmentTitle || "Esse site está em desenvolvimento"}</strong>

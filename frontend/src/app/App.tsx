@@ -414,8 +414,15 @@ function AppLayout({
   const location = useLocation();
   const isBioRoute = location.pathname === "/bio";
   const siteMode = useSiteModeContent();
-  const isDevelopmentHome = location.pathname === "/" && siteMode.developmentMode;
-  const shouldShowSiteChrome = !isBioRoute && !isDevelopmentHome;
+  const siteModeLoaded = siteMode.loaded !== false;
+  const isDevelopmentHome = siteModeLoaded && location.pathname === "/" && siteMode.developmentMode;
+  const shouldShowSiteChrome = siteModeLoaded && !isBioRoute && !siteMode.developmentMode;
+
+  useEffect(() => {
+    if (!siteModeLoaded || !siteMode.developmentMode) return;
+    if (location.pathname === "/" || isBioRoute) return;
+    navigate("/", { replace: true });
+  }, [isBioRoute, location.pathname, navigate, siteMode.developmentMode, siteModeLoaded]);
 
   const startProductsTransition = useCallback(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -464,7 +471,7 @@ function AppLayout({
         <PreloaderDoneContext.Provider value={preloaderDone}>
           <ProductsNavContext.Provider value={startProductsTransition}>
             {shouldShowSiteChrome && <Header />}
-            <AnimatedRoutes siteMode={siteMode} />
+            <AnimatedRoutes siteMode={siteMode} siteModeLoaded={siteModeLoaded} />
             {shouldShowSiteChrome && <Footer />}
             {shouldShowSiteChrome && <FloatingWhatsApp />}
           </ProductsNavContext.Provider>
@@ -475,9 +482,11 @@ function AppLayout({
   );
 }
 
-function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
+function AnimatedRoutes({ siteMode, siteModeLoaded }: { siteMode: SiteModeContent; siteModeLoaded: boolean }) {
   const location = useLocation();
   const hasSectionIntro = Boolean(SECTION_INTRO_TITLES[location.pathname]);
+  const isBioRoute = location.pathname === "/bio";
+  const shouldRedirectToDevelopmentHome = siteModeLoaded && siteMode.developmentMode && location.pathname !== "/" && !isBioRoute;
 
   useEffect(() => {
     const main = document.getElementById("ks-scroll-root");
@@ -513,22 +522,26 @@ function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
             if (definition === "animate") refreshScrollMetrics();
           }}
         >
-          <Routes location={location}>
-            <Route path="/" element={<HomePage siteMode={siteMode} />} />
-            <Route path="/sobre" element={<IntroPage path="/sobre"><AboutPage /></IntroPage>} />
-            <Route path="/portfolio" element={<IntroPage path="/portfolio"><PortfolioPage /></IntroPage>} />
-            <Route path="/reformulacoes" element={<IntroPage path="/reformulacoes"><ReformulacoesPage /></IntroPage>} />
-            <Route path="/releituras" element={<Navigate to="/reformulacoes" replace />} />
-            <Route path="/flash-tattoos" element={<IntroPage path="/flash-tattoos"><FlashPage /></IntroPage>} />
-            <Route path="/produtos" element={<IntroPage path="/produtos"><ProductsPage /></IntroPage>} />
-            <Route path="/como-funciona" element={<IntroPage path="/como-funciona"><ProcessPage /></IntroPage>} />
-            <Route path="/cuidados" element={<IntroPage path="/cuidados"><CarePage /></IntroPage>} />
-            <Route path="/depoimentos" element={<IntroPage path="/depoimentos"><TestimonialsPage /></IntroPage>} />
-            <Route path="/faq" element={<IntroPage path="/faq"><FaqPage /></IntroPage>} />
-            <Route path="/orcamento" element={<BudgetPage />} />
-            <Route path="/bio" element={<LinkBioPublicPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          {!siteModeLoaded && !isBioRoute ? null : shouldRedirectToDevelopmentHome ? (
+            <Navigate to="/" replace />
+          ) : (
+            <Routes location={location}>
+              <Route path="/" element={<HomePage siteMode={siteMode} />} />
+              <Route path="/sobre" element={<IntroPage path="/sobre"><AboutPage /></IntroPage>} />
+              <Route path="/portfolio" element={<IntroPage path="/portfolio"><PortfolioPage /></IntroPage>} />
+              <Route path="/reformulacoes" element={<IntroPage path="/reformulacoes"><ReformulacoesPage /></IntroPage>} />
+              <Route path="/releituras" element={<Navigate to="/reformulacoes" replace />} />
+              <Route path="/flash-tattoos" element={<IntroPage path="/flash-tattoos"><FlashPage /></IntroPage>} />
+              <Route path="/produtos" element={<IntroPage path="/produtos"><ProductsPage /></IntroPage>} />
+              <Route path="/como-funciona" element={<IntroPage path="/como-funciona"><ProcessPage /></IntroPage>} />
+              <Route path="/cuidados" element={<IntroPage path="/cuidados"><CarePage /></IntroPage>} />
+              <Route path="/depoimentos" element={<IntroPage path="/depoimentos"><TestimonialsPage /></IntroPage>} />
+              <Route path="/faq" element={<IntroPage path="/faq"><FaqPage /></IntroPage>} />
+              <Route path="/orcamento" element={<BudgetPage />} />
+              <Route path="/bio" element={<LinkBioPublicPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          )}
         </motion.div>
       </AnimatePresence>
     </main>
@@ -626,21 +639,21 @@ function HomePage({ siteMode }: { siteMode: SiteModeContent }) {
 }
 
 function DevelopmentHomePage({ data }: { data: SiteModeContent }) {
-  const featureImage = data.developmentImageUrl === "/assets/karina-sarte.png"
-    ? "/assets/link-bio/background.jpg"
-    : data.developmentImageUrl;
+  const featureImage = data.developmentImageUrl.trim();
 
   return (
     <section className="ks-development-home">
       <motion.div
-        className="ks-development-home-card"
+        className={`ks-development-home-card${featureImage ? "" : " is-text-only"}`}
         initial={{ opacity: 0, y: 28 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: EASE }}
       >
-        <div className="ks-development-home-image">
-          <img src={featureImage} alt="Karina Sarte" loading="eager" decoding="async" />
-        </div>
+        {featureImage ? (
+          <div className="ks-development-home-image">
+            <img src={featureImage} alt="Karina Sarte" loading="eager" decoding="async" />
+          </div>
+        ) : null}
         <div className="ks-development-home-content">
           <div className="ks-development-home-starfield" aria-hidden="true">
             <img src="/assets/brand/star-karina-filled.png" alt="" />
@@ -648,9 +661,6 @@ function DevelopmentHomePage({ data }: { data: SiteModeContent }) {
             <img src="/assets/brand/star-karina-filled.png" alt="" />
             <img src="/assets/brand/star-karina-outline.png" alt="" />
             <img src="/assets/brand/star-karina-filled.png" alt="" />
-          </div>
-          <div className="ks-development-home-avatar">
-            <img src="/assets/karina-sarte.png" alt="Karina Sarte" loading="eager" decoding="async" />
           </div>
           <span className="ks-label-caps">{data.developmentEyebrow}</span>
           <h1 className="ks-display-xl">{data.developmentTitle}</h1>
@@ -2180,7 +2190,7 @@ function LinkBioPublicPage() {
   }, [navigate]);
 
   const backgroundStyle = {
-    "--ks-link-bio-background": `url("${content.backgroundUrl || "/assets/link-bio/background.jpg"}")`,
+    "--ks-link-bio-background": content.backgroundUrl ? `url("${content.backgroundUrl}")` : "linear-gradient(145deg, #1f1028, #070609)",
   } as Record<string, string>;
 
   return (
@@ -2197,7 +2207,13 @@ function LinkBioPublicPage() {
       >
         <div className="ks-link-bio-profile">
           <div className="ks-link-bio-avatar-wrap">
-            <img className="ks-link-bio-avatar" src={content.avatarUrl} alt={content.name} />
+            {content.avatarUrl ? (
+              <img className="ks-link-bio-avatar" src={content.avatarUrl} alt={content.name} />
+            ) : (
+              <span className="ks-link-bio-avatar ks-link-bio-avatar-placeholder" aria-hidden="true">
+                <Sparkles size={26} />
+              </span>
+            )}
           </div>
           <span className="ks-label-caps">{content.eyebrow}</span>
           <h1>{content.name}</h1>
