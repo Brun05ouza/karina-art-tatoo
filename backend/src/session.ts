@@ -14,6 +14,7 @@ const MAX_COOKIE_VALUE_LENGTH = 1024;
 const MAX_COOKIE_HEADER_LENGTH = 4096;
 
 export const SESSION_COOKIE_NAME = isProduction ? "__Host-ks_admin_session" : "ks_admin_session";
+const SESSION_COOKIE_SAME_SITE = isProduction ? "SameSite=None" : "SameSite=Lax";
 
 export type AdminIdentity = {
   email: string;
@@ -98,7 +99,7 @@ export function buildSessionCookie(value: string): string {
     `${SESSION_COOKIE_NAME}=${value}`,
     "Path=/",
     "HttpOnly",
-    "SameSite=Lax",
+    SESSION_COOKIE_SAME_SITE,
     `Max-Age=${TTL_SECONDS}`,
   ];
   if (isProduction) attributes.splice(3, 0, "Secure");
@@ -106,7 +107,7 @@ export function buildSessionCookie(value: string): string {
 }
 
 export function buildClearedSessionCookie(): string {
-  const attributes = [`${SESSION_COOKIE_NAME}=`, "Path=/", "HttpOnly", "SameSite=Lax", "Max-Age=0"];
+  const attributes = [`${SESSION_COOKIE_NAME}=`, "Path=/", "HttpOnly", SESSION_COOKIE_SAME_SITE, "Max-Age=0"];
   if (isProduction) attributes.splice(3, 0, "Secure");
   return attributes.join("; ");
 }
