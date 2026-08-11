@@ -5905,6 +5905,127 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     aspect-ratio: 3 / 2;
     max-height: 250px;
   }
+
+  .ks-products-page-hero {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .ks-products-page-hero-content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 104px 18px 44px;
+  }
+
+  .ks-products-page-hero-content h1 {
+    max-width: 10ch;
+    font-size: clamp(42px, 12.5vw, 56px);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    overflow-wrap: normal;
+  }
+
+  .ks-products-page-hero-content .ks-body-lg {
+    max-width: 100% !important;
+    font-size: 16px;
+    line-height: 1.58;
+  }
+
+  .ks-products-page-hero-content .ks-primary-link {
+    width: 100%;
+    justify-content: center;
+    min-height: 56px;
+    padding-inline: 18px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-align: center;
+  }
+
+  .ks-products-preview {
+    padding-block: 64px 58px;
+  }
+
+  .ks-products-header {
+    margin-bottom: 22px;
+  }
+
+  .ks-products-header h2 {
+    max-width: 11ch;
+    font-size: clamp(42px, 12vw, 56px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+
+  .ks-products-header .ks-body-lg {
+    max-width: 100% !important;
+    margin-top: 14px !important;
+    font-size: 16px;
+    line-height: 1.58;
+  }
+
+  .ks-home-flow .ks-products-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .ks-home-flow .ks-product-visual-card {
+    min-height: 218px;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  .ks-home-flow .ks-product-visual-overlay {
+    padding: 18px;
+    background: linear-gradient(
+      145deg,
+      rgba(var(--ks-ink-rgb), 0.94) 0%,
+      rgba(var(--ks-plum-rgb), 0.88) 48%,
+      rgba(var(--ks-ink-rgb), 0.42) 100%
+    );
+  }
+
+  .ks-home-flow .ks-product-visual-overlay h3 {
+    max-width: 12ch;
+    font-size: clamp(22px, 7vw, 30px);
+    line-height: 1;
+  }
+
+  .ks-home-flow .ks-product-visual-hover-text {
+    max-width: 28ch;
+    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .ks-home-flow .ks-product-visual-cta {
+    max-width: 100%;
+    min-height: 42px;
+    padding-inline: 14px;
+    line-height: 1.15;
+  }
+
+  .ks-products-category-grid {
+    gap: 16px;
+  }
+
+  .ks-products-category-media {
+    aspect-ratio: 4 / 3;
+  }
+
+  .ks-products-category-body {
+    padding: 20px;
+  }
+
+  .ks-products-category-body h2 {
+    font-size: clamp(30px, 10vw, 42px);
+    line-height: 0.98;
+  }
+
+  .ks-products-category-body p {
+    font-size: 16px;
+    line-height: 1.5;
+  }
 }
 
 @media (max-width: 420px) {
