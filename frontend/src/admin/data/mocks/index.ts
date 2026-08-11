@@ -1,6 +1,7 @@
 import type {
   AboutDocument,
   BackstageDocument,
+  BudgetPageDocument,
   FaqItem,
   FlashPageDocument,
   FlashTattoo,
@@ -74,6 +75,30 @@ export const mockProductsPage: ProductsPageDocument = {
   ctaTitle: "Quer levar a arte da Karina Sarte para além da pele?",
   ctaText: "Consulte disponibilidade, valores e opções personalizadas pelo WhatsApp.",
   ctaButton: "Consultar pelo WhatsApp",
+};
+
+export const mockBudgetPage: BudgetPageDocument = {
+  heroKicker: "Orçamento",
+  heroTitle: "Vamos criar sua próxima tattoo?",
+  heroText: "Envie sua ideia, referências, tamanho aproximado e local do corpo. A Karina Sarte analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele.",
+  heroImageUrl: "/assets/process/art-process-poster.jpg",
+
+  introEyebrow: "Briefing inicial",
+  introTitle: "Quanto mais contexto, mais certeiro fica o orçamento.",
+  introText: "Não precisa ter tudo fechado. A ideia é reunir as informações principais para a Karina entender o desenho, o corpo e o caminho visual antes de te responder.",
+
+  stepOneTitle: "Você envia o briefing",
+  stepOneText: "Conta a ideia com o máximo de contexto que tiver.",
+  stepTwoTitle: "Karina analisa",
+  stepTwoText: "Ela entende estilo, proporção, local do corpo e complexidade.",
+  stepThreeTitle: "Resposta no WhatsApp",
+  stepThreeText: "Você recebe orientação inicial e próximos passos.",
+
+  formEyebrow: "Enviar para WhatsApp",
+  formTitle: "Conte sua ideia",
+  submitHelper: "O formulário abre uma conversa pronta no WhatsApp da Karina.",
+  submitButton: "Chamar no WhatsApp",
+  whatsappIntro: "Olá, Karina Sarte! Vim pelo site e queria fazer um orçamento de tattoo ✨",
 };
 
 export const mockMediaItems: MediaItem[] = [

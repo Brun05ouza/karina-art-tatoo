@@ -1,6 +1,7 @@
 import { createRemoteDocumentStore, createRemoteRepository } from "./remoteStore";
 import {
   mockAbout,
+  mockBudgetPage,
   mockFlashPage,
   mockHome,
   mockLinkBio,
@@ -22,3 +23,4 @@ export const productsPageStore = createRemoteDocumentStore("products-page", mock
 export const aboutStore = createRemoteDocumentStore("sobre", mockAbout);
 export const reformulationsTextStore = createRemoteDocumentStore("reformulacoes-textos", mockReformulacoesTextos);
 export const linkBioStore = createRemoteDocumentStore("link-bio", mockLinkBio);
+export const budgetPageStore = createRemoteDocumentStore("budget-page", mockBudgetPage);

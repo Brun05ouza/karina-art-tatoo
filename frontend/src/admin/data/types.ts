@@ -243,6 +243,30 @@ export type LinkBioDocument = {
   highlights: LinkHighlight[];
 };
 
+export type BudgetPageDocument = {
+  heroKicker: string;
+  heroTitle: string;
+  heroText: string;
+  heroImageUrl: string;
+
+  introEyebrow: string;
+  introTitle: string;
+  introText: string;
+
+  stepOneTitle: string;
+  stepOneText: string;
+  stepTwoTitle: string;
+  stepTwoText: string;
+  stepThreeTitle: string;
+  stepThreeText: string;
+
+  formEyebrow: string;
+  formTitle: string;
+  submitHelper: string;
+  submitButton: string;
+  whatsappIntro: string;
+};
+
 export type SettingsDocument = {
   siteName: string;
   city: string;

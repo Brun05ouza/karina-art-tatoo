@@ -39,6 +39,7 @@ import { galleryItems, PORTFOLIO_CATEGORIES, usePortfolioItems, usePortfolioPage
 import { useProductItems, useProductsPageContent, type ProductCatalogItem } from "./products-content";
 import { useReformulationCases, useReformulationsContent } from "./reformulations-content";
 import { useLinkBioContent, type LinkBioButton } from "./link-bio-content.ts";
+import { useBudgetPageContent } from "./budget-content";
 import { BrandStar } from "./components/BrandStar";
 import { StencilCrosshair } from "./components/StencilCrosshair";
 import { CustomCursor } from "./components/CustomCursor";
@@ -145,7 +146,7 @@ const SECTION_INTRO_TITLES: Record<string, string> = {
   "/depoimentos": "Depoimentos",
   "/faq": "FAQ",
 };
-const BUDGET_WHATSAPP_INTRO = "Olá, Karina Sarte! Vim pelo site e queria fazer um orçamento de tattoo.";
+const BUDGET_WHATSAPP_INTRO = "Olá, Karina Sarte! Vim pelo site e queria fazer um orçamento de tattoo ✨";
 
 function productWhatsAppMessage(productName: string) {
   return `Olá, Karina Sarte! Vim pelo site e me interessei por ${productName}. Gostaria de saber mais.`;
@@ -801,13 +802,21 @@ function HomeServicesSection({ data }: { data: HomeContent }) {
 }
 
 function MuralPortfolioPreview({ data }: { data: HomeContent }) {
+  const portfolioItems = usePortfolioItems(false);
+  const manualIds = data.portfolioIds || [];
+  const manualItems = manualIds
+    .map((id) => portfolioItems.find((item) => item.id === id))
+    .filter((item): item is PortfolioWork => Boolean(item));
+  const automaticItems = portfolioItems.filter((item) => item.featured);
+  const displayedItems = (data.portfolioMode === "manual" ? manualItems : automaticItems).slice(0, 6);
+
   return (
     <section className="ks-mural-section">
       <SectionTitle eyebrow={data.portfolioEyebrow} title={data.portfolioTitle} text={data.portfolioText} />
       <div className="ks-mural-grid">
-        {galleryItems.filter((item) => item.featured).map((item, index) => (
+        {displayedItems.map((item, index) => (
           <motion.div
-            key={item.title}
+            key={item.id || item.title}
             className={`ks-mural-item${"processVideo" in item ? " ks-mural-item-featured" : " ks-mural-item-image"}`}
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -823,8 +832,10 @@ function MuralPortfolioPreview({ data }: { data: HomeContent }) {
                     alt={item.alt}
                     loading="lazy"
                   />
-                ) : (
+                ) : item.img ? (
                   <img src={item.img} alt={item.alt} loading="lazy" />
+                ) : (
+                  <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
                 )}
               </div>
               <div className="ks-mural-item-caption">
@@ -2160,7 +2171,21 @@ function isExternalLink(url: string) {
   return /^(https?:|mailto:|tel:|whatsapp:)/i.test(url);
 }
 
+function formatBrazilPhone(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (!digits) return "";
+  if (digits.length <= 2) return `(${digits}`;
+
+  const areaCode = digits.slice(0, 2);
+  const phone = digits.slice(2);
+  const splitAt = digits.length > 10 ? 5 : 4;
+
+  if (phone.length <= splitAt) return `(${areaCode}) ${phone}`;
+  return `(${areaCode}) ${phone.slice(0, splitAt)}-${phone.slice(splitAt)}`;
+}
+
 function BudgetPage() {
+  const content = useBudgetPageContent();
   const [form, setForm] = useState({
     name: "",
     whatsapp: "",
@@ -2173,14 +2198,14 @@ function BudgetPage() {
   const [error, setError] = useState(false);
 
   const buildMessage = () => {
-    const lines = [BUDGET_WHATSAPP_INTRO, ""];
-    if (form.name.trim()) lines.push(`Nome: ${form.name.trim()}`);
-    if (form.whatsapp.trim()) lines.push(`WhatsApp: ${form.whatsapp.trim()}`);
-    if (form.idea.trim()) lines.push(`Ideia: ${form.idea.trim()}`);
-    if (form.bodyPlace.trim()) lines.push(`Local do corpo: ${form.bodyPlace.trim()}`);
-    if (form.size.trim()) lines.push(`Tamanho aproximado: ${form.size.trim()}`);
-    if (form.references.trim()) lines.push(`Referências: ${form.references.trim()}`);
-    if (form.notes.trim()) lines.push(`Observações: ${form.notes.trim()}`);
+    const lines = [content.whatsappIntro || BUDGET_WHATSAPP_INTRO, "", "✨ *Briefing da tattoo*"];
+    if (form.name.trim()) lines.push("", `*Nome:* ${form.name.trim()}`);
+    if (form.whatsapp.trim()) lines.push(`*WhatsApp:* ${form.whatsapp.trim()}`);
+    if (form.idea.trim()) lines.push("", `*Ideia:*`, form.idea.trim());
+    if (form.bodyPlace.trim()) lines.push("", `*Local do corpo:* ${form.bodyPlace.trim()}`);
+    if (form.size.trim()) lines.push(`*Tamanho aproximado:* ${form.size.trim()}`);
+    if (form.references.trim()) lines.push("", `*Referências:*`, form.references.trim());
+    if (form.notes.trim()) lines.push("", `*Observações:*`, form.notes.trim());
     return lines.join("\n");
   };
 
@@ -2189,20 +2214,44 @@ function BudgetPage() {
     if (error && event.target.value.trim()) setError(false);
   };
 
+  const updateWhatsapp = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const whatsapp = formatBrazilPhone(event.target.value);
+    setForm((current) => ({ ...current, whatsapp }));
+  };
+
+  const budgetSteps = [
+    { title: content.stepOneTitle, text: content.stepOneText },
+    { title: content.stepTwoTitle, text: content.stepTwoText },
+    { title: content.stepThreeTitle, text: content.stepThreeText },
+  ];
+
   return (
     <>
       <PageHero
-        kicker="Orçamento"
-        title="Vamos criar sua próxima tattoo?"
-        text="Envie sua ideia, referências, tamanho aproximado e local do corpo. A Karina Sarte analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele."
-        image={tattooImages.heroBudget}
+        kicker={content.heroKicker}
+        title={content.heroTitle}
+        text={content.heroText}
+        image={content.heroImageUrl || tattooImages.heroBudget}
       />
-      <section className="ks-section ks-two-col">
-        <div>
-          <h2 className="ks-headline-md">O que enviar</h2>
+      <section className="ks-section ks-budget-section">
+        <div className="ks-budget-intro">
+          <BrandStar variant={3} size={126} className="ks-budget-intro-star" />
+          <span className="ks-label-caps ks-gold">{content.introEyebrow}</span>
+          <h2 className="ks-headline-md">{content.introTitle}</h2>
           <p className="ks-body-lg ks-muted">
-            Preencha o que puder — todos os campos são opcionais, mas quanto mais contexto, melhor a orientação inicial.
+            {content.introText}
           </p>
+          <div className="ks-budget-flow">
+            {budgetSteps.map((step, index) => (
+              <article key={step.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <strong>{step.title}</strong>
+                  <p>{step.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
         <form
           className="ks-budget-form"
@@ -2215,43 +2264,70 @@ function BudgetPage() {
             window.open(wa(buildMessage()), "_blank", "noopener,noreferrer");
           }}
         >
-          <label className="ks-budget-label" htmlFor="budget-name">Nome</label>
-          <input id="budget-name" className="ks-budget-input" value={form.name} onChange={update("name")} />
+          <div className="ks-budget-form-header">
+            <span className="ks-budget-form-icon"><HeartHandshake size={20} /></span>
+            <div>
+              <span className="ks-label-caps ks-gold">{content.formEyebrow}</span>
+              <h3>{content.formTitle}</h3>
+            </div>
+          </div>
 
-          <label className="ks-budget-label" htmlFor="budget-whatsapp">WhatsApp</label>
-          <input id="budget-whatsapp" className="ks-budget-input" value={form.whatsapp} onChange={update("whatsapp")} />
+          <div className="ks-budget-fields">
+            <label className="ks-budget-field" htmlFor="budget-name">
+              <span className="ks-budget-label">Nome</span>
+              <input id="budget-name" className="ks-budget-input" placeholder="Seu nome" value={form.name} onChange={update("name")} />
+            </label>
 
-          <label className="ks-budget-label" htmlFor="budget-idea">Ideia da tattoo</label>
-          <textarea
-            id="budget-idea"
-            className="ks-budget-textarea"
-            rows={4}
-            placeholder="Descreva sua ideia..."
-            value={form.idea}
-            aria-invalid={error}
-            onChange={update("idea")}
-          />
+            <label className="ks-budget-field" htmlFor="budget-whatsapp">
+              <span className="ks-budget-label">WhatsApp</span>
+              <input id="budget-whatsapp" className="ks-budget-input" placeholder="(21) 99999-9999" inputMode="tel" autoComplete="tel" value={form.whatsapp} onChange={updateWhatsapp} />
+            </label>
 
-          <label className="ks-budget-label" htmlFor="budget-place">Local do corpo</label>
-          <input id="budget-place" className="ks-budget-input" value={form.bodyPlace} onChange={update("bodyPlace")} />
+            <label className="ks-budget-field is-full" htmlFor="budget-idea">
+              <span className="ks-budget-label">Ideia da tattoo</span>
+              <textarea
+                id="budget-idea"
+                className="ks-budget-textarea"
+                rows={4}
+                placeholder="Ex.: quero uma tattoo botânica delicada, com flores e um olho no centro..."
+                value={form.idea}
+                aria-invalid={error}
+                onChange={update("idea")}
+              />
+            </label>
 
-          <label className="ks-budget-label" htmlFor="budget-size">Tamanho aproximado</label>
-          <input id="budget-size" className="ks-budget-input" value={form.size} onChange={update("size")} />
+            <label className="ks-budget-field" htmlFor="budget-place">
+              <span className="ks-budget-label">Local do corpo</span>
+              <input id="budget-place" className="ks-budget-input" placeholder="Braço, costela, costas..." value={form.bodyPlace} onChange={update("bodyPlace")} />
+            </label>
 
-          <label className="ks-budget-label" htmlFor="budget-refs">Referências</label>
-          <textarea id="budget-refs" className="ks-budget-textarea" rows={3} value={form.references} onChange={update("references")} />
+            <label className="ks-budget-field" htmlFor="budget-size">
+              <span className="ks-budget-label">Tamanho aproximado</span>
+              <input id="budget-size" className="ks-budget-input" placeholder="Ex.: 8 cm, palma da mão..." value={form.size} onChange={update("size")} />
+            </label>
 
-          <label className="ks-budget-label" htmlFor="budget-notes">Observações</label>
-          <textarea id="budget-notes" className="ks-budget-textarea" rows={3} value={form.notes} onChange={update("notes")} />
+            <label className="ks-budget-field is-full" htmlFor="budget-refs">
+              <span className="ks-budget-label">Referências</span>
+              <textarea id="budget-refs" className="ks-budget-textarea is-compact" rows={3} placeholder="Cole links, descreva imagens ou diga o estilo que você gosta." value={form.references} onChange={update("references")} />
+            </label>
+
+            <label className="ks-budget-field is-full" htmlFor="budget-notes">
+              <span className="ks-budget-label">Observações</span>
+              <textarea id="budget-notes" className="ks-budget-textarea is-compact" rows={3} placeholder="Disponibilidade, dúvidas, cobertura, cicatriz, primeira tattoo..." value={form.notes} onChange={update("notes")} />
+            </label>
+          </div>
 
           {error && (
             <span className="ks-budget-error" role="alert">
               Conte sua ideia ou envie referências antes de chamar no WhatsApp.
             </span>
           )}
-          <button type="submit" className="ks-primary-link">
-            Chamar no WhatsApp <WhatsAppIcon />
-          </button>
+          <div className="ks-budget-submit-row">
+            <p>{content.submitHelper}</p>
+            <button type="submit" className="ks-primary-link">
+              {content.submitButton} <WhatsAppIcon />
+            </button>
+          </div>
         </form>
       </section>
     </>

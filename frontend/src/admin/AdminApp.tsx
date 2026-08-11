@@ -7,6 +7,7 @@ import { ToastHost } from "./components/ToastHost";
 import { ToastProvider } from "./hooks/useToast";
 import { AdminLayout } from "./layout/AdminLayout";
 import { AboutPage } from "./pages/AboutPage";
+import { BudgetPage } from "./pages/BudgetPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { FaqPage } from "./pages/FaqPage";
 import { FlashTattoosPage } from "./pages/FlashTattoosPage";
@@ -46,6 +47,7 @@ export function AdminApp() {
                 <Route path="reformulacoes" element={<ReformulacoesPage />} />
                 <Route path="flash-tattoos" element={<FlashTattoosPage />} />
                 <Route path="produtos" element={<ProductsPage />} />
+                <Route path="orcamento" element={<BudgetPage />} />
                 <Route path="faq" element={<FaqPage />} />
                 <Route path="link-bio" element={<LinkBioPage />} />
               </Route>
