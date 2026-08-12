@@ -116,7 +116,13 @@ export async function contentRoutes(app: FastifyInstance) {
     `;
 
     const entry = rows[0];
-    if (!entry) return reply.code(404).send({ error: "Conteúdo não encontrado." });
+    if (!entry) {
+      return reply.code(200).send({
+        key: params.data.key,
+        value: null,
+        updatedAt: null,
+      });
+    }
 
     return entry;
   });

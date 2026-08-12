@@ -1,4 +1,4 @@
-import { MousePointerClick } from "lucide-react";
+import { MousePointerClick, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 // ?inline devolve o CSS como string (não injeta na página do admin), então a
@@ -48,6 +48,7 @@ export function SitePreviewFrame({ children, clickToActivate = false }: { childr
   const [width, setWidth] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [isLiveActive, setIsLiveActive] = useState(!clickToActivate);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Mede a largura disponível para calcular a escala — evita constantes
   // hardcoded que quebram quando a sidebar recolhe ou a coluna muda.
@@ -94,6 +95,7 @@ export function SitePreviewFrame({ children, clickToActivate = false }: { childr
       <div className="ksa-site-frame-host" ref={hostRef}>
         <div className="ksa-site-frame-viewport" ref={viewportRef} style={{ height: `${Math.round(REFERENCE_HEIGHT * scale)}px` }}>
           <iframe
+            key={refreshKey}
             className="ksa-site-frame"
             title="Prévia da página no site"
             srcDoc={FRAME_DOC}
@@ -108,9 +110,23 @@ export function SitePreviewFrame({ children, clickToActivate = false }: { childr
             </button>
           ) : null}
           {clickToActivate && isLiveActive ? (
-            <button type="button" className="ksa-site-frame-lock" onClick={() => setIsLiveActive(false)}>
-              Pausar rolagem da prévia
-            </button>
+            <div className="ksa-site-frame-controls">
+              <button
+                type="button"
+                className="ksa-site-frame-refresh"
+                aria-label="Recarregar prévia"
+                title="Recarregar prévia"
+                onClick={() => {
+                  setBody(null);
+                  setRefreshKey((key) => key + 1);
+                }}
+              >
+                <RefreshCw size={16} />
+              </button>
+              <button type="button" className="ksa-site-frame-lock" onClick={() => setIsLiveActive(false)}>
+                Pausar rolagem da prévia
+              </button>
+            </div>
           ) : null}
         </div>
       </div>
