@@ -7,7 +7,18 @@ import { getSupabase } from "../supabase.js";
 
 const mediaSchema = z.object({
   objectKey: z.string().min(1).max(500).regex(/^[a-z0-9][a-z0-9/._-]+$/),
-  contentType: z.enum(["image/jpeg", "image/png", "image/webp", "image/avif", "video/mp4", "video/webm"]),
+  contentType: z.enum([
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/avif",
+    "image/heic",
+    "image/heif",
+    "image/heic-sequence",
+    "image/heif-sequence",
+    "video/mp4",
+    "video/webm",
+  ]),
   altText: z.string().trim().max(300).optional(),
 });
 

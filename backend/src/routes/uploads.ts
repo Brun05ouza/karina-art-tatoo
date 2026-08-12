@@ -5,12 +5,27 @@ import { requireAdmin } from "../auth.js";
 import { requireSupabaseConfig } from "../config.js";
 import { getSupabase } from "../supabase.js";
 
-const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif", "video/mp4", "video/webm"] as const;
+const allowedTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/avif",
+  "image/heic",
+  "image/heif",
+  "image/heic-sequence",
+  "image/heif-sequence",
+  "video/mp4",
+  "video/webm",
+] as const;
 const extensionsByType: Record<(typeof allowedTypes)[number], string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
   "image/avif": "avif",
+  "image/heic": "heic",
+  "image/heif": "heif",
+  "image/heic-sequence": "heic",
+  "image/heif-sequence": "heif",
   "video/mp4": "mp4",
   "video/webm": "webm",
 };
