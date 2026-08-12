@@ -910,6 +910,84 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   margin-top: clamp(22px, 3vw, 34px);
 }
 
+.ks-portfolio-page-hero {
+  min-height: min(78vh, 760px);
+  align-items: flex-end;
+  padding: clamp(138px, 16vh, 190px) clamp(28px, 6vw, 88px) clamp(74px, 10vh, 118px);
+}
+
+.ks-portfolio-page-hero.ks-page-hero-no-image {
+  background:
+    radial-gradient(circle at 80% 24%, rgba(var(--ks-plum-rgb), 0.16), transparent 34%),
+    linear-gradient(108deg, rgba(var(--ks-beige-light-rgb), 0.98) 0%, rgba(var(--ks-beige-light-rgb), 0.92) 47%, rgba(var(--ks-plum-rgb), 0.14) 100%);
+}
+
+.ks-portfolio-page-hero .ks-page-hero-content {
+  max-width: min(820px, 58vw);
+}
+
+.ks-portfolio-page-hero .ks-page-hero-content .ks-label-caps {
+  display: inline-flex;
+  margin-bottom: clamp(18px, 2.5vw, 30px);
+}
+
+.ks-portfolio-page-hero h1 {
+  margin: 0 0 clamp(18px, 2.6vw, 30px);
+  max-width: 9.5ch;
+}
+
+.ks-portfolio-page-hero .ks-body-lg {
+  max-width: 44ch;
+}
+
+.ks-portfolio-page-hero .ks-page-hero-starfield {
+  right: clamp(52px, 12vw, 210px);
+  top: clamp(116px, 18vh, 190px);
+  opacity: 0.18;
+}
+
+.ks-portfolio-page-hero .ks-star-sprinkle-page-hero {
+  right: clamp(84px, 16vw, 260px);
+  top: clamp(124px, 20vh, 220px);
+  opacity: 0.38;
+}
+
+@media (max-width: 900px) {
+  .ks-portfolio-page-hero {
+    min-height: clamp(520px, 68vh, 680px);
+    padding: 118px clamp(22px, 5vw, 42px) clamp(56px, 8vh, 88px);
+  }
+
+  .ks-portfolio-page-hero .ks-page-hero-content {
+    max-width: min(640px, 86vw);
+  }
+
+  .ks-portfolio-page-hero h1 {
+    max-width: 10ch;
+  }
+}
+
+@media (max-width: 640px) {
+  .ks-portfolio-page-hero {
+    min-height: 68vh;
+    padding: 104px 22px 54px;
+  }
+
+  .ks-portfolio-page-hero .ks-page-hero-content {
+    max-width: 100%;
+  }
+
+  .ks-portfolio-page-hero .ks-body-lg {
+    max-width: 31ch;
+  }
+
+  .ks-portfolio-page-hero .ks-page-hero-starfield {
+    right: -58px;
+    top: 102px;
+    opacity: 0.13;
+  }
+}
+
 .ks-actions {
   display: flex;
   flex-wrap: wrap;

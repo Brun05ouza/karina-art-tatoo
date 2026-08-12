@@ -562,6 +562,7 @@ function PageHero({
    */
   imagePosition,
   showStars = true,
+  className = "",
   children,
 }: {
   kicker: string;
@@ -570,12 +571,13 @@ function PageHero({
   image?: string | null;
   imagePosition?: string;
   showStars?: boolean;
+  className?: string;
   children?: React.ReactNode;
 }) {
   const hasImage = Boolean(image);
 
   return (
-    <section className={`ks-page-hero${hasImage ? "" : " ks-page-hero-no-image"}`}>
+    <section className={`ks-page-hero${hasImage ? "" : " ks-page-hero-no-image"}${className ? ` ${className}` : ""}`}>
       {image && (
         <img
           className="ks-page-hero-image"
@@ -1707,6 +1709,7 @@ function PortfolioPage() {
   return (
     <>
       <PageHero
+        className="ks-portfolio-page-hero"
         kicker={portfolioPage.heroKicker}
         title={portfolioPage.heroTitle}
         text={portfolioPage.heroText}
