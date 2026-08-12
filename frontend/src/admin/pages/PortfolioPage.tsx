@@ -23,7 +23,7 @@ export function PortfolioPage() {
         { key: "heroKicker", label: "Texto superior", hint: "Linha pequena acima do título." },
         { key: "heroTitle", label: "Título principal", hint: "O título grande desta página." },
         { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 3, full: true, hint: "Frase abaixo do título, explicando o que a página mostra." },
-        { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "portfolio/hero", full: true },
+        { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "portfolio/hero", full: true, compositionHint: true },
       ],
     },
     {

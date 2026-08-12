@@ -1,11 +1,13 @@
 import { ArrowDown, ArrowUp, Copy, Eye, EyeOff, Pencil, Plus, Trash2, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { BaseItem } from "../data/types";
 import type { Repository } from "../data/repository";
 import { useCollection } from "../hooks/useCollection";
 import { useDirtyGuard } from "../hooks/useDirtyGuard";
 import { useToast } from "../hooks/useToast";
+import { consumePendingEdit, hasActiveJobForItem, type UploadTarget } from "../uploads/uploadQueue";
 import { ImagePicker } from "./ImagePicker";
+import { VideoPicker } from "./VideoPicker";
 import { AdminButton, AdminCard, Field, InternalLinkInput, SelectField, StatusBadge, TextArea, TextInput, Toggle } from "./Primitives";
 import { FilterChips, SearchInput } from "./SearchFilter";
 import { ConfirmDialog, EmptyState, ErrorState, LoadingState } from "./States";
@@ -13,7 +15,7 @@ import { ConfirmDialog, EmptyState, ErrorState, LoadingState } from "./States";
 export type CollectionField = {
   key: string;
   label: string;
-  type?: "text" | "textarea" | "select" | "number" | "toggle" | "image" | "internalLink" | "currency";
+  type?: "text" | "textarea" | "select" | "number" | "toggle" | "image" | "video" | "internalLink" | "currency";
   options?: string[];
   allowCustom?: boolean;
   hint?: string;
@@ -39,6 +41,15 @@ export type CollectionConfig<T extends BaseItem> = {
    * um documento de textos e precisam de uma prévia única — ver ReformulacoesPage.
    */
   onPreviewItemsChange?: (items: T[]) => void;
+  /**
+   * Só precisam ser passados se algum campo for do tipo "video": identificam
+   * esta coleção pra fila global de upload (uploads/uploadQueue.ts) — é o que
+   * permite reabrir o item certo com o vídeo já encaixado quando o card do
+   * canto da tela é clicado depois de terminar. Sem eles, cai no nome da
+   * coleção em minúsculo e sem rota (o botão do card fica sem efeito).
+   */
+  collectionKey?: string;
+  route?: string;
 };
 
 export function CollectionManager<T extends BaseItem>({ config }: { config: CollectionConfig<T> }) {
@@ -50,6 +61,25 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
   const [draft, setDraft] = useState<T | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<T | null>(null);
   const [saving, setSaving] = useState(false);
+  const [pendingSaveWarning, setPendingSaveWarning] = useState(false);
+  const hasModalOpen = Boolean(draft || deleteTarget || pendingSaveWarning);
+  const collectionKey = config.collectionKey || config.singular.toLowerCase();
+  const route = config.route || "";
+
+  useEffect(() => {
+    if (!hasModalOpen) return;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousDocumentOverflow = document.documentElement.style.overflow;
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousDocumentOverflow;
+    };
+  }, [hasModalOpen]);
 
   const filtered = useMemo(() => items.filter((item) => {
     const haystack = [item.title, item.description, item.category, item.status].filter(Boolean).join(" ").toLowerCase();
@@ -99,6 +129,28 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
     notifyPreview?.(previewItems);
   }, [notifyPreview, previewItems]);
 
+  /**
+   * Card do upload clicado após terminar (ver uploads/uploadQueue.ts): assim
+   * que os itens carregam, abre o item certo já com o vídeo encaixado. Se o
+   * item era um rascunho novo que nunca chegou a ser salvo antes dela sair da
+   * tela, ele não existe mais em `items` — nesse caso abre um rascunho novo
+   * só com o vídeo e o título preenchidos (o resto do que ela tinha digitado
+   * se perde; é a única saída, já que um rascunho não salvo não sobrevive à
+   * navegação).
+   */
+  const appliedPendingEdit = useRef(false);
+  useEffect(() => {
+    if (appliedPendingEdit.current || loading) return;
+    appliedPendingEdit.current = true;
+    const pending = consumePendingEdit(collectionKey);
+    if (!pending) return;
+
+    const existing = items.find((item) => item.id === pending.itemId);
+    setDraft((existing ? { ...existing, ...pending.patch } : { ...config.emptyItem, id: pending.itemId, order: items.length + 1, title: pending.itemTitle, ...pending.patch }) as T);
+    setDirty(true);
+    show("Vídeo pronto — confira e clique em Salvar alterações.");
+  }, [loading, items, collectionKey, config.emptyItem, setDirty, show]);
+
   const openNew = () => {
     if (!confirmLeave()) return;
     setDraft({ ...config.emptyItem, id: `new:${crypto.randomUUID()}`, order: items.length + 1 });
@@ -124,7 +176,7 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
     setDirty(true);
   };
 
-  const submit = async () => {
+  const performSave = async () => {
     if (!draft?.title.trim()) {
       show(`Informe o título de ${config.singular.toLowerCase()}.`, "error");
       return;
@@ -140,6 +192,14 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
     } finally {
       setSaving(false);
     }
+  };
+
+  const submit = () => {
+    if (draft && hasActiveJobForItem(collectionKey, draft.id)) {
+      setPendingSaveWarning(true);
+      return;
+    }
+    void performSave();
   };
 
   const updateQuickly = async (item: T, patch: Partial<T>, message: string) => {
@@ -171,6 +231,18 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
     {draft && <div className="ksa-drawer-backdrop" onMouseDown={(event) => event.target === event.currentTarget && closeEditor()}><aside className="ksa-editor" aria-label={`Editar ${config.singular}`}><header><div><span className="ksa-eyebrow">{draft.id.startsWith("new:") ? "Novo item" : "Editar item"}</span><h2>{draft.title || config.singular}</h2></div><button onClick={closeEditor} aria-label="Fechar"><X /></button></header><div className="ksa-editor-fields">{config.fields.map((field) => {
       const current = draft[field.key];
       if (field.type === "image") return <div className={field.full ? "is-full" : ""} key={field.key}><ImagePicker label={field.label} folder={field.folder} value={String(current || "")} onChange={(url, key) => { patchDraft(field.key, url); patchDraft(field.imageKey || "imageKey", key); }} /></div>;
+      if (field.type === "video") {
+        const uploadTarget: UploadTarget = {
+          route,
+          collectionKey,
+          itemId: draft.id,
+          itemTitle: draft.title || config.singular,
+          fieldKey: field.key,
+          fieldLabel: field.label,
+          keyFieldKey: field.imageKey || `${field.key}Key`,
+        };
+        return <div className={field.full ? "is-full" : ""} key={field.key}><VideoPicker label={field.label} folder={field.folder} value={String(current || "")} target={uploadTarget} onChange={(url, key) => { patchDraft(field.key, url); patchDraft(field.imageKey || `${field.key}Key`, key); }} /></div>;
+      }
       if (field.type === "toggle") return <Field label={field.label} hint={field.hint} key={field.key}><Toggle checked={Boolean(current)} onChange={(value) => patchDraft(field.key, value)} label={Boolean(current) ? "Ativo" : "Inativo"} /></Field>;
       if (field.type === "textarea") return <Field label={field.label} hint={field.hint} key={field.key}><TextArea rows={4} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => patchDraft(field.key, event.target.value)} /></Field>;
       if (field.type === "currency") return <Field label={field.label} hint={field.hint} key={field.key}><CurrencyInput value={String(current ?? "")} placeholder={field.placeholder} onChange={(next) => patchDraft(field.key, next)} /></Field>;
@@ -178,9 +250,23 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
       if (field.type === "select") return <Field label={field.label} hint={field.hint} key={field.key}><SelectField value={String(current ?? "")} onChange={(event) => patchDraft(field.key, event.target.value)}>{field.options?.map((option) => <option key={option}>{option}</option>)}</SelectField></Field>;
       if (field.type === "internalLink" || field.key === "link" || field.key === "url") return <Field label={field.label} hint={field.hint} key={field.key}><InternalLinkInput value={String(current ?? "")} onChange={(next) => patchDraft(field.key, next)} /></Field>;
       return <Field label={field.label} hint={field.hint} key={field.key}><TextInput type={field.type === "number" ? "number" : "text"} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => patchDraft(field.key, field.type === "number" ? Number(event.target.value) : event.target.value)} /></Field>;
-    })}</div><footer><AdminButton tone="ghost" onClick={closeEditor}>Cancelar</AdminButton><AdminButton onClick={() => void submit()} disabled={saving}>{saving ? "Salvando…" : "Salvar alterações"}</AdminButton></footer></aside></div>}
+    })}</div><footer><AdminButton tone="ghost" onClick={closeEditor}>Cancelar</AdminButton><AdminButton onClick={submit} disabled={saving}>{saving ? "Salvando…" : "Salvar alterações"}</AdminButton></footer></aside></div>}
 
     <ConfirmDialog open={Boolean(deleteTarget)} title={`Excluir ${config.singular.toLowerCase()}?`} text={`“${deleteTarget?.title || "Este item"}” será removido do banco de dados e deixará de aparecer no site.`} onCancel={() => setDeleteTarget(null)} onConfirm={() => { if (!deleteTarget) return; void remove(deleteTarget.id).then(() => { show(`${config.singular} excluído.`); setDeleteTarget(null); }).catch((cause) => show(cause instanceof Error ? cause.message : "Não foi possível excluir.", "error")); }} />
+
+    <ConfirmDialog
+      open={pendingSaveWarning}
+      title="Vídeo ainda em andamento"
+      text="Um vídeo desse item ainda está sendo convertido ou enviado. Salvando agora, esta versão fica sem ele — quando o envio terminar, o card no canto da tela deixa você aplicá-lo depois. Prefere cancelar e esperar terminar, ou salvar mesmo assim?"
+      confirmLabel="Salvar mesmo assim"
+      cancelLabel="Cancelar"
+      tone="primary"
+      onCancel={() => setPendingSaveWarning(false)}
+      onConfirm={() => {
+        setPendingSaveWarning(false);
+        void performSave();
+      }}
+    />
     </>
   );
 

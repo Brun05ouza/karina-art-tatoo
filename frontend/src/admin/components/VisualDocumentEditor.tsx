@@ -129,7 +129,7 @@ function FieldControl<T extends Record<string, unknown>>({ field, value, update 
   if (field.type === "image") {
     return (
       <div className="is-full">
-        <ImagePicker label={field.label} folder={field.folder} value={String(current || "")} onChange={(url, key) => update({ [field.key]: url, ...(field.imageKey ? { [field.imageKey]: key } : {}) } as Partial<T>)} />
+        <ImagePicker label={field.label} folder={field.folder} value={String(current || "")} compositionHint={field.compositionHint} onChange={(url, key) => update({ [field.key]: url, ...(field.imageKey ? { [field.imageKey]: key } : {}) } as Partial<T>)} />
       </div>
     );
   }

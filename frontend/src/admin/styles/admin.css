@@ -309,7 +309,6 @@ a { color: inherit; text-decoration: none; }
 .ksa-editor > header button { align-items: center; background: var(--ksa-surface-soft); border: 1px solid var(--ksa-border); border-radius: 50%; display: flex; height: 42px; justify-content: center; transition: .18s ease; width: 42px; }
 .ksa-editor > header button:hover { background: var(--ksa-purple-deep); color: var(--ksa-white); }
 .ksa-editor-fields { display: grid; gap: 20px; grid-template-columns: repeat(2, minmax(0,1fr)); overflow-y: auto; padding: 28px; }
-.ksa-editor-fields > div:first-child { grid-column: 1 / -1; }
 .ksa-editor > footer { align-items: center; background: rgba(255,255,255,.94); border-top: 1px solid var(--ksa-border); display: flex; gap: 10px; justify-content: flex-end; margin-top: auto; padding: 18px 28px; }
 .ksa-image-picker { display: grid; gap: 8px; }
 .ksa-image-picker-box { align-items: center; background: var(--ksa-surface-soft); border: 1px dashed var(--ksa-border-strong); border-radius: 6px; display: flex; gap: 10px; min-height: 140px; overflow: hidden; padding: 12px; position: relative; }
@@ -318,6 +317,10 @@ a { color: inherit; text-decoration: none; }
 .ksa-image-action { background: var(--ksa-purple-deep); border-radius: var(--ksa-radius-pill); color: white; font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: .1em; padding: 11px 15px; text-transform: uppercase; }
 .ksa-image-action input { display: none; }
 .ksa-image-remove { align-self: center; flex: none; min-height: 38px; padding: 0; width: 38px; }
+.ksa-image-guidance { background: rgba(255,255,255,.72); border: 1px solid rgba(46,23,58,.08); border-radius: 16px; color: var(--ksa-text-muted); display: grid; flex: 1; gap: 6px; margin-left: auto; max-width: 430px; min-width: 220px; padding: 16px 18px; }
+.ksa-image-guidance span { color: var(--ksa-purple-burnt); font-family: "IBM Plex Mono", monospace; font-size: 8px; letter-spacing: .16em; text-transform: uppercase; }
+.ksa-image-guidance strong { color: var(--ksa-purple-dark); font-family: "Cormorant Garamond", serif; font-size: clamp(20px, 2.2vw, 28px); font-weight: 600; line-height: .98; }
+.ksa-image-guidance small { color: var(--ksa-text-muted); font-size: 12px; line-height: 1.45; }
 .ksa-editor-fields .ksa-image-picker { background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(250,248,251,.86)); border: 1px solid rgba(46,23,58,.1); border-radius: 18px; padding: 14px; }
 .ksa-editor-fields .ksa-image-picker-box { background: linear-gradient(135deg, rgba(46,23,58,.035), rgba(128,110,133,.04)); border-radius: 14px; min-height: 172px; padding: 16px; }
 .ksa-editor-fields .ksa-image-picker-box img, .ksa-editor-fields .ksa-image-picker-box video { border-radius: 12px; box-shadow: 0 12px 28px rgba(46,23,58,.12); height: 156px; width: 210px; }
@@ -690,6 +693,29 @@ a { color: inherit; text-decoration: none; }
 .ksa-toast span { font-size: 12px; line-height: 1.4; }
 .ksa-toast button { background: none; border: 0; color: inherit; display: grid; margin-left: auto; place-items: center; }
 
+/* Canto oposto ao dos toasts (bottom-right) pra não sobrepor. */
+.ksa-upload-tray { bottom: 22px; display: grid; gap: 8px; left: 22px; position: fixed; width: min(340px, calc(100vw - 44px)); z-index: 150; }
+.ksa-upload-card { align-items: flex-start; background: var(--ksa-surface); border: 1px solid var(--ksa-border); border-radius: var(--ksa-radius); box-shadow: var(--ksa-shadow); display: flex; gap: 10px; padding: 12px 12px 12px 14px; }
+.ksa-upload-card--done { cursor: pointer; }
+.ksa-upload-card--done:hover { border-color: var(--ksa-purple-dark); }
+.ksa-upload-card--error { border-color: rgba(168,50,79,.4); }
+.ksa-upload-card-icon { color: var(--ksa-purple-dark); display: grid; flex: none; place-items: center; margin-top: 1px; }
+.ksa-upload-card--done .ksa-upload-card-icon { color: #3f8f5f; }
+.ksa-upload-card--error .ksa-upload-card-icon { color: var(--ksa-danger); }
+.ksa-upload-card-body { display: grid; gap: 3px; min-width: 0; }
+.ksa-upload-card-body strong { color: var(--ksa-text); font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ksa-upload-card-body small { color: var(--ksa-text-muted); font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: .04em; }
+.ksa-upload-card-error { color: var(--ksa-danger) !important; }
+.ksa-upload-card-bar { background: var(--ksa-border); border-radius: 999px; height: 4px; margin: 3px 0 1px; overflow: hidden; width: 100%; }
+.ksa-upload-card-bar span { background: var(--ksa-purple-deep); display: block; height: 100%; transition: width .2s ease; }
+.ksa-upload-card--done .ksa-upload-card-bar span { background: #3f8f5f; }
+.ksa-upload-card-dismiss { background: none; border: 0; color: var(--ksa-text-muted); cursor: pointer; display: grid; flex: none; place-items: center; padding: 2px; }
+.ksa-upload-card-dismiss:hover { color: var(--ksa-text); }
+
+@media (max-width: 640px) {
+  .ksa-upload-tray { left: 12px; right: 12px; width: auto; }
+}
+
 @media (max-width: 1120px) {
   .ksa-stats { grid-template-columns: repeat(2, 1fr); }
   .ksa-support-grid, .ksa-support-contact { grid-template-columns: 1fr; }
@@ -748,9 +774,9 @@ a { color: inherit; text-decoration: none; }
   .ksa-editor > header { padding: 18px; }
   .ksa-editor > footer { padding: 14px 18px; }
   .ksa-editor-fields { grid-template-columns: 1fr; padding: 18px; }
-  .ksa-editor-fields > div:first-child { grid-column: auto; }
   .ksa-image-picker-box { align-items: stretch; flex-direction: column; }
   .ksa-image-picker-box img, .ksa-image-picker-box video { height: 180px; width: 100%; }
+  .ksa-image-guidance { max-width: none; min-width: 0; }
   .ksa-image-remove { align-self: flex-start; }
   .ksa-save-bar { gap: 9px; padding-left: 14px; }
   .ksa-save-bar span { font-size: 10px; }

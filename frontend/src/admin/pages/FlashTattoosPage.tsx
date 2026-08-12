@@ -32,7 +32,7 @@ const HERO_BLOCK: DocumentBlock<FlashPageDocument> = {
     { key: "heroKicker", label: "Texto superior" },
     { key: "heroTitle", label: "Título principal" },
     { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 3, full: true },
-    { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "flash-tattoos/hero", full: true },
+    { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "flash-tattoos/hero", full: true, compositionHint: true },
   ],
 };
 

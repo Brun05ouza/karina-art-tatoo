@@ -4,6 +4,7 @@ import { AdminAuthProvider } from "./auth/AdminAuthContext";
 import { RedirectIfAuthenticated } from "./auth/RedirectIfAuthenticated";
 import { RequireAuth } from "./auth/RequireAuth";
 import { ToastHost } from "./components/ToastHost";
+import { UploadTray } from "./components/UploadTray";
 import { ToastProvider } from "./hooks/useToast";
 import { AdminLayout } from "./layout/AdminLayout";
 import { AboutPage } from "./pages/AboutPage";
@@ -57,6 +58,7 @@ export function AdminApp() {
             <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
           </Routes>
           <ToastHost />
+          <UploadTray />
         </ToastProvider>
       </AdminAuthProvider>
     </BrowserRouter>

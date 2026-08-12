@@ -13,7 +13,7 @@ const BLOCKS: DocumentBlock<BudgetPageDocument>[] = [
       { key: "heroKicker", label: "Texto superior" },
       { key: "heroTitle", label: "Título principal" },
       { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 3, full: true },
-      { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "orcamento/hero", full: true },
+      { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "orcamento/hero", full: true, compositionHint: true },
     ],
   },
   {

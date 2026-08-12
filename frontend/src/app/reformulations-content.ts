@@ -13,6 +13,8 @@ export type ReformulationCase = {
   status: string;
   beforeImageUrl?: string;
   afterImageUrl?: string;
+  beforeVideoUrl?: string;
+  afterVideoUrl?: string;
 };
 
 export type ReformulationsContent = {

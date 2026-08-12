@@ -34,7 +34,7 @@ const TEXT_BLOCKS: DocumentBlock<ProductsPageDocument>[] = [
       { key: "heroText1", label: "Primeiro parágrafo", type: "textarea", rows: 2, full: true },
       { key: "heroText2", label: "Segundo parágrafo", type: "textarea", rows: 3, full: true },
       { key: "heroButton", label: "Texto do botão" },
-      { key: "heroImageUrl", label: "Imagem lateral", type: "image", folder: "produtos/hero", full: true },
+      { key: "heroImageUrl", label: "Imagem lateral", type: "image", folder: "produtos/hero", full: true, compositionHint: true },
     ],
   },
   {

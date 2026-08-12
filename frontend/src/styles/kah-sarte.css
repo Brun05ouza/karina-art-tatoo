@@ -2158,11 +2158,42 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   background: var(--ks-surface-warm);
 }
 
-.ks-reformulacao-photo img {
+.ks-reformulacao-photo img,
+.ks-reformulacao-photo video {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/*
+ * Foto e vídeo ocupam o mesmo espaço, empilhados por position:absolute — a
+ * troca entre os dois é um crossfade de opacidade (ver .is-visible/.is-hidden
+ * abaixo), controlado pelo hover em .ks-reformulacao-compare.
+ */
+.ks-reformulacao-media-stack {
+  position: relative;
+  height: 100%;
+}
+
+.ks-reformulacao-media-stack img,
+.ks-reformulacao-media-stack video {
+  position: absolute;
+  inset: 0;
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+
+.ks-reformulacao-media-stack img.is-hidden {
+  opacity: 0;
+}
+
+.ks-reformulacao-media-stack video {
+  opacity: 0;
+}
+
+.ks-reformulacao-media-stack video.is-visible {
+  opacity: 1;
 }
 
 .ks-reformulacao-photo-label {
@@ -2226,6 +2257,39 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   background: var(--ks-cream);
   color: var(--ks-primary);
   transform: translate(-50%, -50%);
+}
+
+.ks-reformulacao-compare.is-expandable {
+  cursor: pointer;
+}
+
+.ks-reformulacao-expand {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(var(--ks-ink-rgb), 0.78);
+  color: var(--ks-on-dark);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.ks-reformulacao-compare.is-expandable:hover .ks-reformulacao-expand,
+.ks-reformulacao-compare.is-expandable:focus-visible .ks-reformulacao-expand {
+  opacity: 1;
+}
+
+/* Sem hover real (touch), mantém o badge sempre visível como pista de que dá pra tocar. */
+@media (hover: none) {
+  .ks-reformulacao-expand {
+    opacity: 0.85;
+  }
 }
 
 .ks-reformulacao-case-note {
@@ -2672,6 +2736,56 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
 .ks-tattoo-modal-body .ks-primary-link {
   width: fit-content;
   margin-top: 4px;
+}
+
+/* Modal ampliado de antes/depois de uma reformulação — mais largo que o modal
+   padrão (uma imagem só) porque mostra dois vídeos lado a lado. */
+.ks-reformulacao-modal-panel {
+  width: min(100%, 920px);
+}
+
+.ks-reformulacao-modal-header {
+  display: grid;
+  gap: 6px;
+  padding: clamp(20px, 4vw, 28px) clamp(20px, 4vw, 28px) 0;
+}
+
+.ks-reformulacao-modal-header h2 {
+  margin: 0;
+}
+
+.ks-reformulacao-modal-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: clamp(16px, 3vw, 24px) clamp(20px, 4vw, 28px) clamp(20px, 4vw, 28px);
+}
+
+.ks-reformulacao-modal-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid rgba(247, 245, 246, 0.12);
+  background: var(--ks-surface-low);
+}
+
+.ks-reformulacao-modal-media img,
+.ks-reformulacao-modal-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ks-reformulacao-modal-media .ks-reformulacao-photo-placeholder {
+  position: absolute;
+  inset: 0;
+}
+
+@media (max-width: 640px) {
+  .ks-reformulacao-modal-compare {
+    grid-template-columns: 1fr;
+  }
 }
 
 .ks-section-intro {

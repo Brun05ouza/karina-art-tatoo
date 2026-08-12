@@ -15,7 +15,25 @@ export function EmptyState({ title, text, action }: { title: string; text: strin
   return <div className="ksa-empty"><StarGlyph8 size={34} color="#806e85" /><strong>{title}</strong><p>{text}</p>{action}</div>;
 }
 
-export function ConfirmDialog({ open, title, text, onConfirm, onCancel }: { open: boolean; title: string; text: string; onConfirm(): void; onCancel(): void }) {
+export function ConfirmDialog({
+  open,
+  title,
+  text,
+  confirmLabel = "Excluir",
+  cancelLabel = "Cancelar",
+  tone = "danger",
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  title: string;
+  text: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  tone?: "danger" | "primary";
+  onConfirm(): void;
+  onCancel(): void;
+}) {
   if (!open) return null;
-  return <div className="ksa-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onCancel()}><div className="ksa-modal" role="alertdialog" aria-modal="true" aria-labelledby="ksa-confirm-title"><h2 id="ksa-confirm-title">{title}</h2><p>{text}</p><div className="ksa-modal-actions"><AdminButton tone="ghost" onClick={onCancel}>Cancelar</AdminButton><AdminButton tone="danger" onClick={onConfirm}>Excluir</AdminButton></div></div></div>;
+  return <div className="ksa-modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onCancel()}><div className="ksa-modal" role="alertdialog" aria-modal="true" aria-labelledby="ksa-confirm-title"><h2 id="ksa-confirm-title">{title}</h2><p>{text}</p><div className="ksa-modal-actions"><AdminButton tone="ghost" onClick={onCancel}>{cancelLabel}</AdminButton><AdminButton tone={tone} onClick={onConfirm}>{confirmLabel}</AdminButton></div></div></div>;
 }

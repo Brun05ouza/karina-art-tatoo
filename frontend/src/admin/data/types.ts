@@ -70,6 +70,12 @@ export type ReformulationItem = BaseItem & {
   status: PublishStatus;
   beforeImageUrl: string;
   afterImageUrl: string;
+  beforeImageKey?: string;
+  afterImageKey?: string;
+  beforeVideoUrl?: string;
+  afterVideoUrl?: string;
+  beforeVideoKey?: string;
+  afterVideoKey?: string;
   problem: string;
   solution: string;
   internalNote: string;

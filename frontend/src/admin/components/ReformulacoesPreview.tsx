@@ -19,12 +19,17 @@ function MiniCard({ number, title, text }: { number: string; title: string; text
   );
 }
 
-function Foto({ label, src, index }: { label: "Antes" | "Depois"; src?: string; index: number }) {
+function Midia({ label, imageSrc, videoSrc, index }: { label: "Antes" | "Depois"; imageSrc?: string; videoSrc?: string; index: number }) {
+  const hasMedia = Boolean(imageSrc || videoSrc);
+
   return (
     <figure className="ks-reformulacao-photo">
       <span className="ks-reformulacao-photo-label">{label}</span>
-      {src ? (
-        <img src={src} alt={`Tattoo ${label.toLowerCase()} da reformulação`} loading="lazy" />
+      {hasMedia ? (
+        <div className="ks-reformulacao-media-stack">
+          {imageSrc ? <img src={imageSrc} alt={`Tattoo ${label.toLowerCase()} da reformulação`} loading="lazy" /> : null}
+          {videoSrc ? <video src={videoSrc} muted loop playsInline controls preload="metadata" /> : null}
+        </div>
       ) : (
         <div className="ks-reformulacao-photo-placeholder" aria-label={`Espaço para a foto de ${label.toLowerCase()}`}>
           <BrandStar variant={variantePorIndice(index)} size={120} className="ks-reformulacao-photo-star" />
@@ -153,11 +158,11 @@ export function ReformulacoesPreview({
                       <h3>{caso.title || "Caso sem título"}</h3>
                     </header>
                     <div className="ks-reformulacao-compare">
-                      <Foto label="Antes" src={caso.beforeImageUrl} index={index} />
+                      <Midia label="Antes" imageSrc={caso.beforeImageUrl} videoSrc={caso.beforeVideoUrl} index={index} />
                       <span className="ks-reformulacao-arrow" aria-hidden="true">
                         <ArrowRight size={18} />
                       </span>
-                      <Foto label="Depois" src={caso.afterImageUrl} index={index} />
+                      <Midia label="Depois" imageSrc={caso.afterImageUrl} videoSrc={caso.afterVideoUrl} index={index} />
                     </div>
                     {doc.caseNote ? <p className="ks-reformulacao-case-note">{doc.caseNote}</p> : null}
                   </article>
@@ -196,3 +201,4 @@ export function ReformulacoesPreview({
     </SitePreviewFrame>
   );
 }
+

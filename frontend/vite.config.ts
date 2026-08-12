@@ -36,6 +36,14 @@ export default defineConfig({
     strictPort: false,
   },
 
+  // @ffmpeg/ffmpeg cria seu worker via `new Worker(new URL(...))` internamente.
+  // O pre-bundle do Vite não resolve essa URL corretamente (o worker.js some
+  // do cache de deps e a conversão MOV trava esperando um 404 silencioso) —
+  // excluir do optimizeDeps faz o Vite servir o pacote direto do node_modules.
+  optimizeDeps: {
+    exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util"],
+  },
+
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
 })

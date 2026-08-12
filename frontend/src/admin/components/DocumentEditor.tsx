@@ -17,6 +17,7 @@ export type DocumentField = {
   placeholder?: string;
   folder?: string;
   imageKey?: string;
+  compositionHint?: boolean;
   rows?: number;
   full?: boolean;
 };
@@ -99,7 +100,7 @@ export function DocumentEditor<T extends Record<string, unknown>>({ store, block
                 if (field.type === "image") {
                   return (
                     <div key={field.key} className="is-full">
-                      <ImagePicker label={field.label} folder={field.folder} value={String(current || "")} onChange={(url, key) => update({ [field.key]: url, ...(field.imageKey ? { [field.imageKey]: key } : {}) } as Partial<T>)} />
+                      <ImagePicker label={field.label} folder={field.folder} value={String(current || "")} compositionHint={field.compositionHint} onChange={(url, key) => update({ [field.key]: url, ...(field.imageKey ? { [field.imageKey]: key } : {}) } as Partial<T>)} />
                     </div>
                   );
                 }

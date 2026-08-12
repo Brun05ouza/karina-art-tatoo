@@ -10,6 +10,7 @@ import {
   HeartHandshake,
   Images,
   LinkIcon,
+  Maximize2,
   Play,
   ShoppingBag,
   Sparkles,
@@ -37,7 +38,7 @@ import { useFlashItems, useFlashPageContent } from "./flash-content";
 import { useFaqItems } from "./faq-content";
 import { galleryItems, PORTFOLIO_CATEGORIES, usePortfolioItems, usePortfolioPageContent, type PortfolioWork } from "./portfolio-works";
 import { useProductItems, useProductsPageContent, type ProductCatalogItem } from "./products-content";
-import { useReformulationCases, useReformulationsContent } from "./reformulations-content";
+import { useReformulationCases, useReformulationsContent, type ReformulationCase } from "./reformulations-content";
 import { useLinkBioContent, type LinkBioButton } from "./link-bio-content.ts";
 import { useBudgetPageContent } from "./budget-content";
 import { BrandStar } from "./components/BrandStar";
@@ -1751,6 +1752,23 @@ function ReformulacoesPage() {
   const reformulacoes = useReformulationCases();
   const pontos = [...content.panelPoints].filter((point) => point.active).sort((a, b) => a.order - b.order);
   const possibilidades = [...content.possibilityCards].filter((card) => card.active).sort((a, b) => a.order - b.order);
+  const [expandedCase, setExpandedCase] = useState<ReformulationCase | null>(null);
+
+  useEffect(() => {
+    if (!expandedCase) return;
+
+    lockScroll();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setExpandedCase(null);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      unlockScroll();
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [expandedCase]);
 
   return (
     <>
@@ -1804,13 +1822,7 @@ function ReformulacoesPage() {
                 <span className="ks-label-caps">{item.category}</span>
                 <h3>{item.title}</h3>
               </header>
-              <div className="ks-reformulacao-compare">
-                <ReformulacaoPhoto label="Antes" src={item.beforeImageUrl} index={index} />
-                <span className="ks-reformulacao-arrow" aria-hidden="true">
-                  <ArrowRight size={18} />
-                </span>
-                <ReformulacaoPhoto label="Depois" src={item.afterImageUrl} index={index + 1} />
-              </div>
+              <ReformulacaoCompare item={item} index={index} onExpand={() => setExpandedCase(item)} />
               {content.caseNote ? <p className="ks-reformulacao-case-note">{content.caseNote}</p> : null}
             </article>
           ))}
@@ -1843,16 +1855,105 @@ function ReformulacoesPage() {
         cta={content.ctaButton}
         to={content.ctaButtonUrl || "/orcamento"}
       />
+
+      <AnimatePresence onExitComplete={refreshScrollMetrics}>
+        {expandedCase && <ReformulacaoCompareModal item={expandedCase} onClose={() => setExpandedCase(null)} />}
+      </AnimatePresence>
     </>
   );
 }
 
-function ReformulacaoPhoto({ label, src, index }: { label: "Antes" | "Depois"; src?: string; index: number }) {
+/**
+ * Antes/depois de um caso. Por padrão mostra só a foto; passando o mouse por
+ * cima, os dois vídeos (antes e depois) tocam juntos; clicando, abre o modal
+ * ampliado (ReformulacaoCompareModal) com os dois lado a lado.
+ */
+function ReformulacaoCompare({
+  item,
+  index,
+  onExpand,
+}: {
+  item: ReformulationCase;
+  index: number;
+  onExpand: () => void;
+}) {
+  const [hovering, setHovering] = useState(false);
+  const canExpand = Boolean(item.beforeVideoUrl || item.afterVideoUrl || item.beforeImageUrl || item.afterImageUrl);
+
+  return (
+    <div
+      className={`ks-reformulacao-compare${canExpand ? " is-expandable" : ""}`}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+      onClick={canExpand ? onExpand : undefined}
+      role={canExpand ? "button" : undefined}
+      tabIndex={canExpand ? 0 : undefined}
+      aria-label={canExpand ? `Ver comparação ampliada de ${item.title}` : undefined}
+      onKeyDown={canExpand ? (event) => (event.key === "Enter" || event.key === " ") && onExpand() : undefined}
+    >
+      <ReformulacaoMedia label="Antes" imageSrc={item.beforeImageUrl} videoSrc={item.beforeVideoUrl} index={index} playing={hovering} />
+      <span className="ks-reformulacao-arrow" aria-hidden="true">
+        <ArrowRight size={18} />
+      </span>
+      <ReformulacaoMedia label="Depois" imageSrc={item.afterImageUrl} videoSrc={item.afterVideoUrl} index={index + 1} playing={hovering} />
+      {canExpand && (
+        <span className="ks-reformulacao-expand" aria-hidden="true">
+          <Maximize2 size={14} />
+        </span>
+      )}
+    </div>
+  );
+}
+
+function ReformulacaoMedia({
+  label,
+  imageSrc,
+  videoSrc,
+  index,
+  playing = false,
+}: {
+  label: "Antes" | "Depois";
+  imageSrc?: string;
+  videoSrc?: string;
+  index: number;
+  playing?: boolean;
+}) {
+  const hasMedia = Boolean(imageSrc || videoSrc);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (playing) video.play().catch(() => {});
+    else video.pause();
+  }, [playing]);
+
   return (
     <figure className="ks-reformulacao-photo">
       <span className="ks-reformulacao-photo-label">{label}</span>
-      {src ? (
-        <img src={src} alt={`Tattoo ${label.toLowerCase()} da reformulação`} loading="lazy" />
+      {hasMedia ? (
+        <div className="ks-reformulacao-media-stack">
+          {imageSrc ? (
+            <img
+              className={videoSrc && playing ? "is-hidden" : ""}
+              src={imageSrc}
+              alt={`Tattoo ${label.toLowerCase()} da reformulação`}
+              loading="lazy"
+            />
+          ) : null}
+          {videoSrc ? (
+            <video
+              ref={videoRef}
+              className={playing || !imageSrc ? "is-visible" : ""}
+              src={videoSrc}
+              muted
+              loop
+              playsInline
+              preload="metadata"
+            />
+          ) : null}
+        </div>
       ) : (
         <div className="ks-reformulacao-photo-placeholder" aria-label={`Espaço para a foto de ${label.toLowerCase()}`}>
           <BrandStar variant={brandStarVariant(index)} size={120} className="ks-reformulacao-photo-star" />
@@ -1860,6 +1961,64 @@ function ReformulacaoPhoto({ label, src, index }: { label: "Antes" | "Depois"; s
         </div>
       )}
     </figure>
+  );
+}
+
+/** Painel de vídeo (ou foto, se o caso não tiver vídeo) dentro do modal ampliado. */
+function ReformulacaoModalPanel({ label, imageSrc, videoSrc }: { label: "Antes" | "Depois"; imageSrc?: string; videoSrc?: string }) {
+  return (
+    <div className="ks-reformulacao-modal-media">
+      <span className="ks-reformulacao-photo-label">{label}</span>
+      {videoSrc ? (
+        <video src={videoSrc} autoPlay muted loop playsInline controls />
+      ) : imageSrc ? (
+        <img src={imageSrc} alt={`Tattoo ${label.toLowerCase()} da reformulação`} />
+      ) : (
+        <div className="ks-reformulacao-photo-placeholder" aria-label={`Sem mídia de ${label.toLowerCase()}`}>
+          <BrandStar variant={2} size={140} className="ks-reformulacao-photo-star" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReformulacaoCompareModal({ item, onClose }: { item: ReformulationCase; onClose: () => void }) {
+  return (
+    <motion.div
+      className="ks-tattoo-modal ks-reformulacao-modal"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25, ease: EASE }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="ks-tattoo-modal-panel ks-reformulacao-modal-panel"
+        data-lenis-prevent
+        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.98 }}
+        transition={{ duration: 0.35, ease: FLUID_EASE }}
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reformulacao-modal-title"
+      >
+        <button type="button" className="ks-tattoo-modal-close" onClick={onClose} aria-label="Fechar">
+          <X size={20} />
+        </button>
+
+        <header className="ks-reformulacao-modal-header">
+          <span className="ks-label-caps">{item.category}</span>
+          <h2 id="reformulacao-modal-title" className="ks-headline-md">{item.title}</h2>
+        </header>
+
+        <div className="ks-reformulacao-modal-compare">
+          <ReformulacaoModalPanel label="Antes" imageSrc={item.beforeImageUrl} videoSrc={item.beforeVideoUrl} />
+          <ReformulacaoModalPanel label="Depois" imageSrc={item.afterImageUrl} videoSrc={item.afterVideoUrl} />
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

@@ -69,7 +69,7 @@ const BLOCKS: DocumentBlock<HomeDocument>[] = [
           linkValue={String(value.heroSecondaryUrl ?? "")}
           onLinkChange={(heroSecondaryUrl) => update({ heroSecondaryUrl })}
         />
-        <ImagePicker label="Imagem de fundo" folder="home/hero" value={String(value.heroImageUrl ?? "")} onChange={(heroImageUrl) => update({ heroImageUrl })} />
+        <ImagePicker label="Imagem de fundo" folder="home/hero" value={String(value.heroImageUrl ?? "")} compositionHint onChange={(heroImageUrl) => update({ heroImageUrl })} />
       </div>
     ),
   },

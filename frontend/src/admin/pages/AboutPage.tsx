@@ -15,7 +15,7 @@ const ABOUT_BLOCKS: DocumentBlock<AboutDocument>[] = [
       { key: "eyebrow", label: "Texto superior" },
       { key: "title", label: "Título" },
       { key: "intro", label: "Introdução", type: "textarea" },
-      { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "sobre/hero" },
+      { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "sobre/hero", compositionHint: true },
     ],
   },
   {
