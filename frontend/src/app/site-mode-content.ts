@@ -23,24 +23,41 @@ export const defaultSiteModeContent: SiteModeContent = {
 
 const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
 
+/**
+ * Enquanto `loaded` não vira true, o site inteiro fica com opacity:0 (ver
+ * `.ks-shell` em App.tsx — o Preloader só aparece, e só chama onComplete,
+ * depois que isso resolve). Por isso o fetch aqui NÃO pode ficar pendurado
+ * esperando o backend: um backend lento pra acordar (hosts que hibernam
+ * depois de um tempo sem tráfego) ou uma conexão que trava sem erro nem
+ * sucesso deixava a tela em branco indefinidamente, sem nenhum fallback —
+ * exatamente o "às vezes carrega, às vezes não" relatado.
+ */
+const SITE_MODE_TIMEOUT_MS = 4000;
+
 export function useSiteModeContent(): SiteModeContent {
   const [data, setData] = useState<SiteModeContent>({ ...defaultSiteModeContent, loaded: false });
 
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), SITE_MODE_TIMEOUT_MS);
 
-    fetch(`${API_URL}/api/content/site-mode`)
+    fetch(`${API_URL}/api/content/site-mode`, { signal: controller.signal })
       .then((response) => (response.ok ? response.json() : null))
       .then((entry: { value?: Partial<SiteModeContent> } | null) => {
         if (active) setData({ ...defaultSiteModeContent, ...(entry?.value ?? {}), loaded: true });
       })
       .catch(() => {
-        // Sem banco disponível, o site segue publicado normalmente.
+        // Sem banco disponível (ou backend lento demais pra responder a
+        // tempo): o site segue publicado normalmente, com os textos padrão.
         if (active) setData({ ...defaultSiteModeContent, loaded: true });
-      });
+      })
+      .finally(() => window.clearTimeout(timeout));
 
     return () => {
       active = false;
+      controller.abort();
+      window.clearTimeout(timeout);
     };
   }, []);
 
