@@ -201,10 +201,20 @@ let ffmpegInstance: FFmpegInstance | null = null;
 // com o progresso do segundo, parecendo que ele tinha "reiniciado".
 let currentProgressCallback: ((progress: number) => void) | null = null;
 
+// Versão do @ffmpeg/core a carregar do CDN — mantenha igual à do package.json.
+const FFMPEG_CORE_VERSION = "0.12.10";
+const FFMPEG_CORE_BASE = `https://cdn.jsdelivr.net/npm/@ffmpeg/core@${FFMPEG_CORE_VERSION}/dist/esm`;
+
 /**
- * Carrega o núcleo do ffmpeg.wasm uma única vez por sessão (arquivos
- * self-hosted em /ffmpeg/, copiados de @ffmpeg/core pelo script
- * scripts/copy-ffmpeg-core.mjs — ver ali o porquê de não ir pro git).
+ * Carrega o núcleo do ffmpeg.wasm uma única vez por sessão, direto do CDN do
+ * próprio projeto ffmpeg.wasm.
+ *
+ * Achamos melhor não self-hostar: o .wasm sozinho tem ~31 MB, e o Cloudflare
+ * Pages recusa qualquer arquivo acima de 25 MiB no deploy ("Pages only
+ * supports files up to 25 MiB in size") — não tem contorno, é limite da
+ * plataforma. O jsDelivr é o CDN oficialmente documentado pelo ffmpeg.wasm
+ * pra esse caso, então indo por ele em vez de montar infra própria (ex.: R2)
+ * só pra um arquivo estático de terceiros que já é versionado e imutável.
  */
 async function getFFmpeg() {
   const { FFmpeg } = await import("@ffmpeg/ffmpeg");
@@ -219,8 +229,8 @@ async function getFFmpeg() {
 
   if (!ffmpegInstance.loaded) {
     const [coreURL, wasmURL] = await Promise.all([
-      toBlobURL("/ffmpeg/ffmpeg-core.js", "text/javascript"),
-      toBlobURL("/ffmpeg/ffmpeg-core.wasm", "application/wasm"),
+      toBlobURL(`${FFMPEG_CORE_BASE}/ffmpeg-core.js`, "text/javascript"),
+      toBlobURL(`${FFMPEG_CORE_BASE}/ffmpeg-core.wasm`, "application/wasm"),
     ]);
     await ffmpegInstance.load({ coreURL, wasmURL });
   }
