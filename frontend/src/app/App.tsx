@@ -417,15 +417,14 @@ function AppLayout({
   const location = useLocation();
   const isBioRoute = location.pathname === "/bio";
   const siteMode = useSiteModeContent();
-  const siteModeLoaded = siteMode.loaded !== false;
-  const isDevelopmentHome = siteModeLoaded && location.pathname === "/" && siteMode.developmentMode;
-  const shouldShowSiteChrome = siteModeLoaded && !isBioRoute && !siteMode.developmentMode;
+  const isDevelopmentHome = location.pathname === "/" && siteMode.developmentMode;
+  const shouldShowSiteChrome = !isBioRoute && !siteMode.developmentMode;
 
   useEffect(() => {
-    if (!siteModeLoaded || !siteMode.developmentMode) return;
+    if (!siteMode.developmentMode) return;
     if (location.pathname === "/" || isBioRoute) return;
     navigate("/", { replace: true });
-  }, [isBioRoute, location.pathname, navigate, siteMode.developmentMode, siteModeLoaded]);
+  }, [isBioRoute, location.pathname, navigate, siteMode.developmentMode]);
 
   const startProductsTransition = useCallback(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -474,7 +473,7 @@ function AppLayout({
         <PreloaderDoneContext.Provider value={preloaderDone}>
           <ProductsNavContext.Provider value={startProductsTransition}>
             {shouldShowSiteChrome && <Header />}
-            <AnimatedRoutes siteMode={siteMode} siteModeLoaded={siteModeLoaded} />
+            <AnimatedRoutes siteMode={siteMode} />
             {shouldShowSiteChrome && <Footer />}
             {shouldShowSiteChrome && <FloatingWhatsApp />}
           </ProductsNavContext.Provider>
@@ -485,11 +484,11 @@ function AppLayout({
   );
 }
 
-function AnimatedRoutes({ siteMode, siteModeLoaded }: { siteMode: SiteModeContent; siteModeLoaded: boolean }) {
+function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
   const location = useLocation();
   const hasSectionIntro = Boolean(SECTION_INTRO_TITLES[location.pathname]);
   const isBioRoute = location.pathname === "/bio";
-  const shouldRedirectToDevelopmentHome = siteModeLoaded && siteMode.developmentMode && location.pathname !== "/" && !isBioRoute;
+  const shouldRedirectToDevelopmentHome = siteMode.developmentMode && location.pathname !== "/" && !isBioRoute;
 
   useEffect(() => {
     const main = document.getElementById("ks-scroll-root");
@@ -525,7 +524,7 @@ function AnimatedRoutes({ siteMode, siteModeLoaded }: { siteMode: SiteModeConten
             if (definition === "animate") refreshScrollMetrics();
           }}
         >
-          {!siteModeLoaded && !isBioRoute ? null : shouldRedirectToDevelopmentHome ? (
+          {shouldRedirectToDevelopmentHome ? (
             <Navigate to="/" replace />
           ) : (
             <Routes location={location}>
