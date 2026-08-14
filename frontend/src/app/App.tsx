@@ -2346,14 +2346,8 @@ function FaqPage() {
 }
 
 function LinkBioPublicPage() {
-  const navigate = useNavigate();
   const content = useLinkBioContent();
   const buttons = [...content.buttons].filter((item) => item.active).sort((a, b) => a.order - b.order);
-
-  useEffect(() => {
-    const isDesktop = window.matchMedia("(min-width: 900px) and (pointer: fine)").matches;
-    if (isDesktop) navigate("/", { replace: true });
-  }, [navigate]);
 
   const backgroundStyle = {
     "--ks-link-bio-background": content.backgroundUrl ? `url("${content.backgroundUrl}")` : "linear-gradient(145deg, #1f1028, #070609)",
