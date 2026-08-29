@@ -35,14 +35,11 @@ type DocumentEditorProps<T> = {
   store: DocumentStore<T>;
   blocks: DocumentBlock<T>[];
   children?: (value: T, update: (patch: Partial<T>) => void) => ReactNode;
-  /** Prévia ao vivo exibida ao lado do formulário. Recebe o valor em edição,
-   *  ainda não salvo, então reflete cada tecla digitada. */
-  preview?: (value: T) => ReactNode;
 };
 
-export function DocumentEditor<T extends Record<string, unknown>>({ store, blocks, children, preview }: DocumentEditorProps<T>) {
+export function DocumentEditor<T extends Record<string, unknown>>({ store, blocks, children }: DocumentEditorProps<T>) {
   const { value, setValue, loading, error, reload, save } = useDocument(store);
-  const { dirty, setDirty } = useDirtyGuard();
+  const { setDirty } = useDirtyGuard();
   const { show } = useToast();
   /**
    * Alterações pendentes DESTE documento. O `dirty` do guarda é compartilhado com
@@ -85,7 +82,7 @@ export function DocumentEditor<T extends Record<string, unknown>>({ store, block
         <div>
           <span className="ksa-eyebrow">Roteiro da página</span>
           <h2>Escolha uma seção para editar</h2>
-          <p>Os blocos seguem a mesma ordem em que aparecem no site. Abra só o trecho que quer ajustar e acompanhe o resultado na prévia.</p>
+          <p>Os blocos seguem a mesma ordem em que aparecem no site. Abra só o trecho que quer ajustar.</p>
         </div>
         <strong>{blocks.length.toString().padStart(2, "0")} seções</strong>
       </div>
@@ -160,7 +157,5 @@ export function DocumentEditor<T extends Record<string, unknown>>({ store, block
     </div>
   );
 
-  if (!preview) return editor;
-
-  return <div className="ksa-editor-layout">{editor}<aside className="ksa-preview-sticky"><span className="ksa-eyebrow">Prévia ao vivo{dirty ? " · não salvo" : ""}</span>{preview(value)}</aside></div>;
+  return editor;
 }

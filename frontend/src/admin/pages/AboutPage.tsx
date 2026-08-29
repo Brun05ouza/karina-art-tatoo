@@ -2,7 +2,6 @@ import type { DocumentBlock } from "../components/DocumentEditor";
 import { ImagePicker } from "../components/ImagePicker";
 import { Repeater } from "../components/Repeater";
 import { AdminPage } from "../components/Primitives";
-import { AboutPreview } from "../components/AboutPreview";
 import { VisualDocumentEditor } from "../components/VisualDocumentEditor";
 import { aboutStore } from "../data/stores";
 import type { AboutDocument } from "../data/types";
@@ -14,7 +13,7 @@ const ABOUT_BLOCKS: DocumentBlock<AboutDocument>[] = [
     fields: [
       { key: "eyebrow", label: "Texto superior" },
       { key: "title", label: "Título" },
-      { key: "intro", label: "Introdução", type: "textarea" },
+      { key: "intro", label: "Introdução", type: "textarea", rows: 2, full: true },
       { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "sobre/hero", compositionHint: true },
     ],
   },
@@ -22,8 +21,8 @@ const ABOUT_BLOCKS: DocumentBlock<AboutDocument>[] = [
     title: "Biografia",
     summary: "História, frase e retrato principal",
     fields: [
-      { key: "biography", label: "Sua história", type: "textarea" },
-      { key: "quote", label: "Frase de destaque", type: "textarea" },
+      { key: "biography", label: "Sua história", type: "textarea", rows: 4, full: true },
+      { key: "quote", label: "Frase de destaque", type: "textarea", rows: 2, full: true },
       { key: "imageUrl", label: "Retrato vertical", type: "image", folder: "sobre/retrato" },
     ],
   },
@@ -31,7 +30,7 @@ const ABOUT_BLOCKS: DocumentBlock<AboutDocument>[] = [
     title: "Bastidores",
     summary: "Uma foto sua no dia a dia, com uma legenda descontraída",
     fields: [
-      { key: "behindScenesCaption", label: "Legenda da foto", type: "textarea", rows: 2, hint: "Uma frase curta e com personalidade, como se fosse uma legenda de rede social." },
+      { key: "behindScenesCaption", label: "Legenda da foto", type: "textarea", rows: 2, full: true, hint: "Uma frase curta e com personalidade, como se fosse uma legenda de rede social." },
     ],
     render: (value, update) => (
       <div className="ksa-block-list">
@@ -70,11 +69,10 @@ const ABOUT_BLOCKS: DocumentBlock<AboutDocument>[] = [
 
 export function AboutPage() {
   return (
-    <AdminPage eyebrow="Apresentação" title="Sobre" description="A prévia agora é a área principal: selecione uma seção no site e ajuste os campos no inspector.">
+    <AdminPage eyebrow="Apresentação" title="Sobre" description="Edite a página Sobre por seção: abertura, biografia, bastidores e abordagem.">
       <VisualDocumentEditor<AboutDocument>
         store={aboutStore}
         blocks={ABOUT_BLOCKS}
-        preview={(value, tools) => <AboutPreview value={value} editor={tools} />}
       />
     </AdminPage>
   );

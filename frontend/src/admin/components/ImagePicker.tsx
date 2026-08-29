@@ -119,7 +119,7 @@ export function ImagePicker({
         )}
       </div>
       <small className="ksa-hint">
-        JPG, PNG, WebP, AVIF ou HEIC · HEIC vira JPG automaticamente · até 2 MB no bucket.
+        JPG, PNG, WebP, AVIF ou HEIC · HEIC vira JPG automaticamente · até 8 MB no bucket.
       </small>
       {error && <small className="ksa-error">{error}</small>}
     </div>

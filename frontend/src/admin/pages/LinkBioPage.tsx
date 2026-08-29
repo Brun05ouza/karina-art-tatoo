@@ -1,7 +1,6 @@
 import { ArrowDown, ArrowUp, Plus, Save, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { ImagePicker } from "../components/ImagePicker";
-import { LinkBioPreview } from "../components/LinkBioPreview";
 import {
   AdminButton,
   AdminPage,
@@ -165,10 +164,9 @@ export function LinkBioPage() {
     <AdminPage
       eyebrow="Página compacta"
       title="Link da bio"
-      description="Edite a versão mobile da bio exatamente como ela aparece em /bio."
+      description="Edite a versão mobile da bio em /bio."
     >
-      <div className="ksa-link-bio-layout">
-        <div className="ksa-document-editor">
+      <div className="ksa-document-editor">
           <CollapsibleBlock title="Visual e perfil" summary="Fundo, foto e textos principais" defaultOpen>
             <div className="ksa-grid-2">
               <div className="is-full">
@@ -253,12 +251,6 @@ export function LinkBioPage() {
             <span><i />{dirty ? "Alterações não salvas" : "Tudo salvo"}</span>
             <AdminButton onClick={() => void submit()} disabled={!dirty}><Save size={17} />Salvar alterações</AdminButton>
           </div>
-        </div>
-
-        <aside className="ksa-preview-sticky">
-          <span className="ksa-eyebrow">Prévia mobile</span>
-          <LinkBioPreview value={value} />
-        </aside>
       </div>
     </AdminPage>
   );

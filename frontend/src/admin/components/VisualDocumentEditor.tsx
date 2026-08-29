@@ -1,5 +1,5 @@
 import { RotateCcw, Save } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import type { DocumentBlock, DocumentField } from "./DocumentEditor";
 import { ImagePicker } from "./ImagePicker";
 import { AdminButton, CollapsibleBlock, Field, InternalLinkInput, SelectField, TextArea, TextInput, Toggle } from "./Primitives";
@@ -9,25 +9,17 @@ import { useDocument } from "../hooks/useDocument";
 import { useDirtyGuard } from "../hooks/useDirtyGuard";
 import { useToast } from "../hooks/useToast";
 
-export type VisualEditorPreviewTools = {
-  activeSection: string;
-  focusToken: number;
-  onSelectSection(section: string): void;
-};
-
 type VisualDocumentEditorProps<T> = {
   store: DocumentStore<T>;
   blocks: DocumentBlock<T>[];
-  preview: (value: T, tools: VisualEditorPreviewTools) => ReactNode;
 };
 
-export function VisualDocumentEditor<T extends Record<string, unknown>>({ store, blocks, preview }: VisualDocumentEditorProps<T>) {
+export function VisualDocumentEditor<T extends Record<string, unknown>>({ store, blocks }: VisualDocumentEditorProps<T>) {
   const { value, setValue, loading, error, reload, save } = useDocument(store);
   const { setDirty } = useDirtyGuard();
   const { show } = useToast();
   const [documentDirty, setDocumentDirty] = useState(false);
   const [activeSection, setActiveSection] = useState(blocks[0]?.title ?? "");
-  const [previewFocusToken, setPreviewFocusToken] = useState(0);
 
   const activeBlock = useMemo(() => blocks.find((block) => block.title === activeSection) ?? blocks[0], [activeSection, blocks]);
 
@@ -62,18 +54,13 @@ export function VisualDocumentEditor<T extends Record<string, unknown>>({ store,
     }
   };
 
-  const selectSection = (section: string) => {
-    setActiveSection(section);
-    setPreviewFocusToken((current) => current + 1);
-  };
-
   return (
     <div className="ksa-visual-editor">
       <div className="ksa-visual-topline">
         <div>
-          <span className="ksa-eyebrow">Editor visual</span>
-          <h2>Edite olhando para o site</h2>
-          <p>Clique numa seção da prévia ou escolha pela trilha abaixo. O painel ao lado mostra só os campos daquele trecho.</p>
+          <span className="ksa-eyebrow">Editor</span>
+          <h2>Edite por seção</h2>
+          <p>Escolha uma seção na trilha abaixo. O painel mostra só os campos daquele trecho.</p>
           {documentDirty ? <small className="ksa-visual-change-note">Mudanças em rascunho — salve quando terminar ou descarte para voltar ao último conteúdo salvo.</small> : null}
         </div>
       </div>
@@ -84,7 +71,7 @@ export function VisualDocumentEditor<T extends Record<string, unknown>>({ store,
             key={block.title}
             type="button"
             className={block.title === activeBlock?.title ? "is-active" : ""}
-            onClick={() => selectSection(block.title)}
+            onClick={() => setActiveSection(block.title)}
           >
             <span>{String(index + 1).padStart(2, "0")}</span>
             {block.title}
@@ -92,11 +79,7 @@ export function VisualDocumentEditor<T extends Record<string, unknown>>({ store,
         ))}
       </div>
 
-      <div className="ksa-visual-workbench">
-        <section className="ksa-visual-canvas" aria-label="Prévia editável da página">
-          {preview(value, { activeSection: activeBlock?.title ?? activeSection, focusToken: previewFocusToken, onSelectSection: selectSection })}
-        </section>
-
+      <div className="ksa-visual-workbench ksa-visual-workbench-form">
         {activeBlock ? (
           <aside className="ksa-visual-inspector">
             <CollapsibleBlock title={activeBlock.title} summary={activeBlock.summary} defaultOpen>
@@ -143,9 +126,16 @@ function FieldControl<T extends Record<string, unknown>>({ field, value, update 
   }
 
   if (field.type === "textarea") {
+    const rows = field.rows ?? 2;
+    const wide = Boolean(field.full || rows >= 3);
     return (
-      <Field className={className} label={field.label} hint={field.hint}>
-        <TextArea rows={field.rows ?? 3} value={String(current ?? "")} placeholder={field.placeholder} onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)} />
+      <Field className={wide ? "is-full" : ""} label={field.label} hint={field.hint}>
+        <TextArea
+          rows={rows}
+          value={String(current ?? "")}
+          placeholder={field.placeholder}
+          onChange={(event) => update({ [field.key]: event.target.value } as Partial<T>)}
+        />
       </Field>
     );
   }

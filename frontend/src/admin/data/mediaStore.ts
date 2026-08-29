@@ -13,7 +13,8 @@ const acceptedImageTypes = new Set([
 const acceptedVideoTypes = new Set(["video/mp4", "video/webm"]);
 const movVideoTypes = new Set(["video/quicktime", "video/x-quicktime"]);
 const heicImageTypes = new Set(["image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence"]);
-const maxStoredImageBytes = 2 * 1024 * 1024;
+const maxStoredImageBytes = 8 * 1024 * 1024;
+const maxStoredImageMb = Math.round(maxStoredImageBytes / (1024 * 1024));
 const maxHeicSourceBytes = 20 * 1024 * 1024;
 const maxStoredVideoBytes = 20 * 1024 * 1024;
 const maxMovSourceBytes = 150 * 1024 * 1024;
@@ -339,8 +340,8 @@ export async function uploadImage(file: File, folder = "site") {
   if (uploadFile.size > maxStoredImageBytes) {
     throw new Error(
       isHeicImage(file)
-        ? "A imagem convertida ficou acima de 2 MB. Tente um HEIC menor ou exporte em JPG."
-        : "A imagem precisa ter no máximo 2 MB.",
+        ? `A imagem convertida ficou acima de ${maxStoredImageMb} MB. Tente um HEIC menor ou exporte em JPG.`
+        : `A imagem precisa ter no máximo ${maxStoredImageMb} MB.`,
     );
   }
 

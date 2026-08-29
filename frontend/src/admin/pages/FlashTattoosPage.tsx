@@ -1,8 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { CollectionManager } from "../components/CollectionManager";
 import type { DocumentBlock } from "../components/DocumentEditor";
 import { AdminPage } from "../components/Primitives";
-import { FlashTattoosPreview } from "../components/FlashTattoosPreview";
 import { VisualDocumentEditor } from "../components/VisualDocumentEditor";
 import { flashStore, flashPageStore } from "../data/stores";
 import type { FlashPageDocument, FlashTattoo } from "../data/types";
@@ -31,14 +30,12 @@ const HERO_BLOCK: DocumentBlock<FlashPageDocument> = {
   fields: [
     { key: "heroKicker", label: "Texto superior" },
     { key: "heroTitle", label: "Título principal" },
-    { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 3, full: true },
+    { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 2, full: true },
     { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "flash-tattoos/hero", full: true, compositionHint: true },
   ],
 };
 
 export function FlashTattoosPage() {
-  const [flashes, setFlashes] = useState<FlashTattoo[]>([]);
-
   const blocks = useMemo<DocumentBlock<FlashPageDocument>[]>(() => [
     HERO_BLOCK,
     {
@@ -55,7 +52,6 @@ export function FlashTattoosPage() {
               emptyItem: empty,
               categories,
               quickStatuses: statuses,
-              onPreviewItemsChange: setFlashes,
               secondary: (item) => `${item.price || "Valor sob consulta"} · ${item.size || "Tamanho livre"}`,
               fields: [
                 { key: "imageUrl", label: "Imagem", type: "image", folder: "flash-tattoos/catalogo", full: true },
@@ -78,12 +74,11 @@ export function FlashTattoosPage() {
     <AdminPage
       eyebrow="Catálogo"
       title="Flash tattoos"
-      description="A prévia agora é a área principal: selecione o Hero ou o catálogo e ajuste no inspector."
+      description="Edite o hero e o catálogo de flash tattoos."
     >
       <VisualDocumentEditor<FlashPageDocument>
         store={flashPageStore}
         blocks={blocks}
-        preview={(doc, tools) => <FlashTattoosPreview doc={doc} items={flashes} editor={tools} />}
       />
     </AdminPage>
   );

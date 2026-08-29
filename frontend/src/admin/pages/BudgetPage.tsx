@@ -1,6 +1,5 @@
 import type { DocumentBlock } from "../components/DocumentEditor";
 import { AdminPage } from "../components/Primitives";
-import { BudgetPreview } from "../components/BudgetPreview";
 import { VisualDocumentEditor } from "../components/VisualDocumentEditor";
 import { budgetPageStore } from "../data/stores";
 import type { BudgetPageDocument } from "../data/types";
@@ -12,7 +11,7 @@ const BLOCKS: DocumentBlock<BudgetPageDocument>[] = [
     fields: [
       { key: "heroKicker", label: "Texto superior" },
       { key: "heroTitle", label: "Título principal" },
-      { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 3, full: true },
+      { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 2, full: true },
       { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "orcamento/hero", full: true, compositionHint: true },
     ],
   },
@@ -22,7 +21,7 @@ const BLOCKS: DocumentBlock<BudgetPageDocument>[] = [
     fields: [
       { key: "introEyebrow", label: "Texto superior" },
       { key: "introTitle", label: "Título" },
-      { key: "introText", label: "Texto", type: "textarea", rows: 4, full: true },
+      { key: "introText", label: "Texto", type: "textarea", rows: 2, full: true },
       { key: "stepOneTitle", label: "Etapa 01 · título" },
       { key: "stepOneText", label: "Etapa 01 · texto", type: "textarea", rows: 2 },
       { key: "stepTwoTitle", label: "Etapa 02 · título" },
@@ -39,7 +38,7 @@ const BLOCKS: DocumentBlock<BudgetPageDocument>[] = [
       { key: "formTitle", label: "Título do formulário" },
       { key: "submitHelper", label: "Texto antes do botão", type: "textarea", rows: 2, full: true },
       { key: "submitButton", label: "Texto do botão" },
-      { key: "whatsappIntro", label: "Mensagem inicial do WhatsApp", type: "textarea", rows: 3, full: true },
+      { key: "whatsappIntro", label: "Mensagem inicial do WhatsApp", type: "textarea", rows: 2, full: true },
     ],
   },
 ];
@@ -54,7 +53,6 @@ export function BudgetPage() {
       <VisualDocumentEditor<BudgetPageDocument>
         store={budgetPageStore}
         blocks={BLOCKS}
-        preview={(doc, tools) => <BudgetPreview doc={doc} editor={tools} />}
       />
     </AdminPage>
   );

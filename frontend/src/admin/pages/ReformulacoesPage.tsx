@@ -1,8 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { CollectionManager } from "../components/CollectionManager";
 import type { DocumentBlock } from "../components/DocumentEditor";
 import { AdminPage, Field, TextArea, TextInput } from "../components/Primitives";
-import { ReformulacoesPreview } from "../components/ReformulacoesPreview";
 import { VisualDocumentEditor } from "../components/VisualDocumentEditor";
 import { reformulationsStore, reformulationsTextStore } from "../data/stores";
 import type { ReformulationCard, ReformulationItem, ReformulationPoint, ReformulationsDocument } from "../data/types";
@@ -45,7 +44,7 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
     fields: [
       { key: "heroEyebrow", label: "Texto superior" },
       { key: "heroTitle", label: "Título principal" },
-      { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 3, full: true },
+      { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 2, full: true },
       { key: "heroButton", label: "Texto do botão" },
       { key: "heroButtonUrl", label: "Link do botão", type: "internalLink" },
       { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "reformulacoes/hero", compositionHint: true },
@@ -56,11 +55,11 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
     summary: "Seção logo abaixo do hero",
     fields: [
       { key: "introEyebrow", label: "Texto superior" },
-      { key: "introTitle", label: "Título", type: "textarea", rows: 2 },
-      { key: "introText", label: "Texto", type: "textarea", rows: 3, full: true },
+      { key: "introTitle", label: "Título" },
+      { key: "introText", label: "Texto", type: "textarea", rows: 2, full: true },
       { key: "panelEyebrow", label: "Título do painel ao lado" },
-      { key: "panelTextOne", label: "Primeiro parágrafo do painel", type: "textarea", rows: 3, full: true },
-      { key: "panelTextTwo", label: "Segundo parágrafo do painel", type: "textarea", rows: 3, full: true },
+      { key: "panelTextOne", label: "Primeiro parágrafo do painel", type: "textarea", rows: 2, full: true },
+      { key: "panelTextTwo", label: "Segundo parágrafo do painel", type: "textarea", rows: 2, full: true },
     ],
     render: (value, update) => (
       <div className="ksa-block-list">
@@ -86,7 +85,7 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
     fields: [
       { key: "portfolioEyebrow", label: "Texto superior" },
       { key: "portfolioTitle", label: "Título" },
-      { key: "portfolioText", label: "Texto", type: "textarea", rows: 3, full: true },
+      { key: "portfolioText", label: "Texto", type: "textarea", rows: 2, full: true },
       { key: "caseNote", label: "Nota exibida nos casos", type: "textarea", rows: 2, full: true },
     ],
   },
@@ -96,7 +95,7 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
     fields: [
       { key: "possibilitiesEyebrow", label: "Texto superior" },
       { key: "possibilitiesTitle", label: "Título" },
-      { key: "possibilitiesText", label: "Texto", type: "textarea", rows: 3, full: true },
+      { key: "possibilitiesText", label: "Texto", type: "textarea", rows: 2, full: true },
     ],
     render: (value, update) => (
       <div className="ksa-block-list">
@@ -113,7 +112,7 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
               </Field>
               <Field label={`${String(index + 1).padStart(2, "0")} · Descrição`}>
                 <TextArea
-                  rows={3}
+                  rows={2}
                   value={card.text}
                   onChange={(event) => update({ possibilityCards: patchCard(value.possibilityCards, card.id, { text: event.target.value }) })}
                 />
@@ -128,7 +127,7 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
     summary: "Convite no fim da página",
     fields: [
       { key: "ctaTitle", label: "Título" },
-      { key: "ctaText", label: "Texto", type: "textarea", rows: 3, full: true },
+      { key: "ctaText", label: "Texto", type: "textarea", rows: 2, full: true },
       { key: "ctaButton", label: "Texto do botão" },
       { key: "ctaButtonUrl", label: "Link do botão", type: "internalLink" },
     ],
@@ -136,8 +135,6 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
 ];
 
 export function ReformulacoesPage() {
-  const [casos, setCasos] = useState<ReformulationItem[]>([]);
-
   const blocks = useMemo<DocumentBlock<ReformulationsDocument>[]>(() => {
     const casesBlock = TEXT_BLOCKS.find((block) => block.title === "Casos");
     return TEXT_BLOCKS.map((block) => {
@@ -158,7 +155,6 @@ export function ReformulacoesPage() {
                 categories,
                 image: (item) => item.afterImageUrl || item.beforeImageUrl,
                 secondary: (item) => item.solution || item.description || item.category,
-                onPreviewItemsChange: setCasos,
                 fields: [
                   { key: "beforeImageUrl", label: "1 · Imagem de antes", type: "image", imageKey: "beforeImageKey", folder: "reformulacoes/antes" },
                   { key: "afterImageUrl", label: "2 · Imagem de depois", type: "image", imageKey: "afterImageKey", folder: "reformulacoes/depois" },
@@ -185,12 +181,11 @@ export function ReformulacoesPage() {
     <AdminPage
       eyebrow="Antes e depois"
       title="Reformulações"
-      description="A prévia agora é a área principal: selecione uma seção e ajuste os textos ou casos no inspector."
+      description="Edite os textos da página e os casos de reformulação."
     >
       <VisualDocumentEditor<ReformulationsDocument>
         store={reformulationsTextStore}
         blocks={blocks}
-        preview={(doc, tools) => <ReformulacoesPreview doc={doc} items={casos} editor={tools} />}
       />
     </AdminPage>
   );

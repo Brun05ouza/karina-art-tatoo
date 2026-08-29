@@ -1,8 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { CollectionManager } from "../components/CollectionManager";
 import type { DocumentBlock } from "../components/DocumentEditor";
 import { AdminPage } from "../components/Primitives";
-import { ProductsPreview } from "../components/ProductsPreview";
 import { VisualDocumentEditor } from "../components/VisualDocumentEditor";
 import { productsStore, productsPageStore } from "../data/stores";
 import type { ProductsPageDocument, ProductItem } from "../data/types";
@@ -32,7 +31,7 @@ const TEXT_BLOCKS: DocumentBlock<ProductsPageDocument>[] = [
       { key: "heroKicker", label: "Texto superior" },
       { key: "heroTitle", label: "Título principal" },
       { key: "heroText1", label: "Primeiro parágrafo", type: "textarea", rows: 2, full: true },
-      { key: "heroText2", label: "Segundo parágrafo", type: "textarea", rows: 3, full: true },
+      { key: "heroText2", label: "Segundo parágrafo", type: "textarea", rows: 2, full: true },
       { key: "heroButton", label: "Texto do botão" },
       { key: "heroImageUrl", label: "Imagem lateral", type: "image", folder: "produtos/hero", full: true, compositionHint: true },
     ],
@@ -54,8 +53,6 @@ const TEXT_BLOCKS: DocumentBlock<ProductsPageDocument>[] = [
 ];
 
 export function ProductsPage() {
-  const [products, setProducts] = useState<ProductItem[]>([]);
-
   const blocks = useMemo<DocumentBlock<ProductsPageDocument>[]>(() => TEXT_BLOCKS.map((block) => {
     if (block.title !== "Catálogo") return block;
 
@@ -70,7 +67,6 @@ export function ProductsPage() {
               singular: "Produto",
               emptyItem: empty,
               categories,
-              onPreviewItemsChange: setProducts,
               secondary: (item) => `${item.price || "Sob consulta"} · ${item.category}`,
               fields: [
                 { key: "imageUrl", label: "Imagem", type: "image", folder: "produtos/catalogo", full: true },
@@ -94,12 +90,11 @@ export function ProductsPage() {
     <AdminPage
       eyebrow="Coleções"
       title="Produtos"
-      description="A prévia agora é a área principal: selecione Hero, Catálogo ou Chamada final e ajuste no inspector."
+      description="Edite o hero, o catálogo e a chamada final da página de produtos."
     >
       <VisualDocumentEditor<ProductsPageDocument>
         store={productsPageStore}
         blocks={blocks}
-        preview={(doc, tools) => <ProductsPreview doc={doc} items={products} editor={tools} />}
       />
     </AdminPage>
   );

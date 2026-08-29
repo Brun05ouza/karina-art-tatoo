@@ -34,13 +34,6 @@ export type CollectionConfig<T extends BaseItem> = {
   quickStatuses?: string[];
   secondary?(item: T): string;
   image?(item: T): string | undefined;
-  preview?: (items: T[]) => React.ReactNode;
-  /**
-   * Avisa a página a cada mudança na lista que a prévia deveria mostrar (itens
-   * salvos + rascunho em edição). Serve para telas que combinam esta coleção com
-   * um documento de textos e precisam de uma prévia única — ver ReformulacoesPage.
-   */
-  onPreviewItemsChange?: (items: T[]) => void;
   /**
    * Só precisam ser passados se algum campo for do tipo "video": identificam
    * esta coleção pra fila global de upload (uploads/uploadQueue.ts) — é o que
@@ -105,29 +98,6 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
     if (typeof draftValue === "string" && draftValue.trim()) values.add(draftValue.trim());
     return Array.from(values);
   };
-
-  /**
-   * O que a prévia recebe: os itens salvos COM o rascunho em edição aplicado
-   * por cima. Sem isso a prévia só mudava depois do "Salvar alterações" — o
-   * formulário trabalha num draft separado, que não estava chegando aqui.
-   *
-   * Item novo entra na lista (aparece só se estiver ativo/publicado, porque cada
-   * prévia aplica seus próprios filtros); item existente é substituído. A
-   * ordenação por `order` é reaplicada para que mexer no campo Ordem também
-   * reposicione o item ao vivo.
-   */
-  const previewItems = useMemo(() => {
-    if (!draft) return items;
-    const merged = items.some((item) => item.id === draft.id)
-      ? items.map((item) => (item.id === draft.id ? draft : item))
-      : [...items, draft];
-    return [...merged].sort((a, b) => a.order - b.order);
-  }, [items, draft]);
-
-  const notifyPreview = config.onPreviewItemsChange;
-  useEffect(() => {
-    notifyPreview?.(previewItems);
-  }, [notifyPreview, previewItems]);
 
   /**
    * Card do upload clicado após terminar (ver uploads/uploadQueue.ts): assim
@@ -270,17 +240,7 @@ export function CollectionManager<T extends BaseItem>({ config }: { config: Coll
     </>
   );
 
-  return config.preview ? (
-    <div className="ksa-editor-layout">
-      <div className="ksa-editor-main">
-        {content}
-      </div>
-      <aside className="ksa-preview-sticky">
-        <span className="ksa-eyebrow">Prévia ao vivo{draft ? " · não salvo" : ""}</span>
-        {config.preview(previewItems)}
-      </aside>
-    </div>
-  ) : content;
+  return content;
 }
 
 function ChoicePicker({

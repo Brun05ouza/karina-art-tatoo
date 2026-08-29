@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { CollectionManager } from "../components/CollectionManager";
 import type { DocumentBlock } from "../components/DocumentEditor";
-import { PortfolioPreview } from "../components/PortfolioPreview";
 import { AdminPage } from "../components/Primitives";
 import { VisualDocumentEditor } from "../components/VisualDocumentEditor";
 import { portfolioPageStore, portfolioStore } from "../data/stores";
@@ -13,8 +12,6 @@ const styles = ["Fine Line", "Minimalista", "Blackwork", "Botânico", "Ornamenta
 const empty: PortfolioItem = { id: "", order: 1, active: true, title: "", description: "", category: categories[0], status: "Rascunho", bodyLocation: "", style: "", featured: false, imageUrl: "", imageKey: "" };
 
 export function PortfolioPage() {
-  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
-
   const blocks = useMemo<DocumentBlock<PortfolioPageDocument>[]>(() => [
     {
       title: "Hero",
@@ -22,7 +19,7 @@ export function PortfolioPage() {
       fields: [
         { key: "heroKicker", label: "Texto superior", hint: "Linha pequena acima do título." },
         { key: "heroTitle", label: "Título principal", hint: "O título grande desta página." },
-        { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 3, full: true, hint: "Frase abaixo do título, explicando o que a página mostra." },
+        { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 2, full: true, hint: "Frase abaixo do título, explicando o que a página mostra." },
         { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "portfolio/hero", full: true, compositionHint: true },
       ],
     },
@@ -39,7 +36,6 @@ export function PortfolioPage() {
               singular: "Trabalho",
               emptyItem: empty,
               categories,
-              onPreviewItemsChange: setPortfolioItems,
               secondary: (item) => `${item.bodyLocation || "Local não informado"} · ${item.style || "Estilo não informado"}`,
               fields: [
                 { key: "imageUrl", label: "Imagem do trabalho", type: "image", folder: "portfolio/trabalhos" },
@@ -49,7 +45,7 @@ export function PortfolioPage() {
                 { key: "bodyLocation", label: "Local do corpo", type: "select", options: bodyLocations, allowCustom: true },
                 { key: "style", label: "Estilo", type: "select", options: styles, allowCustom: true },
                 { key: "status", label: "Status", type: "select", options: ["Publicado", "Rascunho", "Oculto"] },
-                { key: "featured", label: "Destaque na Home", type: "toggle" },
+                { key: "featured", label: "Mostrar na home", type: "toggle" },
                 { key: "active", label: "Item ativo", type: "toggle" },
               ],
             }}
@@ -60,11 +56,10 @@ export function PortfolioPage() {
   ], []);
 
   return (
-    <AdminPage eyebrow="Trabalhos" title="Portfólio" description="A prévia agora é a área principal: selecione o Hero ou a lista de trabalhos e ajuste no inspector.">
+    <AdminPage eyebrow="Trabalhos" title="Portfólio" description="Edite o hero e os trabalhos do portfólio.">
       <VisualDocumentEditor<PortfolioPageDocument>
         store={portfolioPageStore}
         blocks={blocks}
-        preview={(doc, tools) => <PortfolioPreview doc={doc} items={portfolioItems} editor={tools} />}
       />
     </AdminPage>
   );

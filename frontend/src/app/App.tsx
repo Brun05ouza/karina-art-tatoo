@@ -874,12 +874,15 @@ function HomeServicesSection({ data }: { data: HomeContent }) {
 
 function MuralPortfolioPreview({ data }: { data: HomeContent }) {
   const portfolioItems = usePortfolioItems(false);
+  const featuredItems = portfolioItems.filter((item) => item.featured);
   const manualIds = data.portfolioIds || [];
   const manualItems = manualIds
     .map((id) => portfolioItems.find((item) => item.id === id))
     .filter((item): item is PortfolioWork => Boolean(item));
-  const automaticItems = portfolioItems.filter((item) => item.featured);
-  const displayedItems = (data.portfolioMode === "manual" ? manualItems : automaticItems).slice(0, 6);
+  // Preferência: itens marcados como “Mostrar na home”. Se não houver, cai no
+  // modo manual legado (portfolioIds) para não esvaziar a seção de quem ainda
+  // não migrou os destaques.
+  const displayedItems = (featuredItems.length > 0 ? featuredItems : manualItems).slice(0, 6);
 
   return (
     <section className="ks-mural-section">
