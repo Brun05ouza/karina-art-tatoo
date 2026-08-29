@@ -27,17 +27,21 @@ export function queueRefresh() {
 }
 
 export function registerLenis(instance: Lenis) {
+  if (preferNativeScroll) {
+    try {
+      instance.destroy();
+    } catch {
+      // ignore
+    }
+    return;
+  }
+
   lenis = instance;
 
   instance.on("scroll", ({ scroll }) => {
     ScrollTrigger.update();
     notifyScrollListeners(scroll);
   });
-
-  if (preferNativeScroll) {
-    instance.stop();
-    document.documentElement.classList.add("ks-native-scroll");
-  }
 }
 
 export function unregisterLenis() {
@@ -93,6 +97,12 @@ export function unlockScroll() {
 }
 
 export function ensureScrollUnlocked() {
+  if (preferNativeScroll) {
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+    return;
+  }
+
   if (lenis?.isStopped && lockCount === 0) {
     lenis.start();
   }
@@ -117,6 +127,13 @@ export function scrollTo(
 }
 
 export function resetScrollPosition() {
+  if (preferNativeScroll) {
+    const root = document.getElementById("ks-scroll-root");
+    if (root) root.scrollTop = 0;
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+    return;
+  }
+
   ensureScrollUnlocked();
 
   if (lenis) {
@@ -133,21 +150,35 @@ export function refreshScrollMetrics() {
   ScrollTrigger.refresh();
 }
 
-/** Pausa o Lenis e libera o scroll nativo (ex.: /bio no mobile). */
+/** Pausa/destrói o Lenis e libera scroll nativo (ex.: /bio no mobile). */
 export function pauseSmoothScroll() {
   preferNativeScroll = true;
   document.documentElement.classList.add("ks-native-scroll");
-  document.body.style.overflow = "";
-  document.documentElement.style.overflow = "";
+  document.body.style.removeProperty("overflow");
+  document.documentElement.style.removeProperty("overflow");
+  document.body.style.removeProperty("height");
+  document.documentElement.style.removeProperty("height");
+
   if (!lenis) return;
-  lenis.stop();
+  try {
+    lenis.stop();
+    lenis.destroy();
+  } catch {
+    // ignore
+  }
+  lenis = null;
 }
 
 /** Retoma o Lenis após navegação fora de rotas com scroll nativo. */
 export function resumeSmoothScroll() {
   preferNativeScroll = false;
   document.documentElement.classList.remove("ks-native-scroll");
-  if (!lenis) return;
-  if (lockCount === 0) lenis.start();
-  lenis.resize();
+}
+
+export function isNativeScrollPreferred() {
+  return preferNativeScroll;
+}
+
+export function getLenis() {
+  return lenis;
 }

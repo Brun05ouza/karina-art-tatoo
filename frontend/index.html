@@ -113,6 +113,13 @@
       </div>
     </noscript>
     <div id="root"></div>
+    <script>
+      (function () {
+        if (location.pathname === "/bio") {
+          document.documentElement.classList.add("ks-native-scroll");
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

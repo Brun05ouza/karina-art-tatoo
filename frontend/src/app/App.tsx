@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { gsap } from "gsap";
@@ -343,46 +343,6 @@ const tattooGalleryItems = [
 function AppShell() {
   const [preloaderDone, setPreloaderDone] = useState(false);
 
-  useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
-
-    const lenis = new Lenis({
-      lerp: 0.12,
-      smoothWheel: true,
-      wheelMultiplier: 1.0,   // padrão — sem redução artificial
-      touchMultiplier: 1.2,
-      autoRaf: false,
-      autoResize: false,       // gerenciamos resize manualmente via queueRefresh/refreshScrollMetrics
-    });
-
-    registerLenis(lenis);
-
-    const tickerFn = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(tickerFn);
-    gsap.ticker.lagSmoothing(0);
-
-    const onWindowLoad = () => refreshScrollMetrics();
-    const onVisibilityChange = () => {
-      if (document.visibilityState === "visible") refreshScrollMetrics();
-    };
-
-    window.addEventListener("load", onWindowLoad);
-    document.addEventListener("visibilitychange", onVisibilityChange);
-
-    const refreshTimer = window.setTimeout(() => refreshScrollMetrics(), 300);
-
-    return () => {
-      window.clearTimeout(refreshTimer);
-      window.removeEventListener("load", onWindowLoad);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-      gsap.ticker.remove(tickerFn);
-      unobserveScrollRoot();
-      unregisterLenis();
-      lenis.destroy();
-    };
-  }, []);
-
   return (
     <BrowserRouter>
       <ComingSoonProvider>
@@ -415,12 +375,54 @@ function AppLayout({
     navigate("/", { replace: true });
   }, [isBioRoute, location.pathname, navigate, siteMode.developmentMode]);
 
-  useEffect(() => {
+  // Lenis só fora da /bio — na bio o scroll é 100% nativo no #ks-scroll-root.
+  useLayoutEffect(() => {
     if (isBioRoute) {
       pauseSmoothScroll();
-      return () => resumeSmoothScroll();
+      return;
     }
     resumeSmoothScroll();
+  }, [isBioRoute]);
+
+  useEffect(() => {
+    if (isBioRoute) return;
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const lenis = new Lenis({
+      lerp: 0.12,
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.2,
+      autoRaf: false,
+      autoResize: false,
+    });
+
+    registerLenis(lenis);
+
+    const tickerFn = (time: number) => lenis.raf(time * 1000);
+    gsap.ticker.add(tickerFn);
+    gsap.ticker.lagSmoothing(0);
+
+    const onWindowLoad = () => refreshScrollMetrics();
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") refreshScrollMetrics();
+    };
+
+    window.addEventListener("load", onWindowLoad);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    const refreshTimer = window.setTimeout(() => refreshScrollMetrics(), 300);
+
+    return () => {
+      window.clearTimeout(refreshTimer);
+      window.removeEventListener("load", onWindowLoad);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      gsap.ticker.remove(tickerFn);
+      unobserveScrollRoot();
+      unregisterLenis();
+      lenis.destroy();
+    };
   }, [isBioRoute]);
 
   const startProductsTransition = useCallback(() => {
@@ -505,7 +507,7 @@ function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
   }, [location.pathname]);
 
   return (
-    <main id="ks-scroll-root">
+    <main id="ks-scroll-root" className={isBioRoute ? "is-bio-scroll" : undefined}>
       <AnimatePresence
         mode="wait"
         onExitComplete={() => {
@@ -514,12 +516,13 @@ function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
         }}
       >
         <motion.div
-          className="ks-route-content"
+          className={`ks-route-content${isBioRoute ? " is-bio-route" : ""}`}
           key={location.pathname}
           initial={skipEnterMotion ? false : { opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={isBioRoute ? { opacity: 1 } : { opacity: 1, y: 0 }}
           exit={hasSectionIntro || isBioRoute ? { opacity: 0 } : { opacity: 0, y: -14 }}
           transition={{ duration: hasSectionIntro || isBioRoute ? 0.3 : 0.5, ease: EASE }}
+          style={isBioRoute ? { transform: "none" } : undefined}
           onAnimationComplete={(definition) => {
             if (definition === "animate") refreshScrollMetrics();
           }}

@@ -130,24 +130,45 @@ body {
 
 .ks-shell.is-bio {
   background: #000;
-  min-height: 100svh;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
 }
 
+/* /bio: documento trava; o scroll acontece no #ks-scroll-root */
 html.ks-native-scroll,
 html.ks-native-scroll body {
-  height: auto;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior-y: auto;
-  touch-action: pan-y;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  position: relative;
+}
+
+html.ks-native-scroll #root,
+html.ks-native-scroll .ks-shell.is-bio {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 html.ks-native-scroll #ks-scroll-root,
+#ks-scroll-root.is-bio-scroll {
+  -webkit-overflow-scrolling: touch;
+  height: 100%;
+  max-height: 100dvh;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain;
+  position: relative;
+  touch-action: pan-y;
+}
+
 html.ks-native-scroll .ks-route-content,
-html.ks-native-scroll .ks-shell.is-bio {
-  height: auto;
-  min-height: 100svh;
+.ks-route-content.is-bio-route {
+  min-height: 100%;
   overflow: visible;
+  transform: none !important;
 }
 
 html::-webkit-scrollbar,
@@ -8947,15 +8968,15 @@ button.ks-product-visual-card {
   color: var(--ks-on-dark);
   display: flex;
   justify-content: stretch;
-  min-height: 100svh;
+  min-height: 100%;
   overflow: visible;
   padding: 0;
   position: relative;
-  -webkit-overflow-scrolling: touch;
+  width: 100%;
 }
 
 .ks-link-bio-page--boot {
-  min-height: 100svh;
+  min-height: 100%;
 }
 
 .ks-link-bio-backdrop {
@@ -9629,7 +9650,7 @@ button.ks-product-visual-card {
 .ks-link-bio-shell .ks-link-bio-card {
   align-content: start;
   gap: 22px;
-  min-height: 100svh;
+  min-height: auto;
   padding-bottom: max(40px, env(safe-area-inset-bottom));
   width: 100%;
 }
