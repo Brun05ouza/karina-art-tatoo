@@ -25,6 +25,7 @@ const empty: ProductItem = {
 
 const TEXT_BLOCKS: DocumentBlock<ProductsPageDocument>[] = [
   {
+    id: "hero",
     title: "Hero",
     summary: "Textos e imagem principal da tela de Coleções",
     fields: [
@@ -37,11 +38,13 @@ const TEXT_BLOCKS: DocumentBlock<ProductsPageDocument>[] = [
     ],
   },
   {
+    id: "catalogo",
     title: "Catálogo",
     summary: "Cards de produtos, planos e coleções",
     fields: [],
   },
   {
+    id: "cta",
     title: "Chamada final",
     summary: "Faixa final chamando para o WhatsApp",
     fields: [

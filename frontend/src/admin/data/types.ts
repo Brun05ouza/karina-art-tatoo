@@ -34,6 +34,7 @@ export type FlashPageDocument = {
   heroTitle: string;
   heroText: string;
   heroImageUrl: string;
+  hiddenSections?: string[];
 };
 
 /** Textos fixos da página /portfolio (frontend/src/app/App.tsx): só o hero — o resto vem da coleção PortfolioItem. */
@@ -42,6 +43,7 @@ export type PortfolioPageDocument = {
   heroTitle: string;
   heroText: string;
   heroImageUrl: string;
+  hiddenSections?: string[];
 };
 
 export type ProductItem = BaseItem & {
@@ -63,6 +65,7 @@ export type ProductsPageDocument = {
   ctaTitle: string;
   ctaText: string;
   ctaButton: string;
+  hiddenSections?: string[];
 };
 
 export type ReformulationItem = BaseItem & {
@@ -96,6 +99,8 @@ export type MediaItem = BaseItem & {
 
 export type LinkButton = { id: string; label: string; url: string; icon: string; active: boolean; order: number };
 export type LinkHighlight = { id: string; title: string; text: string; url: string; active: boolean; order?: number };
+export type LinkBioChip = { id: string; label: string; active: boolean; order: number };
+export type LinkBioTestimonial = { id: string; text: string; active: boolean; order: number };
 
 /** Card editável das seções Serviços e Coleções da Home. */
 export type HomeCard = { id: string; title: string; text: string; url: string; cta: string; imageUrl?: string; active: boolean; order: number };
@@ -156,9 +161,8 @@ export type HomeDocument = {
   ctaText: string;
   ctaButton: string;
   ctaButtonUrl: string;
+  hiddenSections?: string[];
 };
-
-/** Card numerado das seções "Possibilidades" e "Como pedir uma avaliação". */
 export type ReformulationCard = { id: string; title: string; text: string; active: boolean; order: number };
 /** Item da lista "Pontos avaliados na reformulação". */
 export type ReformulationPoint = { id: string; label: string; active: boolean; order: number };
@@ -202,6 +206,7 @@ export type ReformulationsDocument = {
   ctaText: string;
   ctaButton: string;
   ctaButtonUrl: string;
+  hiddenSections?: string[];
 };
 
 export type AboutApproachCard = {
@@ -210,6 +215,16 @@ export type AboutApproachCard = {
   order: number;
   title: string;
   text: string;
+};
+
+export type AboutStudioStep = {
+  id: string;
+  active: boolean;
+  order: number;
+  label: string;
+  title: string;
+  text: string;
+  imageUrl: string;
 };
 
 export type AboutDocument = {
@@ -223,6 +238,9 @@ export type AboutDocument = {
   quote: string;
   behindScenesImageUrl: string;
   behindScenesCaption: string;
+  studioInviteImageUrl: string;
+  studioTourSteps: AboutStudioStep[];
+  hiddenSections?: string[];
 };
 
 export type BackstageDocument = {
@@ -247,6 +265,32 @@ export type LinkBioDocument = {
   footerUrl: string;
   buttons: LinkButton[];
   highlights: LinkHighlight[];
+
+  stylesLabel: string;
+  stylesTitle: string;
+  stylesText: string;
+  styleChips: LinkBioChip[];
+
+  flashLabel: string;
+  flashTitle: string;
+  flashText: string;
+  flashCta: string;
+
+  testimonialsLabel: string;
+  testimonialsTitle: string;
+  testimonialsCta: string;
+  testimonials: LinkBioTestimonial[];
+
+  studioLabel: string;
+  studioTitle: string;
+  studioText: string;
+  studioImageUrl: string;
+  studioButton: string;
+  studioButtonUrl: string;
+
+  finalTitle: string;
+  finalText: string;
+  finalButton: string;
 };
 
 export type BudgetPageDocument = {
@@ -271,6 +315,7 @@ export type BudgetPageDocument = {
   submitHelper: string;
   submitButton: string;
   whatsappIntro: string;
+  hiddenSections?: string[];
 };
 
 export type SettingsDocument = {

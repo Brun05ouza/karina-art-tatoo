@@ -1,8 +1,8 @@
-/** Vídeos de processo criativo — hover nos cards para mostrar como a arte é feita. */
+/** Vídeos de processo — só via CMS/admin; sem fallback local. */
 export const processVideos = {
   artProcess: {
-    src: "/assets/process/art-process.mp4",
-    poster: "/assets/process/art-process-poster.jpg",
+    src: "",
+    poster: "",
   },
 } as const;
 

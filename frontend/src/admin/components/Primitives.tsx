@@ -13,7 +13,6 @@ const INTERNAL_LINK_GROUPS = [
       { value: "/flash-tattoos", label: "Flash tattoos" },
       { value: "/produtos", label: "Produtos" },
       { value: "/orcamento", label: "Orçamento" },
-      { value: "/faq", label: "FAQ" },
     ],
   },
   {

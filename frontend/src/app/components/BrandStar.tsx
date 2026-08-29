@@ -1,9 +1,10 @@
 import type { CSSProperties } from "react";
 
+/** Mesmas estrelas das quebras entre seções (PNG leve). */
 const STAR_ASSETS = {
-  1: "/assets/brand/star-karina-2.svg",
-  2: "/assets/brand/star-karina-2.svg",
-  3: "/assets/brand/star-karina-3.svg",
+  1: "/assets/brand/star-karina-filled.png",
+  2: "/assets/brand/star-karina-filled.png",
+  3: "/assets/brand/star-karina-outline.png",
 } as const;
 
 type BrandStarProps = {

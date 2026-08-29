@@ -19,23 +19,23 @@ import type {
 } from "../types";
 
 export const mockPortfolioItems: PortfolioItem[] = [
-  { id: "portfolio-1", order: 1, active: true, title: "Orquídeas", description: "Composição botânica autoral.", category: "Fine Line", status: "Publicado", bodyLocation: "Pescoço", style: "Fine line", featured: true, imageUrl: "/assets/recent-projects/orquidea-pescoco.jpg", imageKey: "" },
-  { id: "portfolio-2", order: 2, active: true, title: "Lua botânica", description: "Traço delicado e elementos naturais.", category: "Minimalista", status: "Publicado", bodyLocation: "Braço", style: "Minimalista", featured: true, imageUrl: "/assets/recent-projects/lua-botanica.jpg", imageKey: "" },
-  { id: "portfolio-3", order: 3, active: true, title: "Kira", description: "Retrato pet em preto e cinza.", category: "Projetos Autorais", status: "Publicado", bodyLocation: "Antebraço", style: "Blackwork", featured: false, imageUrl: "/assets/recent-projects/kira.jpg", imageKey: "" },
-  { id: "portfolio-4", order: 4, active: true, title: "Columbina", description: "Personagem em composição autoral.", category: "Blackwork", status: "Publicado", bodyLocation: "Coxa", style: "Blackwork", featured: false, imageUrl: "/assets/recent-projects/columbina.jpg", imageKey: "" },
-  { id: "portfolio-5", order: 5, active: true, title: "Mandala", description: "Geometria ornamental delicada.", category: "Fine Line", status: "Rascunho", bodyLocation: "Costas", style: "Ornamental", featured: false, imageUrl: "/assets/recent-projects/mandala.jpg", imageKey: "" },
+  { id: "portfolio-1", order: 1, active: true, title: "Orquídeas", description: "Composição botânica autoral.", category: "Fine Line", status: "Publicado", bodyLocation: "Pescoço", style: "Fine line", featured: true, imageUrl: "", imageKey: "" },
+  { id: "portfolio-2", order: 2, active: true, title: "Lua botânica", description: "Traço delicado e elementos naturais.", category: "Minimalista", status: "Publicado", bodyLocation: "Braço", style: "Minimalista", featured: true, imageUrl: "", imageKey: "" },
+  { id: "portfolio-3", order: 3, active: true, title: "Kira", description: "Retrato pet em preto e cinza.", category: "Projetos Autorais", status: "Publicado", bodyLocation: "Antebraço", style: "Blackwork", featured: false, imageUrl: "", imageKey: "" },
+  { id: "portfolio-4", order: 4, active: true, title: "Columbina", description: "Personagem em composição autoral.", category: "Blackwork", status: "Publicado", bodyLocation: "Coxa", style: "Blackwork", featured: false, imageUrl: "", imageKey: "" },
+  { id: "portfolio-5", order: 5, active: true, title: "Mandala", description: "Geometria ornamental delicada.", category: "Fine Line", status: "Rascunho", bodyLocation: "Costas", style: "Ornamental", featured: false, imageUrl: "", imageKey: "" },
 ];
 
 export const mockFlashTattoos: FlashTattoo[] = [
-  { id: "flash-1", order: 1, active: true, title: "Olho floral", description: "Flash autoral disponível uma única vez.", category: "Botânico", status: "Disponível", price: "R$ 450", size: "12 cm", imageUrl: "/assets/brand/products-hero-flower-eye.png", imageKey: "" },
-  { id: "flash-2", order: 2, active: true, title: "Olho coração", description: "Desenho autoral em preto e vermelho.", category: "Símbolos", status: "Reservado", price: "R$ 380", size: "10 cm", imageUrl: "/assets/brand/eye-heart.png", imageKey: "" },
-  { id: "flash-3", order: 3, active: true, title: "Estrela violeta", description: "Peça gráfica com identidade Sarte.", category: "Gráfico", status: "Disponível", price: "R$ 320", size: "8 cm", imageUrl: "/assets/brand/eye-purple.png", imageKey: "" },
+  { id: "flash-1", order: 1, active: true, title: "Olho floral", description: "Flash autoral disponível uma única vez.", category: "Botânico", status: "Disponível", price: "R$ 450", size: "12 cm", imageUrl: "", imageKey: "" },
+  { id: "flash-2", order: 2, active: true, title: "Olho coração", description: "Desenho autoral em preto e vermelho.", category: "Símbolos", status: "Reservado", price: "R$ 380", size: "10 cm", imageUrl: "", imageKey: "" },
+  { id: "flash-3", order: 3, active: true, title: "Estrela violeta", description: "Peça gráfica com identidade Sarte.", category: "Gráfico", status: "Disponível", price: "R$ 320", size: "8 cm", imageUrl: "", imageKey: "" },
 ];
 
 export const mockProducts: ProductItem[] = [
-  { id: "product-1", order: 1, active: true, title: "Adesivos autorais", description: "Seleção de adesivos da Karina Sarte.", category: "Adesivos", status: "Publicado", price: "R$ 25", whatsappMessage: "Olá! Quero saber sobre os adesivos autorais.", link: "", imageUrl: "/assets/brand/products-hero-art.png", imageKey: "" },
-  { id: "product-2", order: 2, active: true, title: "Print botânico", description: "Impressão artística em papel de alta gramatura.", category: "Prints & Artes", status: "Publicado", price: "R$ 65", whatsappMessage: "Olá! Quero saber sobre o print botânico.", link: "", imageUrl: "/assets/brand/products-hero-flower-eye.png", imageKey: "" },
-  { id: "product-3", order: 3, active: true, title: "Plano tattoo pequena", description: "Opção para projetos delicados e objetivos.", category: "Planos de Tattoo", status: "Rascunho", price: "Sob consulta", whatsappMessage: "Olá! Quero conhecer o plano de tattoo pequena.", link: "", imageUrl: "/assets/recent-projects/lua-botanica.jpg", imageKey: "" },
+  { id: "product-1", order: 1, active: true, title: "Adesivos autorais", description: "Seleção de adesivos da Karina Sarte.", category: "Adesivos", status: "Publicado", price: "R$ 25", whatsappMessage: "Olá! Quero saber sobre os adesivos autorais.", link: "", imageUrl: "", imageKey: "" },
+  { id: "product-2", order: 2, active: true, title: "Print botânico", description: "Impressão artística em papel de alta gramatura.", category: "Prints & Artes", status: "Publicado", price: "R$ 65", whatsappMessage: "Olá! Quero saber sobre o print botânico.", link: "", imageUrl: "", imageKey: "" },
+  { id: "product-3", order: 3, active: true, title: "Plano tattoo pequena", description: "Opção para projetos delicados e objetivos.", category: "Planos de Tattoo", status: "Rascunho", price: "Sob consulta", whatsappMessage: "Olá! Quero conhecer o plano de tattoo pequena.", link: "", imageUrl: "", imageKey: "" },
 ];
 
 export const mockReformulacoes: ReformulationItem[] = [
@@ -55,7 +55,7 @@ export const mockFlashPage: FlashPageDocument = {
   heroKicker: "Flash Tattoos",
   heroTitle: "Flash Tattoos disponíveis",
   heroText: "Artes autorais prontas para tatuar, com disponibilidade limitada.",
-  heroImageUrl: "/assets/hero-home.png",
+  heroImageUrl: "",
 };
 
 /** Copy inicial igual à que está publicada hoje em /portfolio. */
@@ -63,7 +63,7 @@ export const mockPortfolioPage: PortfolioPageDocument = {
   heroKicker: "Portfólio",
   heroTitle: "Portfólio",
   heroText: "Conheça tattoos, flashes e projetos autorais criados pela Karina Sarte.",
-  heroImageUrl: "/assets/hero-home.png",
+  heroImageUrl: "",
 };
 
 export const mockProductsPage: ProductsPageDocument = {
@@ -72,7 +72,7 @@ export const mockProductsPage: ProductsPageDocument = {
   heroText1: "Arte para usar, colecionar e levar na pele.",
   heroText2: "Produtos autorais, planos, flashes, prints e criações exclusivas feitas para aproximar ainda mais a arte da Karina Sarte de quem acompanha seu trabalho.",
   heroButton: "Consultar produtos pelo WhatsApp",
-  heroImageUrl: "/assets/brand/products-hero-flower-eye.png",
+  heroImageUrl: "",
   ctaTitle: "Quer levar a arte da Karina Sarte para além da pele?",
   ctaText: "Consulte disponibilidade, valores e opções personalizadas pelo WhatsApp.",
   ctaButton: "Consultar pelo WhatsApp",
@@ -103,10 +103,10 @@ export const mockBudgetPage: BudgetPageDocument = {
 };
 
 export const mockMediaItems: MediaItem[] = [
-  { id: "media-1", order: 1, active: true, title: "Hero da Home", description: "Imagem principal do site.", category: "Home", type: "Imagem", publicUrl: "/assets/hero-home.png", usage: "Home / Hero", imageUrl: "/assets/hero-home.png" },
-  { id: "media-2", order: 2, active: true, title: "Retrato Karina", description: "Retrato usado na apresentação.", category: "Sobre", type: "Imagem", publicUrl: "/assets/karina-sarte.png", usage: "Home e Sobre", imageUrl: "/assets/karina-sarte.png" },
-  { id: "media-3", order: 3, active: true, title: "Arte olho floral", description: "Arte das coleções.", category: "Produtos", type: "Imagem", publicUrl: "/assets/brand/products-hero-flower-eye.png", usage: "Produtos / Hero", imageUrl: "/assets/brand/products-hero-flower-eye.png" },
-  { id: "media-4", order: 4, active: true, title: "Processo criativo", description: "Poster do vídeo.", category: "Bastidores", type: "Imagem", publicUrl: "/assets/process/art-process-poster.jpg", usage: "Home / Processo", imageUrl: "/assets/process/art-process-poster.jpg" },
+  { id: "media-1", order: 1, active: true, title: "Hero da Home", description: "Imagem principal do site.", category: "Home", type: "Imagem", publicUrl: "", usage: "Home / Hero", imageUrl: "" },
+  { id: "media-2", order: 2, active: true, title: "Retrato Karina", description: "Retrato usado na apresentação.", category: "Sobre", type: "Imagem", publicUrl: "", usage: "Home e Sobre", imageUrl: "" },
+  { id: "media-3", order: 3, active: true, title: "Arte olho floral", description: "Arte das coleções.", category: "Produtos", type: "Imagem", publicUrl: "", usage: "Produtos / Hero", imageUrl: "" },
+  { id: "media-4", order: 4, active: true, title: "Processo criativo", description: "Poster do vídeo.", category: "Bastidores", type: "Imagem", publicUrl: "", usage: "Home / Processo", imageUrl: "" },
 ];
 
 /** Copy inicial igual à que está publicada hoje na home. */
@@ -118,7 +118,7 @@ export const mockHome: HomeDocument = {
   heroButtonUrl: "/orcamento",
   heroSecondaryButton: "Ver portfólio",
   heroSecondaryUrl: "/portfolio",
-  heroImageUrl: "/assets/hero.jpeg",
+  heroImageUrl: "",
 
   processEyebrow: "Processo criativo",
   processTitle: "Da conversa nasce uma composição autoral.",
@@ -128,8 +128,8 @@ export const mockHome: HomeDocument = {
   processButtonUrl: "/sobre",
   // Mesmo arquivo que o site usa na coluna do Processo criativo
   // (tattooImages.artistDetail).
-  processImageUrl: "/assets/karina-sarte-detalhe.jpg",
-  processPortraitUrl: "/assets/karina-sarte-retrato.jpg",
+  processImageUrl: "",
+  processPortraitUrl: "",
   processSteps: [
     { id: "step-1", label: "01 · Referência", active: true, order: 1 },
     { id: "step-2", label: "02 · Desenho", active: true, order: 2 },
@@ -140,10 +140,10 @@ export const mockHome: HomeDocument = {
   servicesTitle: "O que você encontra por aqui",
   servicesText: "Projetos autorais, flash tattoos e produtos criados para quem busca arte com personalidade.",
   serviceCards: [
-    { id: "service-1", title: "Tatuagens Autorais", text: "Projetos personalizados criados a partir da sua ideia, referência e estilo.", url: "/portfolio", cta: "Ver projetos", imageUrl: "/assets/process/art-process-poster.jpg", active: true, order: 1 },
-    { id: "service-2", title: "Flash Tattoos", text: "Artes prontas e exclusivas, com disponibilidade limitada para tatuar.", url: "/flash-tattoos", cta: "Ver flashes", imageUrl: "/assets/hero-home.png", active: true, order: 2 },
-    { id: "service-3", title: "Produtos Autorais", text: "Produtos, prints e coleções criadas dentro do universo visual da Karina Sarte.", url: "/produtos", cta: "Ver produtos", imageUrl: "/assets/hero-home.png", active: true, order: 3 },
-    { id: "service-4", title: "Cuidados e Experiência", text: "Atendimento com cuidado, orientação e responsabilidade em todas as etapas.", url: "/cuidados", cta: "Saiba mais", imageUrl: "/assets/process/art-process-poster.jpg", active: true, order: 4 },
+    { id: "service-1", title: "Tatuagens Autorais", text: "Projetos personalizados criados a partir da sua ideia, referência e estilo.", url: "/portfolio", cta: "Ver projetos", imageUrl: "", active: true, order: 1 },
+    { id: "service-2", title: "Flash Tattoos", text: "Artes prontas e exclusivas, com disponibilidade limitada para tatuar.", url: "/flash-tattoos", cta: "Ver flashes", imageUrl: "", active: true, order: 2 },
+    { id: "service-3", title: "Produtos Autorais", text: "Produtos, prints e coleções criadas dentro do universo visual da Karina Sarte.", url: "/produtos", cta: "Ver produtos", imageUrl: "", active: true, order: 3 },
+    { id: "service-4", title: "Cuidados e Experiência", text: "Atendimento com cuidado, orientação e responsabilidade em todas as etapas.", url: "/orcamento", cta: "Saiba mais", imageUrl: "", active: true, order: 4 },
   ],
 
   portfolioEyebrow: "Portfólio",
@@ -158,10 +158,10 @@ export const mockHome: HomeDocument = {
     "Arte para usar, colecionar e levar na pele. Além das tatuagens, a Karina Sarte também cria produtos, artes, flashes e coleções exclusivas para quem se identifica com seu universo visual.",
   collectionsButton: "Ver mais produtos",
   collectionCards: [
-    { id: "collection-1", title: "Planos de Tattoo", text: "Opções para tattoos pequenas, projetos autorais e sessões personalizadas.", url: "/produtos", cta: "Consultar planos", imageUrl: "/assets/recent-projects/lua-botanica.jpg", active: true, order: 1 },
-    { id: "collection-2", title: "Flash Tattoos", text: "Artes prontas e disponíveis para tatuar, com disponibilidade limitada.", url: "/flash-tattoos", cta: "Ver flashes disponíveis", imageUrl: "/assets/brand/eye-heart.png", active: true, order: 2 },
-    { id: "collection-3", title: "Prints & Artes", text: "Impressões e artes autorais para colecionar.", url: "/produtos", cta: "Ver prints", imageUrl: "/assets/brand/products-hero-flower-eye.png", active: true, order: 3 },
-    { id: "collection-4", title: "Adesivos", text: "Adesivos autorais do universo visual da Karina.", url: "/produtos", cta: "Ver adesivos", imageUrl: "/assets/brand/products-hero-art.png", active: true, order: 4 },
+    { id: "collection-1", title: "Planos de Tattoo", text: "Opções para tattoos pequenas, projetos autorais e sessões personalizadas.", url: "/produtos", cta: "Consultar planos", imageUrl: "", active: true, order: 1 },
+    { id: "collection-2", title: "Flash Tattoos", text: "Artes prontas e disponíveis para tatuar, com disponibilidade limitada.", url: "/flash-tattoos", cta: "Ver flashes disponíveis", imageUrl: "", active: true, order: 2 },
+    { id: "collection-3", title: "Prints & Artes", text: "Impressões e artes autorais para colecionar.", url: "/produtos", cta: "Ver prints", imageUrl: "", active: true, order: 3 },
+    { id: "collection-4", title: "Adesivos", text: "Adesivos autorais do universo visual da Karina.", url: "/produtos", cta: "Ver adesivos", imageUrl: "", active: true, order: 4 },
   ],
 
   youtubeEyebrow: "Karina Sarte no YouTube",
@@ -171,8 +171,8 @@ export const mockHome: HomeDocument = {
   youtubeButton: "Ver vídeo completo",
   youtubeUrl: "https://youtu.be/zntCZqs4rEE",
   youtubeMeta: "Tattoo vlog · rotina de estúdio · processo criativo",
-  youtubeThumbUrl: "/assets/youtube/tattoo-vlog-thumb.jpeg",
-  youtubeTrailerUrl: "/assets/youtube/tattoo-vlog-trailer.mp4",
+  youtubeThumbUrl: "",
+  youtubeTrailerUrl: "",
   youtubeActive: true,
 
   ctaTitle: "Vamos criar sua próxima tattoo?",
@@ -185,17 +185,25 @@ export const mockAbout: AboutDocument = {
   eyebrow: "A artista",
   title: "Sobre a Karina Sarte",
   intro: "Karina Sarte cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele.",
-  heroImageUrl: "/assets/karina-sarte-detalhe.jpg",
+  heroImageUrl: "",
   biography: "Minha estética é autoral, com traço fino e referências botânicas. Construo projetos que equilibram delicadeza e presença. Todo atendimento começa com escuta: quero entender suas referências, as proporções e o significado por trás da ideia.\n\nEm Teresópolis, criei um espaço de criação e cuidado. Da primeira mensagem à cicatrização, acompanho cada etapa com orientação clara e muita atenção.",
   approachCards: [
     { id: "1", active: true, order: 1, title: "Processo criativo", text: "Penso cada projeto como uma conversa entre sua história, seu corpo e minha linguagem visual." },
     { id: "2", active: true, order: 2, title: "Atendimento cuidadoso", text: "Escuto com calma desde a primeira mensagem para entender o que você quer levar na pele." },
     { id: "3", active: true, order: 3, title: "Ambiente seguro", text: "Trabalho com materiais adequados, biossegurança e orientações claras em cada etapa." }
   ],
-  imageUrl: "/assets/karina-sarte-retrato.jpg",
-  quote: "Em cada traço, coloco intenção. A tattoo precisa conversar com quem você é e com o corpo que a recebe.",
+  imageUrl: "",
+  quote: "Crio projetos que abraçam o corpo e são uma extensão da sua personalidade.",
   behindScenesImageUrl: "",
-  behindScenesCaption: "Língua de fora, mão firme: é assim que uma borboleta nasce no tablet antes de virar tattoo.",
+  behindScenesCaption: "Eu depois de comer strogonoff com feijão e decidir que era uma ótima hora pra criar arte.",
+  studioInviteImageUrl: "/assets/studio/studio-1.jpeg",
+  studioTourSteps: [
+    { id: "entrada", order: 1, active: true, label: "Entrada", title: "Essa é a entrada.", text: "É daqui que começa a experiência: um espaço mais íntimo, calmo e preparado para te receber.", imageUrl: "/assets/studio/studio-1.jpeg" },
+    { id: "espaco", order: 2, active: true, label: "Espaço", title: "Meu cantinho de criação.", text: "É aqui que eu desenho, organizo referências e preparo cada detalhe antes da tattoo acontecer.", imageUrl: "/assets/studio/studio-3.jpeg" },
+    { id: "processo", order: 3, active: true, label: "Processo", title: "Onde o projeto ganha forma.", text: "Entre conversas, traços e ajustes, cada ideia vai encontrando o próprio lugar.", imageUrl: "/assets/studio/studio-5.jpeg" },
+    { id: "vista", order: 4, active: true, label: "Vista", title: "Uma vista que acompanha o processo.", text: "Meu studio também carrega um pouco de Teresópolis — e isso faz parte do clima do espaço.", imageUrl: "/assets/studio/studio-8.jpeg" },
+    { id: "cuidado", order: 5, active: true, label: "Cuidado", title: "Tudo pensado com cuidado.", text: "Do ambiente aos materiais, eu gosto que cada detalhe faça a experiência ser leve, segura e especial.", imageUrl: "/assets/studio/studio-11.jpeg" },
+  ],
 };
 
 /** Copy inicial igual à que está publicada hoje em /reformulacoes. */
@@ -205,7 +213,7 @@ export const mockReformulacoesTextos: ReformulationsDocument = {
   heroText: "Um novo projeto criado a partir da tattoo que você já tem, para melhorar desenho, composição e leitura sem apagar sua história.",
   heroButton: "Quero avaliar minha tattoo",
   heroButtonUrl: "/orcamento",
-  heroImageUrl: "/assets/hero-home.png",
+  heroImageUrl: "",
 
   introEyebrow: "Reconstruir para evoluir",
   introTitle: "A tattoo continua sendo sua. O desenho evolui.",
@@ -243,33 +251,11 @@ export const mockBastidores: BackstageDocument = {
   eyebrow: "Bastidores",
   title: "O processo também faz parte da obra",
   intro: "Veja desenhos, estudos, preparação e fragmentos do cotidiano no ateliê.",
-  videoUrl: "/assets/process/art-process.mp4",
-  videoPoster: "/assets/process/art-process-poster.jpg",
+  videoUrl: "",
+  videoPoster: "",
   processTitle: "Do papel para a pele",
   processText: "Cada linha passa por pesquisa, desenho e ajustes antes de chegar ao corpo.",
   active: true,
-};
-
-const mockLinkBioLegacy: LinkBioDocument = {
-  eyebrow: "Link da bio",
-  name: "Karina Sarte",
-  bio: "Tatuagem autoral · Teresópolis, RJ",
-  avatarUrl: "",
-  backgroundUrl: "",
-  instagram: "@karinasarte",
-  footerLabel: "Site completo",
-  footerUrl: "/",
-  buttons: [
-    { id: "link-1", label: "Solicitar orçamento", url: "/orcamento", icon: "MessageCircle", active: true, order: 1 },
-    { id: "link-2", label: "Ver portfólio", url: "/portfolio", icon: "Images", active: true, order: 2 },
-    { id: "link-3", label: "Flash tattoos", url: "/flash-tattoos", icon: "Sparkles", active: true, order: 3 },
-    { id: "link-4", label: "Produtos", url: "/produtos", icon: "ShoppingBag", active: true, order: 4 },
-  ],
-  highlights: [
-    { id: "highlight-1", title: "Agenda", text: "Consulte as próximas datas disponíveis.", url: "/orcamento", active: true },
-    { id: "highlight-2", title: "Novos flashes", text: "Desenhos disponíveis uma única vez.", url: "/flash-tattoos", active: true },
-    { id: "highlight-3", title: "Ateliê", text: "Conheça o espaço e o processo.", url: "/sobre", active: true },
-  ],
 };
 
 export const mockLinkBio: LinkBioDocument = {
@@ -285,20 +271,57 @@ export const mockLinkBio: LinkBioDocument = {
     {
       id: "link-1",
       label: "Solicitar orçamento",
-      url: "https://wa.me/5521990724477?text=Ol%C3%A1%2C%20Karina%20Sarte%21%20Vim%20pela%20bio%20do%20site%20e%20queria%20fazer%20um%20or%C3%A7amento.",
+      url: "https://wa.me/5521990724477?text=" + encodeURIComponent("Olá Karina, vim pelo seu link da bio e queria fazer um orçamento de tattoo."),
       icon: "WhatsApp",
       active: true,
       order: 1,
     },
-    { id: "link-2", label: "Ver portfólio", url: "/portfolio", icon: "Images", active: true, order: 2 },
-    { id: "link-3", label: "Flash tattoos", url: "/flash-tattoos", icon: "Sparkles", active: true, order: 3 },
+    { id: "link-2", label: "Portfólio", url: "/portfolio", icon: "Images", active: true, order: 2 },
+    { id: "link-3", label: "Flash Tattoos", url: "/flash-tattoos", icon: "Sparkles", active: true, order: 3 },
     { id: "link-4", label: "Produtos", url: "/produtos", icon: "ShoppingBag", active: true, order: 4 },
+    { id: "link-5", label: "TikTok", url: "https://www.tiktok.com/@karinasarte", icon: "TikTok", active: true, order: 5 },
+    { id: "link-6", label: "YouTube", url: "https://www.youtube.com/@karinasarte", icon: "YouTube", active: true, order: 6 },
+    { id: "link-7", label: "Instagram", url: "https://www.instagram.com/karinasarte", icon: "Instagram", active: true, order: 7 },
   ],
-  highlights: [
-    { id: "section-1", title: "Sobre", text: "Conheça a artista, o ateliê e o processo.", url: "/sobre", active: true, order: 1 },
-    { id: "section-2", title: "Reformulações", text: "Veja como uma tattoo pode evoluir.", url: "/reformulacoes", active: true, order: 2 },
-    { id: "section-3", title: "FAQ", text: "Dúvidas sobre orçamento, sessão e cuidados.", url: "/faq", active: true, order: 3 },
+  highlights: [],
+
+  stylesLabel: "linguagem visual",
+  stylesTitle: "Estilos que atravessam meu trabalho",
+  stylesText: "Traços, símbolos e referências que aparecem nas minhas criações autorais.",
+  styleChips: [
+    { id: "chip-1", label: "blackwork", active: true, order: 1 },
+    { id: "chip-2", label: "botânica", active: true, order: 2 },
+    { id: "chip-3", label: "ornamental", active: true, order: 3 },
+    { id: "chip-4", label: "suminagashi", active: true, order: 4 },
+    { id: "chip-5", label: "fineline", active: true, order: 5 },
+    { id: "chip-6", label: "neotradicional", active: true, order: 6 },
   ],
+
+  flashLabel: "flash tattoos",
+  flashTitle: "Flashs disponíveis",
+  flashText: "Desenhos autorais prontos para tatuar, com disponibilidade limitada.",
+  flashCta: "Ver todos os flashs",
+
+  testimonialsLabel: "depoimentos",
+  testimonialsTitle: "Quem já passou por aqui",
+  testimonialsCta: "Quero viver essa experiência também",
+  testimonials: [
+    { id: "quote-1", text: "Ficou simplesmente perfeita!", active: true, order: 1 },
+    { id: "quote-2", text: "Me senti ouvida em cada detalhe.", active: true, order: 2 },
+    { id: "quote-3", text: "Melhor que eu esperava.", active: true, order: 3 },
+    { id: "quote-4", text: "O trabalho ficou surreal.", active: true, order: 4 },
+  ],
+
+  studioLabel: "meu studio",
+  studioTitle: "Um espaço para criar com calma",
+  studioText: "É aqui que eu desenho, preparo cada detalhe e recebo quem chega para transformar ideia em pele.",
+  studioImageUrl: "/assets/studio/studio-5.jpeg",
+  studioButton: "Conhecer o studio",
+  studioButtonUrl: "/sobre",
+
+  finalTitle: "Vamos criar sua próxima tattoo?",
+  finalText: "Me chama com sua ideia, referência ou dúvida e a gente começa a pensar no projeto.",
+  finalButton: "Solicitar orçamento",
 };
 
 export const mockSettings: SettingsDocument = {
@@ -309,7 +332,7 @@ export const mockSettings: SettingsDocument = {
   portfolioUrl: "https://brunosouza.dev.br",
   seoTitle: "Karina Sarte | Tatuagem autoral em Teresópolis",
   seoDescription: "Tatuagens autorais, flash tattoos, reformulações e arte por Karina Sarte.",
-  shareImageUrl: "/assets/hero-home.png",
+  shareImageUrl: "",
   whatsappBudget: "Olá, Karina! Vim pelo site e gostaria de solicitar um orçamento.",
   whatsappFlash: "Olá, Karina! Quero saber sobre os flash tattoos disponíveis.",
   whatsappProducts: "Olá, Karina! Quero conhecer os produtos disponíveis.",
@@ -321,7 +344,7 @@ export const mockSiteMode: SiteModeDocument = {
   developmentEyebrow: "Karina Sarte",
   developmentTitle: "Esse site está em desenvolvimento",
   developmentText: "Estou preparando esse espaço com carinho. Em breve tudo aparece por aqui com mais detalhes, arte e intenção.",
-  developmentImageUrl: "/assets/development/karina-waist-dev.jpg",
+  developmentImageUrl: "",
   developmentButton: "Falar comigo no WhatsApp",
   developmentButtonUrl: "https://wa.me/5521990724477?text=Oi%2C%20Karina%21%20Vim%20pelo%20site%20e%20queria%20falar%20com%20voc%C3%AA.",
 };

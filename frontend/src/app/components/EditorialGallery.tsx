@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
 import { StencilCrosshair } from "./StencilCrosshair";
 import { StarGlyph } from "./StarGlyph";
-import { tattooImages } from "../tattoo-images";
 
 const items = [
   {
@@ -10,7 +9,7 @@ const items = [
     title: "BOTÂNICA",
     label: "01 — ATELIER",
     text: "A natureza interpretada em linhas finas e precisas.",
-    img: tattooImages.fineLineBotanical,
+    img: "",
     size: "large",
     offset: 0,
   },
@@ -19,7 +18,7 @@ const items = [
     title: "SUMIÊ",
     label: "02 — GESTO",
     text: "O gesto do pincel transformado em tinta na pele.",
-    img: tattooImages.ornamental,
+    img: "",
     size: "small",
     offset: 120,
   },
@@ -28,7 +27,7 @@ const items = [
     title: "FREEHAND",
     label: "03 — FORMA",
     text: "Criações que respeitam a anatomia única de cada corpo.",
-    img: tattooImages.tattooInProgress,
+    img: "",
     size: "medium",
     offset: 0,
   },
@@ -37,7 +36,7 @@ const items = [
     title: "SÍMBOLOS",
     label: "04 — MÍSTICO",
     text: "Pequenas marcações místicas, estrelas e sentidos.",
-    img: tattooImages.minimalSymbols,
+    img: "",
     size: "square",
     offset: 60,
   },
@@ -46,7 +45,7 @@ const items = [
     title: "FLORAL",
     label: "05 — LINHA",
     text: "Delicadeza com presença.",
-    img: tattooImages.detailEditorial,
+    img: "",
     size: "medium",
     offset: 0,
   },

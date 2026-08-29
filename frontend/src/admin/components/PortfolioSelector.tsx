@@ -8,9 +8,9 @@ import { useToast } from "../hooks/useToast";
 import { portfolioStore } from "../data/stores";
 import { AdminButton, Field, SelectField, TextArea, TextInput } from "./Primitives";
 
-const categories = ["Fine Line", "Minimalista", "Blackwork", "Projetos Autorais", "Flash Tattoo", "Cicatrizadas"];
+const categories = ["Blackwork", "Botânica", "Ornamental", "Suminagashi", "Fineline", "Neotradicional"];
 const bodyLocations = ["Braço", "Antebraço", "Costas", "Coxa", "Perna", "Costela", "Ombro", "Pescoço", "Mão", "Tornozelo"];
-const styles = ["Fine Line", "Minimalista", "Blackwork", "Botânico", "Ornamental", "Autoral", "Geométrico", "Floral"];
+const styles = ["Blackwork", "Botânica", "Ornamental", "Suminagashi", "Fineline", "Neotradicional", "Autoral", "Geométrico"];
 
 const emptyDraft = {
   title: "",

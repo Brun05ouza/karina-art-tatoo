@@ -23,12 +23,16 @@ export type DocumentField = {
 };
 
 export type DocumentBlock<T = never> = {
+  /** Chave estável para ocultar/exibir a seção no site público. */
+  id: string;
   title: string;
   summary?: string;
   fields?: DocumentField[];
   /** Conteúdo extra renderizado dentro do bloco, depois dos campos simples
    *  (usado para listas de cards — ver Repeater). */
   render?: (value: T, update: (patch: Partial<T>) => void) => ReactNode;
+  /** Se false, a seção não ganha o interruptor de ocultar. Default: true. */
+  hideable?: boolean;
 };
 
 type DocumentEditorProps<T> = {

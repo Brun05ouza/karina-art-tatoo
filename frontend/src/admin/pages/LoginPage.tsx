@@ -41,7 +41,7 @@ export function LoginPage() {
         <img className="star-5" src="/assets/brand/star-karina-filled.png" alt="" />
       </div>
       <section className="ksa-login-panel">
-        <img className="ksa-login-panel-bg" src="/assets/hero.jpeg" alt="" aria-hidden="true" />
+        <img className="ksa-login-panel-bg" src="/assets/brand/star-karina-filled.png" alt="" aria-hidden="true" />
         <a className="ksa-login-brand" href="/" target="_blank" rel="noreferrer"><span>＋</span> Karina Sarte</a>
         <div className="ksa-login-copy">
           <span className="ksa-eyebrow">Central de edição</span>

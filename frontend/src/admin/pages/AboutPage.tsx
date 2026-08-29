@@ -8,6 +8,7 @@ import type { AboutDocument } from "../data/types";
 
 const ABOUT_BLOCKS: DocumentBlock<AboutDocument>[] = [
   {
+    id: "abertura",
     title: "Abertura",
     summary: "Primeira dobra da página Sobre",
     fields: [
@@ -18,6 +19,7 @@ const ABOUT_BLOCKS: DocumentBlock<AboutDocument>[] = [
     ],
   },
   {
+    id: "biografia",
     title: "Biografia",
     summary: "História, frase e retrato principal",
     fields: [
@@ -27,6 +29,7 @@ const ABOUT_BLOCKS: DocumentBlock<AboutDocument>[] = [
     ],
   },
   {
+    id: "bastidores",
     title: "Bastidores",
     summary: "Uma foto sua no dia a dia, com uma legenda descontraída",
     fields: [
@@ -45,6 +48,41 @@ const ABOUT_BLOCKS: DocumentBlock<AboutDocument>[] = [
     ),
   },
   {
+    id: "studio",
+    title: "Studio",
+    summary: "Convite e tour pelas fotos do espaço",
+    fields: [
+      { key: "studioInviteImageUrl", label: "Imagem do convite", type: "image", folder: "sobre/studio" },
+    ],
+    render: (value, update) => (
+      <div className="ksa-block-list">
+        <span className="ksa-label">Etapas do tour</span>
+        <Repeater
+          items={value.studioTourSteps ?? []}
+          fields={[
+            { key: "imageUrl", label: "Foto", type: "image", folder: "sobre/studio" },
+            { key: "label", label: "Rótulo curto" },
+            { key: "title", label: "Título" },
+            { key: "text", label: "Texto", type: "textarea", rows: 2 },
+          ]}
+          compact
+          addLabel="Adicionar etapa"
+          blank={() => ({
+            id: crypto.randomUUID(),
+            active: true,
+            order: 999,
+            label: "",
+            title: "",
+            text: "",
+            imageUrl: "",
+          })}
+          onChange={(studioTourSteps) => update({ studioTourSteps: studioTourSteps as AboutDocument["studioTourSteps"] })}
+        />
+      </div>
+    ),
+  },
+  {
+    id: "abordagem",
     title: "Abordagem",
     summary: "Cards explicativos sobre o seu método",
     fields: [],
@@ -69,7 +107,7 @@ const ABOUT_BLOCKS: DocumentBlock<AboutDocument>[] = [
 
 export function AboutPage() {
   return (
-    <AdminPage eyebrow="Apresentação" title="Sobre" description="Edite a página Sobre por seção: abertura, biografia, bastidores e abordagem.">
+    <AdminPage eyebrow="Apresentação" title="Sobre" description="Edite a página Sobre por seção: abertura, biografia, studio, bastidores e abordagem.">
       <VisualDocumentEditor<AboutDocument>
         store={aboutStore}
         blocks={ABOUT_BLOCKS}

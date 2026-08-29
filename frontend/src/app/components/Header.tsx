@@ -1,8 +1,9 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Link, useLocation } from "react-router";
 import { Menu, X } from "lucide-react";
 import { StarGlyph } from "./StarGlyph";
+import { isNavPathVisible, useNavVisibility } from "../nav-visibility";
 import { lockScroll, subscribeLenisScroll, unlockScroll } from "../scroll";
 
 const navLinks = [
@@ -20,6 +21,9 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navVisibility = useNavVisibility();
+  const visibleLinks = navLinks.filter((link) => isNavPathVisible(navVisibility, link.href));
+  const showBudgetCta = isNavPathVisible(navVisibility, "/orcamento");
 
   useEffect(() => subscribeLenisScroll((scroll) => setScrolled(scroll > 60)), []);
 
@@ -33,6 +37,11 @@ export function Header() {
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname]);
+
+  const mobileLinks = [
+    ...visibleLinks,
+    ...(showBudgetCta ? [{ label: "Orçamento", href: "/orcamento" }] : []),
+  ];
 
   return (
     <>
@@ -48,12 +57,14 @@ export function Header() {
         </Link>
 
         <nav className="ks-desktop-nav">
-          {navLinks.map((link) => (
+          {visibleLinks.map((link) => (
             <NavItem key={link.href} {...link} active={location.pathname === link.href} />
           ))}
-          <Link className="ks-nav-cta" to="/orcamento">
-            Quero um orçamento
-          </Link>
+          {showBudgetCta ? (
+            <Link className="ks-nav-cta" to="/orcamento">
+              Quero um orçamento
+            </Link>
+          ) : null}
         </nav>
 
         <motion.button
@@ -82,7 +93,7 @@ export function Header() {
               <StarGlyph size={40} color="#806E85" />
             </div>
             <nav>
-              {[...navLinks, { label: "Orçamento", href: "/orcamento" }].map((link, i) => (
+              {mobileLinks.map((link, i) => (
                 <MobileNavLink
                   key={link.href}
                   {...link}

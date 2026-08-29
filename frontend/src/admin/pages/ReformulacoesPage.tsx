@@ -39,6 +39,7 @@ const patchPoint = (points: ReformulationPoint[], id: string, changes: Partial<R
 
 const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
   {
+    id: "hero",
     title: "Hero",
     summary: "Textos e imagem da primeira dobra",
     fields: [
@@ -51,6 +52,7 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
     ],
   },
   {
+    id: "introducao",
     title: "Introdução",
     summary: "Seção logo abaixo do hero",
     fields: [
@@ -80,6 +82,7 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
     ),
   },
   {
+    id: "casos",
     title: "Casos",
     summary: "Textos e cards de antes/depois",
     fields: [
@@ -90,6 +93,7 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
     ],
   },
   {
+    id: "possibilidades",
     title: "Possibilidades",
     summary: "Última seção antes da faixa final — 3 cards",
     fields: [
@@ -123,6 +127,7 @@ const TEXT_BLOCKS: DocumentBlock<ReformulationsDocument>[] = [
     ),
   },
   {
+    id: "cta",
     title: "Chamada final",
     summary: "Convite no fim da página",
     fields: [

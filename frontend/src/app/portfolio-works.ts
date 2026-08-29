@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { tattooImages } from "./tattoo-images";
 
 export const PORTFOLIO_CATEGORIES = [
-  "Fine Line",
-  "Minimalista",
   "Blackwork",
-  "Projetos Autorais",
-  "Flash Tattoo",
-  "Cicatrizadas",
+  "Botânica",
+  "Ornamental",
+  "Suminagashi",
+  "Fineline",
+  "Neotradicional",
 ] as const;
 
 export type PortfolioWork = {
@@ -44,68 +43,25 @@ export type PortfolioPageContent = {
   heroTitle: string;
   heroText: string;
   heroImageUrl: string;
+  hiddenSections?: string[];
 };
 
 export const defaultPortfolioPageContent: PortfolioPageContent = {
   heroKicker: "Portfólio",
   heroTitle: "Portfólio",
   heroText: "Conheça tattoos, flashes e projetos autorais criados pela Karina Sarte.",
-  heroImageUrl: tattooImages.heroPortfolio,
+  heroImageUrl: "",
 };
 
+/** Metadados de exemplo sem mídia — só títulos para scaffolds mortos; fotos vêm do CMS. */
 export const galleryItems: PortfolioWork[] = [
-  {
-    title: "Orquídeas",
-    category: "Projetos Autorais",
-    label: "Vídeo de processo",
-    img: "/assets/recent-projects/orquideas-poster.jpg",
-    alt: "Processo de criação de tatuagem de orquídeas",
-    featured: true,
-    processVideo: {
-      poster: "/assets/recent-projects/orquideas-poster.jpg",
-      src: "/assets/recent-projects/orquideas-processo.mp4",
-    },
-  },
-  {
-    title: "Columbina",
-    category: "Projetos Autorais",
-    label: "Projeto autoral",
-    img: "/assets/recent-projects/columbina.jpg",
-    alt: "Tatuagem autoral Columbina com composição floral e olhar",
-    featured: true,
-  },
-  {
-    title: "Mandala autoral",
-    category: "Projetos Autorais",
-    label: "Ornamental",
-    img: "/assets/recent-projects/mandala.jpg",
-    alt: "Tatuagem de mandala ornamental autoral",
-    featured: true,
-  },
-  {
-    title: "Orquídea",
-    category: "Fine Line",
-    label: "Fine line",
-    img: "/assets/recent-projects/orquidea-pescoco.jpg",
-    alt: "Tatuagem de orquídea em traço fino no pescoço",
-    featured: true,
-  },
-  {
-    title: "Kira",
-    category: "Projetos Autorais",
-    label: "Pet tattoo",
-    img: "/assets/recent-projects/kira.jpg",
-    alt: "Tatuagem autoral de cachorro chamada Kira",
-    featured: true,
-  },
-  {
-    title: "Lua botânica",
-    category: "Projetos Autorais",
-    label: "Projeto autoral",
-    img: "/assets/recent-projects/lua-botanica.jpg",
-    alt: "Tatuagem autoral de lua, folhas e andorinha",
-    featured: true,
-  },
+  { title: "Orquídeas", category: "Botânica", label: "Botânica", img: "", alt: "Tatuagem botânica de orquídeas", featured: true },
+  { title: "Columbina", category: "Neotradicional", label: "Neotradicional", img: "", alt: "Tatuagem autoral Columbina", featured: true },
+  { title: "Mandala autoral", category: "Ornamental", label: "Ornamental", img: "", alt: "Tatuagem de mandala ornamental", featured: true },
+  { title: "Orquídea", category: "Fineline", label: "Fineline", img: "", alt: "Tatuagem de orquídea em traço fino", featured: true },
+  { title: "Kira", category: "Blackwork", label: "Blackwork", img: "", alt: "Tatuagem autoral de cachorro", featured: true },
+  { title: "Lua botânica", category: "Botânica", label: "Botânica", img: "", alt: "Tatuagem de lua e folhas", featured: true },
+  { title: "Traço em processo", category: "Suminagashi", label: "Suminagashi", img: "", alt: "Detalhe de processo criativo", featured: false },
 ];
 
 const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
@@ -117,7 +73,7 @@ function toPortfolioWorks(items: RemotePortfolioItem[]): PortfolioWork[] {
     .map((item) => ({
       id: item.id,
       title: item.title || "Trabalho sem título",
-      category: item.category || "Projetos Autorais",
+      category: item.category || "Botânica",
       label: item.style || item.category || "Projeto autoral",
       img: item.imageUrl || "",
       alt: item.description || item.title || "Trabalho de portfólio",

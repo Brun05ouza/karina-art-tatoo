@@ -1,0 +1,16 @@
+# Rotas mortas → home
+/cuidados       /       301
+/cuidados/      /       301
+/faq            /       301
+/faq/           /       301
+/como-funciona  /       301
+/como-funciona/ /       301
+/depoimentos    /       301
+/depoimentos/   /       301
+
+# Alias legado
+/releituras     /reformulacoes  301
+/releituras/    /reformulacoes  301
+
+# SPA fallback (Cloudflare Pages)
+/*    /index.html   200

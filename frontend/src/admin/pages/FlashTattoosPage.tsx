@@ -25,6 +25,7 @@ const empty: FlashTattoo = {
 };
 
 const HERO_BLOCK: DocumentBlock<FlashPageDocument> = {
+  id: "hero",
   title: "Hero",
   summary: "Textos e imagem da primeira dobra",
   fields: [
@@ -39,6 +40,7 @@ export function FlashTattoosPage() {
   const blocks = useMemo<DocumentBlock<FlashPageDocument>[]>(() => [
     HERO_BLOCK,
     {
+      id: "catalogo",
       title: "Catálogo",
       summary: "Desenhos disponíveis, reservados e tatuados",
       fields: [],

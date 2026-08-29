@@ -6,14 +6,15 @@ import { VisualDocumentEditor } from "../components/VisualDocumentEditor";
 import { portfolioPageStore, portfolioStore } from "../data/stores";
 import type { PortfolioItem, PortfolioPageDocument } from "../data/types";
 
-const categories = ["Fine Line", "Minimalista", "Blackwork", "Projetos Autorais", "Flash Tattoo", "Cicatrizadas"];
+const categories = ["Blackwork", "Botânica", "Ornamental", "Suminagashi", "Fineline", "Neotradicional"];
 const bodyLocations = ["Braço", "Antebraço", "Costas", "Coxa", "Perna", "Costela", "Ombro", "Pescoço", "Mão", "Tornozelo"];
-const styles = ["Fine Line", "Minimalista", "Blackwork", "Botânico", "Ornamental", "Autoral", "Geométrico", "Floral"];
+const styles = ["Blackwork", "Botânica", "Ornamental", "Suminagashi", "Fineline", "Neotradicional", "Autoral", "Geométrico"];
 const empty: PortfolioItem = { id: "", order: 1, active: true, title: "", description: "", category: categories[0], status: "Rascunho", bodyLocation: "", style: "", featured: false, imageUrl: "", imageKey: "" };
 
 export function PortfolioPage() {
   const blocks = useMemo<DocumentBlock<PortfolioPageDocument>[]>(() => [
     {
+      id: "hero",
       title: "Hero",
       summary: "Textos e imagem da primeira dobra",
       fields: [
@@ -24,6 +25,7 @@ export function PortfolioPage() {
       ],
     },
     {
+      id: "trabalhos",
       title: "Trabalhos",
       summary: "Cards cadastrados no portfólio",
       fields: [],

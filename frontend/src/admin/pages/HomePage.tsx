@@ -26,12 +26,7 @@ const SERVICE_CARD_FIELDS: RepeaterField[] = [
   ...CARD_FIELDS,
 ];
 
-const SERVICE_CARD_IMAGES: Record<string, string> = {
-  "service-1": "/assets/process/art-process-poster.jpg",
-  "service-2": "/assets/hero-home.png",
-  "service-3": "/assets/hero-home.png",
-  "service-4": "/assets/process/art-process-poster.jpg",
-};
+const SERVICE_CARD_IMAGES: Record<string, string> = {};
 
 const blankCard = (): HomeCard => ({ id: crypto.randomUUID(), title: "Novo card", text: "", url: "/", cta: "Ver mais", imageUrl: "", active: true, order: 0 });
 
@@ -41,6 +36,7 @@ const blankCard = (): HomeCard => ({ id: crypto.randomUUID(), title: "Novo card"
  */
 const BLOCKS: DocumentBlock<HomeDocument>[] = [
   {
+    id: "hero",
     title: "Hero",
     summary: "Primeira dobra da página",
     fields: [
@@ -75,6 +71,7 @@ const BLOCKS: DocumentBlock<HomeDocument>[] = [
     ),
   },
   {
+    id: "processo",
     title: "Processo criativo",
     summary: "Como o desenho nasce, com o fluxo de etapas",
     fields: [
@@ -123,6 +120,7 @@ const BLOCKS: DocumentBlock<HomeDocument>[] = [
     ),
   },
   {
+    id: "servicos",
     title: "Serviços",
     summary: "“O que você encontra por aqui”",
     fields: [
@@ -139,6 +137,7 @@ const BLOCKS: DocumentBlock<HomeDocument>[] = [
     ),
   },
   {
+    id: "portfolio",
     title: "Portfólio",
     summary: "Trabalhos recentes exibidos na home",
     fields: [
@@ -154,6 +153,7 @@ const BLOCKS: DocumentBlock<HomeDocument>[] = [
     ),
   },
   {
+    id: "colecoes",
     title: "Coleções",
     summary: "Produtos e coleções em destaque",
     fields: [
@@ -171,6 +171,7 @@ const BLOCKS: DocumentBlock<HomeDocument>[] = [
     ),
   },
   {
+    id: "youtube",
     title: "YouTube",
     summary: "Bastidores e vídeo em destaque",
     fields: [
@@ -214,6 +215,7 @@ const BLOCKS: DocumentBlock<HomeDocument>[] = [
     ),
   },
   {
+    id: "cta",
     title: "Chamada final",
     summary: "Faixa de convite no fim da página",
     fields: [

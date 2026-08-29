@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { tattooImages } from "./tattoo-images";
 
 /**
  * Conteúdo da Home vindo do admin (Neon, tabela content_entries, key "home").
@@ -9,6 +8,9 @@ import { tattooImages } from "./tattoo-images";
  * HomePreview.tsx em vez de importar App.tsx (que traria GSAP e Lenis pro
  * bundle do admin). Aqui é o caminho inverso: o site público não depende do
  * admin, cada lado guarda sua própria cópia da estrutura.
+ *
+ * Imagens nos defaults ficam vazias — a mídia vem só do CMS (exceto
+ * estrelas / eye-heart / estúdio, tratados no JSX).
  */
 export type HomeCard = {
   id: string;
@@ -71,6 +73,7 @@ export type HomeContent = {
   ctaText: string;
   ctaButton: string;
   ctaButtonUrl: string;
+  hiddenSections?: string[];
 };
 
 /** Cópia publicada hoje — usada no primeiro paint e como base enquanto o Neon não responde. */
@@ -82,15 +85,15 @@ export const defaultHomeContent: HomeContent = {
   heroButtonUrl: "/orcamento",
   heroSecondaryButton: "Ver portfólio",
   heroSecondaryUrl: "/portfolio",
-  heroImageUrl: tattooImages.hero,
+  heroImageUrl: "",
 
   processEyebrow: "Processo criativo",
   processTitle: "Da conversa nasce uma composição autoral.",
   processText: "Referências, memória e proporção do corpo viram um desenho pensado para ter presença na pele, com equilíbrio, identidade e cuidado em cada detalhe.",
   processButton: "Conhecer a artista",
   processButtonUrl: "/sobre",
-  processImageUrl: tattooImages.artistDetail,
-  processPortraitUrl: tattooImages.artistPortrait,
+  processImageUrl: "",
+  processPortraitUrl: "",
   processSteps: [
     { id: "1", label: "01 · Referência", active: true, order: 1 },
     { id: "2", label: "02 · Desenho", active: true, order: 2 },
@@ -101,10 +104,10 @@ export const defaultHomeContent: HomeContent = {
   servicesTitle: "O que você encontra por aqui",
   servicesText: "Projetos autorais, flash tattoos e produtos criados para quem busca arte com personalidade.",
   serviceCards: [
-    { id: "service-1", title: "Tatuagens Autorais", text: "Projetos personalizados criados a partir da sua ideia, referência e estilo.", url: "/portfolio", cta: "Ver projetos", imageUrl: tattooImages.cardAutoral, active: true, order: 1 },
-    { id: "service-2", title: "Flash Tattoos", text: "Artes prontas e exclusivas, com disponibilidade limitada para tatuar.", url: "/flash-tattoos", cta: "Ver flashes", imageUrl: tattooImages.cardFlash, active: true, order: 2 },
-    { id: "service-3", title: "Produtos Autorais", text: "Produtos, prints e coleções criadas dentro do universo visual da Karina Sarte.", url: "/produtos", cta: "Ver produtos", imageUrl: tattooImages.cardPrint, active: true, order: 3 },
-    { id: "service-4", title: "Cuidados e Experiência", text: "Atendimento com cuidado, orientação e responsabilidade em todas as etapas.", url: "/cuidados", cta: "Saiba mais", imageUrl: tattooImages.cardCare, active: true, order: 4 },
+    { id: "service-1", title: "Tatuagens Autorais", text: "Projetos personalizados criados a partir da sua ideia, referência e estilo.", url: "/portfolio", cta: "Ver projetos", imageUrl: "", active: true, order: 1 },
+    { id: "service-2", title: "Flash Tattoos", text: "Artes prontas e exclusivas, com disponibilidade limitada para tatuar.", url: "/flash-tattoos", cta: "Ver flashes", imageUrl: "", active: true, order: 2 },
+    { id: "service-3", title: "Produtos Autorais", text: "Produtos, prints e coleções criadas dentro do universo visual da Karina Sarte.", url: "/produtos", cta: "Ver produtos", imageUrl: "", active: true, order: 3 },
+    { id: "service-4", title: "Cuidados e Experiência", text: "Atendimento com cuidado, orientação e responsabilidade em todas as etapas.", url: "/orcamento", cta: "Saiba mais", imageUrl: "", active: true, order: 4 },
   ],
 
   portfolioEyebrow: "Portfólio",
@@ -118,10 +121,10 @@ export const defaultHomeContent: HomeContent = {
   collectionsText: "Arte para usar, colecionar e levar na pele. Além das tatuagens, a Karina Sarte também cria produtos, artes, flashes e coleções exclusivas para quem se identifica com seu universo visual.",
   collectionsButton: "Ver mais produtos",
   collectionCards: [
-    { id: "collection-1", title: "Planos de Tattoo", text: "Opções para tattoos pequenas, projetos autorais e sessões personalizadas.", url: "/produtos", cta: "Consultar planos", imageUrl: tattooImages.cardAutoral, active: true, order: 1 },
-    { id: "collection-2", title: "Flash Tattoos", text: "Artes prontas com identidade própria e disponibilidade limitada.", url: "/produtos", cta: "Ver flashes disponíveis", imageUrl: tattooImages.cardFlash, active: true, order: 2 },
-    { id: "collection-3", title: "Prints & Artes", text: "Ilustrações autorais para decorar, presentear ou colecionar.", url: "/produtos", cta: "Consultar artes", imageUrl: tattooImages.cardPrint, active: true, order: 3 },
-    { id: "collection-4", title: "Adesivos", text: "Adesivos autorais para colecionar, presentear e levar a arte da Karina para outros lugares.", url: "/produtos", cta: "Consultar adesivos", imageUrl: "/assets/brand/products-hero-flower-eye.png", active: true, order: 4 },
+    { id: "collection-1", title: "Planos de Tattoo", text: "Opções para tattoos pequenas, projetos autorais e sessões personalizadas.", url: "/produtos", cta: "Consultar planos", imageUrl: "", active: true, order: 1 },
+    { id: "collection-2", title: "Flash Tattoos", text: "Artes prontas com identidade própria e disponibilidade limitada.", url: "/produtos", cta: "Ver flashes disponíveis", imageUrl: "", active: true, order: 2 },
+    { id: "collection-3", title: "Prints & Artes", text: "Ilustrações autorais para decorar, presentear ou colecionar.", url: "/produtos", cta: "Consultar artes", imageUrl: "", active: true, order: 3 },
+    { id: "collection-4", title: "Adesivos", text: "Adesivos autorais para colecionar, presentear e levar a arte da Karina para outros lugares.", url: "/produtos", cta: "Consultar adesivos", imageUrl: "", active: true, order: 4 },
   ],
 
   youtubeActive: true,
@@ -131,8 +134,8 @@ export const defaultHomeContent: HomeContent = {
   youtubeButton: "Ver vídeo completo",
   youtubeUrl: "https://youtu.be/zntCZqs4rEE",
   youtubeMeta: "Tattoo vlog · rotina de estúdio · processo criativo",
-  youtubeThumbUrl: "/assets/youtube/tattoo-vlog-thumb.jpeg",
-  youtubeTrailerUrl: "/assets/youtube/tattoo-vlog-trailer.mp4",
+  youtubeThumbUrl: "",
+  youtubeTrailerUrl: "",
 
   ctaTitle: "Vamos criar sua próxima tattoo?",
   ctaText: "Envie sua ideia, referências, tamanho aproximado e local do corpo. A Karina Sarte analisa sua proposta e orienta o melhor caminho para transformar sua ideia em arte na pele.",

@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { StarGlyph } from "./StarGlyph";
-import { tattooImages } from "../tattoo-images";
 
 export function ArtistSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -40,7 +39,7 @@ export function ArtistSection() {
           }}
         >
           <img
-            src={tattooImages.artistTattooing}
+            src=""
             alt="Karina Sarte"
             style={{
               width: "100%",

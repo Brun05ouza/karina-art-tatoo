@@ -6,16 +6,17 @@ import type { BudgetPageDocument } from "../data/types";
 
 const BLOCKS: DocumentBlock<BudgetPageDocument>[] = [
   {
+    id: "hero",
     title: "Hero",
     summary: "Primeira dobra da página de orçamento",
     fields: [
       { key: "heroKicker", label: "Texto superior" },
       { key: "heroTitle", label: "Título principal" },
       { key: "heroText", label: "Texto de apoio", type: "textarea", rows: 2, full: true },
-      { key: "heroImageUrl", label: "Imagem de fundo", type: "image", folder: "orcamento/hero", full: true, compositionHint: true },
     ],
   },
   {
+    id: "briefing",
     title: "Briefing",
     summary: "Texto explicativo e etapas antes do formulário",
     fields: [
@@ -31,6 +32,7 @@ const BLOCKS: DocumentBlock<BudgetPageDocument>[] = [
     ],
   },
   {
+    id: "formulario",
     title: "Formulário",
     summary: "Cabeçalho, botão e mensagem inicial enviada ao WhatsApp",
     fields: [

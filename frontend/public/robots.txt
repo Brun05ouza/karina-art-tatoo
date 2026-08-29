@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
-# SPA — rotas públicas indexáveis via sitemap
 Sitemap: https://karinasarte.com.br/sitemap.xml

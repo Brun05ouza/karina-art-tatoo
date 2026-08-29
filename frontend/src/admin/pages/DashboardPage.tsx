@@ -7,8 +7,6 @@ import { StarDecor } from "../components/StarDecor";
 import { faqStore, flashStore, portfolioStore, productsStore, siteModeStore } from "../data/stores";
 import type { SiteModeDocument } from "../data/types";
 
-const DEVELOPMENT_HOME_FALLBACK_IMAGE = "/assets/development/karina-waist-dev.jpg";
-
 const MOTIVATIONAL_MESSAGES = [
   "Respira. Um passo de cada vez também leva longe.",
   "Hoje pode ser simples e ainda assim ser um bom dia.",
@@ -91,7 +89,7 @@ export function DashboardPage() {
     ["Editar Home", "/admin/home"],
     ["Revisar produtos", "/admin/produtos"],
   ];
-  const developmentPreviewImage = DEVELOPMENT_HOME_FALLBACK_IMAGE;
+  const developmentPreviewImage = siteMode?.developmentImageUrl || "";
 
   return (
     <AdminPage

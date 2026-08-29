@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { tattooImages } from "./tattoo-images";
 
 /**
  * Conteúdo da página /sobre vindo do admin (Neon, key "sobre") — mesma
  * separação de home-content.ts: tipo e cópia padrão próprios deste arquivo,
- * sem importar de src/admin.
+ * sem importar de src/admin. Mídia vem do CMS (defaults de imagem vazios).
  */
 export type AboutCard = {
   id: string;
@@ -12,6 +11,16 @@ export type AboutCard = {
   text: string;
   active: boolean;
   order: number;
+};
+
+export type AboutStudioStep = {
+  id: string;
+  order: number;
+  active: boolean;
+  label: string;
+  title: string;
+  text: string;
+  imageUrl: string;
 };
 
 export type AboutContent = {
@@ -28,6 +37,10 @@ export type AboutContent = {
 
   behindScenesImageUrl: string;
   behindScenesCaption: string;
+
+  studioInviteImageUrl: string;
+  studioTourSteps: AboutStudioStep[];
+  hiddenSections?: string[];
 };
 
 /** Cópia publicada hoje — primeiro paint e base enquanto o Neon não responde. */
@@ -35,11 +48,11 @@ export const defaultAboutContent: AboutContent = {
   eyebrow: "A artista",
   title: "Sobre a Karina Sarte",
   intro: "Karina Sarte cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele.",
-  heroImageUrl: tattooImages.heroAbout,
+  heroImageUrl: "",
 
   biography: "Minha estética é autoral, com traço fino e referências botânicas. Construo projetos que equilibram delicadeza e presença. Todo atendimento começa com escuta: quero entender suas referências, as proporções e o significado por trás da ideia.\n\nEm Teresópolis, criei um espaço de criação e cuidado. Da primeira mensagem à cicatrização, acompanho cada etapa com orientação clara e muita atenção.",
-  quote: "Em cada traço, coloco intenção. A tattoo precisa conversar com quem você é e com o corpo que a recebe.",
-  imageUrl: tattooImages.artistTattooing,
+  quote: "Crio projetos que abraçam o corpo e são uma extensão da sua personalidade.",
+  imageUrl: "",
 
   approachCards: [
     { id: "1", title: "Processo criativo", text: "Penso cada projeto como uma conversa entre sua história, seu corpo e minha linguagem visual.", active: true, order: 1 },
@@ -48,10 +61,76 @@ export const defaultAboutContent: AboutContent = {
   ],
 
   behindScenesImageUrl: "",
-  behindScenesCaption: "Língua de fora, mão firme: é assim que uma borboleta nasce no tablet antes de virar tattoo.",
+  behindScenesCaption: "Eu depois de comer strogonoff com feijão e decidir que era uma ótima hora pra criar arte.",
+
+  studioInviteImageUrl: "/assets/studio/studio-1.jpeg",
+  studioTourSteps: [
+    {
+      id: "entrada",
+      order: 1,
+      active: true,
+      label: "Entrada",
+      title: "Essa é a entrada.",
+      text: "É daqui que começa a experiência: um espaço mais íntimo, calmo e preparado para te receber.",
+      imageUrl: "/assets/studio/studio-1.jpeg",
+    },
+    {
+      id: "espaco",
+      order: 2,
+      active: true,
+      label: "Espaço",
+      title: "Meu cantinho de criação.",
+      text: "É aqui que eu desenho, organizo referências e preparo cada detalhe antes da tattoo acontecer.",
+      imageUrl: "/assets/studio/studio-3.jpeg",
+    },
+    {
+      id: "processo",
+      order: 3,
+      active: true,
+      label: "Processo",
+      title: "Onde o projeto ganha forma.",
+      text: "Entre conversas, traços e ajustes, cada ideia vai encontrando o próprio lugar.",
+      imageUrl: "/assets/studio/studio-5.jpeg",
+    },
+    {
+      id: "vista",
+      order: 4,
+      active: true,
+      label: "Vista",
+      title: "Uma vista que acompanha o processo.",
+      text: "Meu studio também carrega um pouco de Teresópolis — e isso faz parte do clima do espaço.",
+      imageUrl: "/assets/studio/studio-8.jpeg",
+    },
+    {
+      id: "cuidado",
+      order: 5,
+      active: true,
+      label: "Cuidado",
+      title: "Tudo pensado com cuidado.",
+      text: "Do ambiente aos materiais, eu gosto que cada detalhe faça a experiência ser leve, segura e especial.",
+      imageUrl: "/assets/studio/studio-11.jpeg",
+    },
+  ],
 };
 
 const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
+
+function mergeStudioSteps(incoming?: Partial<AboutStudioStep>[] | null): AboutStudioStep[] {
+  if (!Array.isArray(incoming) || incoming.length === 0) return defaultAboutContent.studioTourSteps;
+
+  return incoming.map((step, index) => {
+    const fallback = defaultAboutContent.studioTourSteps[index] ?? defaultAboutContent.studioTourSteps[0]!;
+    return {
+      id: step.id || fallback.id,
+      order: typeof step.order === "number" ? step.order : index + 1,
+      active: step.active !== false,
+      label: step.label || fallback.label,
+      title: step.title || fallback.title,
+      text: step.text || fallback.text,
+      imageUrl: step.imageUrl || fallback.imageUrl,
+    };
+  });
+}
 
 export function useAboutContent(): AboutContent {
   const [data, setData] = useState<AboutContent>(defaultAboutContent);
@@ -62,7 +141,15 @@ export function useAboutContent(): AboutContent {
     fetch(`${API_URL}/api/content/sobre`)
       .then((response) => (response.ok ? response.json() : null))
       .then((entry: { value?: Partial<AboutContent> } | null) => {
-        if (active && entry?.value) setData({ ...defaultAboutContent, ...entry.value });
+        if (active && entry?.value) {
+          setData({
+            ...defaultAboutContent,
+            ...entry.value,
+            imageUrl: entry.value.imageUrl || "",
+            studioInviteImageUrl: entry.value.studioInviteImageUrl || "",
+            studioTourSteps: mergeStudioSteps(entry.value.studioTourSteps),
+          });
+        }
       })
       .catch(() => {});
 

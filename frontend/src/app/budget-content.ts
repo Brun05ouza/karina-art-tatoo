@@ -22,6 +22,7 @@ export type BudgetPageContent = {
   submitHelper: string;
   submitButton: string;
   whatsappIntro: string;
+  hiddenSections?: string[];
 };
 
 export const defaultBudgetPageContent: BudgetPageContent = {

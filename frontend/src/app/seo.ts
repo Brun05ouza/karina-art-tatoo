@@ -1,7 +1,7 @@
 /** Configuração e utilitários de SEO — fonte única para meta tags e JSON-LD. */
 
 export const SITE = {
-  name: "Karina Sarte",
+  name: "Karina Sarte Tattoo",
   shortName: "Karina Sarte",
   baseUrl: "https://karinasarte.com.br",
   locale: "pt_BR",
@@ -12,8 +12,8 @@ export const SITE = {
   phone: "+5521990724477",
   phoneDisplay: "(21) 99072-4477",
   themeColor: "#2E173A",
-  ogImagePath: "/assets/hero-home.png",
-  ogImageAlt: "Tatuagem autoral de pantera por Karina Sarte em Teresópolis, RJ",
+  ogImagePath: "/og/karina-sarte-og.jpg",
+  ogImageAlt: "Karina Sarte Tattoo — Tatuagem autoral em Teresópolis, RJ",
   address: {
     locality: "Teresópolis",
     region: "RJ",
@@ -25,6 +25,7 @@ export const SITE = {
   },
 } as const;
 
+/** FAQ usado no bloco de produtos (não há rota /faq). */
 export const FAQ_ITEMS: ReadonlyArray<readonly [string, string]> = [
   ["Como faço um orçamento?", "Envie sua ideia pelo WhatsApp com referências, tamanho aproximado e local do corpo."],
   ["Faço desenhos personalizados?", "Sim. Crio projetos conforme a ideia e o estilo que você deseja."],
@@ -40,129 +41,119 @@ export type PageSeo = {
   description: string;
   keywords: string;
   breadcrumb: string;
-  changefreq: "weekly" | "monthly";
+  changefreq: "weekly" | "monthly" | "yearly";
   priority: number;
+  noindex?: boolean;
 };
 
+/** Rotas públicas indexáveis. Sem /cuidados, /faq, /como-funciona, /depoimentos. */
 export const PAGE_SEO: Record<string, PageSeo> = {
   "/": {
     path: "/",
-    title: "Karina Sarte | Tatuadora em Teresópolis, RJ",
+    title: "Karina Sarte | Tatuagem Autoral em Teresópolis, RJ",
     description:
-      "Tatuagens autorais, flash tattoos e projetos personalizados com Karina Sarte em Teresópolis, RJ. Fine line, botânica e arte com identidade.",
+      "Tatuagens autorais, flash tattoos e projetos personalizados em Teresópolis, RJ. Conheça o portfólio da Karina Sarte e peça seu orçamento.",
     keywords:
-      "tatuagem Teresópolis, tatuadora RJ, Karina Sarte, tattoo autoral, flash tattoo, fine line, tatuagem feminina",
+      "tatuadora em Teresópolis, tatuagem autoral em Teresópolis, flash tattoo Teresópolis, tattoo personalizada RJ, Karina Sarte Tattoo",
     breadcrumb: "Início",
     changefreq: "weekly",
     priority: 1,
   },
   "/sobre": {
     path: "/sobre",
-    title: "Sobre Karina Sarte | Tatuadora Autoral em Teresópolis",
+    title: "Sobre a Karina Sarte | Tatuadora Autoral em Teresópolis",
     description:
-      "Conheça Karina Sarte: tatuadora autoral em Teresópolis, RJ. Traço fino, botânica, símbolos e projetos pensados para a pele e a história de cada cliente.",
-    keywords: "sobre Karina Sarte, tatuadora Teresópolis, artista tattoo RJ, estúdio autoral",
+      "Conheça a Karina Sarte, tatuadora em Teresópolis que cria projetos autorais com escuta, cuidado, referências botânicas e composições personalizadas.",
+    keywords:
+      "Karina Sarte tatuadora, tatuadora autoral Teresópolis, estúdio de tattoo Teresópolis, processo criativo tattoo",
     breadcrumb: "Sobre",
     changefreq: "monthly",
     priority: 0.8,
   },
   "/portfolio": {
     path: "/portfolio",
-    title: "Portfólio de Tatuagens | Karina Sarte",
+    title: "Portfólio de Tatuagens | Karina Sarte Tattoo",
     description:
-      "Portfólio de tattoos autorais: fine line, botânica, blackwork e projetos personalizados. Trabalhos recentes da Karina Sarte em Teresópolis, RJ.",
-    keywords: "portfólio tattoo, tatuagens autorais, fine line Teresópolis, blackwork RJ, trabalhos Karina Sarte",
+      "Veja o portfólio de tatuagens da Karina Sarte: trabalhos autorais, fine line, botânicos, ornamentais, blackwork, flash tattoos e projetos personalizados.",
+    keywords:
+      "portfólio de tatuagem, tattoos autorais, tatuagem fine line, tattoo botânica, tatuagem ornamental, blackwork tattoo",
     breadcrumb: "Portfólio",
     changefreq: "weekly",
     priority: 0.9,
   },
   "/reformulacoes": {
     path: "/reformulacoes",
-    title: "Reformulação e Reconstrução de Tattoo | Karina Sarte",
+    title: "Reformulação de Tattoo em Teresópolis | Karina Sarte",
     description:
-      "Reformulação e reconstrução de tatuagens com Karina Sarte em Teresópolis, RJ. Aprimoramento de desenhos, linhas, composição e integração de novos detalhes.",
+      "Reformulações de tattoos com cuidado, reconstrução de desenho, ajustes de composição e novos caminhos para artes já existentes na pele.",
     keywords:
-      "reformulação de tatuagem Teresópolis, reconstrução de tattoo RJ, melhorar tatuagem antiga, correção de tattoo, Karina Sarte",
+      "reformulação de tattoo, cobertura de tatuagem, reconstrução de tatuagem, corrigir tattoo, tattoo antiga reformulada",
     breadcrumb: "Reformulações",
     changefreq: "monthly",
-    priority: 0.8,
+    priority: 0.85,
   },
   "/flash-tattoos": {
     path: "/flash-tattoos",
-    title: "Flash Tattoos Disponíveis | Karina Sarte — Teresópolis",
+    title: "Flash Tattoos Disponíveis | Karina Sarte Tattoo",
     description:
-      "Flash tattoos autorais prontas para tatuar com Karina Sarte. Artes exclusivas, disponibilidade limitada. Consulte pelo WhatsApp em Teresópolis, RJ.",
-    keywords: "flash tattoo Teresópolis, tattoo pronta RJ, flash autoral, artes para tatuar",
+      "Conheça flash tattoos autorais da Karina Sarte, com desenhos prontos para tatuar, disponibilidade limitada e orçamento pelo WhatsApp.",
+    keywords:
+      "flash tattoo Teresópolis, flash tattoos disponíveis, flash tattoo autoral, desenhos prontos para tatuar",
     breadcrumb: "Flash Tattoos",
     changefreq: "weekly",
     priority: 0.85,
   },
   "/produtos": {
     path: "/produtos",
-    title: "Produtos, Prints e Artes | Karina Sarte",
+    title: "Produtos Autorais | Karina Sarte",
     description:
-      "Prints, artes autorais, kits e coleções da Karina Sarte. Produtos do universo tattoo para colecionar, presentear ou levar além da pele.",
-    keywords: "prints tattoo, produtos autorais, artes Karina Sarte, coleções tattoo Teresópolis",
+      "Conheça produtos, prints, artes e coleções autorais da Karina Sarte, criados a partir do universo visual da tattoo e da ilustração.",
+    keywords:
+      "produtos autorais tattoo, prints de tattoo, artes autorais, flash tattoo produto, coleção Karina Sarte",
     breadcrumb: "Produtos",
     changefreq: "weekly",
-    priority: 0.9,
-  },
-  "/como-funciona": {
-    path: "/como-funciona",
-    title: "Como Funciona | Orçamento e Sessão — Karina Sarte",
-    description:
-      "Entenda como funciona o atendimento: orçamento pelo WhatsApp, criação do desenho, agendamento e sessão de tattoo com Karina Sarte em Teresópolis.",
-    keywords: "como tatuar, processo tattoo, orçamento tatuagem, agendamento Teresópolis",
-    breadcrumb: "Como funciona",
-    changefreq: "monthly",
-    priority: 0.7,
-  },
-  "/cuidados": {
-    path: "/cuidados",
-    title: "Cuidados com a Tattoo | Antes, Durante e Depois",
-    description:
-      "Orientações de cuidados com tattoo: preparo da pele, higiene na sessão, cicatrização e pós-tattoo. Guia completo da Karina Sarte.",
-    keywords: "cuidados tattoo, cicatrização tatuagem, pós tattoo, higiene sessão",
-    breadcrumb: "Cuidados",
-    changefreq: "monthly",
-    priority: 0.7,
-  },
-  "/depoimentos": {
-    path: "/depoimentos",
-    title: "Depoimentos | Clientes da Karina Sarte",
-    description:
-      "Relatos e experiências de quem já tatuou com Karina Sarte em Teresópolis, RJ. Feedback sobre atendimento, processo criativo e resultado.",
-    keywords: "depoimentos tattoo Teresópolis, avaliações tatuadora RJ, experiências clientes",
-    breadcrumb: "Depoimentos",
-    changefreq: "monthly",
-    priority: 0.6,
-  },
-  "/faq": {
-    path: "/faq",
-    title: "FAQ | Dúvidas sobre Tattoo e Atendimento",
-    description:
-      "Perguntas frequentes sobre orçamento, desenhos personalizados, flash tattoos, produtos, sinal e formas de pagamento — Karina Sarte.",
-    keywords: "faq tatuagem, dúvidas tattoo Teresópolis, orçamento flash tattoo",
-    breadcrumb: "FAQ",
-    changefreq: "monthly",
-    priority: 0.6,
+    priority: 0.75,
   },
   "/orcamento": {
     path: "/orcamento",
-    title: "Orçamento de Tattoo | Fale com Karina Sarte",
+    title: "Orçamento de Tattoo em Teresópolis | Karina Sarte",
     description:
-      "Solicite orçamento de tattoo com Karina Sarte pelo WhatsApp. Envie referências, tamanho e local do corpo. Atendimento em Teresópolis, RJ.",
-    keywords: "orçamento tattoo Teresópolis, orçamento tatuagem RJ, WhatsApp tatuadora",
+      "Envie sua ideia, referências e dúvidas para receber um orçamento personalizado de tattoo com a Karina Sarte em Teresópolis, RJ.",
+    keywords:
+      "orçamento tattoo Teresópolis, orçamento tatuagem, pedir orçamento tattoo, tatuagem personalizada preço",
     breadcrumb: "Orçamento",
     changefreq: "monthly",
-    priority: 0.85,
+    priority: 0.9,
+  },
+  "/bio": {
+    path: "/bio",
+    title: "Links da Karina Sarte | Tattoo, Portfólio e Orçamento",
+    description:
+      "Acesse os principais links da Karina Sarte: WhatsApp, portfólio, flash tattoos, produtos, Instagram e orçamento de tattoo.",
+    keywords: "Karina Sarte links, bio Karina Sarte, Instagram Karina Sarte, WhatsApp Karina Sarte",
+    breadcrumb: "Links",
+    changefreq: "monthly",
+    priority: 0.6,
+  },
+  "/404": {
+    path: "/404",
+    title: "Página não encontrada | Karina Sarte",
+    description:
+      "A página que você tentou acessar não foi encontrada. Volte para o site da Karina Sarte ou peça um orçamento de tattoo.",
+    keywords: "Karina Sarte, página não encontrada",
+    breadcrumb: "Página não encontrada",
+    changefreq: "yearly",
+    priority: 0,
+    noindex: true,
   },
 };
 
-export const SITEMAP_ROUTES = Object.values(PAGE_SEO);
+/** Rotas do sitemap (exclui /404). */
+export const SITEMAP_ROUTES = Object.values(PAGE_SEO).filter((page) => page.path !== "/404" && !page.noindex);
 
 export function getPageSeo(pathname: string): PageSeo {
-  return PAGE_SEO[pathname] ?? PAGE_SEO["/"];
+  if (pathname in PAGE_SEO) return PAGE_SEO[pathname]!;
+  return PAGE_SEO["/404"]!;
 }
 
 export function absoluteUrl(path = "/"): string {
@@ -208,13 +199,19 @@ function upsertJsonLd(id: string, data: unknown) {
   el.textContent = JSON.stringify(data);
 }
 
+const BUSINESS_ID = `${SITE.baseUrl}/#business`;
+const WEBSITE_ID = `${SITE.baseUrl}/#website`;
+const PERSON_ID = `${SITE.baseUrl}/#karina`;
+
+/** TODO SEO: preencher endereço completo e horário de atendimento caso a Karina queira divulgar. */
 function buildLocalBusiness() {
   return {
-    "@type": "HealthAndBeautyBusiness",
-    "@id": `${SITE.baseUrl}/#tattoo-parlor`,
+    "@type": "TattooParlor",
+    "@id": BUSINESS_ID,
     name: SITE.name,
+    alternateName: SITE.shortName,
     description:
-      "Estúdio de tatuagem autoral em Teresópolis, RJ. Fine line, botânica, flash tattoos e projetos personalizados com Karina Sarte.",
+      "Tatuagens autorais, flash tattoos e projetos personalizados em Teresópolis, RJ.",
     url: SITE.baseUrl,
     telephone: SITE.phone,
     email: SITE.email,
@@ -236,49 +233,79 @@ function buildLocalBusiness() {
       name: "Teresópolis",
       containedInPlace: { "@type": "State", name: "Rio de Janeiro" },
     },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        opens: "09:00",
-        closes: "18:00",
-      },
-    ],
     sameAs: [SITE.instagram],
-    hasOfferCatalog: {
-      "@type": "OfferCatalog",
-      name: "Serviços de Tatuagem",
-      itemListElement: [
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Tatuagem autoral personalizada" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Flash tattoo" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Fine line e botânica" } },
-        { "@type": "Offer", itemOffered: { "@type": "Service", name: "Prints e artes autorais" } },
-      ],
-    },
   };
 }
 
 function buildWebSite() {
   return {
     "@type": "WebSite",
-    "@id": `${SITE.baseUrl}/#website`,
-    name: SITE.name,
+    "@id": WEBSITE_ID,
     url: SITE.baseUrl,
+    name: SITE.name,
+    description: "Tatuagens autorais, flash tattoos e projetos personalizados em Teresópolis, RJ.",
     inLanguage: SITE.language,
-    publisher: { "@id": `${SITE.baseUrl}/#tattoo-parlor` },
-    potentialAction: {
-      "@type": "ContactAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE.baseUrl}/orcamento`,
-        actionPlatform: [
-          "http://schema.org/DesktopWebPlatform",
-          "http://schema.org/MobileWebPlatform",
-        ],
-      },
-      name: "Solicitar orçamento de tattoo",
-    },
+    publisher: { "@id": BUSINESS_ID },
   };
+}
+
+function buildPerson() {
+  return {
+    "@type": "Person",
+    "@id": PERSON_ID,
+    name: SITE.shortName,
+    jobTitle: "Tatuadora",
+    description:
+      "Tatuadora autoral em Teresópolis, RJ, com foco em projetos personalizados, flash tattoos e reformulações.",
+    url: absoluteUrl("/sobre"),
+    worksFor: { "@id": BUSINESS_ID },
+    sameAs: [SITE.instagram],
+  };
+}
+
+function buildServices() {
+  const services: Array<{ id: string; name: string; description: string; serviceType: string }> = [
+    {
+      id: "service-tatuagem-autoral",
+      name: "Tatuagem autoral",
+      description: "Projetos de tatuagem personalizados criados a partir de referências, história e intenção.",
+      serviceType: "Tatuagem autoral",
+    },
+    {
+      id: "service-flash-tattoo",
+      name: "Flash tattoo",
+      description: "Desenhos autorais prontos para tatuar, com disponibilidade limitada.",
+      serviceType: "Flash tattoo",
+    },
+    {
+      id: "service-reformulacao",
+      name: "Reformulação de tattoo",
+      description: "Reconstrução de desenho, composição e leitura visual de tattoos já existentes na pele.",
+      serviceType: "Reformulação de tatuagem",
+    },
+    {
+      id: "service-projeto-personalizado",
+      name: "Projeto personalizado",
+      description: "Criação de tattoo sob medida, do briefing ao desenho final para o corpo.",
+      serviceType: "Projeto de tatuagem personalizada",
+    },
+    {
+      id: "service-produtos-autorais",
+      name: "Produtos autorais",
+      description: "Prints, artes e coleções criadas a partir do universo visual da tattoo.",
+      serviceType: "Produtos autorais",
+    },
+  ];
+
+  return services.map((service) => ({
+    "@type": "Service",
+    "@id": `${SITE.baseUrl}/#${service.id}`,
+    name: service.name,
+    description: service.description,
+    serviceType: service.serviceType,
+    provider: { "@id": BUSINESS_ID },
+    areaServed: { "@type": "City", name: "Teresópolis" },
+  }));
 }
 
 function buildWebPage(page: PageSeo, url: string) {
@@ -289,17 +316,20 @@ function buildWebPage(page: PageSeo, url: string) {
     name: page.title,
     description: page.description,
     inLanguage: SITE.language,
-    isPartOf: { "@id": `${SITE.baseUrl}/#website` },
-    about: { "@id": `${SITE.baseUrl}/#tattoo-parlor` },
+    isPartOf: { "@id": WEBSITE_ID },
+    about: { "@id": BUSINESS_ID },
     breadcrumb: { "@id": `${url}#breadcrumb` },
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      contentUrl: absoluteUrl(SITE.ogImagePath),
+      name: SITE.ogImageAlt,
+    },
   };
 }
 
 function buildBreadcrumb(page: PageSeo, url: string) {
-  const items = [
-    { "@type": "ListItem", position: 1, name: "Início", item: SITE.baseUrl },
-  ];
-  if (page.path !== "/") {
+  const items = [{ "@type": "ListItem", position: 1, name: "Início", item: SITE.baseUrl }];
+  if (page.path !== "/" && page.path !== "/404") {
     items.push({ "@type": "ListItem", position: 2, name: page.breadcrumb, item: url });
   }
   return {
@@ -309,10 +339,10 @@ function buildBreadcrumb(page: PageSeo, url: string) {
   };
 }
 
-function buildFaqPage(url: string) {
+function buildFaqPage() {
   return {
     "@type": "FAQPage",
-    "@id": `${url}#faq`,
+    "@id": `${absoluteUrl("/produtos")}#faq`,
     mainEntity: FAQ_ITEMS.map(([question, answer]) => ({
       "@type": "Question",
       name: question,
@@ -323,16 +353,24 @@ function buildFaqPage(url: string) {
 
 function buildPageGraph(pathname: string) {
   const page = getPageSeo(pathname);
-  const url = absoluteUrl(page.path);
-  const graph: unknown[] = [buildLocalBusiness(), buildWebSite(), buildWebPage(page, url), buildBreadcrumb(page, url)];
-  if (pathname === "/faq") graph.push(buildFaqPage(url));
+  const url = absoluteUrl(page.path === "/404" ? pathname : page.path);
+  const graph: unknown[] = [
+    buildLocalBusiness(),
+    buildWebSite(),
+    buildPerson(),
+    ...buildServices(),
+    buildWebPage(page, url),
+    buildBreadcrumb(page, url),
+  ];
+  if (pathname === "/produtos") graph.push(buildFaqPage());
   return { "@context": "https://schema.org", "@graph": graph };
 }
 
 /** Aplica title, meta tags, Open Graph, Twitter e JSON-LD da rota atual. */
 export function applyPageSeo(pathname: string) {
   const page = getPageSeo(pathname);
-  const url = absoluteUrl(page.path);
+  const pageUrl = page.path === "/404" ? absoluteUrl(pathname) : absoluteUrl(page.path);
+  const canonicalHref = page.path === "/404" ? absoluteUrl("/") : absoluteUrl(page.path);
   const ogImage = absoluteUrl(SITE.ogImagePath);
 
   document.documentElement.lang = SITE.language;
@@ -341,21 +379,28 @@ export function applyPageSeo(pathname: string) {
   upsertMeta({ name: "description", content: page.description });
   upsertMeta({ name: "keywords", content: page.keywords });
   upsertMeta({ name: "author", content: SITE.shortName });
-  upsertMeta({ name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" });
+  upsertMeta({
+    name: "robots",
+    content: page.noindex
+      ? "noindex, follow"
+      : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+  });
   upsertMeta({ name: "theme-color", content: SITE.themeColor });
   upsertMeta({ name: "format-detection", content: "telephone=no" });
 
-  upsertLink("canonical", url);
-  upsertLink("alternate", url, { hreflang: SITE.language });
+  upsertLink("canonical", canonicalHref);
+  upsertLink("alternate", canonicalHref, { hreflang: SITE.language });
 
   upsertMeta({ property: "og:type", content: "website" });
   upsertMeta({ property: "og:site_name", content: SITE.name });
   upsertMeta({ property: "og:locale", content: SITE.locale });
-  upsertMeta({ property: "og:url", content: url });
+  upsertMeta({ property: "og:url", content: page.path === "/404" ? canonicalHref : pageUrl });
   upsertMeta({ property: "og:title", content: page.title });
   upsertMeta({ property: "og:description", content: page.description });
   upsertMeta({ property: "og:image", content: ogImage });
   upsertMeta({ property: "og:image:alt", content: SITE.ogImageAlt });
+  upsertMeta({ property: "og:image:width", content: "1200" });
+  upsertMeta({ property: "og:image:height", content: "630" });
 
   upsertMeta({ name: "twitter:card", content: "summary_large_image" });
   upsertMeta({ name: "twitter:site", content: SITE.twitter });
