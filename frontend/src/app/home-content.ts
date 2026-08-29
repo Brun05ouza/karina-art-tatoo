@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ensureContent, isContentReady, peekContent } from "./content-loader";
 
 /**
  * Conteúdo da Home vindo do admin (Neon, tabela content_entries, key "home").
@@ -143,31 +144,27 @@ export const defaultHomeContent: HomeContent = {
   ctaButtonUrl: "/orcamento",
 };
 
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
+import { ensureContent, isContentReady, peekContent } from "./content-loader";
 
-/**
- * Busca o conteúdo salvo no Neon; até a resposta chegar (ou se falhar), a
- * página já mostrou a cópia padrão acima — não há tela de carregamento.
- */
-export function useHomeContent(): HomeContent {
-  const [data, setData] = useState<HomeContent>(defaultHomeContent);
+export async function loadHomeContent(): Promise<HomeContent> {
+  return ensureContent<HomeContent>("home", defaultHomeContent);
+}
+
+export function useHomeContent(): HomeContent & { loaded: boolean } {
+  const [data, setData] = useState<HomeContent>(() => peekContent("home", defaultHomeContent));
+  const [loaded, setLoaded] = useState(() => isContentReady("home"));
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/home`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: Partial<HomeContent> } | null) => {
-        if (active && entry?.value) setData({ ...defaultHomeContent, ...entry.value });
-      })
-      .catch(() => {
-        // Sem Neon disponível, a home fica na cópia padrão — não é um erro visível pra visitante.
-      });
-
+    loadHomeContent().then((next) => {
+      if (!active) return;
+      setData(next);
+      setLoaded(true);
+    });
     return () => {
       active = false;
     };
   }, []);
 
-  return data;
+  return { ...data, loaded };
 }

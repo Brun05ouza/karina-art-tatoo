@@ -128,6 +128,28 @@ body {
   min-height: 100vh;
 }
 
+.ks-shell.is-bio {
+  background: #000;
+  min-height: 100svh;
+}
+
+html.ks-native-scroll,
+html.ks-native-scroll body {
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-y: auto;
+  touch-action: pan-y;
+}
+
+html.ks-native-scroll #ks-scroll-root,
+html.ks-native-scroll .ks-route-content,
+html.ks-native-scroll .ks-shell.is-bio {
+  height: auto;
+  min-height: 100svh;
+  overflow: visible;
+}
+
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none;
@@ -8692,7 +8714,7 @@ button.ks-product-visual-card {
   display: flex;
   justify-content: center;
   min-height: 100svh;
-  overflow: hidden;
+  overflow: visible;
   padding: max(28px, env(safe-area-inset-top)) 20px max(28px, env(safe-area-inset-bottom));
   position: relative;
 }
@@ -8926,10 +8948,14 @@ button.ks-product-visual-card {
   display: flex;
   justify-content: stretch;
   min-height: 100svh;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: visible;
   padding: 0;
   position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ks-link-bio-page--boot {
+  min-height: 100svh;
 }
 
 .ks-link-bio-backdrop {
@@ -9382,9 +9408,8 @@ button.ks-product-visual-card {
    para 3 colunas atÃ© em ~515px, deixando texto espremido/cortado. */
 .ks-link-bio-page {
   -ms-overflow-style: none;
-  overscroll-behavior: contain;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overscroll-behavior-y: auto;
+  overflow: visible;
   scrollbar-width: none;
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ensureContent, isContentReady, peekContent } from "./content-loader";
 
 export type FlashPageContent = {
   heroKicker: string;
@@ -28,49 +29,45 @@ export const defaultFlashPageContent: FlashPageContent = {
   heroImageUrl: "",
 };
 
-/** Seed de texto sem mídia — a lista pública usa só o CMS. */
-export const defaultFlashItems: FlashTattooItem[] = [
-  { id: "flash-1", order: 1, active: true, title: "Olho floral", description: "Flash autoral disponível uma única vez.", category: "Botânico", status: "Disponível", price: "R$ 450", size: "12 cm", imageUrl: "" },
-  { id: "flash-2", order: 2, active: true, title: "Olho coração", description: "Desenho autoral em preto e vermelho.", category: "Símbolos", status: "Reservado", price: "R$ 380", size: "10 cm", imageUrl: "" },
-  { id: "flash-3", order: 3, active: true, title: "Estrela violeta", description: "Peça gráfica com identidade Sarte.", category: "Gráfico", status: "Disponível", price: "R$ 320", size: "8 cm", imageUrl: "" },
-];
+/** Lista pública vem só do CMS — sem seed visual mockado. */
+export const defaultFlashItems: FlashTattooItem[] = [];
 
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
+export async function loadFlashPageContent(): Promise<FlashPageContent> {
+  return ensureContent("flash-page", defaultFlashPageContent);
+}
 
-export function useFlashPageContent(): FlashPageContent {
-  const [data, setData] = useState<FlashPageContent>(defaultFlashPageContent);
+export async function loadFlashItems(): Promise<FlashTattooItem[]> {
+  const value = await ensureContent<FlashTattooItem[]>("flash-tattoos", []);
+  return Array.isArray(value) ? value : [];
+}
+
+export function useFlashPageContent(): FlashPageContent & { loaded: boolean } {
+  const [data, setData] = useState(() => peekContent("flash-page", defaultFlashPageContent));
+  const [loaded, setLoaded] = useState(() => isContentReady("flash-page"));
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/flash-page`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: Partial<FlashPageContent> } | null) => {
-        if (active && entry?.value) setData({ ...defaultFlashPageContent, ...entry.value });
-      })
-      .catch(() => {});
-
+    loadFlashPageContent().then((next) => {
+      if (!active) return;
+      setData(next);
+      setLoaded(true);
+    });
     return () => {
       active = false;
     };
   }, []);
 
-  return data;
+  return { ...data, loaded };
 }
 
 export function useFlashItems(): FlashTattooItem[] {
-  const [items, setItems] = useState<FlashTattooItem[]>([]);
+  const [items, setItems] = useState<FlashTattooItem[]>(() => peekContent<FlashTattooItem[]>("flash-tattoos", []));
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/flash-tattoos`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: FlashTattooItem[] } | null) => {
-        if (active) setItems(Array.isArray(entry?.value) ? entry.value : []);
-      })
-      .catch(() => {});
-
+    loadFlashItems().then((next) => {
+      if (active) setItems(next);
+    });
     return () => {
       active = false;
     };

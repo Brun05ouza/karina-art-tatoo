@@ -58,12 +58,15 @@ import {
   unlockScroll,
   unregisterLenis,
   unobserveScrollRoot,
+  pauseSmoothScroll,
+  resumeSmoothScroll,
 } from "./scroll";
 import { useHomeContent, type HomeContent } from "./home-content";
 import { useSiteModeContent, type SiteModeContent } from "./site-mode-content";
 import { useAboutContent, type AboutStudioStep } from "./about-content";
 import { applyPageSeo } from "./seo";
 import { isSectionVisible, isPageVisible } from "./section-visibility";
+import { useBootReady } from "./boot-ready";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -400,15 +403,25 @@ function AppLayout({
   const navigate = useNavigate();
   const location = useLocation();
   const isBioRoute = location.pathname === "/bio";
+  const bootReady = useBootReady(location.pathname);
   const siteMode = useSiteModeContent();
   const isDevelopmentHome = location.pathname === "/" && siteMode.developmentMode;
   const shouldShowSiteChrome = !isBioRoute && !siteMode.developmentMode;
+  const showPreloader = !isDevelopmentHome && !preloaderDone;
 
   useEffect(() => {
     if (!siteMode.developmentMode) return;
     if (location.pathname === "/" || isBioRoute) return;
     navigate("/", { replace: true });
   }, [isBioRoute, location.pathname, navigate, siteMode.developmentMode]);
+
+  useEffect(() => {
+    if (isBioRoute) {
+      pauseSmoothScroll();
+      return () => resumeSmoothScroll();
+    }
+    resumeSmoothScroll();
+  }, [isBioRoute]);
 
   const startProductsTransition = useCallback(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -439,8 +452,9 @@ function AppLayout({
       <div className="ks-grain" aria-hidden="true" />
       {!isBioRoute && <AdminShortcut />}
       {shouldShowSiteChrome && <CustomCursor />}
-      {shouldShowSiteChrome && (
+      {showPreloader && (
         <Preloader
+          ready={bootReady && (isBioRoute || Boolean(siteMode.loaded))}
           onComplete={() => {
             setPreloaderDone(true);
             window.setTimeout(() => refreshScrollMetrics(), 100);
@@ -448,10 +462,11 @@ function AppLayout({
         />
       )}
       <div
-        className="ks-shell"
+        className={`ks-shell${isBioRoute ? " is-bio" : ""}`}
         style={{
-          opacity: isBioRoute || isDevelopmentHome || preloaderDone ? 1 : 0,
-          transition: "opacity 0.6s ease",
+          opacity: isDevelopmentHome || preloaderDone ? 1 : 0,
+          transition: "opacity 0.55s ease",
+          pointerEvents: isDevelopmentHome || preloaderDone ? "auto" : "none",
         }}
       >
         <PreloaderDoneContext.Provider value={preloaderDone}>
@@ -473,6 +488,7 @@ function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
   const hasSectionIntro = Boolean(SECTION_INTRO_TITLES[location.pathname]);
   const isBioRoute = location.pathname === "/bio";
   const shouldRedirectToDevelopmentHome = siteMode.developmentMode && location.pathname !== "/" && !isBioRoute;
+  const skipEnterMotion = hasSectionIntro || isBioRoute;
 
   useEffect(() => {
     const main = document.getElementById("ks-scroll-root");
@@ -500,10 +516,10 @@ function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
         <motion.div
           className="ks-route-content"
           key={location.pathname}
-          initial={hasSectionIntro ? false : { opacity: 0, y: 20 }}
+          initial={skipEnterMotion ? false : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={hasSectionIntro ? { opacity: 0 } : { opacity: 0, y: -14 }}
-          transition={{ duration: hasSectionIntro ? 0.3 : 0.5, ease: EASE }}
+          exit={hasSectionIntro || isBioRoute ? { opacity: 0 } : { opacity: 0, y: -14 }}
+          transition={{ duration: hasSectionIntro || isBioRoute ? 0.3 : 0.5, ease: EASE }}
           onAnimationComplete={(definition) => {
             if (definition === "animate") refreshScrollMetrics();
           }}

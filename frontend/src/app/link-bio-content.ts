@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ensureContent, isContentReady, peekContent } from "./content-loader";
 
 export type LinkBioButton = {
   id: string;
@@ -143,8 +144,6 @@ export const defaultLinkBioContent: LinkBioContent = {
   finalButton: "Solicitar orçamento",
 };
 
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
-
 function mergeChips(incoming?: Partial<LinkBioChip>[] | null): LinkBioChip[] {
   if (!Array.isArray(incoming) || incoming.length === 0) return defaultLinkBioContent.styleChips;
   return incoming.map((item, index) => ({
@@ -165,32 +164,40 @@ function mergeTestimonials(incoming?: Partial<LinkBioTestimonial>[] | null): Lin
   }));
 }
 
-export function useLinkBioContent(): LinkBioContent {
-  const [data, setData] = useState<LinkBioContent>(defaultLinkBioContent);
+function normalizeLinkBio(raw: Partial<LinkBioContent> | null | undefined): LinkBioContent {
+  const value = raw ?? {};
+  return {
+    ...defaultLinkBioContent,
+    ...value,
+    buttons: Array.isArray(value.buttons) ? value.buttons : defaultLinkBioContent.buttons,
+    highlights: [],
+    styleChips: mergeChips(value.styleChips),
+    testimonials: mergeTestimonials(value.testimonials),
+  };
+}
+
+export async function loadLinkBioContent(): Promise<LinkBioContent> {
+  const raw = await ensureContent<Partial<LinkBioContent>>("link-bio", defaultLinkBioContent);
+  return normalizeLinkBio(raw);
+}
+
+export function useLinkBioContent(): LinkBioContent & { loaded: boolean } {
+  const [data, setData] = useState<LinkBioContent>(() =>
+    normalizeLinkBio(peekContent("link-bio", defaultLinkBioContent)),
+  );
+  const [loaded, setLoaded] = useState(() => isContentReady("link-bio"));
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/link-bio`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: Partial<LinkBioContent> } | null) => {
-        if (active && entry?.value) {
-          setData({
-            ...defaultLinkBioContent,
-            ...entry.value,
-            buttons: Array.isArray(entry.value.buttons) ? entry.value.buttons : defaultLinkBioContent.buttons,
-            highlights: [],
-            styleChips: mergeChips(entry.value.styleChips),
-            testimonials: mergeTestimonials(entry.value.testimonials),
-          });
-        }
-      })
-      .catch(() => {});
-
+    loadLinkBioContent().then((next) => {
+      if (!active) return;
+      setData(next);
+      setLoaded(true);
+    });
     return () => {
       active = false;
     };
   }, []);
 
-  return data;
+  return { ...data, loaded };
 }

@@ -5,6 +5,7 @@ type ScrollListener = (scroll: number) => void;
 
 let lenis: Lenis | null = null;
 let lockCount = 0;
+let preferNativeScroll = false;
 let resizeObserver: ResizeObserver | null = null;
 let observedRoot: Element | null = null;
 let refreshRaf = 0;
@@ -32,6 +33,11 @@ export function registerLenis(instance: Lenis) {
     ScrollTrigger.update();
     notifyScrollListeners(scroll);
   });
+
+  if (preferNativeScroll) {
+    instance.stop();
+    document.documentElement.classList.add("ks-native-scroll");
+  }
 }
 
 export function unregisterLenis() {
@@ -125,4 +131,23 @@ export function resetScrollPosition() {
 export function refreshScrollMetrics() {
   lenis?.resize();
   ScrollTrigger.refresh();
+}
+
+/** Pausa o Lenis e libera o scroll nativo (ex.: /bio no mobile). */
+export function pauseSmoothScroll() {
+  preferNativeScroll = true;
+  document.documentElement.classList.add("ks-native-scroll");
+  document.body.style.overflow = "";
+  document.documentElement.style.overflow = "";
+  if (!lenis) return;
+  lenis.stop();
+}
+
+/** Retoma o Lenis após navegação fora de rotas com scroll nativo. */
+export function resumeSmoothScroll() {
+  preferNativeScroll = false;
+  document.documentElement.classList.remove("ks-native-scroll");
+  if (!lenis) return;
+  if (lockCount === 0) lenis.start();
+  lenis.resize();
 }

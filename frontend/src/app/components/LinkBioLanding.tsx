@@ -12,12 +12,6 @@ const DEFAULT_WA_MESSAGE =
   "Olá Karina, vim pelo seu link da bio e queria fazer um orçamento de tattoo.";
 const DEFAULT_WA_URL = `${WHATSAPP}?text=${encodeURIComponent(DEFAULT_WA_MESSAGE)}`;
 
-const FALLBACK_FLASHES = [
-  { id: "f1", title: "Floral lunar", status: "Disponível" },
-  { id: "f2", title: "Ornamental", status: "Disponível" },
-  { id: "f3", title: "Botânica livre", status: "Disponível" },
-];
-
 function isWhatsappButton(button: LinkBioButton) {
   const icon = button.icon.toLowerCase();
   const label = button.label.toLowerCase();
@@ -51,6 +45,10 @@ export function LinkBioLanding() {
   const flashItems = useFlashItems();
   const flashPageVisible = isPageVisible(flashPage);
 
+  if (!content.loaded) {
+    return <section className="ks-link-bio-page ks-link-bio-page--boot" aria-hidden="true" />;
+  }
+
   const primaryCta =
     [...content.buttons]
       .filter((item) => item.active && isWhatsappButton(item))
@@ -75,7 +73,8 @@ export function LinkBioLanding() {
       imageUrl: item.imageUrl || "",
     }));
 
-  const flashCards = flashes.length > 0 ? flashes : FALLBACK_FLASHES.map((item) => ({ ...item, imageUrl: "" }));
+  const flashCards = flashes;
+  const showFlashSection = flashPageVisible && flashCards.length > 0;
 
   const styleChips = [...content.styleChips]
     .filter((item) => item.active && item.label.trim())
@@ -194,7 +193,7 @@ export function LinkBioLanding() {
             </div>
           ) : null}
 
-          {flashPageVisible ? (
+          {showFlashSection ? (
             <section className="ks-bio-block" aria-labelledby="bio-flash-title">
               <span className="ks-bio-block__label">{content.flashLabel}</span>
               <h2 id="bio-flash-title" className="ks-bio-block__title">
