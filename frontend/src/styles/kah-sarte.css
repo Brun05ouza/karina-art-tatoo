@@ -129,7 +129,7 @@ body {
 }
 
 .ks-shell.is-bio {
-  background: #000;
+  background: var(--ks-paper-lavender);
   height: 100%;
   min-height: 100%;
   overflow: hidden;
@@ -154,6 +154,7 @@ html.ks-native-scroll .ks-shell.is-bio {
 
 html.ks-native-scroll #ks-scroll-root,
 #ks-scroll-root.is-bio-scroll {
+  -ms-overflow-style: none;
   -webkit-overflow-scrolling: touch;
   height: 100%;
   max-height: 100dvh;
@@ -161,7 +162,15 @@ html.ks-native-scroll #ks-scroll-root,
   overflow-y: auto !important;
   overscroll-behavior-y: contain;
   position: relative;
+  scrollbar-width: none;
   touch-action: pan-y;
+}
+
+html.ks-native-scroll #ks-scroll-root::-webkit-scrollbar,
+#ks-scroll-root.is-bio-scroll::-webkit-scrollbar {
+  display: none;
+  height: 0;
+  width: 0;
 }
 
 html.ks-native-scroll .ks-route-content,
@@ -9679,8 +9688,9 @@ button.ks-product-visual-card {
 }
 
 .ks-link-bio-primary-cta {
-  min-height: 58px !important;
-  font-size: 0.98rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  min-height: 54px !important;
 }
 
 .ks-link-bio-shell .ks-link-bio-action:not(.is-primary) {
@@ -10171,6 +10181,176 @@ button.ks-product-visual-card {
   .ks-link-bio-shell .ks-link-bio-action:not(.is-primary):hover {
     transform: none;
   }
+}
+
+/* Link bio — fundo lilás do projeto (sem foto de fundo) */
+.ks-link-bio-page--lilac {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(247, 245, 246, 0.55), transparent 32%),
+    radial-gradient(circle at 88% 18%, rgba(168, 152, 170, 0.35), transparent 34%),
+    radial-gradient(circle at 50% 100%, rgba(128, 110, 133, 0.22), transparent 42%),
+    linear-gradient(165deg, #e8e1e8 0%, var(--ks-paper-lavender) 42%, #cfc4d0 100%);
+  color: var(--ks-plum-deep);
+}
+
+.ks-link-bio-page--lilac::before {
+  display: none;
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-backdrop {
+  display: none;
+}
+
+.ks-link-bio-deco {
+  opacity: 0.22;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.ks-link-bio-deco-a {
+  left: -28px;
+  top: 8%;
+  transform: rotate(-18deg);
+}
+
+.ks-link-bio-deco-b {
+  right: -12px;
+  top: 36%;
+  transform: rotate(14deg);
+}
+
+.ks-link-bio-deco-c {
+  bottom: 18%;
+  left: 8%;
+  transform: rotate(-8deg);
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-shell,
+.ks-link-bio-page--lilac .ks-link-bio-card {
+  position: relative;
+  z-index: 1;
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-card {
+  gap: 20px;
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-profile {
+  text-shadow: none;
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-profile .ks-label-caps,
+.ks-link-bio-page--lilac .ks-label-caps {
+  color: rgba(var(--ks-plum-rgb), 0.62);
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-profile h1 {
+  color: var(--ks-plum-deep);
+  text-shadow: none;
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-subtitle,
+.ks-link-bio-page--lilac .ks-link-bio-profile p {
+  color: rgba(var(--ks-plum-rgb), 0.78) !important;
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-avatar-wrap {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(247, 245, 246, 0.7));
+  border-color: rgba(var(--ks-plum-rgb), 0.16);
+  box-shadow: 0 18px 40px rgba(var(--ks-plum-rgb), 0.14);
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-action {
+  backdrop-filter: none;
+  background: rgba(247, 245, 246, 0.88);
+  border: 1px solid rgba(var(--ks-plum-rgb), 0.14);
+  box-shadow: 0 12px 28px rgba(var(--ks-plum-rgb), 0.1);
+  color: var(--ks-plum-deep);
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-action::before {
+  display: none;
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-action-icon {
+  background: rgba(var(--ks-plum-rgb), 0.1);
+  border-color: transparent;
+  color: var(--ks-plum-deep);
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-action.is-primary {
+  background: var(--ks-plum-deep);
+  border-color: var(--ks-plum-deep);
+  box-shadow: 0 16px 36px rgba(var(--ks-plum-rgb), 0.22);
+  color: var(--ks-highlight);
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-action.is-primary .ks-link-bio-action-icon {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--ks-highlight);
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-action.is-primary > svg {
+  background: transparent;
+  color: var(--ks-highlight);
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-site-link {
+  color: rgba(var(--ks-plum-rgb), 0.72);
+}
+
+.ks-link-bio-page--lilac .bio-style-tags__label,
+.ks-link-bio-page--lilac .ks-bio-block__label {
+  color: rgba(var(--ks-plum-rgb), 0.58);
+}
+
+.ks-link-bio-page--lilac .bio-style-tags__title,
+.ks-link-bio-page--lilac .ks-bio-block__title,
+.ks-link-bio-page--lilac .ks-bio-final-cta h2 {
+  color: var(--ks-plum-deep);
+}
+
+.ks-link-bio-page--lilac .bio-style-tags__support,
+.ks-link-bio-page--lilac .ks-bio-block__text,
+.ks-link-bio-page--lilac .ks-bio-final-cta p {
+  color: rgba(var(--ks-plum-rgb), 0.74);
+}
+
+.ks-link-bio-page--lilac .bio-style-tags__chip {
+  background: rgba(247, 245, 246, 0.78);
+  border-color: rgba(var(--ks-plum-rgb), 0.14);
+  color: var(--ks-plum-deep);
+}
+
+.ks-link-bio-page--lilac .ks-bio-block__cta {
+  color: var(--ks-plum-deep);
+}
+
+.ks-link-bio-page--lilac .ks-bio-star-break {
+  margin: 10px 0 4px;
+  opacity: 0.72;
+}
+
+.ks-link-bio-page--lilac .ks-bio-star-break .ks-section-star-break-star.star-3,
+.ks-link-bio-page--lilac .ks-bio-star-break .ks-section-star-break-star.star-4 {
+  display: none;
+}
+
+.ks-link-bio-page--lilac .ks-bio-final-cta {
+  background: rgba(247, 245, 246, 0.55);
+  border: 1px solid rgba(var(--ks-plum-rgb), 0.1);
+  border-radius: 24px;
+  padding: 22px 18px;
+}
+
+.ks-link-bio-page--lilac .ks-bio-studio__star {
+  filter: none;
+  opacity: 0.55;
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-star {
+  display: none;
 }
 
 /* â”€â”€ Home em modo desenvolvimento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */

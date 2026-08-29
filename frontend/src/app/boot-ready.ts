@@ -28,7 +28,6 @@ async function prepareRoute(pathname: string): Promise<void> {
     await loadFlashPageContent();
     await preloadImages(
       [
-        bio.backgroundUrl,
         bio.avatarUrl,
         bio.studioImageUrl,
         ...flashes

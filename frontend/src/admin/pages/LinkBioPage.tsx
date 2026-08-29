@@ -201,11 +201,8 @@ export function LinkBioPage() {
     >
       <div className="ksa-link-bio-layout">
         <div className="ksa-document-editor">
-          <CollapsibleBlock title="Visual e perfil" summary="Fundo, foto e textos principais" defaultOpen>
+          <CollapsibleBlock title="Visual e perfil" summary="Foto e textos principais" defaultOpen>
             <div className="ksa-grid-2">
-              <div className="is-full">
-                <ImagePicker label="Imagem de fundo" folder="link-bio/background" value={doc.backgroundUrl} onChange={(url) => update({ backgroundUrl: url })} />
-              </div>
               <div className="is-full">
                 <ImagePicker label="Foto de perfil" folder="link-bio/avatar" value={doc.avatarUrl} onChange={(url) => update({ avatarUrl: url })} />
               </div>

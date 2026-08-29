@@ -2,6 +2,7 @@ import { ArrowRight, Images, LinkIcon, ShoppingBag, Sparkles, Youtube } from "lu
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { BrandStar } from "./BrandStar";
 import { useFlashItems, useFlashPageContent } from "../flash-content";
 import { useLinkBioContent, type LinkBioButton } from "../link-bio-content";
 import { isPageVisible } from "../section-visibility";
@@ -11,6 +12,11 @@ const WHATSAPP = "https://wa.me/5521990724477";
 const DEFAULT_WA_MESSAGE =
   "Olá Karina, vim pelo seu link da bio e queria fazer um orçamento de tattoo.";
 const DEFAULT_WA_URL = `${WHATSAPP}?text=${encodeURIComponent(DEFAULT_WA_MESSAGE)}`;
+
+const STAR_ASSETS = [
+  "/assets/brand/star-karina-filled.png",
+  "/assets/brand/star-karina-outline.png",
+] as const;
 
 function isWhatsappButton(button: LinkBioButton) {
   const icon = button.icon.toLowerCase();
@@ -38,6 +44,26 @@ function flashWa(title: string) {
   )}`;
 }
 
+function BioStarBreak({ align = "right" }: { align?: "left" | "right" | "center" }) {
+  const assets = [0, 1] as const;
+  return (
+    <div className={`ks-section-star-break ks-section-star-break-${align} ks-bio-star-break`} aria-hidden="true">
+      <div className="ks-section-star-break-field">
+        {assets.map((assetIndex, index) => (
+          <img
+            key={`${align}-${index}`}
+            className={`ks-section-star-break-star star-${index + 1}`}
+            src={STAR_ASSETS[assetIndex]}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function LinkBioLanding() {
   const content = useLinkBioContent();
   const reduceMotion = useReducedMotion();
@@ -46,7 +72,7 @@ export function LinkBioLanding() {
   const flashPageVisible = isPageVisible(flashPage);
 
   if (!content.loaded) {
-    return <section className="ks-link-bio-page ks-link-bio-page--boot" aria-hidden="true" />;
+    return <section className="ks-link-bio-page ks-link-bio-page--lilac ks-link-bio-page--boot" aria-hidden="true" />;
   }
 
   const primaryCta =
@@ -85,7 +111,6 @@ export function LinkBioLanding() {
     .sort((a, b) => a.order - b.order)
     .map((item) => item.text);
 
-  const backgroundUrl = content.backgroundUrl || "";
   const studioImage = content.studioImageUrl || "/assets/studio/studio-5.jpeg";
 
   const fadeUp = (delay = 0) =>
@@ -98,21 +123,9 @@ export function LinkBioLanding() {
         };
 
   return (
-    <section
-      className="ks-link-bio-page"
-      aria-label="Link da bio Karina Sarte"
-      data-has-photo={backgroundUrl ? "true" : "false"}
-    >
-      <div className="ks-link-bio-backdrop" aria-hidden="true">
-        {backgroundUrl ? (
-          <img className="ks-link-bio-backdrop__img" src={backgroundUrl} alt="" decoding="async" />
-        ) : null}
-        <div className="ks-link-bio-backdrop__fade" />
-      </div>
-
-      <img className="ks-link-bio-star star-1" src="/assets/brand/star-karina-filled.png" alt="" aria-hidden="true" />
-      <img className="ks-link-bio-star star-2" src="/assets/brand/star-karina-outline.png" alt="" aria-hidden="true" />
-      <img className="ks-link-bio-star star-3" src="/assets/brand/star-karina-filled.png" alt="" aria-hidden="true" />
+    <section className="ks-link-bio-page ks-link-bio-page--lilac" aria-label="Link da bio Karina Sarte">
+      <BrandStar variant={2} size={96} className="ks-link-bio-deco ks-link-bio-deco-a" />
+      <BrandStar variant={3} size={56} className="ks-link-bio-deco ks-link-bio-deco-b" />
 
       <div className="ks-link-bio-shell">
         <motion.div className="ks-link-bio-card" {...fadeUp(0)}>
@@ -194,57 +207,63 @@ export function LinkBioLanding() {
           ) : null}
 
           {showFlashSection ? (
-            <section className="ks-bio-block" aria-labelledby="bio-flash-title">
-              <span className="ks-bio-block__label">{content.flashLabel}</span>
-              <h2 id="bio-flash-title" className="ks-bio-block__title">
-                {content.flashTitle}
-              </h2>
-              <p className="ks-bio-block__text">{content.flashText}</p>
-              <div className="ks-bio-snap">
-                {flashCards.map((item) => (
-                  <article className="ks-bio-flash-card" key={item.id}>
-                    <div className="ks-bio-flash-card__media">
-                      {item.imageUrl ? (
-                        <img src={item.imageUrl} alt={item.title} loading="lazy" />
-                      ) : (
-                        <span className="ks-bio-flash-card__placeholder" aria-hidden="true">
-                          <Sparkles size={22} />
-                        </span>
-                      )}
-                    </div>
-                    <div className="ks-bio-flash-card__body">
-                      <span className="ks-bio-status">{item.status}</span>
-                      <strong>{item.title}</strong>
-                      <a href={flashWa(item.title)} target="_blank" rel="noopener noreferrer">
-                        Quero esse flash <ArrowRight size={14} />
-                      </a>
-                    </div>
-                  </article>
-                ))}
-              </div>
-              <Link className="ks-bio-block__cta" to="/flash-tattoos">
-                {content.flashCta} <ArrowRight size={14} />
-              </Link>
-            </section>
+            <>
+              <BioStarBreak align="right" />
+              <section className="ks-bio-block" aria-labelledby="bio-flash-title">
+                <span className="ks-bio-block__label">{content.flashLabel}</span>
+                <h2 id="bio-flash-title" className="ks-bio-block__title">
+                  {content.flashTitle}
+                </h2>
+                <p className="ks-bio-block__text">{content.flashText}</p>
+                <div className="ks-bio-snap">
+                  {flashCards.map((item) => (
+                    <article className="ks-bio-flash-card" key={item.id}>
+                      <div className="ks-bio-flash-card__media">
+                        {item.imageUrl ? (
+                          <img src={item.imageUrl} alt={item.title} loading="lazy" />
+                        ) : (
+                          <span className="ks-bio-flash-card__placeholder" aria-hidden="true">
+                            <Sparkles size={22} />
+                          </span>
+                        )}
+                      </div>
+                      <div className="ks-bio-flash-card__body">
+                        <span className="ks-bio-status">{item.status}</span>
+                        <strong>{item.title}</strong>
+                        <a href={flashWa(item.title)} target="_blank" rel="noopener noreferrer">
+                          Quero esse flash <ArrowRight size={14} />
+                        </a>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+                <Link className="ks-bio-block__cta" to="/flash-tattoos">
+                  {content.flashCta} <ArrowRight size={14} />
+                </Link>
+              </section>
+            </>
           ) : null}
 
           {testimonials.length > 0 ? (
-            <section className="ks-bio-block" aria-labelledby="bio-quotes-title">
-              <span className="ks-bio-block__label">{content.testimonialsLabel}</span>
-              <h2 id="bio-quotes-title" className="ks-bio-block__title">
-                {content.testimonialsTitle}
-              </h2>
-              <BioQuotesCarousel quotes={testimonials} reduceMotion={Boolean(reduceMotion)} />
-              <a className="ks-bio-block__cta" href={primaryUrl} target="_blank" rel="noopener noreferrer">
-                {content.testimonialsCta} <ArrowRight size={14} />
-              </a>
-            </section>
+            <>
+              <BioStarBreak align="left" />
+              <section className="ks-bio-block" aria-labelledby="bio-quotes-title">
+                <span className="ks-bio-block__label">{content.testimonialsLabel}</span>
+                <h2 id="bio-quotes-title" className="ks-bio-block__title">
+                  {content.testimonialsTitle}
+                </h2>
+                <BioQuotesCarousel quotes={testimonials} reduceMotion={Boolean(reduceMotion)} />
+                <a className="ks-bio-block__cta" href={primaryUrl} target="_blank" rel="noopener noreferrer">
+                  {content.testimonialsCta} <ArrowRight size={14} />
+                </a>
+              </section>
+            </>
           ) : null}
 
           <section className="ks-bio-block ks-bio-studio" aria-labelledby="bio-studio-title">
             <div className="ks-bio-studio__media">
               <img src={studioImage} alt="Studio Karina Sarte" loading="lazy" />
-              <img className="ks-bio-studio__star" src="/assets/brand/star-karina-filled.png" alt="" aria-hidden="true" />
+              <BrandStar variant={2} size={54} className="ks-bio-studio__star" />
             </div>
             <span className="ks-bio-block__label">{content.studioLabel}</span>
             <h2 id="bio-studio-title" className="ks-bio-block__title">
@@ -262,9 +281,9 @@ export function LinkBioLanding() {
             )}
           </section>
 
+          <BioStarBreak align="right" />
           <section className="ks-bio-final-cta" aria-labelledby="bio-final-title">
-            <img className="ks-bio-final-cta__star a" src="/assets/brand/star-karina-outline.png" alt="" aria-hidden="true" />
-            <img className="ks-bio-final-cta__star b" src="/assets/brand/star-karina-filled.png" alt="" aria-hidden="true" />
+            <BrandStar variant={3} size={36} className="ks-bio-final-cta__star a" />
             <h2 id="bio-final-title">{content.finalTitle}</h2>
             <p>{content.finalText}</p>
             <a className="ks-link-bio-action is-primary" href={primaryUrl} target="_blank" rel="noopener noreferrer">
@@ -375,17 +394,17 @@ function WhatsAppGlyph() {
 function TikTokGlyph() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M16.6 3c.35 2.4 1.75 4.05 4.05 4.2v3.25c-1.34.13-2.52-.3-3.98-1.18v6.08c0 7.72-8.42 10.14-11.8 4.6-2.17-3.56-.84-9.8 6.12-10.05v3.43c-.44.07-.91.18-1.34.33-1.29.44-2.02 1.26-1.82 2.7.39 2.76 5.45 3.57 5.03-1.82V3h3.74Z" />
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.16 15.3a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.73a8.2 8.2 0 0 0 4.76 1.52V6.84a4.84 4.84 0 0 1-1.01-.15z" />
     </svg>
   );
 }
 
 function InstagramGlyph() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 7.2A4.8 4.8 0 1 0 16.8 12 4.81 4.81 0 0 0 12 7.2Zm0 7.92A3.12 3.12 0 1 1 15.12 12 3.12 3.12 0 0 1 12 15.12Z" />
-      <path d="M17.52 2.4H6.48A4.08 4.08 0 0 0 2.4 6.48v11.04A4.08 4.08 0 0 0 6.48 21.6h11.04a4.08 4.08 0 0 0 4.08-4.08V6.48A4.08 4.08 0 0 0 17.52 2.4Zm2.4 15.12a2.4 2.4 0 0 1-2.4 2.4H6.48a2.4 2.4 0 0 1-2.4-2.4V6.48a2.4 2.4 0 0 1 2.4-2.4h11.04a2.4 2.4 0 0 1 2.4 2.4Z" />
-      <circle cx="17.76" cy="6.24" r="1.08" />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="4.2" />
+      <circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none" />
     </svg>
   );
 }

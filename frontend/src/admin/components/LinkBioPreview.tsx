@@ -13,7 +13,7 @@ const FRAME_DOC = `<!doctype html>
 ${fontsCss}
 ${siteCss}
 html, body {
-  background: #000;
+  background: #bab1ba;
   height: 720px;
   margin: 0;
   max-height: 720px;
@@ -31,7 +31,7 @@ body::-webkit-scrollbar {
 }
 html::-webkit-scrollbar-thumb,
 body::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(46, 23, 58, 0.28);
   border-radius: 999px;
 }
 a, button { pointer-events: none; }
@@ -112,24 +112,13 @@ function LinkBioPreviewBody({ value }: { value: LinkBioDocument }) {
     .filter((item) => item.status.toLowerCase() !== "reservado")
     .slice(0, 3);
 
-  const backgroundUrl = value.backgroundUrl || "";
   const studioImage = value.studioImageUrl || "/assets/studio/studio-5.jpeg";
   const previewQuote = testimonials[0]?.text || "";
 
   return (
-    <section
-      className="ks-link-bio-page"
-      aria-label="Prévia Link da bio"
-      data-has-photo={backgroundUrl ? "true" : "false"}
-    >
-      <div className="ks-link-bio-backdrop" aria-hidden="true">
-        {backgroundUrl ? <img className="ks-link-bio-backdrop__img" src={backgroundUrl} alt="" /> : null}
-        <div className="ks-link-bio-backdrop__fade" />
-      </div>
-
-      <img className="ks-link-bio-star star-1" src="/assets/brand/star-karina-filled.png" alt="" aria-hidden="true" />
-      <img className="ks-link-bio-star star-2" src="/assets/brand/star-karina-outline.png" alt="" aria-hidden="true" />
-      <img className="ks-link-bio-star star-3" src="/assets/brand/star-karina-filled.png" alt="" aria-hidden="true" />
+    <section className="ks-link-bio-page ks-link-bio-page--lilac" aria-label="Prévia Link da bio">
+      <img className="ks-link-bio-deco ks-link-bio-deco-a ks-brand-star" src="/assets/brand/star-karina-filled.png" alt="" aria-hidden="true" />
+      <img className="ks-link-bio-deco ks-link-bio-deco-b ks-brand-star" src="/assets/brand/star-karina-outline.png" alt="" aria-hidden="true" />
 
       <div className="ks-link-bio-shell">
         <div className="ks-link-bio-card">
