@@ -1,4 +1,4 @@
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
+import { API_URL } from "../lib/api-base";
 
 type CacheEntry<T> = {
   status: "loading" | "ready";
@@ -7,6 +7,15 @@ type CacheEntry<T> = {
 };
 
 const cache = new Map<string, CacheEntry<unknown>>();
+
+const FETCH_TIMEOUT_MS = 12_000;
+const FETCH_RETRIES = 3;
+
+function sleep(ms: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
+}
 
 export function preloadImage(url: string | null | undefined, timeoutMs = 4000): Promise<void> {
   const src = typeof url === "string" ? url.trim() : "";
@@ -40,24 +49,41 @@ export function preloadImages(urls: Array<string | null | undefined>, timeoutMs 
   return Promise.all(unique.map((url) => preloadImage(url, timeoutMs))).then(() => undefined);
 }
 
-async function fetchContentValue<T>(key: string, fallback: T): Promise<T> {
-  try {
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 5000);
-    const response = await fetch(`${API_URL}/api/content/${key}`, { signal: controller.signal });
-    window.clearTimeout(timeout);
-    if (!response.ok) return fallback;
-    const entry = (await response.json()) as { value?: T } | null;
-    if (entry?.value == null) return fallback;
-    if (Array.isArray(fallback) && !Array.isArray(entry.value)) return fallback;
-    if (Array.isArray(fallback)) return entry.value;
-    if (typeof fallback === "object" && fallback && typeof entry.value === "object") {
-      return { ...fallback, ...entry.value };
-    }
-    return entry.value;
-  } catch {
-    return fallback;
+function mergeFetchedValue<T>(fallback: T, value: T): T {
+  if (Array.isArray(fallback) && !Array.isArray(value)) return fallback;
+  if (Array.isArray(fallback)) return value;
+  if (typeof fallback === "object" && fallback && typeof value === "object" && value) {
+    return { ...fallback, ...value };
   }
+  return value;
+}
+
+async function fetchContentValueOnce<T>(key: string, signal: AbortSignal): Promise<T | null> {
+  const response = await fetch(`${API_URL}/api/content/${key}`, { signal });
+  if (!response.ok) return null;
+  const entry = (await response.json()) as { value?: T } | null;
+  if (entry?.value == null) return null;
+  return entry.value;
+}
+
+async function fetchContentValue<T>(key: string, fallback: T): Promise<T> {
+  for (let attempt = 0; attempt < FETCH_RETRIES; attempt++) {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    try {
+      const value = await fetchContentValueOnce<T>(key, controller.signal);
+      window.clearTimeout(timeout);
+      if (value != null) return mergeFetchedValue(fallback, value);
+    } catch {
+      window.clearTimeout(timeout);
+    }
+
+    if (attempt < FETCH_RETRIES - 1) {
+      await sleep(900 * (attempt + 1));
+    }
+  }
+
+  return fallback;
 }
 
 export function ensureContent<T>(key: string, fallback: T): Promise<T> {

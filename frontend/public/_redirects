@@ -12,5 +12,5 @@
 /releituras     /reformulacoes  301
 /releituras/    /reformulacoes  301
 
-# SPA fallback (Cloudflare Pages)
-/*    /index.html   200
+# Não usar `/* /index.html 200` — o Cloudflare Pages já faz SPA fallback
+# e essa regra gera aviso de loop infinito (e é ignorada).

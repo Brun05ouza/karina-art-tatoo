@@ -92,9 +92,9 @@ export const defaultLinkBioContent: LinkBioContent = {
   eyebrow: "Link da bio",
   name: "Karina Sarte",
   bio: "Tatuagem autoral · Teresópolis, RJ",
-  avatarUrl: "",
+  avatarUrl: "/assets/karina-sarte.png",
   backgroundUrl: "",
-  instagram: "",
+  instagram: "@karinasarte",
   footerLabel: "Site completo",
   footerUrl: "/",
   buttons: [
@@ -103,17 +103,14 @@ export const defaultLinkBioContent: LinkBioContent = {
       label: "Solicitar orçamento",
       url:
         "https://wa.me/5521990724477?text=" +
-        encodeURIComponent("Olá Karina, vim pelo seu link da bio e queria fazer um orçamento de tattoo."),
+        encodeURIComponent("Olá, Karina Sarte! Vim pela bio do site e queria fazer um orçamento."),
       icon: "WhatsApp",
       active: true,
       order: 1,
     },
-    { id: "link-2", label: "Portfólio", url: "/portfolio", icon: "Images", active: true, order: 2 },
-    { id: "link-3", label: "Flash Tattoos", url: "/flash-tattoos", icon: "Sparkles", active: true, order: 3 },
-    { id: "link-4", label: "Produtos", url: "/produtos", icon: "ShoppingBag", active: true, order: 4 },
-    { id: "link-5", label: "TikTok", url: "https://www.tiktok.com/@karinasarte", icon: "TikTok", active: true, order: 5 },
-    { id: "link-6", label: "YouTube", url: "https://www.youtube.com/@karinasarte", icon: "YouTube", active: true, order: 6 },
-    { id: "link-7", label: "Instagram", url: "https://www.instagram.com/karinasarte", icon: "Instagram", active: true, order: 7 },
+    { id: "link-2", label: "TikTok", url: "https://www.tiktok.com/@karinasarte", icon: "TikTok", active: true, order: 2 },
+    { id: "link-3", label: "Youtube", url: "https://www.youtube.com/@karinasarte", icon: "YouTube", active: true, order: 3 },
+    { id: "link-4", label: "Portfólio", url: "/portfolio", icon: "Images", active: true, order: 4 },
   ],
   highlights: [],
 

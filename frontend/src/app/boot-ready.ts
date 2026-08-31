@@ -6,6 +6,8 @@ import { preloadImage, preloadImages } from "./content-loader";
 
 const MIN_BOOT_MS = 900;
 const MAX_BOOT_MS = 7000;
+/** Render free tier pode demorar >10s para acordar; a bio precisa esperar o CMS. */
+const MAX_BIO_BOOT_MS = 22_000;
 
 function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
   return new Promise((resolve) => {
@@ -75,12 +77,13 @@ export function useBootReady(pathname: string): boolean {
     let active = true;
     setReady(false);
     const startedAt = performance.now();
+    const maxBootMs = pathname === "/bio" ? MAX_BIO_BOOT_MS : MAX_BOOT_MS;
 
     const hardStop = window.setTimeout(() => {
       if (active) setReady(true);
-    }, MAX_BOOT_MS);
+    }, maxBootMs);
 
-    withTimeout(prepareRoute(pathname), MAX_BOOT_MS - 200, undefined)
+    withTimeout(prepareRoute(pathname), maxBootMs - 200, undefined)
       .then(async () => {
         const elapsed = performance.now() - startedAt;
         const waitMore = Math.max(0, MIN_BOOT_MS - elapsed);
