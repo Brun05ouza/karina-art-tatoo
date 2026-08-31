@@ -10263,27 +10263,46 @@ button.ks-product-visual-card {
 
 .ks-link-bio-page--lilac .ks-link-bio-action {
   backdrop-filter: none;
-  background: rgba(247, 245, 246, 0.88);
+  background: rgba(247, 245, 246, 0.92);
   border: 1px solid rgba(var(--ks-plum-rgb), 0.14);
   box-shadow: 0 12px 28px rgba(var(--ks-plum-rgb), 0.1);
   color: var(--ks-plum-deep);
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-shell .ks-link-bio-action:not(.is-primary),
+.ks-link-bio-page--lilac .ks-link-bio-action:not(.is-primary) {
+  background: rgba(247, 245, 246, 0.92);
+  border-color: rgba(var(--ks-plum-rgb), 0.14);
+  box-shadow: 0 12px 28px rgba(var(--ks-plum-rgb), 0.1);
+  color: var(--ks-plum-deep);
+}
+
+.ks-link-bio-page--lilac .ks-link-bio-shell .ks-link-bio-action:not(.is-primary):hover,
+.ks-link-bio-page--lilac .ks-link-bio-action:not(.is-primary):hover {
+  border-color: rgba(var(--ks-plum-rgb), 0.28);
+  box-shadow: 0 14px 32px rgba(var(--ks-plum-rgb), 0.14);
+  transform: translateY(-1px);
 }
 
 .ks-link-bio-page--lilac .ks-link-bio-action::before {
   display: none;
 }
 
-.ks-link-bio-page--lilac .ks-link-bio-action-icon {
+.ks-link-bio-page--lilac .ks-link-bio-action-icon,
+.ks-link-bio-page--lilac .ks-link-bio-shell .ks-link-bio-action:not(.is-primary) .ks-link-bio-action-icon {
   background: rgba(var(--ks-plum-rgb), 0.1);
   border-color: transparent;
   color: var(--ks-plum-deep);
 }
 
-.ks-link-bio-page--lilac .ks-link-bio-action.is-primary {
+.ks-link-bio-page--lilac .ks-link-bio-action.is-primary,
+.ks-link-bio-page--lilac .ks-link-bio-primary-cta {
   background: var(--ks-plum-deep);
   border-color: var(--ks-plum-deep);
   box-shadow: 0 16px 36px rgba(var(--ks-plum-rgb), 0.22);
   color: var(--ks-highlight);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
 }
 
 .ks-link-bio-page--lilac .ks-link-bio-action.is-primary .ks-link-bio-action-icon {
