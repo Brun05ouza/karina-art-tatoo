@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../lib/api-base";
 
 export type BudgetPageContent = {
   heroKicker: string;
@@ -48,8 +49,6 @@ export const defaultBudgetPageContent: BudgetPageContent = {
   submitButton: "Enviar para a Karina",
   whatsappIntro: "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo ✨",
 };
-
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
 
 export function useBudgetPageContent(): BudgetPageContent {
   const [data, setData] = useState<BudgetPageContent>(defaultBudgetPageContent);

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../lib/api-base";
 
 export const PORTFOLIO_CATEGORIES = [
   "Blackwork",
@@ -63,8 +64,6 @@ export const galleryItems: PortfolioWork[] = [
   { title: "Lua botânica", category: "Botânica", label: "Botânica", img: "", alt: "Tatuagem de lua e folhas", featured: true },
   { title: "Traço em processo", category: "Suminagashi", label: "Suminagashi", img: "", alt: "Detalhe de processo criativo", featured: false },
 ];
-
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
 
 function toPortfolioWorks(items: RemotePortfolioItem[]): PortfolioWork[] {
   return [...items]

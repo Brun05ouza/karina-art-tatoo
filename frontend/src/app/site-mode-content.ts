@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../lib/api-base";
 
 export type SiteModeContent = {
   developmentMode: boolean;
@@ -20,8 +21,6 @@ export const defaultSiteModeContent: SiteModeContent = {
   developmentButton: "Falar comigo no WhatsApp",
   developmentButtonUrl: "https://wa.me/5521990724477?text=Oi%2C%20Karina%21%20Vim%20pelo%20site%20e%20queria%20falar%20com%20voc%C3%AA.",
 };
-
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
 
 /**
  * Enquanto `loaded` não vira true, o site inteiro fica com opacity:0 (ver

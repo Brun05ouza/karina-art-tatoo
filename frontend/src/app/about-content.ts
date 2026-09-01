@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../lib/api-base";
 
 /**
  * Conteúdo da página /sobre vindo do admin (Neon, key "sobre") — mesma
@@ -112,8 +113,6 @@ export const defaultAboutContent: AboutContent = {
     },
   ],
 };
-
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
 
 function mergeStudioSteps(incoming?: Partial<AboutStudioStep>[] | null): AboutStudioStep[] {
   if (!Array.isArray(incoming) || incoming.length === 0) return defaultAboutContent.studioTourSteps;

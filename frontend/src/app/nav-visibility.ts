@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../lib/api-base";
 import { isPageVisible } from "./section-visibility";
-
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
 
 /** Rotas do menu principal ↔ chave do conteúdo no CMS. */
 const NAV_CONTENT_KEYS: Record<string, string> = {

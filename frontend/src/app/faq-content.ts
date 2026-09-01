@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../lib/api-base";
 import { FAQ_ITEMS } from "./seo";
 
 export type FaqContentItem = {
@@ -21,8 +22,6 @@ export const defaultFaqItems: FaqContentItem[] = FAQ_ITEMS.map(([title, answer],
   category: "Geral",
   status: "Publicado",
 }));
-
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
 
 export function useFaqItems(): FaqContentItem[] {
   const [items, setItems] = useState<FaqContentItem[]>([]);

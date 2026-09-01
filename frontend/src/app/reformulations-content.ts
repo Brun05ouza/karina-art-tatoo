@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URL } from "../lib/api-base";
 
 export type ReformulationPoint = { id: string; label: string; active: boolean; order: number };
 export type ReformulationCard = { id: string; title: string; text: string; active: boolean; order: number };
@@ -86,8 +87,6 @@ export const defaultReformulationCases: ReformulationCase[] = [
   { id: "reform-1", order: 1, active: true, title: "Cobertura botânica", description: "Releitura com folhagens e novas linhas.", category: "Cobertura", status: "Publicado", beforeImageUrl: "", afterImageUrl: "" },
   { id: "reform-2", order: 2, active: true, title: "Renovação ornamental", description: "Redesenho e recuperação de contraste.", category: "Revitalização", status: "Publicado", beforeImageUrl: "", afterImageUrl: "" },
 ];
-
-const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(/\/$/, "");
 
 export function useReformulationsContent(): ReformulationsContent {
   const [data, setData] = useState<ReformulationsContent>(defaultReformulationsContent);
