@@ -1,86 +1,78 @@
 # Karina Sarte
 
-Site público e central administrativa da Karina Sarte, separados em frontend e backend para manter banco, credenciais e uploads fora do navegador.
+Site público e painel administrativo da Karina Sarte.
 
 ## Estrutura
 
 ```text
-frontend/  React + Vite — site público e /admin
-backend/   Fastify — autenticação, Neon PostgreSQL e Cloudflare R2
+frontend/            React + Vite — site, /admin e Cloudflare Pages Functions (/api)
+frontend/functions/  API same-origin (Neon + Supabase Storage)
+backend/             Fastify legado no Render — rollback até o cutover
+scripts/             hash PBKDF2, seed de admin, helpers de migração
 ```
 
-## Desenvolvimento
+Detalhes da migração: [`MIGRATION-PAGES-FUNCTIONS.md`](MIGRATION-PAGES-FUNCTIONS.md).
 
-Requer Node.js 20 ou superior.
+## Desenvolvimento (Pages Functions — preferido)
+
+Requer Node.js 20+.
 
 ```bash
 npm install
-cp frontend/.env.example frontend/.env
+# Copie secrets para frontend/.dev.vars (veja MIGRATION-PAGES-FUNCTIONS.md)
+cd frontend
+npm run pages:dev
+```
+
+- Site + API: `http://127.0.0.1:8788` (porta do wrangler)
+- Com `VITE_API_URL` vazio, o cliente chama `/api/*` same-origin
+
+## Desenvolvimento legado (Fastify local)
+
+```bash
+cp frontend/.env.example frontend/.env   # VITE_API_URL=http://localhost:3333
 cp backend/.env.example backend/.env
 npm run admin:hash -- --all
 npm run dev
 ```
 
-Preencha no `backend/.env` o hash e os segredos gerados. O comando `npm run dev` inicia:
-
-- site e painel: `http://localhost:5174` e `http://localhost:5174/admin`;
-- API: `http://localhost:3333`.
-
-O gerador de senha não aceita a senha por argumento. Em terminal interativo, ela é solicitada sem eco; em automações, também pode ser lida pela entrada padrão.
+- Site: `http://localhost:5174`
+- API: `http://localhost:3333`
 
 ## Área administrativa
 
-O painel inclui visão geral e editores para Home, Sobre, Portfólio, Reformulações, Flash Tattoos, Produtos, Bastidores, FAQ, Link da Bio, Mídia e Configurações.
+Editores: Home, Sobre, Portfólio, Reformulações, Flash Tattoos, Produtos, Orçamento, FAQ, Link da Bio, Contato dev. Conteúdo persiste em **Neon** (`content_entries`); mídia em **Supabase Storage**.
 
-Nesta etapa, o conteúdo editado fica em `localStorage`, sob o prefixo `ks-admin-draft:`. Isso é apenas uma camada de rascunhos: nada sensível deve ser colocado nos mocks ou no bundle do frontend. O código da interface administrativa é público como qualquer JavaScript enviado ao navegador; a segurança real das operações está no `requireAdmin` do backend.
+Bundles separados: `/` não baixa o admin; `/admin` não carrega Lenis/GSAP do site público.
 
-O site público e o painel são bundles separados. Abrir `/` não baixa o código do admin, e abrir `/admin` não carrega Lenis, GSAP, cursor personalizado ou o CSS do site público.
-
-### Rotas de autenticação
+### Auth
 
 | Método | Rota | Comportamento |
 |---|---|---|
-| POST | `/api/admin/login` | Valida e-mail/senha e cria cookie httpOnly |
-| POST | `/api/admin/logout` | Limpa a sessão; sempre idempotente |
-| GET | `/api/admin/session` | Retorna o estado atual; sempre responde 200 |
+| POST | `/api/admin/login` | E-mail/senha + cookie httpOnly (PBKDF2 nas Functions) |
+| POST | `/api/admin/logout` | Limpa sessão |
+| GET | `/api/admin/session` | Estado atual |
 
-As rotas que alteram conteúdo aceitam o cookie administrativo ou `Authorization: Bearer SEU_TOKEN`. Se o header `Authorization` for enviado e estiver incorreto, a API não tenta usar o cookie como alternativa.
+Escrita autenticada: cookie ou `Authorization: Bearer ADMIN_API_TOKEN`.
 
 ## Neon
 
-1. Crie um projeto no Neon.
-2. Configure `DATABASE_URL` no `backend/.env`.
-3. Execute `npm run db:migrate`.
+1. Configure `DATABASE_URL` (Pages secrets / `.dev.vars` / `backend/.env`).
+2. Migrations em `backend/migrations/` (inclui `003_login_attempts.sql` para rate limit).
 
-O banco começa com:
+Tabelas: `content_entries`, `media_assets`, `admin_users`, `login_attempts`.
 
-- `content_entries`: textos e coleções em JSON;
-- `media_assets`: metadados das imagens armazenadas no R2;
-- `admin_users`: usuários autorizados do painel administrativo.
+## Uploads (Supabase Storage)
 
-Sem `DATABASE_URL`, o backend continua disponível para login, mas as rotas dependentes do banco respondem `503` com uma mensagem de configuração.
+1. `POST /api/uploads/presign` → URL assinada
+2. Browser faz `PUT` direto no bucket
+3. `POST /api/media` registra metadados no Neon
 
-## Cloudflare R2
+Conversão HEIC/MOV ocorre no navegador (`mediaStore.ts`).
 
-1. Crie um bucket privado e um token limitado a esse bucket.
-2. Configure as variáveis `R2_*` no `backend/.env`.
-3. Aplique `backend/config/r2-cors.example.json` ao bucket.
-4. Informe o domínio público de leitura em `R2_PUBLIC_BASE_URL`.
+## Produção
 
-O fluxo previsto é: solicitar uma URL `PUT` de cinco minutos em `/api/uploads/presign`, enviar a imagem diretamente ao R2 e registrar os metadados em `/api/media`. A API confirma que o objeto existe antes de gravá-lo no Neon.
-
-## Segurança e produção
-
-- Nunca coloque credenciais em variáveis `VITE_*` ou faça commit de arquivos `.env`.
-- Restrinja `CORS_ORIGINS` aos domínios reais e o token R2 ao bucket necessário.
-- O cookie usa `HttpOnly`, `SameSite=Lax`, expiração absoluta de 12 horas e assinatura HMAC. Em produção, usa também `Secure` e o prefixo `__Host-`.
-- A API precisa ficar no mesmo domínio registrável do site, por exemplo `karinasarte.com.br` e `api.karinasarte.com.br`. Outro domínio exigiria `SameSite=None` e uma estratégia adicional de CSRF.
-- O servidor limita tentativas de login, taxa global, tamanho de JSON, origens e tipos de imagem.
-- O deploy do frontend precisa redirecionar rotas desconhecidas para `index.html`, permitindo atualizar páginas como `/admin/portfolio` diretamente.
-
-```bash
-npm run build
-npm run start
-```
-
-Os artefatos são gerados em `frontend/dist` e `backend/dist`.
+- Frontend + Functions: Cloudflare Pages (Root directory = `frontend`)
+- Durante a migração, `VITE_API_URL` pode ainda apontar para o Render
+- Após validação (incl. Safari/iPhone), remova `VITE_API_URL` e desligue o Render
+- Nunca coloque secrets em variáveis `VITE_*`
