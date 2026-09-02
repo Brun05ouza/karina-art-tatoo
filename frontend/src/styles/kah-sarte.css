@@ -514,10 +514,10 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   height: clamp(160px, 18vw, 260px);
   opacity: 0.76;
   background-image:
-    url("/assets/brand/star-karina-filled.png"),
-    url("/assets/brand/star-karina-outline.png"),
-    url("/assets/brand/star-karina-filled.png"),
-    url("/assets/brand/star-karina-outline.png");
+    url("/assets/brand/star-karina-filled.webp"),
+    url("/assets/brand/star-karina-outline.webp"),
+    url("/assets/brand/star-karina-filled.webp"),
+    url("/assets/brand/star-karina-outline.webp");
   background-position:
     left 4% top 22%,
     left 43% top 0,
@@ -536,9 +536,9 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   height: clamp(108px, 12vw, 185px);
   opacity: 0.52;
   background-image:
-    url("/assets/brand/star-karina-outline.png"),
-    url("/assets/brand/star-karina-filled.png"),
-    url("/assets/brand/star-karina-outline.png");
+    url("/assets/brand/star-karina-outline.webp"),
+    url("/assets/brand/star-karina-filled.webp"),
+    url("/assets/brand/star-karina-outline.webp");
   background-position:
     left 8% top 34%,
     left 54% top 2%,
@@ -10412,7 +10412,7 @@ button.ks-product-visual-card {
 }
 
 .ks-development-home-card::after {
-  background: url("/assets/brand/star-karina-filled.png") center/contain no-repeat;
+  background: url("/assets/brand/star-karina-filled.webp") center/contain no-repeat;
   content: "";
   height: clamp(86px, 13vw, 148px);
   opacity: .22;

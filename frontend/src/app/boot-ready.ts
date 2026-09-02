@@ -7,18 +7,18 @@ import { preloadImages } from "./content-loader";
  */
 const ROUTE_ASSETS: Record<string, string[]> = {
   "/": [
-    "/assets/brand/star-karina-filled.png",
-    "/assets/brand/star-karina-outline.png",
+    "/assets/brand/star-karina-filled.webp",
+    "/assets/brand/star-karina-outline.webp",
   ],
   "/bio": [
     "/assets/karina-sarte.png",
     "/assets/studio/studio-5.jpeg",
-    "/assets/brand/star-karina-filled.png",
-    "/assets/brand/star-karina-outline.png",
+    "/assets/brand/star-karina-filled.webp",
+    "/assets/brand/star-karina-outline.webp",
   ],
 };
 
-const DEFAULT_ASSETS = ["/assets/brand/star-karina-filled.png"];
+const DEFAULT_ASSETS = ["/assets/brand/star-karina-filled.webp"];
 
 /** Timeout curto: só imagens locais pequenas; não bloquear no GIF do preloader. */
 const PRELOAD_TIMEOUT_MS = 1200;

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
-const PRELOADER_SRC = "/assets/IMG_0430.GIF";
+const PRELOADER_MP4 = "/assets/IMG_0430.mp4";
 
 interface PreloaderProps {
   ready?: boolean;
@@ -9,8 +9,8 @@ interface PreloaderProps {
 }
 
 /**
- * Cobre a tela até `ready` (conteúdo + imagens-chave).
- * Só chama onComplete depois do fade-out — evita revelar o site cedo demais.
+ * Cobre a tela até `ready` (assets locais prioritários).
+ * Vídeo MP4 (~438 KB) substitui o GIF (~2,16 MB) no preloader.
  */
 export function Preloader({ ready = true, onComplete }: PreloaderProps) {
   const [visible, setVisible] = useState(true);
@@ -41,18 +41,22 @@ export function Preloader({ ready = true, onComplete }: PreloaderProps) {
           aria-label="Carregando Karina Sarte"
           aria-busy={!ready}
         >
-          <motion.img
+          <motion.video
             className="ks-preloader-media"
-            src={PRELOADER_SRC}
-            alt=""
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
             width={2480}
             height={3508}
-            decoding="async"
             draggable={false}
             initial={{ opacity: 0, scale: 0.97 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
-          />
+          >
+            <source src={PRELOADER_MP4} type="video/mp4" />
+          </motion.video>
         </motion.div>
       )}
     </AnimatePresence>

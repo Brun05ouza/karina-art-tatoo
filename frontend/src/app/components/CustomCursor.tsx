@@ -130,7 +130,7 @@ export function CustomCursor() {
       <div ref={mainRef} className="ks-star-cursor-main">
         <img
           className="ks-cursor-star-image ks-cursor-star-filled"
-          src="/assets/brand/star-karina-filled.png"
+          src="/assets/brand/star-karina-filled.webp"
           alt=""
           width="48"
           height="48"
@@ -138,7 +138,7 @@ export function CustomCursor() {
         />
         <img
           className="ks-cursor-star-image ks-cursor-star-outline"
-          src="/assets/brand/star-karina-outline.png"
+          src="/assets/brand/star-karina-outline.webp"
           alt=""
           width="58"
           height="58"

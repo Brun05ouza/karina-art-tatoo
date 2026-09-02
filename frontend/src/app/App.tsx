@@ -81,8 +81,8 @@ const ProductsNavContext = createContext<(() => void) | null>(null);
 const PreloaderDoneContext = createContext(false);
 const brandStarVariant = (index: number) => (index % 2 === 0 ? 2 : 3) as 2 | 3;
 const looseStarAssets = [
-  "/assets/brand/star-karina-filled.png",
-  "/assets/brand/star-karina-outline.png",
+  "/assets/brand/star-karina-filled.webp",
+  "/assets/brand/star-karina-outline.webp",
 ] as const;
 
 function StarSprinkle({ className = "", light = false }: { className?: string; light?: boolean }) {
@@ -715,11 +715,11 @@ function DevelopmentHomePage({ data }: { data: SiteModeContent }) {
         ) : null}
         <div className="ks-development-home-content">
           <div className="ks-development-home-starfield" aria-hidden="true">
-            <img src="/assets/brand/star-karina-filled.png" alt="" />
-            <img src="/assets/brand/star-karina-outline.png" alt="" />
-            <img src="/assets/brand/star-karina-filled.png" alt="" />
-            <img src="/assets/brand/star-karina-outline.png" alt="" />
-            <img src="/assets/brand/star-karina-filled.png" alt="" />
+            <img src="/assets/brand/star-karina-filled.webp" alt="" />
+            <img src="/assets/brand/star-karina-outline.webp" alt="" />
+            <img src="/assets/brand/star-karina-filled.webp" alt="" />
+            <img src="/assets/brand/star-karina-outline.webp" alt="" />
+            <img src="/assets/brand/star-karina-filled.webp" alt="" />
           </div>
           <span className="ks-label-caps">{data.developmentEyebrow}</span>
           <h1 className="ks-display-xl">{data.developmentTitle}</h1>
@@ -2785,8 +2785,8 @@ function AboutBastidorSection({
               <img src={imageUrl} alt="Karina Sarte criando no tablet" loading="lazy" />
             ) : (
               <div className="ks-about-bastidor-placeholder" aria-hidden="true">
-                <img src="/assets/brand/star-karina-filled.png" alt="" />
-                <img src="/assets/brand/star-karina-outline.png" alt="" />
+                <img src="/assets/brand/star-karina-filled.webp" alt="" />
+                <img src="/assets/brand/star-karina-outline.webp" alt="" />
               </div>
             )}
           </div>

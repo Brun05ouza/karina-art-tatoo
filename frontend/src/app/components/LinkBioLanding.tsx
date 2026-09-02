@@ -14,8 +14,8 @@ const DEFAULT_WA_MESSAGE =
 const DEFAULT_WA_URL = `${WHATSAPP}?text=${encodeURIComponent(DEFAULT_WA_MESSAGE)}`;
 
 const STAR_ASSETS = [
-  "/assets/brand/star-karina-filled.png",
-  "/assets/brand/star-karina-outline.png",
+  "/assets/brand/star-karina-filled.webp",
+  "/assets/brand/star-karina-outline.webp",
 ] as const;
 
 function isWhatsappButton(button: LinkBioButton) {
