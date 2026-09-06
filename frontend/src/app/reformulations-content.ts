@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../lib/api-base";
 
 export type ReformulationPoint = { id: string; label: string; active: boolean; order: number };
 export type ReformulationCard = { id: string; title: string; text: string; active: boolean; order: number };
@@ -93,19 +92,9 @@ export function useReformulationsContent(): ReformulationsContent {
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/reformulacoes-textos`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: Partial<ReformulationsContent> } | null) => {
-        if (active && entry?.value) {
-          setData({
-            ...defaultReformulationsContent,
-            ...entry.value,
-          });
-        }
-      })
-      .catch(() => {});
-
+    void Promise.resolve(defaultReformulationsContent).then((next) => {
+      if (active) setData(next);
+    });
     return () => {
       active = false;
     };
@@ -115,18 +104,13 @@ export function useReformulationsContent(): ReformulationsContent {
 }
 
 export function useReformulationCases(): ReformulationCase[] {
-  const [items, setItems] = useState<ReformulationCase[]>([]);
+  const [items, setItems] = useState<ReformulationCase[]>(defaultReformulationCases);
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/reformulacoes`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: ReformulationCase[] } | null) => {
-        if (active) setItems(Array.isArray(entry?.value) ? entry.value : []);
-      })
-      .catch(() => {});
-
+    void Promise.resolve(defaultReformulationCases).then((next) => {
+      if (active) setItems(next);
+    });
     return () => {
       active = false;
     };

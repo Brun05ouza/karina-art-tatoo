@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ensureContent, isContentReady, peekContent } from "./content-loader";
 
 export type LinkBioButton = {
   id: string;
@@ -174,27 +173,22 @@ function normalizeLinkBio(raw: Partial<LinkBioContent> | null | undefined): Link
 }
 
 export async function loadLinkBioContent(): Promise<LinkBioContent> {
-  const raw = await ensureContent<Partial<LinkBioContent>>("link-bio", defaultLinkBioContent);
-  return normalizeLinkBio(raw);
+  return normalizeLinkBio(defaultLinkBioContent);
 }
 
 export function useLinkBioContent(): LinkBioContent & { loaded: boolean } {
-  const [data, setData] = useState<LinkBioContent>(() =>
-    normalizeLinkBio(peekContent("link-bio", defaultLinkBioContent)),
-  );
-  const [loaded, setLoaded] = useState(() => isContentReady("link-bio"));
+  const [data, setData] = useState<LinkBioContent>(() => normalizeLinkBio(defaultLinkBioContent));
 
   useEffect(() => {
     let active = true;
     loadLinkBioContent().then((next) => {
       if (!active) return;
       setData(next);
-      setLoaded(true);
     });
     return () => {
       active = false;
     };
   }, []);
 
-  return { ...data, loaded };
+  return { ...data, loaded: true };
 }

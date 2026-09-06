@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../lib/api-base";
 import { FAQ_ITEMS } from "./seo";
 
 export type FaqContentItem = {
@@ -24,18 +23,13 @@ export const defaultFaqItems: FaqContentItem[] = FAQ_ITEMS.map(([title, answer],
 }));
 
 export function useFaqItems(): FaqContentItem[] {
-  const [items, setItems] = useState<FaqContentItem[]>([]);
+  const [items, setItems] = useState<FaqContentItem[]>(defaultFaqItems);
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/faq`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: FaqContentItem[] } | null) => {
-        if (active) setItems(Array.isArray(entry?.value) ? entry.value : []);
-      })
-      .catch(() => {});
-
+    void Promise.resolve(defaultFaqItems).then((next) => {
+      if (active) setItems(next);
+    });
     return () => {
       active = false;
     };

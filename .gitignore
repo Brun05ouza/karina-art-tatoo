@@ -8,6 +8,8 @@ dist/
 !**/.env.example
 .dev.vars
 .wrangler/
+content-backup/
+lighthouse/
 *.local
 .DS_Store
 Thumbs.db

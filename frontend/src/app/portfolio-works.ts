@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../lib/api-base";
 
 export const PORTFOLIO_CATEGORIES = [
   "Blackwork",
@@ -25,20 +24,6 @@ export type PortfolioWork = {
   };
 };
 
-type RemotePortfolioItem = {
-  id: string;
-  order: number;
-  active: boolean;
-  title: string;
-  description?: string;
-  category?: string;
-  status?: string;
-  bodyLocation?: string;
-  style?: string;
-  featured?: boolean;
-  imageUrl?: string;
-};
-
 export type PortfolioPageContent = {
   heroKicker: string;
   heroTitle: string;
@@ -54,7 +39,7 @@ export const defaultPortfolioPageContent: PortfolioPageContent = {
   heroImageUrl: "",
 };
 
-/** Metadados de exemplo sem mídia — só títulos para scaffolds mortos; fotos vêm do CMS. */
+/** Metadados de exemplo sem mídia — só títulos para scaffolds mortos. */
 export const galleryItems: PortfolioWork[] = [
   { title: "Orquídeas", category: "Botânica", label: "Botânica", img: "", alt: "Tatuagem botânica de orquídeas", featured: true },
   { title: "Columbina", category: "Neotradicional", label: "Neotradicional", img: "", alt: "Tatuagem autoral Columbina", featured: true },
@@ -65,46 +50,18 @@ export const galleryItems: PortfolioWork[] = [
   { title: "Traço em processo", category: "Suminagashi", label: "Suminagashi", img: "", alt: "Detalhe de processo criativo", featured: false },
 ];
 
-function toPortfolioWorks(items: RemotePortfolioItem[]): PortfolioWork[] {
-  return [...items]
-    .filter((item) => item.active && item.status !== "Oculto")
-    .sort((a, b) => a.order - b.order)
-    .map((item) => ({
-      id: item.id,
-      title: item.title || "Trabalho sem título",
-      category: item.category || "Botânica",
-      label: item.style || item.category || "Projeto autoral",
-      img: item.imageUrl || "",
-      alt: item.description || item.title || "Trabalho de portfólio",
-      featured: Boolean(item.featured),
-      order: item.order,
-    }));
-}
-
-export function usePortfolioItems(staticFallback = false): PortfolioWork[] {
-  const [items, setItems] = useState<PortfolioWork[]>(staticFallback ? galleryItems : []);
+export function usePortfolioItems(_staticFallback = false): PortfolioWork[] {
+  const [items, setItems] = useState<PortfolioWork[]>(galleryItems);
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/portfolio`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: RemotePortfolioItem[] } | null) => {
-        if (!active) return;
-        if (Array.isArray(entry?.value)) {
-          setItems(toPortfolioWorks(entry.value));
-        } else if (!staticFallback) {
-          setItems([]);
-        }
-      })
-      .catch(() => {
-        if (active && !staticFallback) setItems([]);
-      });
-
+    void Promise.resolve(galleryItems).then((next) => {
+      if (active) setItems(next);
+    });
     return () => {
       active = false;
     };
-  }, [staticFallback]);
+  }, []);
 
   return items;
 }
@@ -114,14 +71,9 @@ export function usePortfolioPageContent(): PortfolioPageContent {
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/portfolio-page`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: Partial<PortfolioPageContent> } | null) => {
-        if (active && entry?.value) setData({ ...defaultPortfolioPageContent, ...entry.value });
-      })
-      .catch(() => {});
-
+    void Promise.resolve(defaultPortfolioPageContent).then((next) => {
+      if (active) setData(next);
+    });
     return () => {
       active = false;
     };

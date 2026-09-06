@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ensureContent, isContentReady, peekContent } from "./content-loader";
 
 export type FlashPageContent = {
   heroKicker: string;
@@ -29,39 +28,35 @@ export const defaultFlashPageContent: FlashPageContent = {
   heroImageUrl: "",
 };
 
-/** Lista pública vem só do CMS — sem seed visual mockado. */
 export const defaultFlashItems: FlashTattooItem[] = [];
 
 export async function loadFlashPageContent(): Promise<FlashPageContent> {
-  return ensureContent("flash-page", defaultFlashPageContent);
+  return defaultFlashPageContent;
 }
 
 export async function loadFlashItems(): Promise<FlashTattooItem[]> {
-  const value = await ensureContent<FlashTattooItem[]>("flash-tattoos", []);
-  return Array.isArray(value) ? value : [];
+  return defaultFlashItems;
 }
 
 export function useFlashPageContent(): FlashPageContent & { loaded: boolean } {
-  const [data, setData] = useState(() => peekContent("flash-page", defaultFlashPageContent));
-  const [loaded, setLoaded] = useState(() => isContentReady("flash-page"));
+  const [data, setData] = useState<FlashPageContent>(defaultFlashPageContent);
 
   useEffect(() => {
     let active = true;
     loadFlashPageContent().then((next) => {
       if (!active) return;
       setData(next);
-      setLoaded(true);
     });
     return () => {
       active = false;
     };
   }, []);
 
-  return { ...data, loaded };
+  return { ...data, loaded: true };
 }
 
 export function useFlashItems(): FlashTattooItem[] {
-  const [items, setItems] = useState<FlashTattooItem[]>(() => peekContent<FlashTattooItem[]>("flash-tattoos", []));
+  const [items, setItems] = useState<FlashTattooItem[]>(defaultFlashItems);
 
   useEffect(() => {
     let active = true;

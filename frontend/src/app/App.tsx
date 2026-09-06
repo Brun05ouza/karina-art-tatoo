@@ -33,7 +33,6 @@ import { Preloader } from "./components/Preloader";
 import { HoverProcessMedia } from "./components/HoverProcessMedia";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
-import { AdminShortcut } from "./components/AdminShortcut";
 import { LinkBioLanding } from "./components/LinkBioLanding";
 import { useFlashItems, useFlashPageContent } from "./flash-content";
 import { useFaqItems } from "./faq-content";
@@ -452,7 +451,6 @@ function AppLayout({
         </defs>
       </svg>
       <div className="ks-grain" aria-hidden="true" />
-      {!isBioRoute && <AdminShortcut />}
       {shouldShowSiteChrome && <CustomCursor />}
       {showPreloader && (
         <Preloader

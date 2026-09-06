@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ensureContent, isContentReady, peekContent } from "./content-loader";
 
 /**
  * Conteúdo da Home vindo do admin (Neon, tabela content_entries, key "home").
@@ -144,27 +143,23 @@ export const defaultHomeContent: HomeContent = {
   ctaButtonUrl: "/orcamento",
 };
 
-import { ensureContent, isContentReady, peekContent } from "./content-loader";
-
 export async function loadHomeContent(): Promise<HomeContent> {
-  return ensureContent<HomeContent>("home", defaultHomeContent);
+  return defaultHomeContent;
 }
 
 export function useHomeContent(): HomeContent & { loaded: boolean } {
-  const [data, setData] = useState<HomeContent>(() => peekContent("home", defaultHomeContent));
-  const [loaded, setLoaded] = useState(() => isContentReady("home"));
+  const [data, setData] = useState<HomeContent>(defaultHomeContent);
 
   useEffect(() => {
     let active = true;
     loadHomeContent().then((next) => {
       if (!active) return;
       setData(next);
-      setLoaded(true);
     });
     return () => {
       active = false;
     };
   }, []);
 
-  return { ...data, loaded };
+  return { ...data, loaded: true };
 }

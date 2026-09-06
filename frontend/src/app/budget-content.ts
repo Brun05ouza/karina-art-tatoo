@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../lib/api-base";
 
 export type BudgetPageContent = {
   heroKicker: string;
@@ -55,14 +54,9 @@ export function useBudgetPageContent(): BudgetPageContent {
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/budget-page`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: Partial<BudgetPageContent> } | null) => {
-        if (active && entry?.value) setData({ ...defaultBudgetPageContent, ...entry.value });
-      })
-      .catch(() => {});
-
+    void Promise.resolve(defaultBudgetPageContent).then((next) => {
+      if (active) setData(next);
+    });
     return () => {
       active = false;
     };

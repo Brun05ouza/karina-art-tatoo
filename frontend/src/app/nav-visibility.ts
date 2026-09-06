@@ -1,59 +1,13 @@
-import { useEffect, useState } from "react";
-import { API_URL } from "../lib/api-base";
-import { isPageVisible } from "./section-visibility";
-
-/** Rotas do menu principal ↔ chave do conteúdo no CMS. */
-const NAV_CONTENT_KEYS: Record<string, string> = {
-  "/": "home",
-  "/sobre": "sobre",
-  "/portfolio": "portfolio-page",
-  "/reformulacoes": "reformulacoes-textos",
-  "/flash-tattoos": "flash-page",
-  "/produtos": "products-page",
-  "/orcamento": "budget-page",
-};
+/** Rotas do menu principal. */
+const NAV_PATHS = ["/", "/sobre", "/portfolio", "/reformulacoes", "/flash-tattoos", "/produtos", "/orcamento"] as const;
 
 export type NavVisibilityMap = Record<string, boolean>;
 
-const defaultVisibility: NavVisibilityMap = Object.fromEntries(
-  Object.keys(NAV_CONTENT_KEYS).map((path) => [path, true]),
-);
+const defaultVisibility: NavVisibilityMap = Object.fromEntries(NAV_PATHS.map((path) => [path, true]));
 
-async function fetchPageVisible(key: string): Promise<boolean> {
-  try {
-    const response = await fetch(`${API_URL}/api/content/${key}`);
-    if (!response.ok) return true;
-    const entry = (await response.json()) as { value?: unknown };
-    if (!entry?.value) return true;
-    return isPageVisible(entry.value);
-  } catch {
-    return true;
-  }
-}
-
-/** Quais páginas do menu/footer devem aparecer, com base em `hiddenSections` do admin. */
+/** Quais páginas do menu/footer devem aparecer. Sem CMS, todas ficam visíveis. */
 export function useNavVisibility(): NavVisibilityMap {
-  const [visibility, setVisibility] = useState<NavVisibilityMap>(defaultVisibility);
-
-  useEffect(() => {
-    let active = true;
-
-    void Promise.all(
-      Object.entries(NAV_CONTENT_KEYS).map(async ([path, key]) => {
-        const visible = await fetchPageVisible(key);
-        return [path, visible] as const;
-      }),
-    ).then((entries) => {
-      if (!active) return;
-      setVisibility(Object.fromEntries(entries));
-    });
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  return visibility;
+  return defaultVisibility;
 }
 
 /** Extrai o pathname de um href interno (`/produtos#x` → `/produtos`). */
@@ -77,7 +31,6 @@ export function isNavPathVisible(visibility: NavVisibilityMap, href: string): bo
   return visibility[path] !== false;
 }
 
-/** Se o destino é uma página controlada pelo toggle “Página no site”. */
 export function isManagedNavPath(href: string): boolean {
-  return normalizeNavPath(href) in NAV_CONTENT_KEYS;
+  return NAV_PATHS.includes(normalizeNavPath(href) as (typeof NAV_PATHS)[number]);
 }

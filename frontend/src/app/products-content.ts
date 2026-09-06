@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../lib/api-base";
 
 export type ProductsPageContent = {
   heroKicker: string;
@@ -51,14 +50,9 @@ export function useProductsPageContent(): ProductsPageContent {
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/products-page`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: Partial<ProductsPageContent> } | null) => {
-        if (active && entry?.value) setData({ ...defaultProductsPageContent, ...entry.value });
-      })
-      .catch(() => {});
-
+    void Promise.resolve(defaultProductsPageContent).then((next) => {
+      if (active) setData(next);
+    });
     return () => {
       active = false;
     };
@@ -68,18 +62,13 @@ export function useProductsPageContent(): ProductsPageContent {
 }
 
 export function useProductItems(): ProductCatalogItem[] {
-  const [items, setItems] = useState<ProductCatalogItem[]>([]);
+  const [items, setItems] = useState<ProductCatalogItem[]>(defaultProductItems);
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/produtos`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: ProductCatalogItem[] } | null) => {
-        if (active) setItems(Array.isArray(entry?.value) ? entry.value : []);
-      })
-      .catch(() => {});
-
+    void Promise.resolve(defaultProductItems).then((next) => {
+      if (active) setItems(next);
+    });
     return () => {
       active = false;
     };

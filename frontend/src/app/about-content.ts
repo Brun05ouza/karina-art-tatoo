@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { API_URL } from "../lib/api-base";
 
 /**
  * Conteúdo da página /sobre vindo do admin (Neon, key "sobre") — mesma
@@ -136,22 +135,9 @@ export function useAboutContent(): AboutContent {
 
   useEffect(() => {
     let active = true;
-
-    fetch(`${API_URL}/api/content/sobre`)
-      .then((response) => (response.ok ? response.json() : null))
-      .then((entry: { value?: Partial<AboutContent> } | null) => {
-        if (active && entry?.value) {
-          setData({
-            ...defaultAboutContent,
-            ...entry.value,
-            imageUrl: entry.value.imageUrl || "",
-            studioInviteImageUrl: entry.value.studioInviteImageUrl || "",
-            studioTourSteps: mergeStudioSteps(entry.value.studioTourSteps),
-          });
-        }
-      })
-      .catch(() => {});
-
+    void Promise.resolve(defaultAboutContent).then((next) => {
+      if (active) setData(next);
+    });
     return () => {
       active = false;
     };
