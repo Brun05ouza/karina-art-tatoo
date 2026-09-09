@@ -3,3 +3,8 @@
 
 DATABASE_URL=postgresql://USER:PASSWORD@HOST/neondb?sslmode=require
 ADMIN_SESSION_SECRET=gere-32-bytes-aleatorios-em-base64
+
+# Supabase Storage (só nas Functions — nunca com prefixo VITE_)
+SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=sua-service-role-key
+SUPABASE_BUCKET=gallery

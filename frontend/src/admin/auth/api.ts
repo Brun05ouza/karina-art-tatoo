@@ -180,3 +180,55 @@ export function reorderGallery(collection: GalleryCollectionId, ids: string[]) {
     body: JSON.stringify({ ids }),
   });
 }
+
+export type BioIconId =
+  | "whatsapp"
+  | "tiktok"
+  | "youtube"
+  | "instagram"
+  | "portfolio"
+  | "produtos"
+  | "link";
+
+export type BioLinkItem = {
+  id: string;
+  label: string;
+  url: string;
+  icon: BioIconId | null;
+  featured: boolean;
+  sort_order: number;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export function listBioLinks() {
+  return request<{ items: BioLinkItem[] }>("/api/admin/bio-links");
+}
+
+export function createBioLink(body: Record<string, unknown>) {
+  return request<{ ok: true; item: BioLinkItem }>("/api/admin/bio-links", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function patchBioLink(id: string, body: Record<string, unknown>) {
+  return request<{ ok: true; item: BioLinkItem }>(`/api/admin/bio-links/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+export function deleteBioLink(id: string) {
+  return request<{ ok: true; id: string }>(`/api/admin/bio-links/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export function reorderBioLinks(ids: string[]) {
+  return request<{ ok: true }>("/api/admin/bio-links/reorder", {
+    method: "POST",
+    body: JSON.stringify({ ids }),
+  });
+}

@@ -1,0 +1,28 @@
+import type { PagesFunction } from "@cloudflare/workers-types";
+import { authenticateRequest } from "../../../_lib/auth";
+import { reorderLinks } from "../../../_lib/bio-links";
+import { type Env, error, handleError, json } from "../../../_lib/config";
+
+export const onRequestPost: PagesFunction<Env> = async (context) => {
+  try {
+    const identity = await authenticateRequest(context.request, context.env);
+    if (!identity) return error(401, "Faça login para continuar.");
+
+    let body: { ids?: unknown };
+    try {
+      body = (await context.request.json()) as { ids?: unknown };
+    } catch {
+      return error(400, "Corpo da requisição inválido.");
+    }
+
+    const ids = Array.isArray(body.ids) ? body.ids.map(String) : null;
+    if (!ids) return error(400, "Envie { ids: string[] }.");
+
+    const result = await reorderLinks(context.env, ids);
+    if (!result.ok) return error(400, result.message);
+
+    return json({ ok: true });
+  } catch (err) {
+    return handleError(err);
+  }
+};

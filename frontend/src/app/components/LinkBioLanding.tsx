@@ -355,16 +355,18 @@ function BioLinkButton({ button }: { button: LinkBioButton }) {
     </>
   );
 
+  const className = `ks-link-bio-action${button.featured ? " is-primary" : ""}`;
+
   if (isExternalLink(button.url)) {
     return (
-      <a className="ks-link-bio-action" href={button.url} target="_blank" rel="noopener noreferrer">
+      <a className={className} href={button.url} target="_blank" rel="noopener noreferrer">
         {inner}
       </a>
     );
   }
 
   return (
-    <Link className="ks-link-bio-action" to={button.url || "/"}>
+    <Link className={className} to={button.url || "/"}>
       {inner}
     </Link>
   );
@@ -376,9 +378,9 @@ function bioIcon(icon: string) {
   if (normalized.includes("tiktok")) return <TikTokGlyph />;
   if (normalized.includes("instagram") || normalized.includes("insta")) return <InstagramGlyph />;
   if (normalized.includes("youtube")) return <Youtube size={18} />;
-  if (normalized.includes("image")) return <Images size={18} />;
+  if (normalized.includes("portfolio") || normalized.includes("image")) return <Images size={18} />;
   if (normalized.includes("spark")) return <Sparkles size={18} />;
-  if (normalized.includes("shop")) return <ShoppingBag size={18} />;
+  if (normalized.includes("produto") || normalized.includes("shop")) return <ShoppingBag size={18} />;
   return <LinkIcon size={18} />;
 }
 

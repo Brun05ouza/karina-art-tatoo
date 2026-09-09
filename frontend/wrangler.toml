@@ -1,3 +1,8 @@
 name = "karina-sarte"
 compatibility_date = "2026-09-08"
 pages_build_output_dir = "dist"
+
+# Valores públicos / não-secretos. SERVICE_ROLE só em .dev.vars / Pages Secrets.
+[vars]
+SUPABASE_BUCKET = "gallery"
+SUPABASE_URL = "https://gjrwpckxbacdtkzgpxpi.supabase.co"

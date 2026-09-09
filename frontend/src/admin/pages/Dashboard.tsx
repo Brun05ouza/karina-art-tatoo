@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, Images, KeyRound, Sparkles, ShoppingBag } from "lucide-react";
+import { ArrowRight, Images, KeyRound, LinkIcon, Sparkles, ShoppingBag } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
 import { listGallery, type GalleryCollectionId } from "../auth/api";
 import { COLLECTION_LIST } from "../gallery/collections";
@@ -43,8 +43,7 @@ export function DashboardPage() {
         <p className="ks-admin-kicker">Visão geral</p>
         <h1 className="ks-admin-title">Suas galerias</h1>
         <p className="ks-admin-lead">
-          Adicione e organize fotos do portfólio, flashes e produtos. Conectada como{" "}
-          <strong>{user?.email}</strong>.
+          Adicione e organize fotos do portfólio, flashes e produtos.
         </p>
       </header>
 
@@ -62,7 +61,12 @@ export function DashboardPage() {
                 {typeof n === "number"
                   ? n === 0
                     ? "Nenhum item ainda"
-                    : `${n} ${n === 1 ? "item" : "itens"}`
+                    : (
+                      <>
+                        <span className="ks-admin-num">{n}</span>
+                        {` ${n === 1 ? "item" : "itens"}`}
+                      </>
+                    )
                   : "Carregando…"}
               </span>
               <span className="ks-admin-card-action">
@@ -74,6 +78,10 @@ export function DashboardPage() {
       </nav>
 
       <p className="ks-admin-footnote ks-gallery-dash-foot">
+        <Link to="/admin/bio-links">
+          <LinkIcon size={14} /> Links da bio
+        </Link>
+        {" · "}
         <Link to="/admin/senha">
           <KeyRound size={14} /> Trocar senha
         </Link>

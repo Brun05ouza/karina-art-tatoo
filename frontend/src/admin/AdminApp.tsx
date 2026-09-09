@@ -6,6 +6,7 @@ import { ChangePasswordPage } from "./pages/ChangePassword";
 import { DashboardPage } from "./pages/Dashboard";
 import { LoginPage } from "./pages/Login";
 import { UsersPage } from "./pages/Users";
+import { BioLinksPage } from "./pages/BioLinks";
 import { GalleryPage } from "./gallery/GalleryPage";
 import "./admin.css";
 import { AdminLayout } from "./AdminLayout";
@@ -86,6 +87,14 @@ export function AdminApp() {
               element={
                 <RequireAuth>
                   <GalleryPage collectionId="produtos" />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/bio-links"
+              element={
+                <RequireAuth>
+                  <BioLinksPage />
                 </RequireAuth>
               }
             />

@@ -7,6 +7,7 @@ export type LinkBioButton = {
   icon: string;
   active: boolean;
   order: number;
+  featured?: boolean;
 };
 
 export type LinkBioHighlight = {
@@ -103,13 +104,14 @@ export const defaultLinkBioContent: LinkBioContent = {
       url:
         "https://wa.me/5521990724477?text=" +
         encodeURIComponent("Olá, Karina Sarte! Vim pela bio do site e queria fazer um orçamento."),
-      icon: "WhatsApp",
+      icon: "whatsapp",
       active: true,
       order: 1,
+      featured: true,
     },
-    { id: "link-2", label: "TikTok", url: "https://www.tiktok.com/@karinasarte", icon: "TikTok", active: true, order: 2 },
-    { id: "link-3", label: "Youtube", url: "https://www.youtube.com/@karinasarte", icon: "YouTube", active: true, order: 3 },
-    { id: "link-4", label: "Portfólio", url: "/portfolio", icon: "Images", active: true, order: 4 },
+    { id: "link-2", label: "TikTok", url: "https://www.tiktok.com/@karinasarte", icon: "tiktok", active: true, order: 2 },
+    { id: "link-3", label: "Youtube", url: "https://www.youtube.com/@karinasarte", icon: "youtube", active: true, order: 3 },
+    { id: "link-4", label: "Portfólio", url: "/portfolio", icon: "portfolio", active: true, order: 4 },
   ],
   highlights: [],
 
@@ -173,22 +175,54 @@ function normalizeLinkBio(raw: Partial<LinkBioContent> | null | undefined): Link
 }
 
 export async function loadLinkBioContent(): Promise<LinkBioContent> {
-  return normalizeLinkBio(defaultLinkBioContent);
+  const base = normalizeLinkBio(defaultLinkBioContent);
+  try {
+    const res = await fetch("/api/bio-links", { headers: { Accept: "application/json" } });
+    if (!res.ok) return base;
+    const data = (await res.json()) as {
+      items?: Array<{
+        id: string;
+        label: string;
+        url: string;
+        icon: string | null;
+        featured: boolean;
+        sort_order: number;
+        published: boolean;
+      }>;
+    };
+    if (!Array.isArray(data.items)) return base;
+    return {
+      ...base,
+      buttons: data.items.map((item, index) => ({
+        id: item.id,
+        label: item.label,
+        url: item.url,
+        icon: item.icon || "link",
+        active: item.published !== false,
+        order: item.sort_order ?? index,
+        featured: Boolean(item.featured),
+      })),
+    };
+  } catch {
+    return base;
+  }
 }
 
 export function useLinkBioContent(): LinkBioContent & { loaded: boolean } {
   const [data, setData] = useState<LinkBioContent>(() => normalizeLinkBio(defaultLinkBioContent));
+  const [loaded, setLoaded] = useState(true);
 
   useEffect(() => {
     let active = true;
     loadLinkBioContent().then((next) => {
       if (!active) return;
       setData(next);
+      setLoaded(true);
     });
     return () => {
       active = false;
     };
   }, []);
 
-  return { ...data, loaded: true };
+  return { ...data, loaded };
 }

@@ -48,7 +48,17 @@ export default defineConfig({
   // do cache de deps e a conversão MOV trava esperando um 404 silencioso) —
   // excluir do optimizeDeps faz o Vite servir o pacote direto do node_modules.
   optimizeDeps: {
-    exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util"],
+    exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util", "libheif-js"],
+  },
+
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("libheif")) return "libheif";
+        },
+      },
+    },
   },
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
