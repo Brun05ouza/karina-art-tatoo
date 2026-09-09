@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fetchGalleryItems } from "./gallery-api";
 
 export type FlashPageContent = {
   heroKicker: string;
@@ -30,12 +31,33 @@ export const defaultFlashPageContent: FlashPageContent = {
 
 export const defaultFlashItems: FlashTattooItem[] = [];
 
+function formatFlashStatus(raw: string | null | undefined): string {
+  const value = (raw || "disponivel").toLowerCase();
+  if (value === "vendido") return "Vendido";
+  return "Disponível";
+}
+
+function mapFlash(items: Awaited<ReturnType<typeof fetchGalleryItems>>): FlashTattooItem[] {
+  return items
+    .filter((item) => Boolean(item.image_url))
+    .map((item, index) => ({
+      id: item.id,
+      order: item.sort_order ?? index,
+      active: true,
+      title: item.title,
+      description: item.price ? `Preço: ${item.price}` : undefined,
+      status: formatFlashStatus(item.status),
+      price: item.price ?? undefined,
+      imageUrl: item.image_url,
+    }));
+}
+
 export async function loadFlashPageContent(): Promise<FlashPageContent> {
   return defaultFlashPageContent;
 }
 
 export async function loadFlashItems(): Promise<FlashTattooItem[]> {
-  return defaultFlashItems;
+  return mapFlash(await fetchGalleryItems("flash"));
 }
 
 export function useFlashPageContent(): FlashPageContent & { loaded: boolean } {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fetchGalleryItems } from "./gallery-api";
 
 export type ProductsPageContent = {
   heroKicker: string;
@@ -31,7 +32,8 @@ export const defaultProductsPageContent: ProductsPageContent = {
   heroKicker: "Coleções",
   heroTitle: "Coleções da Karina Sarte",
   heroText1: "Arte para usar, colecionar e levar na pele.",
-  heroText2: "Produtos autorais, planos, flashes, prints e criações exclusivas feitas para aproximar ainda mais a arte da Karina Sarte de quem acompanha seu trabalho.",
+  heroText2:
+    "Produtos autorais, planos, flashes, prints e criações exclusivas feitas para aproximar ainda mais a arte da Karina Sarte de quem acompanha seu trabalho.",
   heroButton: "Consultar produtos pelo WhatsApp",
   heroImageUrl: "",
   ctaTitle: "Quer levar a arte da Karina Sarte para além da pele?",
@@ -39,11 +41,25 @@ export const defaultProductsPageContent: ProductsPageContent = {
   ctaButton: "Consultar pelo WhatsApp",
 };
 
-export const defaultProductItems: ProductCatalogItem[] = [
-  { id: "product-1", order: 1, active: true, title: "Adesivos autorais", description: "Seleção de adesivos da Karina Sarte.", category: "Adesivos", status: "Publicado", price: "R$ 25", whatsappMessage: "Olá! Quero saber sobre os adesivos autorais.", link: "", imageUrl: "" },
-  { id: "product-2", order: 2, active: true, title: "Print botânico", description: "Impressão artística em papel de alta gramatura.", category: "Prints & Artes", status: "Publicado", price: "R$ 65", whatsappMessage: "Olá! Quero saber sobre o print botânico.", link: "", imageUrl: "" },
-  { id: "product-3", order: 3, active: true, title: "Plano tattoo pequena", description: "Opção para projetos delicados e objetivos.", category: "Planos de Tattoo", status: "Publicado", price: "Sob consulta", whatsappMessage: "Olá! Quero conhecer o plano de tattoo pequena.", link: "", imageUrl: "" },
-];
+/** Fallback vazio — catálogo vem da API. */
+export const defaultProductItems: ProductCatalogItem[] = [];
+
+function mapProducts(items: Awaited<ReturnType<typeof fetchGalleryItems>>): ProductCatalogItem[] {
+  return items
+    .filter((item) => Boolean(item.image_url))
+    .map((item, index) => ({
+      id: item.id,
+      order: item.sort_order ?? index,
+      active: true,
+      title: item.title,
+      category: "Produtos",
+      status: "Publicado",
+      price: item.price ?? undefined,
+      whatsappMessage: `Olá! Quero saber sobre: ${item.title}`,
+      link: item.link ?? "",
+      imageUrl: item.image_url,
+    }));
+}
 
 export function useProductsPageContent(): ProductsPageContent {
   const [data, setData] = useState<ProductsPageContent>(defaultProductsPageContent);
@@ -66,8 +82,8 @@ export function useProductItems(): ProductCatalogItem[] {
 
   useEffect(() => {
     let active = true;
-    void Promise.resolve(defaultProductItems).then((next) => {
-      if (active) setItems(next);
+    void fetchGalleryItems("produtos").then((raw) => {
+      if (active) setItems(mapProducts(raw));
     });
     return () => {
       active = false;

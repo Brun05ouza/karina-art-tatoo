@@ -36,7 +36,7 @@ import { Footer } from "./components/Footer";
 import { LinkBioLanding } from "./components/LinkBioLanding";
 import { useFlashItems, useFlashPageContent } from "./flash-content";
 import { useFaqItems } from "./faq-content";
-import { galleryItems, PORTFOLIO_CATEGORIES, usePortfolioItems, usePortfolioPageContent, type PortfolioWork } from "./portfolio-works";
+import { PORTFOLIO_CATEGORIES, usePortfolioItems, usePortfolioPageContent, type PortfolioWork } from "./portfolio-works";
 import { useProductItems, useProductsPageContent, type ProductCatalogItem } from "./products-content";
 import { useReformulationCases, useReformulationsContent, type ReformulationCase } from "./reformulations-content";
 import { useBudgetPageContent } from "./budget-content";
@@ -72,6 +72,13 @@ gsap.registerPlugin(ScrollTrigger);
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const FLUID_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const WHATSAPP = "https://wa.me/5521990724477";
+
+function statusClass(status: string): string {
+  return status
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
 
 const WA_DEFAULT = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo.";
 const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
@@ -947,7 +954,7 @@ function MuralPortfolioPreview({ data }: { data: HomeContent }) {
                       loading="lazy"
                     />
                   ) : item.img ? (
-                    <img src={item.img} alt={item.alt} loading="lazy" />
+                    <img src={item.img} alt={item.alt} loading="lazy" decoding="async" />
                   ) : (
                     <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
                   )}
@@ -974,11 +981,12 @@ function MuralPortfolioPreview({ data }: { data: HomeContent }) {
 
 function AboutMeSection() {
   const [active, setActive] = useState(0);
-  const slides = galleryItems;
+  const slides = usePortfolioItems();
   const total = slides.length;
-  const slide = slides[active];
+  const slide = total > 0 ? slides[active % total] : null;
 
   useEffect(() => {
+    if (total < 2) return;
     const timer = setInterval(() => {
       setActive((index) => (index + 1) % total);
     }, 3500);
@@ -995,33 +1003,42 @@ function AboutMeSection() {
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 1.2, ease: EASE }}
         >
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={slide.img}
-              className="ks-about-me-slide"
-              src={slide.img}
-              alt={slide.alt}
-              loading={active === 0 ? "eager" : "lazy"}
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -40 }}
-              transition={{ duration: 0.45, ease: EASE }}
-            />
-          </AnimatePresence>
-          <span className="ks-about-me-carousel-count">
-            {String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-          </span>
-          <div className="ks-about-me-carousel-dots">
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                className={`ks-dot${index === active ? " active" : ""}`}
-                onClick={() => setActive(index)}
-                aria-label={`Ir para imagem ${index + 1}`}
+          {slide ? (
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={slide.img}
+                className="ks-about-me-slide"
+                src={slide.img}
+                alt={slide.alt}
+                loading={active === 0 ? "eager" : "lazy"}
+                decoding="async"
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 }}
+                transition={{ duration: 0.45, ease: EASE }}
               />
-            ))}
-          </div>
+            </AnimatePresence>
+          ) : (
+            <NumberedPlaceholder number="01" />
+          )}
+          {total > 0 ? (
+            <>
+              <span className="ks-about-me-carousel-count">
+                {String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+              </span>
+              <div className="ks-about-me-carousel-dots">
+                {slides.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={`ks-dot${index === active ? " active" : ""}`}
+                    onClick={() => setActive(index)}
+                    aria-label={`Ir para imagem ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </>
+          ) : null}
           <span className="ks-about-me-tag">Karina Sarte</span>
         </motion.div>
 
@@ -1110,15 +1127,23 @@ function PreviewSection({
 
 function PortfolioPreview() {
   const [active, setActive] = useState(0);
-  const total = galleryItems.length;
+  const items = usePortfolioItems();
+  const total = items.length;
 
-  const prev = () => setActive((i) => (i - 1 + total) % total);
-  const next = () => setActive((i) => (i + 1) % total);
+  const prev = () => {
+    if (total === 0) return;
+    setActive((i) => (i - 1 + total) % total);
+  };
+  const next = useCallback(() => {
+    if (total === 0) return;
+    setActive((i) => (i + 1) % total);
+  }, [total]);
 
   useEffect(() => {
+    if (total < 2) return;
     const timer = setInterval(next, 3500);
     return () => clearInterval(timer);
-  }, []);
+  }, [next, total]);
 
   return (
     <section className="ks-section ks-portfolio-carousel">
@@ -1127,57 +1152,74 @@ function PortfolioPreview() {
           <span className="ks-label-caps ks-gold">Trabalhos recentes</span>
           <h2 className="ks-headline-lg">Portfolio vivo</h2>
         </div>
-        <div className="ks-carousel-controls">
-          <button className="ks-carousel-btn" onClick={prev} aria-label="Anterior">
-            <ArrowRight size={18} style={{ transform: "rotate(180deg)" }} />
-          </button>
-          <span className="ks-carousel-count">
-            {String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-          </span>
-          <button className="ks-carousel-btn" onClick={next} aria-label="Próximo">
-            <ArrowRight size={18} />
-          </button>
-        </div>
+        {total > 0 ? (
+          <div className="ks-carousel-controls">
+            <button className="ks-carousel-btn" onClick={prev} aria-label="Anterior">
+              <ArrowRight size={18} style={{ transform: "rotate(180deg)" }} />
+            </button>
+            <span className="ks-carousel-count">
+              {String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+            </span>
+            <button className="ks-carousel-btn" onClick={next} aria-label="Próximo">
+              <ArrowRight size={18} />
+            </button>
+          </div>
+        ) : null}
       </div>
 
-      <div className="ks-carousel-stage">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active}
-            className="ks-carousel-slide"
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.45, ease: EASE }}
-          >
-            <PortfolioCard item={galleryItems[active]} index={active} />
-            <PortfolioCard item={galleryItems[(active + 1) % total]} index={(active + 1) % total} />
-            <PortfolioCard item={galleryItems[(active + 2) % total]} index={(active + 2) % total} />
-          </motion.div>
-        </AnimatePresence>
-      </div>
+      {total > 0 ? (
+        <div className="ks-carousel-stage">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active}
+              className="ks-carousel-slide"
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{ duration: 0.45, ease: EASE }}
+            >
+              <PortfolioCard item={items[active]} index={active} />
+              <PortfolioCard item={items[(active + 1) % total]} index={(active + 1) % total} />
+              <PortfolioCard item={items[(active + 2) % total]} index={(active + 2) % total} />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      ) : (
+        <p className="ks-body-lg ks-muted" style={{ textAlign: "center" }} role="status">
+          Em breve, novos trabalhos por aqui.
+        </p>
+      )}
 
       <div className="ks-carousel-footer">
-        <div className="ks-carousel-dots">
-          {galleryItems.map((_, i) => (
-            <button
-              key={i}
-              className={`ks-dot${i === active ? " active" : ""}`}
-              onClick={() => setActive(i)}
-              aria-label={`Ir para trabalho ${i + 1}`}
-            />
-          ))}
-        </div>
+        {total > 0 ? (
+          <div className="ks-carousel-dots">
+            {items.map((_, i) => (
+              <button
+                key={i}
+                className={`ks-dot${i === active ? " active" : ""}`}
+                onClick={() => setActive(i)}
+                aria-label={`Ir para trabalho ${i + 1}`}
+              />
+            ))}
+          </div>
+        ) : (
+          <span />
+        )}
         <PrimaryLink to="/portfolio">Ver portfolio completo</PrimaryLink>
       </div>
     </section>
   );
 }
 
-function PortfolioCard({ item, index }: { item: (typeof galleryItems)[0]; index: number }) {
+function PortfolioCard({ item, index }: { item: PortfolioWork; index: number }) {
   return (
     <article className="ks-portfolio-card">
-      <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+      <img
+        src={item.img}
+        alt={item.alt}
+        loading={index < 2 ? "eager" : "lazy"}
+        decoding="async"
+      />
       <BrandStar
         variant={brandStarVariant(index)}
         size={172}
@@ -1850,7 +1892,7 @@ function PortfolioMasonryCard({ item, index }: { item: PortfolioWork; index: num
             loading={index < 2 ? "eager" : "lazy"}
           />
         ) : item.img ? (
-          <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+          <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
         ) : (
           <div className="ks-portfolio-work-placeholder" aria-hidden="true">
             <BrandStar variant={2} size={88} className="ks-portfolio-work-placeholder-star" />
@@ -1883,7 +1925,7 @@ function PortfolioFeatured({ work }: { work: PortfolioWork }) {
       <div className="ks-portfolio-featured-inner">
         <figure className="ks-portfolio-featured-media">
           {image ? (
-            <img src={image} alt={work.alt} loading="lazy" />
+            <img src={image} alt={work.alt} loading="lazy" decoding="async" />
           ) : (
             <div className="ks-portfolio-work-placeholder" aria-hidden="true">
               <BrandStar variant={3} size={96} className="ks-portfolio-work-placeholder-star" />
@@ -2317,7 +2359,7 @@ function ProductCategoryCard({
     <>
       <div className="ks-products-category-media">
         {category.imageUrl ? (
-          <img src={category.imageUrl} alt={category.title} loading={index < 2 ? "eager" : "lazy"} />
+          <img src={category.imageUrl} alt={category.title} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
         ) : (
           <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
         )}
@@ -2634,14 +2676,14 @@ function FlashCard({
     <article className="ks-flash-page-card">
       <div className="ks-flash-page-card-media">
         {img ? (
-          <img src={img} alt={name} loading={index < 2 ? "eager" : "lazy"} />
+          <img src={img} alt={name} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
         ) : (
           <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
         )}
       </div>
       <div className="ks-flash-page-card-body">
         <StencilCrosshair size={14} color="#806E85" />
-        <span className={`ks-status ${status.toLowerCase()}`}>{status}</span>
+        <span className={`ks-status ${statusClass(status)}`}>{status}</span>
         <h3>{name}</h3>
         <p>{text}</p>
         <a

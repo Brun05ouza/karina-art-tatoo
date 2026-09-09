@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { fetchGalleryItems } from "./gallery-api";
 
 export const PORTFOLIO_CATEGORIES = [
   "Blackwork",
@@ -39,24 +40,35 @@ export const defaultPortfolioPageContent: PortfolioPageContent = {
   heroImageUrl: "",
 };
 
-/** Metadados de exemplo sem mídia — só títulos para scaffolds mortos. */
-export const galleryItems: PortfolioWork[] = [
-  { title: "Orquídeas", category: "Botânica", label: "Botânica", img: "", alt: "Tatuagem botânica de orquídeas", featured: true },
-  { title: "Columbina", category: "Neotradicional", label: "Neotradicional", img: "", alt: "Tatuagem autoral Columbina", featured: true },
-  { title: "Mandala autoral", category: "Ornamental", label: "Ornamental", img: "", alt: "Tatuagem de mandala ornamental", featured: true },
-  { title: "Orquídea", category: "Fineline", label: "Fineline", img: "", alt: "Tatuagem de orquídea em traço fino", featured: true },
-  { title: "Kira", category: "Blackwork", label: "Blackwork", img: "", alt: "Tatuagem autoral de cachorro", featured: true },
-  { title: "Lua botânica", category: "Botânica", label: "Botânica", img: "", alt: "Tatuagem de lua e folhas", featured: true },
-  { title: "Traço em processo", category: "Suminagashi", label: "Suminagashi", img: "", alt: "Detalhe de processo criativo", featured: false },
-];
+/** Fallback vazio — se a API falhar, a UI mostra mensagem discreta. */
+export const galleryItems: PortfolioWork[] = [];
+
+function mapPortfolio(items: Awaited<ReturnType<typeof fetchGalleryItems>>): PortfolioWork[] {
+  return items
+    .filter((item) => Boolean(item.image_url))
+    .map((item, index) => {
+      const category = item.category?.trim() || "Autoral";
+      return {
+        id: item.id,
+        title: item.title,
+        category,
+        label: category,
+        img: item.image_url,
+        alt: item.alt_text?.trim() || item.title,
+        featured: true,
+        order: item.sort_order ?? index,
+      };
+    });
+}
 
 export function usePortfolioItems(_staticFallback = false): PortfolioWork[] {
   const [items, setItems] = useState<PortfolioWork[]>(galleryItems);
 
   useEffect(() => {
     let active = true;
-    void Promise.resolve(galleryItems).then((next) => {
-      if (active) setItems(next);
+    void fetchGalleryItems("portfolio").then((raw) => {
+      if (!active) return;
+      setItems(mapPortfolio(raw));
     });
     return () => {
       active = false;

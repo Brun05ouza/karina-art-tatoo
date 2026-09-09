@@ -220,7 +220,7 @@ export function LinkBioLanding() {
                     <article className="ks-bio-flash-card" key={item.id}>
                       <div className="ks-bio-flash-card__media">
                         {item.imageUrl ? (
-                          <img src={item.imageUrl} alt={item.title} loading="lazy" />
+                          <img src={item.imageUrl} alt={item.title} loading="lazy" decoding="async" />
                         ) : (
                           <span className="ks-bio-flash-card__placeholder" aria-hidden="true">
                             <Sparkles size={22} />
