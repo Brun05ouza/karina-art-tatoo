@@ -7,7 +7,12 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace frontend",
-    "build": "npm run build --workspace frontend"
+    "build": "npm run build --workspace frontend",
+    "migrate": "node scripts/migrate.mjs",
+    "bench:pbkdf2": "node scripts/bench-pbkdf2.mjs",
+    "create-user": "node scripts/create-user.mjs",
+    "reset-password": "node scripts/reset-password.mjs",
+    "pages:dev": "npm run build --workspace frontend && npm run pages:dev --workspace frontend"
   },
   "engines": {
     "node": ">=20"

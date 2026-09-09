@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "pages:dev": "wrangler pages dev dist --ip 127.0.0.1 --port 8788"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "@radix-ui/react-accordion": "1.2.3",
     "@radix-ui/react-alert-dialog": "1.1.6",
     "@radix-ui/react-aspect-ratio": "1.1.2",
@@ -56,12 +58,14 @@
     "vaul": "1.1.2"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260908.1",
     "@tailwindcss/vite": "4.1.12",
     "@vitejs/plugin-react": "4.7.0",
     "postcss": "8.5.25",
     "tailwindcss": "4.1.12",
     "tar": "7.5.22",
-    "vite": "6.4.3"
+    "vite": "6.4.3",
+    "wrangler": "^4.130.0"
   },
   "peerDependencies": {
     "react": "18.3.1",

@@ -1,0 +1,5 @@
+# Copie para .dev.vars (não versionado) e preencha.
+# Usado por: npx wrangler pages dev dist
+
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/neondb?sslmode=require
+ADMIN_SESSION_SECRET=gere-32-bytes-aleatorios-em-base64

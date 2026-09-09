@@ -34,6 +34,13 @@ export default defineConfig({
   server: {
     port: 5174,
     strictPort: false,
+    proxy: {
+      // Com `wrangler pages dev` em 8788, o Vite em 5174 encaminha a API.
+      "/api": {
+        target: "http://127.0.0.1:8788",
+        changeOrigin: true,
+      },
+    },
   },
 
   // @ffmpeg/ffmpeg cria seu worker via `new Worker(new URL(...))` internamente.

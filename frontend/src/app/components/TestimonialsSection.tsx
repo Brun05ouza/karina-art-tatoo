@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { motion } from "motion/react";
-import { ArrowRight } from "lucide-react";
+import { useRef, useState, type CSSProperties } from "react";
+import { motion, useInView, useReducedMotion } from "motion/react";
+import { ArrowRight, Pause, Play } from "lucide-react";
 import { BrandStar } from "./BrandStar";
 import { GuardedLink } from "./ComingSoonModal";
 import { StarGlyph } from "./StarGlyph";
@@ -98,19 +98,8 @@ const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-function buildColumns(items: Testimonial[], columns: number): Testimonial[][] {
-  const count = Math.max(columns, 1);
-  const perColumn = Math.max(4, Math.ceil(items.length / count));
-  return Array.from({ length: count }, (_, columnIndex) => {
-    const column: Testimonial[] = [];
-    for (let i = 0; i < perColumn; i += 1) {
-      column.push(items[(columnIndex + i * count) % items.length]);
-    }
-    return column;
-  });
-}
-
 export function TestimonialsSection() {
+  const reducedMotion = useReducedMotion();
   return (
     <section className="ks-testimonials" aria-labelledby="ks-testimonials-title">
       <div className="ks-testimonials-grain" aria-hidden="true" />
@@ -122,25 +111,23 @@ export function TestimonialsSection() {
       <div className="ks-testimonials-inner">
         <motion.div
           className="ks-testimonials-copy"
-          initial={{ opacity: 0, y: 28 }}
+          initial={reducedMotion ? false : { opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-12%" }}
           transition={{ duration: 0.85, ease: EASE }}
         >
           <span className="ks-label-caps ks-testimonials-label">Depoimentos</span>
           <h2 id="ks-testimonials-title">
-            O que falam depois
-            <br />
-            que a arte vai pra pele.
+            A arte fica.<br /><span>O carinho também.</span>
           </h2>
           <p className="ks-testimonials-lead">
-            Algumas mensagens de quem já passou pelo processo comigo — entre ideias, ajustes, cuidado e
-            aquele friozinho bom de ver a tattoo pronta.
+            Da primeira ideia ao espelho: cada tattoo tem uma história. E essas são algumas das mensagens que ficam comigo depois da sessão.
           </p>
           <GuardedLink className="ks-primary-link special ks-testimonials-cta" to="/orcamento" data-cursor="cta">
-            Quero viver essa experiência também
+            Vamos criar a sua?
             <ArrowRight size={16} />
           </GuardedLink>
+          <span className="ks-testimonials-signoff">Feito na pele. Guardado com carinho.</span>
         </motion.div>
 
         <TestimonialsCardDrift items={TESTIMONIALS} />
@@ -150,124 +137,46 @@ export function TestimonialsSection() {
 }
 
 function TestimonialsCardDrift({ items }: { items: Testimonial[] }) {
-  const trackRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const columns = useMemo(() => buildColumns(items, 2), [items]);
-
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReducedMotion(media.matches);
-    sync();
-    media.addEventListener("change", sync);
-    return () => media.removeEventListener("change", sync);
-  }, []);
-
-  useEffect(() => {
-    if (reducedMotion) return undefined;
-
-    const offsets = columns.map((_, index) => index * 40);
-    const speeds = columns.map((_, index) => 22 * (index % 2 === 0 ? 1 : 0.86));
-    let frame = 0;
-    let last = performance.now();
-
-    const tick = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-
-      trackRefs.current.forEach((track, index) => {
-        if (!track) return;
-        const half = track.scrollHeight / 2;
-        if (half <= 0) return;
-        offsets[index] = (offsets[index] + speeds[index] * dt) % half;
-        const goesUp = index % 2 === 0;
-        const y = goesUp ? -offsets[index] : offsets[index] - half;
-        track.style.transform = `translate3d(0, ${y}px, 0)`;
-      });
-
-      frame = window.requestAnimationFrame(tick);
-    };
-
-    frame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frame);
-  }, [columns, reducedMotion]);
-
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { margin: "100px" });
+  const [paused, setPaused] = useState(false);
+  const columns = [items.filter((_, i) => i % 2 === 0), items.filter((_, i) => i % 2 === 1), items];
   return (
-    <div className="ks-testimonials-featured" aria-label="Depoimentos em movimento">
-      <div className="ks-testimonials-featured-fade ks-testimonials-featured-fade-top" aria-hidden="true" />
-      <div className="ks-testimonials-featured-fade ks-testimonials-featured-fade-bottom" aria-hidden="true" />
-      {columns.map((column, columnIndex) => {
-        const loop = [...column, ...column];
-        return (
-          <div key={`col-${columnIndex}`} className="ks-testimonials-featured-col">
-            <div
-              ref={(node) => {
-                trackRefs.current[columnIndex] = node;
-              }}
-              className="ks-testimonials-featured-track"
-            >
-              {loop.map((item, itemIndex) => (
-                <TestimonialCard
-                  key={`${columnIndex}-${itemIndex}-${item.id}`}
-                  item={item}
-                  motionEnabled={false}
-                  style={{ marginBottom: 14 }}
-                />
+    <div className="ks-testimonials-mural" ref={ref}>
+      <div className="ks-testimonials-mural-heading">
+        <span>Palavras que ficam</span>
+        <button type="button" className="ks-testimonials-pause" aria-pressed={paused}
+          aria-label={paused ? "Retomar movimento dos depoimentos" : "Pausar movimento dos depoimentos"}
+          onClick={() => setPaused(!paused)}>
+          {paused ? <Play size={12} /> : <Pause size={12} />}{paused ? "Continuar" : "Pausar"}
+        </button>
+      </div>
+      <div className="ks-testimonials-featured" aria-label="Mensagens de clientes" data-paused={paused || !inView}>
+        {columns.map((column, columnIndex) => (
+          <div key={columnIndex} className="ks-testimonials-featured-col">
+            <div className="ks-testimonials-featured-track">
+              {[0, 1].map(copy => (
+                <div className="ks-testimonials-group" key={copy} aria-hidden={copy === 1 ? true : undefined}>
+                  {column.map(item => <TestimonialCard key={item.id} item={item} />)}
+                </div>
               ))}
             </div>
           </div>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 }
-
-function TestimonialCard({
-  item,
-  motionEnabled = true,
-  style,
-}: {
-  item: Testimonial;
-  motionEnabled?: boolean;
-  style?: CSSProperties;
-}) {
-  const className = `ks-testimonial-card${item.size ? ` is-${item.size}` : ""}`;
-  const cardStyle: CSSProperties = {
-    ...(item.rotate ? ({ "--ks-card-rotate": `${item.rotate}deg` } as CSSProperties) : {}),
-    ...style,
-  };
-
-  const body = (
-    <>
-      <StarGlyph size={14} color="#806E85" className="ks-testimonial-card-star" />
-      <blockquote>
-        <p>“{item.quote}”</p>
-      </blockquote>
-      <footer>
-        <span className="ks-testimonial-card-from">Mensagem recebida</span>
-        <span className="ks-testimonial-card-tag">{item.tag}</span>
-      </footer>
-    </>
-  );
-
-  if (!motionEnabled) {
-    return (
-      <article className={className} style={cardStyle}>
-        {body}
-      </article>
-    );
-  }
-
+function TestimonialCard({ item }: { item: Testimonial }) {
   return (
-    <motion.article
-      className={className}
-      style={cardStyle}
-      variants={{
-        hidden: { opacity: 0, y: 24 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
-      }}
-    >
-      {body}
-    </motion.article>
+    <article className={`ks-testimonial-card is-${item.size ?? "md"}`}
+      style={{ "--ks-card-rotate": `${(item.rotate ?? 0) * 0.45}deg` } as CSSProperties}>
+      <div className="ks-testimonial-card-heading">
+        <span className="ks-testimonial-card-tag">{item.tag}</span>
+        <StarGlyph size={19} color="currentColor" className="ks-testimonial-card-star" />
+      </div>
+      <blockquote><p>“{item.quote}”</p></blockquote>
+      <footer><span className="ks-testimonial-card-from">Depois da sessão</span><span aria-hidden="true">↗</span></footer>
+    </article>
   );
 }
-
