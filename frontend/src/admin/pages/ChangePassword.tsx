@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
-import { Navigate, useNavigate } from "react-router";
+import { Link, Navigate, useNavigate } from "react-router";
 import { ApiError } from "../auth/api";
 import { useAuth } from "../auth/AuthContext";
 import {
@@ -46,7 +46,7 @@ export function ChangePasswordPage() {
         currentPassword: mustChangePassword ? undefined : currentPassword,
         newPassword,
       });
-      navigate("/admin", { replace: true });
+      navigate("/admin", { replace: true, state: { passwordUpdated: true } });
     } catch (err) {
       if (err instanceof ApiError) setError(err.message);
       else setError("Não foi possível salvar a senha. Tente de novo.");
@@ -56,7 +56,7 @@ export function ChangePasswordPage() {
   }
 
   return (
-    <div className="ks-admin-shell ks-admin-shell--narrow">
+    <div className="ks-admin-shell ks-admin-shell--password">
       <header className="ks-admin-brand">
         <p className="ks-admin-kicker">
           {mustChangePassword ? "Primeiro acesso" : "Sua conta"}
@@ -71,6 +71,7 @@ export function ChangePasswordPage() {
         </p>
       </header>
 
+      <div className="ks-admin-password-layout">
       <aside className="ks-admin-tips" aria-label="Dicas de senha">
         <p className="ks-admin-tips-title">Como escolher bem</p>
         <ul>
@@ -83,7 +84,7 @@ export function ChangePasswordPage() {
         </p>
       </aside>
 
-      <form className="ks-admin-form" onSubmit={onSubmit} noValidate>
+      <form className="ks-admin-form" onSubmit={onSubmit}>
         {!mustChangePassword ? (
           <label className="ks-admin-field">
             <span>Senha atual</span>
@@ -104,6 +105,7 @@ export function ChangePasswordPage() {
             <input
               type={show ? "text" : "password"}
               autoComplete="new-password"
+              minLength={12}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
@@ -114,6 +116,7 @@ export function ChangePasswordPage() {
               className="ks-admin-ghost-btn"
               onClick={() => setShow((v) => !v)}
               aria-pressed={show}
+              aria-label={show ? "Ocultar senhas" : "Mostrar senhas"}
             >
               {show ? "Ocultar" : "Mostrar"}
             </button>
@@ -147,11 +150,15 @@ export function ChangePasswordPage() {
           {submitting ? "Salvando…" : "Salvar senha"}
         </button>
       </form>
+      </div>
 
       <p className="ks-admin-footnote">
+        {!mustChangePassword && <Link to="/admin">← Voltar ao painel</Link>}
+        {mustChangePassword && <>
         <button type="button" className="ks-admin-text-btn" onClick={() => void logout()}>
-          Sair
+          Sair da conta
         </button>
+        </>}
       </p>
     </div>
   );

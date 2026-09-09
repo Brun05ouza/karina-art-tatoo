@@ -125,3 +125,58 @@ export function setUserActive(id: string, active: boolean) {
     body: JSON.stringify({ active }),
   });
 }
+
+export type GalleryCollectionId = "portfolio" | "flash" | "produtos";
+
+export type GalleryItem = {
+  id: string;
+  collection: GalleryCollectionId;
+  title: string;
+  category: string | null;
+  price: string | null;
+  link: string | null;
+  status: string | null;
+  image_url: string;
+  image_key: string;
+  alt_text: string | null;
+  sort_order: number;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export function listGallery(collection: GalleryCollectionId) {
+  return request<{ collection: string; items: GalleryItem[] }>(
+    `/api/admin/gallery/${collection}`,
+  );
+}
+
+export function createGalleryItem(
+  collection: GalleryCollectionId,
+  body: Record<string, unknown>,
+) {
+  return request<{ ok: true; item: GalleryItem }>(`/api/admin/gallery/${collection}`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function patchGalleryItem(id: string, body: Record<string, unknown>) {
+  return request<{ ok: true; item: GalleryItem }>(`/api/admin/gallery/item/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+export function deleteGalleryItem(id: string) {
+  return request<{ ok: true; id: string }>(`/api/admin/gallery/item/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export function reorderGallery(collection: GalleryCollectionId, ids: string[]) {
+  return request<{ ok: true }>(`/api/admin/gallery/${collection}/reorder`, {
+    method: "POST",
+    body: JSON.stringify({ ids }),
+  });
+}

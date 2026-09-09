@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 import { ApiError } from "../auth/api";
 import { useAuth } from "../auth/AuthContext";
 
@@ -34,18 +34,19 @@ export function LoginPage() {
   return (
     <div className="ks-admin-shell ks-admin-shell--narrow">
       <header className="ks-admin-brand">
-        <p className="ks-admin-kicker">Área interna</p>
-        <h1 className="ks-admin-title">Entrar</h1>
+        <p className="ks-admin-kicker">BEM-VINDA AO ATELIÊ</p>
+        <h1 className="ks-admin-title">Seu espaço de criação.</h1>
         <p className="ks-admin-lead">
-          Use o email e a senha que você recebeu. No primeiro acesso, vamos pedir uma senha nova.
+          Entre com seu email e senha para acessar o painel.
         </p>
       </header>
 
-      <form className="ks-admin-form" onSubmit={onSubmit} noValidate>
+      <form className="ks-admin-form" onSubmit={onSubmit}>
         <label className="ks-admin-field">
           <span>Email</span>
           <input
             type="email"
+            placeholder="voce@exemplo.com"
             autoComplete="username"
             inputMode="email"
             value={email}
@@ -61,6 +62,7 @@ export function LoginPage() {
             <input
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
+              placeholder="Sua senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -71,6 +73,7 @@ export function LoginPage() {
               className="ks-admin-ghost-btn"
               onClick={() => setShowPassword((v) => !v)}
               aria-pressed={showPassword}
+              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
               {showPassword ? "Ocultar" : "Mostrar"}
             </button>
@@ -84,12 +87,12 @@ export function LoginPage() {
         ) : null}
 
         <button type="submit" className="ks-admin-btn" disabled={submitting}>
-          {submitting ? "Entrando…" : "Entrar"}
+          {submitting ? "Entrando…" : "Entrar no painel"}
         </button>
       </form>
 
       <p className="ks-admin-footnote">
-        <Link to="/">Voltar ao site</Link>
+        Primeiro acesso? Use a senha temporária que você recebeu.
       </p>
     </div>
   );

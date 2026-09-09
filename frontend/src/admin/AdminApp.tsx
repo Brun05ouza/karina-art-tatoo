@@ -6,7 +6,9 @@ import { ChangePasswordPage } from "./pages/ChangePassword";
 import { DashboardPage } from "./pages/Dashboard";
 import { LoginPage } from "./pages/Login";
 import { UsersPage } from "./pages/Users";
+import { GalleryPage } from "./gallery/GalleryPage";
 import "./admin.css";
+import { AdminLayout } from "./AdminLayout";
 
 function AdminSeo() {
   useEffect(() => {
@@ -44,6 +46,7 @@ export function AdminApp() {
       <AuthProvider>
         <AdminSeo />
         <div className="ks-admin-app">
+          <AdminLayout>
           <Routes>
             <Route path="/admin/login" element={<LoginPage />} />
             <Route
@@ -63,6 +66,30 @@ export function AdminApp() {
               }
             />
             <Route
+              path="/admin/galeria/portfolio"
+              element={
+                <RequireAuth>
+                  <GalleryPage collectionId="portfolio" />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/galeria/flash"
+              element={
+                <RequireAuth>
+                  <GalleryPage collectionId="flash" />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/galeria/produtos"
+              element={
+                <RequireAuth>
+                  <GalleryPage collectionId="produtos" />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/admin/usuarios"
               element={
                 <RequireAuth ownerOnly>
@@ -73,6 +100,7 @@ export function AdminApp() {
             <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />
           </Routes>
+          </AdminLayout>
         </div>
       </AuthProvider>
     </BrowserRouter>

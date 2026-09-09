@@ -1,5 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Search, UserPlus, Users, CheckCircle2 } from "lucide-react";
 import {
   ApiError,
   createUser,
@@ -24,6 +24,8 @@ function formatDate(value: string | null) {
 
 export function UsersPage() {
   const { user } = useAuth();
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState("all");
   const [users, setUsers] = useState<ListedUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,29 +99,35 @@ export function UsersPage() {
     }
   }
 
+  const filteredUsers = users.filter(item => item.email.toLowerCase().includes(query.trim().toLowerCase()) && (status === "all" || (status === "active" ? item.active : !item.active)));
+
   return (
     <div className="ks-admin-shell">
       <header className="ks-admin-brand">
-        <p className="ks-admin-kicker">
-          <Link to="/admin" className="ks-admin-back">
-            ← Painel
-          </Link>
-        </p>
+        <p className="ks-admin-kicker">EQUIPE & ACESSOS</p>
         <h1 className="ks-admin-title">Usuários</h1>
         <p className="ks-admin-lead">
-          Crie acessos com senha temporária. A pessoa troca a senha no primeiro login.
+          Um espaço para cada pessoa que cuida do ateliê com você.
         </p>
       </header>
 
-      <section className="ks-admin-panel" aria-labelledby="create-user-heading">
+      <div className="ks-admin-stats" aria-label="Resumo de usuários">
+        <div><Users size={19} /><strong>{loading ? "—" : users.length}</strong><span>Contas no ateliê</span></div>
+        <div><CheckCircle2 size={19} /><strong>{loading ? "—" : users.filter(item => item.active).length}</strong><span>Acessos ativos</span></div>
+      </div>
+      {error && <p className="ks-admin-error" role="alert">{error}</p>}
+      <div className="ks-admin-users-layout">
+      <section className="ks-admin-panel ks-admin-create-panel" aria-labelledby="create-user-heading">
         <h2 id="create-user-heading" className="ks-admin-section-title">
-          Novo acesso
+          <UserPlus size={20} /> Novo acesso
         </h2>
-        <form className="ks-admin-form" onSubmit={onCreate} noValidate>
+        <p className="ks-admin-panel-description">A pessoa recebe uma senha temporária e cria a própria senha no primeiro acesso.</p>
+        <form className="ks-admin-form" onSubmit={onCreate}>
           <label className="ks-admin-field">
             <span>Email</span>
             <input
               type="email"
+              placeholder="pessoa@exemplo.com"
               inputMode="email"
               autoComplete="off"
               value={email}
@@ -129,7 +137,7 @@ export function UsersPage() {
             />
           </label>
           <label className="ks-admin-field">
-            <span>Papel</span>
+            <span>Tipo de acesso</span>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value === "owner" ? "owner" : "editor")}
@@ -159,33 +167,38 @@ export function UsersPage() {
         ) : null}
       </section>
 
-      <section className="ks-admin-panel" aria-labelledby="users-list-heading">
+      <section className="ks-admin-panel ks-admin-accounts-panel" aria-labelledby="users-list-heading">
         <h2 id="users-list-heading" className="ks-admin-section-title">
-          Contas
+          Contas <span className="ks-admin-count">{users.length}</span>
         </h2>
+        <div className="ks-admin-list-tools">
+          <label className="ks-admin-search"><Search size={17} /><input aria-label="Buscar usuário por email" placeholder="Buscar por email" value={query} onChange={e => setQuery(e.target.value)} /></label>
+          <select aria-label="Filtrar por status" value={status} onChange={e => setStatus(e.target.value)}><option value="all">Todos</option><option value="active">Ativos</option><option value="inactive">Desativados</option></select>
+        </div>
+        {!loading && users.length > 0 && filteredUsers.length === 0 && <p className="ks-admin-empty">Nenhuma conta encontrada. Tente outro email ou filtro.</p>}
         {loading ? <p className="ks-admin-muted">Carregando…</p> : null}
         {!loading && users.length === 0 ? (
           <p className="ks-admin-muted">Nenhum usuário ainda.</p>
         ) : null}
         <ul className="ks-admin-user-list">
-          {users.map((item) => {
+          {filteredUsers.map((item) => {
             const isSelf = item.id === user?.id;
             return (
               <li key={item.id} className={`ks-admin-user-row${!item.active ? " is-inactive" : ""}`}>
-                <div>
+                <div className="ks-admin-user-info">
                   <p className="ks-admin-user-email">{item.email}</p>
                   <p className="ks-admin-user-meta">
                     {item.role === "owner" ? "Responsável" : "Editor"}
-                    {" · "}
-                    {item.active ? "Ativo" : "Desativado"}
-                    {" · "}
-                    Último acesso: {formatDate(item.lastLoginAt)}
+                    <span className={`ks-admin-status${item.active ? " is-active" : ""}`}>{item.active ? "Ativo" : "Desativado"}</span>
+                  </p>
+                  <p className="ks-admin-user-last">Último acesso: {formatDate(item.lastLoginAt)}
                   </p>
                 </div>
                 <button
                   type="button"
                   className="ks-admin-ghost-btn"
-                  disabled={isSelf || busyId === item.id}
+                  disabled={isSelf || busyId !== null}
+                  aria-label={isSelf ? "Sua conta" : `${item.active ? "Desativar" : "Reativar"} ${item.email}`}
                   title={isSelf ? "Você não pode desativar a própria conta" : undefined}
                   onClick={() => void toggleActive(item)}
                 >
@@ -203,11 +216,7 @@ export function UsersPage() {
         </ul>
       </section>
 
-      {error ? (
-        <p className="ks-admin-error" role="alert">
-          {error}
-        </p>
-      ) : null}
+      </div>
     </div>
   );
 }

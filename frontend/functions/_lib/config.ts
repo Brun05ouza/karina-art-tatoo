@@ -3,6 +3,9 @@
 export type Env = {
   DATABASE_URL: string;
   ADMIN_SESSION_SECRET: string;
+  SUPABASE_URL: string;
+  SUPABASE_SERVICE_ROLE_KEY: string;
+  SUPABASE_BUCKET: string;
 };
 
 export class MissingEnvError extends Error {
@@ -15,10 +18,10 @@ export class MissingEnvError extends Error {
 
 export function requireEnv(env: Env, key: keyof Env): string {
   const value = env[key];
-  if (!value || !String(value).trim()) {
-    throw new MissingEnvError(key);
+  if (value == null || !String(value).trim()) {
+    throw new MissingEnvError(String(key));
   }
-  return String(value);
+  return String(value).trim();
 }
 
 export function json(data: unknown, init: ResponseInit = {}): Response {
