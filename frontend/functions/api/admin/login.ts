@@ -1,5 +1,5 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
-import { clientIp } from "../../_lib/auth";
+import { clientIp, originAllowed } from "../../_lib/auth";
 import { type Env, error, handleError, json } from "../../_lib/config";
 import { dummyVerify, verifyPassword } from "../../_lib/crypto";
 import {
@@ -14,20 +14,10 @@ import { createSessionCookieHeader } from "../../_lib/session";
 
 const INVALID = "Email ou senha inválidos.";
 
-function originOk(request: Request): boolean {
-  const origin = request.headers.get("Origin");
-  if (!origin) return false;
-  try {
-    return origin === new URL(request.url).origin;
-  } catch {
-    return false;
-  }
-}
-
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const { request, env } = context;
-    if (!originOk(request)) {
+    if (!originAllowed(request)) {
       return error(403, "Origem não permitida.");
     }
 

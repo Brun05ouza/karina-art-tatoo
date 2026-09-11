@@ -1,27 +1,22 @@
-import { useCallback, useEffect, useState, type FormEvent } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  Images,
-  LinkIcon,
-  Pencil,
-  ShoppingBag,
-  Trash2,
-  Youtube,
-} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent, type MouseEvent } from "react";
+import { ChevronDown, ChevronUp, Eye, Pencil, Trash2 } from "lucide-react";
+import { BioLinkAction, bioActionIcon } from "../../app/components/BioLinkAction";
 import {
   ApiError,
   createBioLink,
   deleteBioLink,
+  getAdminSettings,
   listBioLinks,
+  patchAdminSettings,
   patchBioLink,
   reorderBioLinks,
   type BioIconId,
+  type BioKindId,
   type BioLinkItem,
 } from "../auth/api";
+import "../bio-preview.css";
 
 const ICONS: { id: BioIconId; label: string }[] = [
-  { id: "whatsapp", label: "WhatsApp" },
   { id: "tiktok", label: "TikTok" },
   { id: "youtube", label: "YouTube" },
   { id: "instagram", label: "Instagram" },
@@ -30,62 +25,219 @@ const ICONS: { id: BioIconId; label: string }[] = [
   { id: "link", label: "Link" },
 ];
 
+const KINDS: { id: BioKindId; label: string; hint: string }[] = [
+  { id: "whatsapp", label: "WhatsApp", hint: "Só a mensagem — o link usa o número do site" },
+  { id: "external", label: "Abre fora", hint: "URL completa (http/https)" },
+  { id: "internal", label: "Página do site", hint: "Caminho como /portfolio" },
+];
+
 type Mode = { type: "list" } | { type: "create" } | { type: "edit"; item: BioLinkItem };
 
 type FormState = {
   label: string;
+  kind: BioKindId;
   url: string;
+  message: string;
   icon: BioIconId;
   featured: boolean;
   published: boolean;
 };
 
+type PhoneStatus = "idle" | "saving" | "saved";
+
 const emptyForm = (): FormState => ({
   label: "",
+  kind: "external",
   url: "",
+  message: "",
   icon: "link",
   featured: false,
   published: true,
 });
 
+function normalizeBrandLabel(label: string): string {
+  const t = label.trim();
+  if (/^youtube$/i.test(t)) return "YouTube";
+  if (/^tiktok$/i.test(t)) return "TikTok";
+  if (/^instagram$/i.test(t)) return "Instagram";
+  return label;
+}
+
 function fromItem(item: BioLinkItem): FormState {
   return {
-    label: item.label,
-    url: item.url,
-    icon: item.icon ?? "link",
+    label: normalizeBrandLabel(item.label),
+    kind: item.kind || "external",
+    url: item.url || "",
+    message: item.message || "",
+    icon: item.icon ?? (item.kind === "whatsapp" ? "whatsapp" : "link"),
     featured: item.featured,
     published: item.published,
   };
 }
 
-function PreviewIcon({ icon }: { icon: BioIconId }) {
-  if (icon === "whatsapp") return <WhatsAppGlyph />;
-  if (icon === "tiktok") return <TikTokGlyph />;
-  if (icon === "instagram") return <InstagramGlyph />;
-  if (icon === "youtube") return <Youtube size={16} />;
-  if (icon === "portfolio") return <Images size={16} />;
-  if (icon === "produtos") return <ShoppingBag size={16} />;
-  return <LinkIcon size={16} />;
+function itemIcon(item: BioLinkItem): string {
+  return item.icon || (item.kind === "whatsapp" ? "whatsapp" : "link");
+}
+
+function digitsOnly(raw: string): string {
+  return raw.replace(/\D/g, "");
+}
+
+/** DDD + número a partir do E.164 BR (55…). */
+function nationalDigits(full: string): string {
+  const d = digitsOnly(full);
+  return d.startsWith("55") ? d.slice(2) : d;
+}
+
+function formatNational(digits: string): string {
+  const d = digitsOnly(digits).slice(0, 11);
+  if (d.length <= 2) return d;
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+}
+
+function destinationOf(item: BioLinkItem): { text: string; title: string; broken: boolean } {
+  if (item.kind === "whatsapp") {
+    const msg = item.message?.trim();
+    if (!msg) {
+      return { text: "Sem mensagem inicial", title: "WhatsApp sem mensagem inicial", broken: false };
+    }
+    const quoted = `"${msg}"`;
+    return { text: quoted, title: quoted, broken: false };
+  }
+
+  if (item.kind === "internal") {
+    const url = item.url?.trim() || "";
+    if (!url) return { text: "Caminho ausente", title: "Sem destino", broken: true };
+    return { text: url, title: url, broken: false };
+  }
+
+  const url = item.url?.trim() || "";
+  if (!url) return { text: "URL ausente", title: "Sem destino", broken: true };
+  try {
+    const u = new URL(url);
+    if (u.protocol !== "http:" && u.protocol !== "https:") {
+      return { text: "URL inválida", title: url, broken: true };
+    }
+    const host = u.hostname.replace(/^www\./i, "");
+    const path = u.pathname === "/" ? "" : u.pathname;
+    const display = `${host}${path}${u.search}`;
+    return { text: display || host, title: url, broken: false };
+  } catch {
+    return { text: "URL inválida", title: url, broken: true };
+  }
+}
+
+function kindChipLabel(kind: BioKindId): string {
+  if (kind === "whatsapp") return "WhatsApp";
+  if (kind === "internal") return "página do site";
+  return "abre fora";
+}
+
+function BioLivePreview({
+  items,
+  editId,
+  draft,
+}: {
+  items: BioLinkItem[];
+  editId?: string;
+  draft?: FormState | null;
+}) {
+  const buttons = useMemo(() => {
+    const out: { key: string; label: string; icon: string; featured: boolean }[] = [];
+
+    for (const item of items) {
+      if (editId && item.id === editId) {
+        if (draft?.published) {
+          out.push({
+            key: item.id,
+            label: normalizeBrandLabel(draft.label.trim() || "Rótulo do botão"),
+            icon: draft.kind === "whatsapp" ? "whatsapp" : draft.icon,
+            featured: draft.featured,
+          });
+        }
+        continue;
+      }
+      if (!item.published) continue;
+      out.push({
+        key: item.id,
+        label: normalizeBrandLabel(item.label),
+        icon: itemIcon(item),
+        featured: item.featured,
+      });
+    }
+
+    if (draft && !editId && draft.published) {
+      out.push({
+        key: "draft",
+        label: normalizeBrandLabel(draft.label.trim() || "Rótulo do botão"),
+        icon: draft.kind === "whatsapp" ? "whatsapp" : draft.icon,
+        featured: draft.featured,
+      });
+    }
+
+    return out;
+  }, [items, editId, draft]);
+
+  return (
+    <div className="ks-bio-live-preview ks-link-bio-page--lilac" aria-label="Simulação dos botões da bio">
+      <p className="ks-admin-kicker ks-bio-preview-kicker">Simulação · /bio</p>
+      <div className="ks-link-bio-links">
+        {buttons.length === 0 ? (
+          <p className="ks-bio-preview-empty">
+            Sem botões publicados. No Instagram, a bio ficaria sem nenhum link clicável.
+          </p>
+        ) : (
+          buttons.map((b) => (
+            <BioLinkAction
+              key={b.key}
+              preview
+              button={{ label: b.label, icon: b.icon, featured: b.featured }}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
 }
 
 export function BioLinksPage() {
   const [items, setItems] = useState<BioLinkItem[]>([]);
+  const [phone, setPhone] = useState("");
+  const [phoneNational, setPhoneNational] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [mode, setMode] = useState<Mode>({ type: "list" });
   const [form, setForm] = useState<FormState>(emptyForm);
-  const [fieldErrors, setFieldErrors] = useState<{ label?: string; url?: string; form?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{
+    label?: string;
+    url?: string;
+    message?: string;
+    phone?: string;
+    form?: string;
+  }>({});
   const [busy, setBusy] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [phoneBusy, setPhoneBusy] = useState(false);
+  const [phoneStatus, setPhoneStatus] = useState<PhoneStatus>("idle");
+  const [showPreview, setShowPreview] = useState(false);
+
+  const phoneDirty =
+    digitsOnly(`55${digitsOnly(phoneNational)}`) !== digitsOnly(phone) &&
+    digitsOnly(phoneNational).length > 0;
 
   const reload = useCallback(async () => {
     setError(null);
     try {
-      const data = await listBioLinks();
-      setItems(data.items);
+      const [links, settings] = await Promise.all([listBioLinks(), getAdminSettings()]);
+      setItems(links.items);
+      setPhone(settings.whatsappPhone);
+      setPhoneNational(formatNational(nationalDigits(settings.whatsappPhone)));
+      setPhoneStatus("idle");
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Não foi possível carregar os links.");
+      setError(err instanceof ApiError ? err.message : "Não foi possível carregar.");
     } finally {
       setLoading(false);
     }
@@ -101,6 +253,12 @@ export function BioLinksPage() {
     return () => window.clearTimeout(t);
   }, [notice]);
 
+  useEffect(() => {
+    if (phoneStatus !== "saved") return;
+    const t = window.setTimeout(() => setPhoneStatus("idle"), 2200);
+    return () => window.clearTimeout(t);
+  }, [phoneStatus]);
+
   function openCreate() {
     setForm(emptyForm());
     setFieldErrors({});
@@ -113,12 +271,46 @@ export function BioLinksPage() {
     setMode({ type: "edit", item });
   }
 
+  async function savePhone() {
+    if (phoneBusy || mode.type !== "list") return;
+    const national = digitsOnly(phoneNational);
+    if (!national) {
+      setFieldErrors((e) => ({ ...e, phone: "Informe DDD e número." }));
+      return;
+    }
+    const full = `55${national}`;
+    if (full === digitsOnly(phone)) {
+      setPhoneStatus("idle");
+      return;
+    }
+
+    setPhoneBusy(true);
+    setPhoneStatus("saving");
+    setFieldErrors((e) => ({ ...e, phone: undefined }));
+    try {
+      const res = await patchAdminSettings({ whatsappPhone: full });
+      setPhone(res.whatsappPhone);
+      setPhoneNational(formatNational(nationalDigits(res.whatsappPhone)));
+      setPhoneStatus("saved");
+    } catch (err) {
+      setPhoneStatus("idle");
+      setFieldErrors((e) => ({
+        ...e,
+        phone: err instanceof ApiError ? err.message : "Não foi possível salvar o número.",
+      }));
+    } finally {
+      setPhoneBusy(false);
+    }
+  }
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
     const nextErrors: { label?: string; url?: string } = {};
     if (!form.label.trim()) nextErrors.label = "Escreva o rótulo.";
-    if (!form.url.trim()) nextErrors.url = "Informe a URL.";
+    if (form.kind !== "whatsapp" && !form.url.trim()) {
+      nextErrors.url = form.kind === "internal" ? "Informe o caminho." : "Informe a URL.";
+    }
     if (Object.keys(nextErrors).length) {
       setFieldErrors(nextErrors);
       return;
@@ -127,13 +319,21 @@ export function BioLinksPage() {
     setBusy(true);
     setFieldErrors({});
     try {
-      const body = {
-        label: form.label.trim(),
-        url: form.url.trim(),
-        icon: form.icon,
+      const body: Record<string, unknown> = {
+        label: normalizeBrandLabel(form.label.trim()),
+        kind: form.kind,
         featured: form.featured,
         published: form.published,
+        icon: form.kind === "whatsapp" ? "whatsapp" : form.icon,
       };
+      if (form.kind === "whatsapp") {
+        body.message = form.message.trim() || null;
+        body.url = "";
+      } else {
+        body.url = form.url.trim();
+        body.message = null;
+      }
+
       if (mode.type === "edit") {
         await patchBioLink(mode.item.id, body);
         setNotice("Link atualizado.");
@@ -153,7 +353,8 @@ export function BioLinksPage() {
     }
   }
 
-  async function move(id: string, dir: -1 | 1) {
+  async function move(id: string, dir: -1 | 1, e?: MouseEvent) {
+    e?.stopPropagation();
     const index = items.findIndex((i) => i.id === id);
     const next = index + dir;
     if (index < 0 || next < 0 || next >= items.length) return;
@@ -163,32 +364,94 @@ export function BioLinksPage() {
     ids[next] = tmp;
     setBusyId(id);
     setError(null);
+    setItems(ids.map((xid) => items.find((i) => i.id === xid)!).filter(Boolean));
     try {
       await reorderBioLinks(ids);
-      await reload();
       setNotice("Ordem atualizada.");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Não foi possível reordenar.");
+      await reload();
     } finally {
       setBusyId(null);
     }
   }
 
-  async function remove(item: BioLinkItem) {
-    const ok = window.confirm(`Remover “${item.label}”? Essa ação não dá para desfazer.`);
+  async function remove(item: BioLinkItem, e?: MouseEvent) {
+    e?.stopPropagation();
+    const ok = window.confirm(`Remover “${normalizeBrandLabel(item.label)}”? Essa ação não dá para desfazer.`);
     if (!ok) return;
     setBusyId(item.id);
     setError(null);
     try {
       await deleteBioLink(item.id);
       await reload();
-      setNotice(`“${item.label}” removido.`);
+      setNotice(`“${normalizeBrandLabel(item.label)}” removido.`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Não foi possível remover.");
     } finally {
       setBusyId(null);
     }
   }
+
+  const editId = mode.type === "edit" ? mode.item.id : undefined;
+  const draft = mode.type === "list" ? null : form;
+
+  const phoneStatusLabel =
+    phoneStatus === "saving" ? "Salvando…" : phoneStatus === "saved" ? "Salvo" : null;
+
+  const phoneBlock = (
+    <section className="ks-bio-phone-card">
+      <h2 className="ks-bio-phone-title">WhatsApp do site</h2>
+      <p className="ks-bio-phone-lead">
+        Um único número para a bio, orçamento, flash, produtos, rodapé e botão flutuante.
+      </p>
+      <div className="ks-bio-phone-row">
+        <label className={`ks-admin-field ks-bio-phone-field${fieldErrors.phone ? " has-error" : ""}`}>
+          <span>Celular com DDD</span>
+          <span className="ks-bio-phone-input">
+            <span className="ks-bio-phone-prefix" aria-hidden="true">
+              +55
+            </span>
+            <input
+              value={phoneNational}
+              onChange={(e) => {
+                setPhoneNational(formatNational(e.target.value));
+                setPhoneStatus("idle");
+                setFieldErrors((err) => ({ ...err, phone: undefined }));
+              }}
+              onBlur={() => {
+                if (phoneDirty && mode.type === "list") void savePhone();
+              }}
+              placeholder="(21) 99072-4477"
+              disabled={phoneBusy || mode.type !== "list"}
+              inputMode="tel"
+              autoComplete="tel-national"
+              aria-describedby="ks-bio-phone-ddi"
+            />
+          </span>
+          <span id="ks-bio-phone-ddi" className="ks-admin-muted">
+            DDI do Brasil já incluído.
+          </span>
+          {fieldErrors.phone ? <span className="ks-admin-field-error">{fieldErrors.phone}</span> : null}
+          {phoneStatusLabel && !fieldErrors.phone ? (
+            <span className="ks-bio-phone-status" role="status">
+              {phoneStatusLabel}
+            </span>
+          ) : null}
+        </label>
+        {mode.type === "list" ? (
+          <button
+            type="button"
+            className="ks-admin-btn ks-admin-btn--secondary"
+            disabled={phoneBusy || !phoneDirty}
+            onClick={() => void savePhone()}
+          >
+            {phoneBusy ? "Salvando…" : "Salvar número"}
+          </button>
+        ) : null}
+      </div>
+    </section>
+  );
 
   if (mode.type === "create" || mode.type === "edit") {
     return (
@@ -200,23 +463,39 @@ export function BioLinksPage() {
             </button>
           </p>
           <h1 className="ks-admin-title">{mode.type === "create" ? "Novo link" : "Editar link"}</h1>
-          <p className="ks-admin-lead">Botões que aparecem no link do Instagram.</p>
+          <p className="ks-admin-lead">Escolha o tipo — a URL do WhatsApp é montada pelo sistema.</p>
         </header>
 
-        <form className="ks-admin-form ks-bio-form" onSubmit={(e) => void onSubmit(e)} noValidate>
-          <div className="ks-bio-form-layout">
-            <div className="ks-bio-preview-panel" aria-label="Prévia do botão">
-              <p className="ks-admin-kicker">Prévia</p>
-              <div className={`ks-bio-preview-btn${form.featured ? " is-featured" : ""}`}>
-                <span className="ks-bio-preview-icon">
-                  <PreviewIcon icon={form.icon} />
-                </span>
-                <span>{form.label.trim() || "Rótulo do botão"}</span>
-              </div>
-              <p className="ks-bio-preview-note">Assim o botão aparece na página /bio.</p>
-            </div>
+        {phoneBlock}
 
+        <div className="ks-bio-workspace">
+          <form className="ks-admin-form ks-bio-form" onSubmit={(e) => void onSubmit(e)} noValidate>
             <div className="ks-bio-fields">
+              <fieldset className="ks-bio-kind-field">
+                <legend>Tipo de link</legend>
+                <div className="ks-bio-kind-grid" role="radiogroup">
+                  {KINDS.map((k) => (
+                    <label key={k.id} className={`ks-bio-kind-option${form.kind === k.id ? " is-active" : ""}`}>
+                      <input
+                        type="radio"
+                        name="bio-kind"
+                        checked={form.kind === k.id}
+                        onChange={() =>
+                          setForm((f) => ({
+                            ...f,
+                            kind: k.id,
+                            icon: k.id === "whatsapp" ? "whatsapp" : f.icon === "whatsapp" ? "link" : f.icon,
+                          }))
+                        }
+                        disabled={busy}
+                      />
+                      <strong>{k.label}</strong>
+                      <span>{k.hint}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+
               <label className={`ks-admin-field ks-admin-field--title${fieldErrors.label ? " has-error" : ""}`}>
                 <span>Rótulo</span>
                 <input
@@ -229,37 +508,56 @@ export function BioLinksPage() {
                 {fieldErrors.label ? <span className="ks-admin-field-error">{fieldErrors.label}</span> : null}
               </label>
 
-              <label className={`ks-admin-field${fieldErrors.url ? " has-error" : ""}`}>
-                <span>URL</span>
-                <input
-                  value={form.url}
-                  onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
-                  placeholder="https://… ou /portfolio"
-                  disabled={busy}
-                  required
-                />
-                {fieldErrors.url ? <span className="ks-admin-field-error">{fieldErrors.url}</span> : null}
-              </label>
+              {form.kind === "whatsapp" ? (
+                <label className="ks-admin-field">
+                  <span>Mensagem inicial (opcional)</span>
+                  <textarea
+                    value={form.message}
+                    onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+                    rows={3}
+                    maxLength={500}
+                    disabled={busy}
+                    placeholder="Olá! 🌿 Vim pela bio…"
+                  />
+                  <span className="ks-admin-muted">Usa o número do site. Acentos e emoji funcionam.</span>
+                </label>
+              ) : (
+                <label className={`ks-admin-field${fieldErrors.url ? " has-error" : ""}`}>
+                  <span>{form.kind === "internal" ? "Caminho" : "URL"}</span>
+                  <input
+                    value={form.url}
+                    onChange={(e) => setForm((f) => ({ ...f, url: e.target.value }))}
+                    placeholder={form.kind === "internal" ? "/portfolio" : "https://…"}
+                    disabled={busy}
+                    required
+                  />
+                  {fieldErrors.url ? <span className="ks-admin-field-error">{fieldErrors.url}</span> : null}
+                </label>
+              )}
 
-              <fieldset className="ks-bio-icon-field">
-                <legend>Ícone</legend>
-                <div className="ks-bio-icon-grid" role="radiogroup" aria-label="Ícone do botão">
-                  {ICONS.map((opt) => (
-                    <label key={opt.id} className={`ks-bio-icon-option${form.icon === opt.id ? " is-active" : ""}`}>
-                      <input
-                        type="radio"
-                        name="bio-icon"
-                        value={opt.id}
-                        checked={form.icon === opt.id}
-                        onChange={() => setForm((f) => ({ ...f, icon: opt.id }))}
-                        disabled={busy}
-                      />
-                      <PreviewIcon icon={opt.id} />
-                      <span>{opt.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
+              {form.kind !== "whatsapp" ? (
+                <fieldset className="ks-bio-icon-field">
+                  <legend>Ícone</legend>
+                  <div className="ks-bio-icon-grid" role="radiogroup" aria-label="Ícone do botão">
+                    {ICONS.map((opt) => (
+                      <label key={opt.id} className={`ks-bio-icon-option${form.icon === opt.id ? " is-active" : ""}`}>
+                        <input
+                          type="radio"
+                          name="bio-icon"
+                          value={opt.id}
+                          checked={form.icon === opt.id}
+                          onChange={() => setForm((f) => ({ ...f, icon: opt.id }))}
+                          disabled={busy}
+                        />
+                        <span className="ks-bio-icon-option-glyph" aria-hidden="true">
+                          {bioActionIcon(opt.id, 16)}
+                        </span>
+                        <span>{opt.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              ) : null}
 
               <label className="ks-gallery-check">
                 <input
@@ -301,8 +599,12 @@ export function BioLinksPage() {
                 </button>
               </div>
             </div>
-          </div>
-        </form>
+          </form>
+
+          <aside className="ks-bio-preview-aside is-open">
+            <BioLivePreview items={items} editId={editId} draft={draft} />
+          </aside>
+        </div>
       </div>
     );
   }
@@ -313,12 +615,23 @@ export function BioLinksPage() {
         <div>
           <p className="ks-admin-kicker">Link da bio</p>
           <h1 className="ks-admin-title">Links da bio</h1>
-          <p className="ks-admin-lead">Os botões do Instagram — o resto da página /bio continua no código.</p>
+          <p className="ks-admin-lead">Botões do Instagram — número do WhatsApp vale para o site inteiro.</p>
         </div>
-        <button type="button" className="ks-admin-btn ks-gallery-add" onClick={openCreate}>
-          Adicionar link
-        </button>
+        <div className="ks-bio-header-actions">
+          <button
+            type="button"
+            className="ks-admin-btn ks-admin-btn--secondary ks-bio-preview-toggle"
+            onClick={() => setShowPreview((v) => !v)}
+          >
+            <Eye size={16} /> {showPreview ? "Ocultar prévia" : "Ver prévia"}
+          </button>
+          <button type="button" className="ks-admin-btn ks-gallery-add" onClick={openCreate}>
+            Adicionar link
+          </button>
+        </div>
       </header>
+
+      {phoneBlock}
 
       {notice ? (
         <p className="ks-admin-toast" role="status">
@@ -332,95 +645,104 @@ export function BioLinksPage() {
       ) : null}
       {loading ? <p className="ks-admin-muted">Carregando…</p> : null}
 
-      {!loading && items.length === 0 ? (
-        <div className="ks-gallery-empty">
-          <img src="/assets/brand/star-karina-outline.webp" alt="" className="ks-gallery-empty-star" />
-          <p>Nenhum link ainda.</p>
-          <button type="button" className="ks-admin-btn" onClick={openCreate}>
-            Adicionar o primeiro
-          </button>
+      <div className="ks-bio-workspace ks-bio-workspace--list">
+        <div className="ks-bio-list-col">
+          {!loading && items.length === 0 ? (
+            <div className="ks-gallery-empty ks-bio-empty">
+              <img src="/assets/brand/star-karina-outline.webp" alt="" className="ks-gallery-empty-star" />
+              <p className="ks-bio-empty-title">A bio está sem botões</p>
+              <p className="ks-bio-empty-text">
+                Quem abrir o link do Instagram não vai ter nenhum caminho para falar com você. Adicione ao menos o
+                WhatsApp de orçamento.
+              </p>
+              <button type="button" className="ks-admin-btn" onClick={openCreate}>
+                Adicionar o primeiro link
+              </button>
+            </div>
+          ) : null}
+
+          <ul className="ks-bio-list">
+            {items.map((item, index) => {
+              const dest = destinationOf(item);
+              const label = normalizeBrandLabel(item.label);
+              return (
+                <li key={item.id}>
+                  <div
+                    className={`ks-bio-row ks-bio-row--compact${!item.published ? " is-hidden" : ""}${item.featured ? " is-featured" : ""}`}
+                  >
+                    <button type="button" className="ks-bio-row-hit" onClick={() => openEdit(item)}>
+                      <span className={`ks-bio-row-glyph${item.featured ? " is-featured" : ""}`} aria-hidden="true">
+                        {bioActionIcon(itemIcon(item), 16)}
+                      </span>
+                      <span className="ks-bio-row-main">
+                        <span className="ks-bio-row-label-line">
+                          <span className="ks-bio-row-label">{label}</span>
+                          {item.featured ? (
+                            <span className="ks-bio-chip ks-bio-chip--featured" title="Destaque na bio">
+                              ●
+                            </span>
+                          ) : null}
+                          {!item.published ? <span className="ks-bio-chip">oculto</span> : null}
+                          <span className="ks-bio-chip">{kindChipLabel(item.kind)}</span>
+                        </span>
+                        <span
+                          className={`ks-bio-row-dest${dest.broken ? " is-broken" : ""}`}
+                          title={dest.title}
+                        >
+                          {dest.text}
+                        </span>
+                      </span>
+                    </button>
+                    <span className="ks-bio-row-actions">
+                      <span className="ks-bio-order" role="group" aria-label="Ordem">
+                        <button
+                          type="button"
+                          className="ks-bio-order-btn"
+                          aria-label="Subir"
+                          disabled={index === 0 || busyId === item.id}
+                          onClick={(e) => void move(item.id, -1, e)}
+                        >
+                          <ChevronUp size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          className="ks-bio-order-btn"
+                          aria-label="Descer"
+                          disabled={index === items.length - 1 || busyId === item.id}
+                          onClick={(e) => void move(item.id, 1, e)}
+                        >
+                          <ChevronDown size={16} />
+                        </button>
+                      </span>
+                      <button
+                        type="button"
+                        className="ks-bio-edit-btn"
+                        aria-label={`Editar ${label}`}
+                        onClick={() => openEdit(item)}
+                      >
+                        <Pencil size={15} />
+                      </button>
+                      <button
+                        type="button"
+                        className="ks-bio-remove-btn"
+                        aria-label={`Remover ${label}`}
+                        disabled={busyId === item.id}
+                        onClick={(e) => void remove(item, e)}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         </div>
-      ) : null}
 
-      <ul className="ks-bio-list">
-        {items.map((item, index) => (
-          <li key={item.id} className={`ks-bio-row${!item.published ? " is-hidden" : ""}`}>
-            <div className={`ks-bio-preview-btn${item.featured ? " is-featured" : ""}`}>
-              <span className="ks-bio-preview-icon">
-                <PreviewIcon icon={item.icon ?? "link"} />
-              </span>
-              <span>{item.label}</span>
-            </div>
-            <p className="ks-bio-row-url">{item.url}</p>
-            <div className="ks-gallery-tile-toolbar">
-              <div className="ks-gallery-order">
-                <button
-                  type="button"
-                  className="ks-gallery-icon-btn"
-                  aria-label="Subir"
-                  disabled={index === 0 || busyId === item.id}
-                  onClick={() => void move(item.id, -1)}
-                >
-                  <ChevronUp size={18} />
-                </button>
-                <button
-                  type="button"
-                  className="ks-gallery-icon-btn"
-                  aria-label="Descer"
-                  disabled={index === items.length - 1 || busyId === item.id}
-                  onClick={() => void move(item.id, 1)}
-                >
-                  <ChevronDown size={18} />
-                </button>
-              </div>
-              <button
-                type="button"
-                className="ks-gallery-edit-btn"
-                disabled={busyId === item.id}
-                onClick={() => openEdit(item)}
-              >
-                <Pencil size={15} /> Editar
-              </button>
-              <button
-                type="button"
-                className="ks-gallery-icon-btn ks-gallery-icon-btn--danger"
-                aria-label={`Remover ${item.label}`}
-                disabled={busyId === item.id}
-                onClick={() => void remove(item)}
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+        <aside className={`ks-bio-preview-aside${showPreview ? " is-open" : ""}`}>
+          <BioLivePreview items={items} />
+        </aside>
+      </div>
     </div>
-  );
-}
-
-function WhatsAppGlyph() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.118 1.522 5.851L.054 23.25a.75.75 0 0 0 .916.916l5.453-1.474A11.952 11.952 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.712 9.712 0 0 1-4.964-1.363l-.357-.214-3.685.997.985-3.594-.234-.371A9.712 9.712 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z" />
-    </svg>
-  );
-}
-
-function TikTokGlyph() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.16 15.3a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.73a8.2 8.2 0 0 0 4.76 1.52V6.84a4.84 4.84 0 0 1-1.01-.15z" />
-    </svg>
-  );
-}
-
-function InstagramGlyph() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-      <circle cx="12" cy="12" r="4.2" />
-      <circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none" />
-    </svg>
   );
 }

@@ -16,6 +16,10 @@ export type AuthIdentity = {
 
 const STATE_CHANGING = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
+/** Hosts/portas locais: Vite (5173/5174) faz proxy para wrangler (8788). */
+const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
+const LOCAL_DEV_PORTS = new Set(["5173", "5174", "8788", "4173"]);
+
 export function clientIp(request: Request): string {
   return (
     request.headers.get("cf-connecting-ip") ||
@@ -24,17 +28,29 @@ export function clientIp(request: Request): string {
   );
 }
 
+/**
+ * CSRF: Origin deve bater com a URL do request.
+ * Em dev, aceita também Vite → proxy → Pages Functions (portas locais).
+ */
 export function originAllowed(request: Request): boolean {
   const origin = request.headers.get("Origin");
   if (!origin) {
     // Navegação same-origin clássica / alguns clientes sem Origin
     // Para mutações via fetch do admin, Origin deve existir.
-    // Sem Origin: rejeitar em métodos que alteram estado.
     return false;
   }
   try {
-    const reqOrigin = new URL(request.url).origin;
-    return origin === reqOrigin;
+    const reqUrl = new URL(request.url);
+    const originUrl = new URL(origin);
+    if (origin === reqUrl.origin) return true;
+
+    const reqLocal = LOCAL_HOSTS.has(reqUrl.hostname);
+    const originLocal = LOCAL_HOSTS.has(originUrl.hostname);
+    const originPort = originUrl.port || (originUrl.protocol === "https:" ? "443" : "80");
+    if (reqLocal && originLocal && LOCAL_DEV_PORTS.has(originPort)) {
+      return true;
+    }
+    return false;
   } catch {
     return false;
   }

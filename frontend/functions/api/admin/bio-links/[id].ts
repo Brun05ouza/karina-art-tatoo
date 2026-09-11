@@ -21,7 +21,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       return error(400, "Corpo da requisição inválido.");
     }
 
-    const parsed = validatePatch(body);
+    const parsed = validatePatch(body, current);
     if (!parsed.ok) return error(400, parsed.message);
 
     const item = await updateLink(context.env, id, parsed.value);

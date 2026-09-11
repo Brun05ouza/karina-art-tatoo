@@ -66,12 +66,12 @@ import { useAboutContent, type AboutStudioStep } from "./about-content";
 import { applyPageSeo } from "./seo";
 import { isSectionVisible, isPageVisible } from "./section-visibility";
 import { useBootReady } from "./boot-ready";
+import { prefetchSiteSettings, whatsappHref } from "./site-settings";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const FLUID_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-const WHATSAPP = "https://wa.me/5521990724477";
 
 function statusClass(status: string): string {
   return status
@@ -348,6 +348,10 @@ const tattooGalleryItems = [
 
 function AppShell() {
   const [preloaderDone, setPreloaderDone] = useState(false);
+
+  useEffect(() => {
+    prefetchSiteSettings();
+  }, []);
 
   return (
     <BrowserRouter>
@@ -729,7 +733,12 @@ function DevelopmentHomePage({ data }: { data: SiteModeContent }) {
           <span className="ks-label-caps">{data.developmentEyebrow}</span>
           <h1 className="ks-display-xl">{data.developmentTitle}</h1>
           <p className="ks-body-lg">{data.developmentText}</p>
-          <a className="ks-primary-link" href={data.developmentButtonUrl} target="_blank" rel="noopener noreferrer">
+          <a
+            className="ks-primary-link"
+            href={data.developmentButtonUrl || whatsappHref("Oi, Karina! Vim pelo site e queria falar com você.")}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {data.developmentButton}
             <ArrowRight size={16} />
           </a>
@@ -3304,7 +3313,7 @@ function WhatsAppIcon() {
 }
 
 function wa(message: string) {
-  return `${WHATSAPP}?text=${encodeURIComponent(message)}`;
+  return whatsappHref(message);
 }
 
 export default function App() {

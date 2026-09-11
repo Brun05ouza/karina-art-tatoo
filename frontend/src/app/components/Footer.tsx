@@ -4,6 +4,7 @@ import { BrandStar } from "./BrandStar";
 import { StarGlyph } from "./StarGlyph";
 import { isNavPathVisible, useNavVisibility } from "../nav-visibility";
 import { SITE } from "../seo";
+import { useWhatsappPhone, whatsappHref } from "../site-settings";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -17,15 +18,7 @@ const siteLinks = [
   { label: "Orçamento", href: "/orcamento" },
 ];
 
-const WHATSAPP_HREF =
-  "https://wa.me/5521990724477?text=" +
-  encodeURIComponent("Oi, Karina! Vim pelo site e queria conversar sobre uma tattoo.");
-
-const contactLinks = [
-  { label: "Instagram", href: SITE.instagram, external: true },
-  { label: "WhatsApp", href: WHATSAPP_HREF, external: true },
-  { label: "E-mail", href: `mailto:${SITE.email}`, external: true },
-];
+const WA_FOOTER_MSG = "Oi, Karina! Vim pelo site e queria conversar sobre uma tattoo.";
 
 const developerPortfolio = "https://brunosouza.dev.br";
 
@@ -56,7 +49,14 @@ function FooterNavLink({ label, href, external }: { label: string; href: string;
 
 export function Footer() {
   const navVisibility = useNavVisibility();
+  const phone = useWhatsappPhone();
+  const waHref = whatsappHref(WA_FOOTER_MSG, phone);
   const visibleSiteLinks = siteLinks.filter((link) => isNavPathVisible(navVisibility, link.href));
+  const contactLinks = [
+    { label: "Instagram", href: SITE.instagram, external: true },
+    { label: "WhatsApp", href: waHref, external: true },
+    { label: "E-mail", href: `mailto:${SITE.email}`, external: true },
+  ];
 
   return (
     <footer className="ks-footer">
@@ -93,7 +93,7 @@ export function Footer() {
             </p>
             <a
               className="ks-footer-whatsapp"
-              href={WHATSAPP_HREF}
+              href={waHref}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Falar com a Karina Sarte pelo WhatsApp"

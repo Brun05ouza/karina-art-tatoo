@@ -1,0 +1,52 @@
+import type { PagesFunction } from "@cloudflare/workers-types";
+import { authenticateRequest } from "../../_lib/auth";
+import { type Env, error, handleError, json } from "../../_lib/config";
+import {
+  formatBrWhatsapp,
+  getWhatsappPhone,
+  setWhatsappPhone,
+} from "../../_lib/site-settings";
+
+export const onRequestGet: PagesFunction<Env> = async (context) => {
+  try {
+    const identity = await authenticateRequest(context.request, context.env);
+    if (!identity) return error(401, "Faça login para continuar.");
+
+    const whatsappPhone = await getWhatsappPhone(context.env);
+    return json({
+      whatsappPhone,
+      whatsappPhoneDisplay: formatBrWhatsapp(whatsappPhone),
+    });
+  } catch (err) {
+    return handleError(err);
+  }
+};
+
+export const onRequestPatch: PagesFunction<Env> = async (context) => {
+  try {
+    const identity = await authenticateRequest(context.request, context.env);
+    if (!identity) return error(401, "Faça login para continuar.");
+
+    let body: Record<string, unknown>;
+    try {
+      body = (await context.request.json()) as Record<string, unknown>;
+    } catch {
+      return error(400, "Corpo da requisição inválido.");
+    }
+
+    if (!("whatsappPhone" in body)) {
+      return error(400, "Informe whatsappPhone.");
+    }
+
+    const result = await setWhatsappPhone(context.env, body.whatsappPhone);
+    if (!result.ok) return error(400, result.message);
+
+    return json({
+      ok: true,
+      whatsappPhone: result.phone,
+      whatsappPhoneDisplay: formatBrWhatsapp(result.phone),
+    });
+  } catch (err) {
+    return handleError(err);
+  }
+};

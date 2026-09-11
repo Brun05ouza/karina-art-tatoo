@@ -1,17 +1,17 @@
-import { ArrowRight, Images, LinkIcon, ShoppingBag, Sparkles, Youtube } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { BrandStar } from "./BrandStar";
+import { BioLinkAction, bioActionIcon } from "./BioLinkAction";
 import { useFlashItems, useFlashPageContent } from "../flash-content";
 import { useLinkBioContent, type LinkBioButton } from "../link-bio-content";
 import { isPageVisible } from "../section-visibility";
+import { useWhatsappPhone, whatsappHref } from "../site-settings";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const WHATSAPP = "https://wa.me/5521990724477";
 const DEFAULT_WA_MESSAGE =
   "Olá Karina, vim pelo seu link da bio e queria fazer um orçamento de tattoo.";
-const DEFAULT_WA_URL = `${WHATSAPP}?text=${encodeURIComponent(DEFAULT_WA_MESSAGE)}`;
 
 const STAR_ASSETS = [
   "/assets/brand/star-karina-filled.webp",
@@ -38,10 +38,8 @@ function isExternalLink(url: string) {
   return /^(https?:|mailto:|tel:|whatsapp:)/i.test(url);
 }
 
-function flashWa(title: string) {
-  return `${WHATSAPP}?text=${encodeURIComponent(
-    `Olá Karina, vim pelo link da bio e quero o flash "${title}".`,
-  )}`;
+function flashWa(title: string, phone: string) {
+  return whatsappHref(`Olá Karina, vim pelo link da bio e quero o flash "${title}".`, phone);
 }
 
 function BioStarBreak({ align = "right" }: { align?: "left" | "right" | "center" }) {
@@ -66,10 +64,12 @@ function BioStarBreak({ align = "right" }: { align?: "left" | "right" | "center"
 
 export function LinkBioLanding() {
   const content = useLinkBioContent();
+  const phone = useWhatsappPhone();
   const reduceMotion = useReducedMotion();
   const flashPage = useFlashPageContent();
   const flashItems = useFlashItems();
   const flashPageVisible = isPageVisible(flashPage);
+  const defaultWaUrl = whatsappHref(DEFAULT_WA_MESSAGE, phone);
 
   if (!content.loaded) {
     return <section className="ks-link-bio-page ks-link-bio-page--lilac ks-link-bio-page--boot" aria-hidden="true" />;
@@ -82,7 +82,7 @@ export function LinkBioLanding() {
 
   const primaryLabel = primaryCta?.label || content.finalButton || "Solicitar orçamento";
   const primaryUrl =
-    primaryCta?.url && isExternalLink(primaryCta.url) ? primaryCta.url : DEFAULT_WA_URL;
+    primaryCta?.url && isExternalLink(primaryCta.url) ? primaryCta.url : defaultWaUrl;
 
   const secondaryLinks = [...content.buttons]
     .filter((item) => item.active && !isWhatsappButton(item))
@@ -157,7 +157,7 @@ export function LinkBioLanding() {
             {...fadeUp(0.08)}
           >
             <span className="ks-link-bio-action-icon">
-              <WhatsAppGlyph />
+              {bioActionIcon("whatsapp")}
             </span>
             <span>{primaryLabel}</span>
             <ArrowRight size={16} />
@@ -166,7 +166,7 @@ export function LinkBioLanding() {
           <div className="ks-link-bio-links">
             {secondaryLinks.map((button, index) => (
               <motion.div key={button.id} {...fadeUp(0.12 + index * 0.04)}>
-                <BioLinkButton button={button} />
+                <BioLinkAction button={button} />
               </motion.div>
             ))}
           </div>
@@ -230,7 +230,7 @@ export function LinkBioLanding() {
                       <div className="ks-bio-flash-card__body">
                         <span className="ks-bio-status">{item.status}</span>
                         <strong>{item.title}</strong>
-                        <a href={flashWa(item.title)} target="_blank" rel="noopener noreferrer">
+                        <a href={flashWa(item.title, phone)} target="_blank" rel="noopener noreferrer">
                           Quero esse flash <ArrowRight size={14} />
                         </a>
                       </div>
@@ -288,7 +288,7 @@ export function LinkBioLanding() {
             <p>{content.finalText}</p>
             <a className="ks-link-bio-action is-primary" href={primaryUrl} target="_blank" rel="noopener noreferrer">
               <span className="ks-link-bio-action-icon">
-                <WhatsAppGlyph />
+                {bioActionIcon("whatsapp")}
               </span>
               <span>{content.finalButton || primaryLabel}</span>
               <ArrowRight size={16} />
@@ -343,70 +343,5 @@ function BioQuotesCarousel({ quotes, reduceMotion }: { quotes: string[]; reduceM
         ))}
       </div>
     </div>
-  );
-}
-
-function BioLinkButton({ button }: { button: LinkBioButton }) {
-  const inner = (
-    <>
-      <span className="ks-link-bio-action-icon">{bioIcon(button.icon)}</span>
-      <span>{button.label}</span>
-      <ArrowRight size={16} />
-    </>
-  );
-
-  const className = `ks-link-bio-action${button.featured ? " is-primary" : ""}`;
-
-  if (isExternalLink(button.url)) {
-    return (
-      <a className={className} href={button.url} target="_blank" rel="noopener noreferrer">
-        {inner}
-      </a>
-    );
-  }
-
-  return (
-    <Link className={className} to={button.url || "/"}>
-      {inner}
-    </Link>
-  );
-}
-
-function bioIcon(icon: string) {
-  const normalized = icon.toLowerCase();
-  if (normalized.includes("message") || normalized.includes("whatsapp") || normalized.includes("zap")) return <WhatsAppGlyph />;
-  if (normalized.includes("tiktok")) return <TikTokGlyph />;
-  if (normalized.includes("instagram") || normalized.includes("insta")) return <InstagramGlyph />;
-  if (normalized.includes("youtube")) return <Youtube size={18} />;
-  if (normalized.includes("portfolio") || normalized.includes("image")) return <Images size={18} />;
-  if (normalized.includes("spark")) return <Sparkles size={18} />;
-  if (normalized.includes("produto") || normalized.includes("shop")) return <ShoppingBag size={18} />;
-  return <LinkIcon size={18} />;
-}
-
-function WhatsAppGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.554 4.118 1.522 5.851L.054 23.25a.75.75 0 0 0 .916.916l5.453-1.474A11.952 11.952 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.712 9.712 0 0 1-4.964-1.363l-.357-.214-3.685.997.985-3.594-.234-.371A9.712 9.712 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z" />
-    </svg>
-  );
-}
-
-function TikTokGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 0 0-.79-.05A6.34 6.34 0 0 0 3.16 15.3a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.73a8.2 8.2 0 0 0 4.76 1.52V6.84a4.84 4.84 0 0 1-1.01-.15z" />
-    </svg>
-  );
-}
-
-function InstagramGlyph() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-      <circle cx="12" cy="12" r="4.2" />
-      <circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none" />
-    </svg>
   );
 }

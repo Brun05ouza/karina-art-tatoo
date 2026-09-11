@@ -1,0 +1,24 @@
+---
+description: Refino visual do admin com taste-skill (preservar cores da marca)
+globs: frontend/src/admin/**/*
+alwaysApply: false
+---
+
+# Admin design — taste-skill
+
+Reading: redesign do painel CMS da Karina Sarte; Soft Structuralism + editorial; **preservar** plum/lilás (`#2e173a`, `#38203f`, paper `#faf8f6`).
+
+Skills de referência em `.agents/skills/`:
+- `redesign-existing-projects`
+- `design-taste-frontend`
+- `high-end-visual-design`
+
+## Regras
+- Não trocar a paleta da marca; só tipografia, ritmo, sombra, raio, estados.
+- Corpo: IBM Plex Sans; títulos: Cormorant / Kah Sarte; meta: IBM Plex Mono.
+- Sombras tingidas de plum (`#38203f`), não preto puro.
+- Transições `cubic-bezier(0.32, 0.72, 0, 1)` ~220–320ms; só `transform`/`opacity`.
+- Cards: elevação suave ou “double-bezel” leve; evitar borda cinza genérica + sombra dura.
+- Densidade de dashboard (não landing airy); touch targets ≥44px no mobile.
+- Lucide já está no projeto — manter; stroke consistente.
+- Não instalar frameworks de UI novos (shadcn/Fluent/etc.) sem pedido explícito.

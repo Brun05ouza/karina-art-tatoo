@@ -45,11 +45,32 @@ async function request<T>(
     headers.set("Content-Type", "application/json");
   }
 
-  const res = await fetch(path, {
-    ...init,
-    headers,
-    credentials: "include",
-  });
+  const timeoutMs = 12_000;
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+  if (init.signal) {
+    if (init.signal.aborted) controller.abort();
+    else {
+      init.signal.addEventListener("abort", () => controller.abort(), { once: true });
+    }
+  }
+
+  let res: Response;
+  try {
+    res = await fetch(path, {
+      ...init,
+      headers,
+      credentials: "include",
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new ApiError("A API não respondeu. Confira se o pages:dev está rodando (porta 8788).", 0);
+    }
+    throw new ApiError("Não foi possível conectar à API.", 0);
+  } finally {
+    window.clearTimeout(timer);
+  }
 
   const data = await parseJson(res);
   if (!res.ok) {
@@ -181,6 +202,8 @@ export function reorderGallery(collection: GalleryCollectionId, ids: string[]) {
   });
 }
 
+export type BioKindId = "whatsapp" | "external" | "internal";
+
 export type BioIconId =
   | "whatsapp"
   | "tiktok"
@@ -193,7 +216,9 @@ export type BioIconId =
 export type BioLinkItem = {
   id: string;
   label: string;
+  kind: BioKindId;
   url: string;
+  message: string | null;
   icon: BioIconId | null;
   featured: boolean;
   sort_order: number;
@@ -231,4 +256,18 @@ export function reorderBioLinks(ids: string[]) {
     method: "POST",
     body: JSON.stringify({ ids }),
   });
+}
+
+export function getAdminSettings() {
+  return request<{ whatsappPhone: string; whatsappPhoneDisplay: string }>("/api/admin/settings");
+}
+
+export function patchAdminSettings(body: { whatsappPhone: string }) {
+  return request<{ ok: true; whatsappPhone: string; whatsappPhoneDisplay: string }>(
+    "/api/admin/settings",
+    {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    },
+  );
 }

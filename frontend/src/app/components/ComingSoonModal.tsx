@@ -4,9 +4,9 @@ import { Link, Navigate } from "react-router";
 import { X } from "lucide-react";
 import { isNavPathVisible, normalizeNavPath, useNavVisibility, type NavVisibilityMap } from "../nav-visibility";
 import { lockScroll, unlockScroll } from "../scroll";
+import { whatsappHref } from "../site-settings";
 import { StarGlyph } from "./StarGlyph";
 
-const WHATSAPP = "https://wa.me/5521990724477";
 const WA_MESSAGE =
   "Oi Karina! Vi no site uma sessão que ainda está em preparação e queria conversar sobre uma ideia ✨";
 
@@ -85,7 +85,7 @@ function ComingSoonModal({ open, onClose }: { open: boolean; onClose: () => void
             <p>Quer conversar comigo sobre alguma ideia?</p>
             <a
               className="ks-coming-soon-whatsapp"
-              href={`${WHATSAPP}?text=${encodeURIComponent(WA_MESSAGE)}`}
+              href={whatsappHref(WA_MESSAGE)}
               target="_blank"
               rel="noopener noreferrer"
               data-cursor="cta"
