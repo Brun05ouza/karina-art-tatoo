@@ -222,7 +222,7 @@ export async function prepareImage(
 
 export async function uploadPreparedImage(
   prepared: PreparedImage,
-  collection: "portfolio" | "flash" | "produtos",
+  collection: "portfolio" | "flash" | "produtos" | "bio-avatar" | "bio-studio",
   onStage?: (stage: UploadStage, detail?: string) => void,
 ): Promise<UploadedImage> {
   onStage?.("presigning", "Preparando envio…");

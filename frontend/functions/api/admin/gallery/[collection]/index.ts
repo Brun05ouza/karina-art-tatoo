@@ -7,6 +7,10 @@ import {
   listAll,
   validateCreate,
 } from "../../../../_lib/gallery";
+import {
+  galleryPublicPaths,
+  invalidatePublicPaths,
+} from "../../../../_lib/public-cache";
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
@@ -46,6 +50,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (!parsed.ok) return error(400, parsed.message);
 
     const item = await createItem(context.env, collection, parsed.value);
+
+    context.waitUntil(
+      invalidatePublicPaths(context.request, context.env, galleryPublicPaths(collection)),
+    );
+
     return json({ ok: true, item }, { status: 201 });
   } catch (err) {
     return handleError(err);

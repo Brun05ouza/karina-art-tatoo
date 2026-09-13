@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
-import { ChevronDown, ChevronUp, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil, Star, Trash2 } from "lucide-react";
 import {
   ApiError,
   createGalleryItem,
@@ -24,6 +24,7 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
   const [mode, setMode] = useState<Mode>({ type: "list" });
   const [busyId, setBusyId] = useState<string | null>(null);
   const [leavingId, setLeavingId] = useState<string | null>(null);
+  const supportsFeatured = collectionId === "portfolio";
 
   const reload = useCallback(async () => {
     setError(null);
@@ -53,12 +54,15 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
   async function saveItem(payload: {
     values: ItemFormValues;
     image?: { imageUrl: string; imageKey: string };
+    focal: { x: number; y: number };
   }) {
     const v = payload.values;
     const base: Record<string, unknown> = {
       title: v.title.trim(),
       alt_text: v.alt_text.trim() || null,
       published: v.published,
+      focalX: payload.focal.x,
+      focalY: payload.focal.y,
     };
     if (config.fields.includes("category")) base.category = v.category.trim() || null;
     if (config.fields.includes("price")) base.price = v.price.trim() || null;
@@ -100,6 +104,34 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
     }
   }
 
+  async function toggleFeatured(item: GalleryItem) {
+    if (!supportsFeatured) return;
+    if (!item.published && !item.featured) {
+      setError(
+        "Não dá para destacar um item oculto. Publique-o primeiro e depois marque como destaque.",
+      );
+      return;
+    }
+    setBusyId(item.id);
+    setError(null);
+    try {
+      const nextFeatured = !item.featured;
+      const { item: updated } = await patchGalleryItem(item.id, { featured: nextFeatured });
+      setItems((prev) =>
+        prev.map((row) => {
+          if (row.id === updated.id) return { ...row, ...updated };
+          if (nextFeatured && row.featured) return { ...row, featured: false };
+          return row;
+        }),
+      );
+      setNotice(nextFeatured ? `“${item.title}” agora é o destaque.` : "Destaque removido.");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Não foi possível atualizar o destaque.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   async function remove(item: GalleryItem) {
     const ok = window.confirm(`Remover “${item.title}”? Essa ação não dá para desfazer.`);
     if (!ok) return;
@@ -120,6 +152,7 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
 
   function metaLine(item: GalleryItem): string {
     const parts: string[] = [];
+    if (item.featured) parts.push("Destaque");
     if (!item.published) parts.push("Oculto");
     if (item.category) parts.push(item.category);
     if (item.price) parts.push(item.price);
@@ -207,7 +240,7 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
         {items.map((item, index) => (
           <li
             key={item.id}
-            className={`ks-gallery-tile${item.published ? "" : " is-hidden"}${leavingId === item.id ? " is-leave" : ""}`}
+            className={`ks-gallery-tile${item.published ? "" : " is-hidden"}${item.featured ? " is-featured" : ""}${leavingId === item.id ? " is-leave" : ""}`}
           >
             <button
               type="button"
@@ -223,7 +256,15 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
                   height={500}
                   loading="lazy"
                   decoding="async"
+                  style={{
+                    ["--focal-x" as string]: `${item.focal_x ?? 50}%`,
+                    ["--focal-y" as string]: `${item.focal_y ?? 50}%`,
+                    objectPosition: `${item.focal_x ?? 50}% ${item.focal_y ?? 50}%`,
+                  }}
                 />
+                {item.featured ? (
+                  <span className="ks-gallery-featured-badge">Destaque</span>
+                ) : null}
               </span>
               <span className="ks-gallery-tile-copy">
                 <span className="ks-gallery-tile-title">{item.title}</span>
@@ -252,6 +293,25 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
                   <ChevronDown size={18} />
                 </button>
               </div>
+              {supportsFeatured ? (
+                <button
+                  type="button"
+                  className={`ks-gallery-icon-btn${item.featured ? " is-featured" : ""}`}
+                  aria-label={item.featured ? "Remover destaque" : "Marcar como destaque"}
+                  aria-pressed={item.featured}
+                  disabled={busyId === item.id}
+                  title={
+                    !item.published && !item.featured
+                      ? "Publique o item antes de destacá-lo"
+                      : item.featured
+                        ? "Remover destaque"
+                        : "Projeto em destaque"
+                  }
+                  onClick={() => void toggleFeatured(item)}
+                >
+                  <Star size={16} fill={item.featured ? "currentColor" : "none"} />
+                </button>
+              ) : null}
               <button
                 type="button"
                 className="ks-gallery-edit-btn"

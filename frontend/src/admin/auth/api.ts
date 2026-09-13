@@ -65,7 +65,7 @@ async function request<T>(
     });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
-      throw new ApiError("A API não respondeu. Confira se o pages:dev está rodando (porta 8788).", 0);
+      throw new ApiError("A API não respondeu. Rode `npm run dev` na raiz do projeto (API na porta 8788).", 0);
     }
     throw new ApiError("Não foi possível conectar à API.", 0);
   } finally {
@@ -162,6 +162,9 @@ export type GalleryItem = {
   alt_text: string | null;
   sort_order: number;
   published: boolean;
+  featured: boolean;
+  focal_x: number;
+  focal_y: number;
   created_at: string;
   updated_at: string;
 };
@@ -253,6 +256,121 @@ export function deleteBioLink(id: string) {
 
 export function reorderBioLinks(ids: string[]) {
   return request<{ ok: true }>("/api/admin/bio-links/reorder", {
+    method: "POST",
+    body: JSON.stringify({ ids }),
+  });
+}
+
+export type BioProfile = {
+  id: number;
+  avatar_url: string;
+  avatar_key: string | null;
+  subtitle: string;
+  studio_image_url: string;
+  studio_image_key: string | null;
+  avatar_focal_x: number;
+  avatar_focal_y: number;
+  studio_focal_x: number;
+  studio_focal_y: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BioStyleChip = {
+  id: string;
+  label: string;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BioTestimonial = {
+  id: string;
+  quote: string;
+  author: string | null;
+  sort_order: number;
+  published: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BioProfileBundle = {
+  profile: BioProfile;
+  chips: BioStyleChip[];
+  testimonials: BioTestimonial[];
+};
+
+export function getBioProfile() {
+  return request<BioProfileBundle>("/api/admin/bio-profile");
+}
+
+export function patchBioProfile(body: Record<string, unknown>) {
+  return request<{ ok: true; profile: BioProfile }>("/api/admin/bio-profile", {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+export function listBioChips() {
+  return request<{ items: BioStyleChip[] }>("/api/admin/bio-chips");
+}
+
+export function createBioChip(body: Record<string, unknown>) {
+  return request<{ ok: true; item: BioStyleChip }>("/api/admin/bio-chips", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function patchBioChip(id: string, body: Record<string, unknown>) {
+  return request<{ ok: true; item: BioStyleChip }>(`/api/admin/bio-chips/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
+}
+
+export function deleteBioChip(id: string) {
+  return request<{ ok: true; id: string }>(`/api/admin/bio-chips/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export function reorderBioChips(ids: string[]) {
+  return request<{ ok: true }>("/api/admin/bio-chips/reorder", {
+    method: "POST",
+    body: JSON.stringify({ ids }),
+  });
+}
+
+export function listBioTestimonials() {
+  return request<{ items: BioTestimonial[] }>("/api/admin/bio-testimonials");
+}
+
+export function createBioTestimonial(body: Record<string, unknown>) {
+  return request<{ ok: true; item: BioTestimonial }>("/api/admin/bio-testimonials", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+export function patchBioTestimonial(id: string, body: Record<string, unknown>) {
+  return request<{ ok: true; item: BioTestimonial }>(
+    `/api/admin/bio-testimonials/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    },
+  );
+}
+
+export function deleteBioTestimonial(id: string) {
+  return request<{ ok: true; id: string }>(`/api/admin/bio-testimonials/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export function reorderBioTestimonials(ids: string[]) {
+  return request<{ ok: true }>("/api/admin/bio-testimonials/reorder", {
     method: "POST",
     body: JSON.stringify({ ids }),
   });

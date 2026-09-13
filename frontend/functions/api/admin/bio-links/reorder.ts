@@ -2,6 +2,10 @@ import type { PagesFunction } from "@cloudflare/workers-types";
 import { authenticateRequest } from "../../../_lib/auth";
 import { reorderLinks } from "../../../_lib/bio-links";
 import { type Env, error, handleError, json } from "../../../_lib/config";
+import {
+  BIO_LINKS_PUBLIC_PATH,
+  invalidatePublicPaths,
+} from "../../../_lib/public-cache";
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
@@ -20,6 +24,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const result = await reorderLinks(context.env, ids);
     if (!result.ok) return error(400, result.message);
+
+    context.waitUntil(
+      invalidatePublicPaths(context.request, context.env, [BIO_LINKS_PUBLIC_PATH]),
+    );
 
     return json({ ok: true });
   } catch (err) {

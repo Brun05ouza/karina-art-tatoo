@@ -1,5 +1,9 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
 import { authenticateRequest } from "../../../_lib/auth";
+import {
+  buildBioObjectKey,
+  isBioUploadCollection,
+} from "../../../_lib/bio-profile";
 import { type Env, error, handleError, json } from "../../../_lib/config";
 import {
   ALLOWED_IMAGE_TYPES,
@@ -22,9 +26,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     const collection = String(body.collection ?? "");
-    if (!isGalleryCollection(collection)) {
-      return error(400, "Coleção inválida. Use portfolio, flash ou produtos.");
-    }
 
     const contentType = String(body.contentType ?? "").toLowerCase().trim();
     if (!(ALLOWED_IMAGE_TYPES as readonly string[]).includes(contentType)) {
@@ -37,7 +38,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const ext = extensionForMime(contentType);
     if (!ext) return error(400, "Formato de imagem não suportado.");
 
-    const path = buildObjectKey(collection, ext);
+    let path: string;
+    if (isBioUploadCollection(collection)) {
+      path = buildBioObjectKey(collection, ext);
+    } else if (isGalleryCollection(collection)) {
+      path = buildObjectKey(collection, ext);
+    } else {
+      return error(
+        400,
+        "Coleção inválida. Use portfolio, flash, produtos, bio-avatar ou bio-studio.",
+      );
+    }
+
     const signed = await createSignedUploadUrl(context.env, path);
 
     return json({

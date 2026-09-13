@@ -504,17 +504,32 @@
   transition: transform .3s var(--admin-ease), box-shadow .3s var(--admin-ease), opacity .25s var(--admin-ease);
 }
 .ks-gallery-tile.is-hidden { opacity: .68; }
+.ks-gallery-tile.is-featured {
+  box-shadow: 0 0 0 2px #2e173a, var(--admin-shadow-lg);
+}
 .ks-gallery-tile.is-enter { animation: admin-tile-in .45s var(--admin-ease) both; }
 .ks-gallery-tile.is-leave { animation: admin-tile-out .28s var(--admin-ease) both; }
 .ks-gallery-tile:hover { transform: translateY(-3px); box-shadow: var(--admin-shadow-lg); }
+.ks-gallery-tile.is-featured:hover { box-shadow: 0 0 0 2px #2e173a, var(--admin-shadow-lg); }
 
 .ks-gallery-tile-main {
   display: grid; gap: 0; width: 100%; padding: 0; border: 0; background: transparent;
   color: inherit; text-align: left; cursor: pointer;
 }
 .ks-gallery-tile-main:focus-visible { outline: 2px solid #ad83b8; outline-offset: -3px; }
-.ks-gallery-tile-media { display: block; aspect-ratio: 4 / 5; background: #efe8f1; overflow: hidden; }
-.ks-gallery-tile-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ks-gallery-tile-media { display: block; position: relative; aspect-ratio: 4 / 5; background: #efe8f1; overflow: hidden; }
+.ks-gallery-tile-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--focal-x, 50%) var(--focal-y, 50%);
+  display: block;
+}
+.ks-gallery-featured-badge {
+  position: absolute; top: 12px; left: 12px; z-index: 1;
+  padding: 6px 10px; border-radius: 999px;
+  background: #2e173a; color: #faf8f6; font-size: 11px; font-weight: 600; letter-spacing: .04em;
+}
 .ks-gallery-tile-copy { display: grid; gap: 4px; padding: 14px 16px 4px; }
 .ks-gallery-tile-title { font: 600 20px/1.2 var(--admin-serif); }
 .ks-gallery-tile-meta { color: var(--admin-muted); font-size: 12px; }
@@ -531,6 +546,8 @@
 .ks-gallery-icon-btn:hover:not(:disabled) { background: #ebe1ef; color: var(--admin-ink); }
 .ks-gallery-icon-btn:active:not(:disabled) { transform: scale(.96); }
 .ks-gallery-icon-btn:disabled { opacity: .22; cursor: not-allowed; background: transparent; border: 0; }
+.ks-gallery-icon-btn.is-featured { background: #2e173a; color: #f4efe8; }
+.ks-gallery-icon-btn.is-featured:hover:not(:disabled) { background: #3d2149; color: #fff; }
 .ks-gallery-icon-btn--danger { background: transparent; color: #b47882; opacity: .75; }
 .ks-gallery-icon-btn--danger:hover:not(:disabled) { background: #f8ecee; color: #9a4654; opacity: 1; }
 .ks-gallery-edit-btn {
@@ -567,7 +584,64 @@
 .ks-gallery-drop input[type="file"] {
   position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden;
 }
-.ks-gallery-drop-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ks-gallery-drop-img { width: 100%; height: 100%; object-fit: cover; display: block; object-position: var(--focal-x, 50%) var(--focal-y, 50%); }
+
+.ks-focal-wrap {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 1fr;
+}
+.ks-focal-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ks-focal-frame.is-pannable { cursor: grab; }
+.ks-focal-frame.is-dragging { cursor: grabbing; }
+.ks-focal-frame:focus-visible { box-shadow: inset 0 0 0 3px #ad83b8; }
+.ks-focal-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 72px;
+  z-index: 2;
+  transform: translateX(-50%);
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: #2e173acc;
+  color: #faf8f6;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.ks-focal-toolbar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+.ks-focal-toolbar .ks-gallery-drop-btn { pointer-events: auto; box-shadow: 0 6px 16px #1a0d2030; }
+.ks-focal-meta {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #ffffffd8;
+  color: #6d5778;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
 .ks-gallery-drop-empty {
   position: absolute; inset: 0; display: grid; place-content: center; gap: 8px;
   padding: 28px; text-align: center; cursor: pointer; color: #6d5778;
@@ -601,8 +675,84 @@
 }
 .ks-gallery-drop:focus-within { outline: 3px solid #ad83b8; outline-offset: 3px; }
 
-.ks-gallery-check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; }
-.ks-gallery-check input { width: 20px; height: 20px; }
+.ks-gallery-flag {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--admin-border);
+  cursor: pointer;
+  transition:
+    border-color .22s var(--admin-ease),
+    box-shadow .22s var(--admin-ease),
+    background .22s var(--admin-ease);
+}
+.ks-gallery-flag input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.ks-gallery-flag-switch {
+  position: relative;
+  width: 40px;
+  height: 24px;
+  border-radius: 999px;
+  background: #e8dfee;
+  box-shadow: inset 0 0 0 1px #d9c9e0;
+  transition: background .22s var(--admin-ease);
+}
+.ks-gallery-flag-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px #38203f22;
+  transition: transform .22s var(--admin-ease);
+}
+.ks-gallery-flag-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.ks-gallery-flag-copy strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--admin-ink);
+}
+.ks-gallery-flag-copy span {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--admin-muted);
+}
+.ks-gallery-flag.is-on {
+  border-color: #91649c;
+  background: linear-gradient(165deg, #faf6fb, #f3ebf6);
+  box-shadow: 0 0 0 2px #a580af33;
+}
+.ks-gallery-flag.is-on .ks-gallery-flag-switch {
+  background: #38203f;
+  box-shadow: none;
+}
+.ks-gallery-flag.is-on .ks-gallery-flag-switch::after {
+  transform: translateX(16px);
+}
+.ks-gallery-flag:has(input:focus-visible) {
+  outline: 3px solid #ad83b8;
+  outline-offset: 2px;
+}
+.ks-gallery-flag:has(input:disabled) {
+  opacity: .55;
+  cursor: wait;
+}
 .ks-gallery-form-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
 @keyframes admin-toast-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }

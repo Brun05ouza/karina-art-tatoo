@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+﻿import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { gsap } from "gsap";
@@ -36,7 +36,8 @@ import { Footer } from "./components/Footer";
 import { LinkBioLanding } from "./components/LinkBioLanding";
 import { useFlashItems, useFlashPageContent } from "./flash-content";
 import { useFaqItems } from "./faq-content";
-import { PORTFOLIO_CATEGORIES, usePortfolioItems, usePortfolioPageContent, type PortfolioWork } from "./portfolio-works";
+import { PORTFOLIO_CATEGORIES, useFeaturedPortfolioWork, usePortfolioItems, usePortfolioPageContent, type PortfolioWork } from "./portfolio-works";
+import { focalStyle } from "./focal";
 import { useProductItems, useProductsPageContent, type ProductCatalogItem } from "./products-content";
 import { useReformulationCases, useReformulationsContent, type ReformulationCase } from "./reformulations-content";
 import { useBudgetPageContent } from "./budget-content";
@@ -73,6 +74,9 @@ gsap.registerPlugin(ScrollTrigger);
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const FLUID_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
+// React 18 não conhece `fetchPriority` (camelCase); o DOM espera `fetchpriority`.
+const FETCH_PRIORITY_HIGH = { fetchpriority: "high" } as Record<string, string>;
+
 function statusClass(status: string): string {
   return status
     .toLowerCase()
@@ -81,7 +85,7 @@ function statusClass(status: string): string {
 }
 
 const WA_DEFAULT = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo.";
-const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
+const WA_PRODUCTS = "OlÃ¡, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponÃ­veis.";
 
 const ProductsNavContext = createContext<(() => void) | null>(null);
 const PreloaderDoneContext = createContext(false);
@@ -147,19 +151,19 @@ function SectionStarBreak({
 
 const SECTION_INTRO_TITLES: Record<string, string> = {
   "/sobre": "Sobre a Karina Sarte",
-  "/portfolio": "Portfólio",
-  "/reformulacoes": "Reformulações",
+  "/portfolio": "PortfÃ³lio",
+  "/reformulacoes": "ReformulaÃ§Ãµes",
   "/flash-tattoos": "Flash Tattoos",
-  "/produtos": "Coleções da Karina Sarte",
+  "/produtos": "ColeÃ§Ãµes da Karina Sarte",
 };
-const BUDGET_WHATSAPP_INTRO = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo ✨";
+const BUDGET_WHATSAPP_INTRO = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo âœ¨";
 
 function productWhatsAppMessage(productName: string) {
-  return `Olá, Karina Sarte! Vim pelo site e me interessei por ${productName}. Gostaria de saber mais.`;
+  return `OlÃ¡, Karina Sarte! Vim pelo site e me interessei por ${productName}. Gostaria de saber mais.`;
 }
 
 function tattooChoiceMessage(tattooName: string) {
-  return `Olá, Karina Sarte! Vim pelo site e escolhi a tattoo "${tattooName}". Gostaria de saber mais.`;
+  return `OlÃ¡, Karina Sarte! Vim pelo site e escolhi a tattoo "${tattooName}". Gostaria de saber mais.`;
 }
 
 
@@ -175,38 +179,38 @@ function tattooStatusClass(status: string) {
 const flashItems = [
   {
     name: "Floral lunar",
-    status: "Disponível",
-    text: "Composição delicada para braço, costela ou tornozelo.",
+    status: "DisponÃ­vel",
+    text: "ComposiÃ§Ã£o delicada para braÃ§o, costela ou tornozelo.",
     img: "",
   },
   {
     name: "Ornamento estrela",
     status: "Reservado",
-    text: "Linhas finas com presença mística e tamanho médio.",
+    text: "Linhas finas com presenÃ§a mÃ­stica e tamanho mÃ©dio.",
     img: "",
   },
   {
     name: "Ramo livre",
-    status: "Disponível",
-    text: "Flash botânico único, ideal para antebraço ou nuca.",
+    status: "DisponÃ­vel",
+    text: "Flash botÃ¢nico Ãºnico, ideal para antebraÃ§o ou nuca.",
     img: "",
   },
   {
     name: "Selo autoral",
     status: "Tatuado",
-    text: "Referência de flash já executado para inspiração.",
+    text: "ReferÃªncia de flash jÃ¡ executado para inspiraÃ§Ã£o.",
     img: "",
   },
   {
-    name: "Traço ornamental",
-    status: "Disponível",
-    text: "Linhas ornamentais autorais, perfeitas para antebraço ou panturrilha.",
+    name: "TraÃ§o ornamental",
+    status: "DisponÃ­vel",
+    text: "Linhas ornamentais autorais, perfeitas para antebraÃ§o ou panturrilha.",
     img: "",
   },
   {
-    name: "Freehand orgânico",
-    status: "Disponível",
-    text: "Formas orgânicas criadas em freehand, com traço único e presença autoral.",
+    name: "Freehand orgÃ¢nico",
+    status: "DisponÃ­vel",
+    text: "Formas orgÃ¢nicas criadas em freehand, com traÃ§o Ãºnico e presenÃ§a autoral.",
     img: "",
   },
 ];
@@ -215,19 +219,19 @@ const productGroups = [
   {
     title: "Planos de Tattoo",
     cta: "Consultar planos",
-    hoverText: "Opções para tattoos pequenas, projetos autorais e sessões personalizadas.",
+    hoverText: "OpÃ§Ãµes para tattoos pequenas, projetos autorais e sessÃµes personalizadas.",
     img: "",
   },
   {
     title: "Flash Tattoos",
-    cta: "Ver flashes disponíveis",
-    hoverText: "Artes prontas com identidade própria e disponibilidade limitada.",
+    cta: "Ver flashes disponÃ­veis",
+    hoverText: "Artes prontas com identidade prÃ³pria e disponibilidade limitada.",
     img: "",
   },
   {
     title: "Prints & Artes",
     cta: "Consultar artes",
-    hoverText: "Ilustrações autorais para decorar, presentear ou colecionar.",
+    hoverText: "IlustraÃ§Ãµes autorais para decorar, presentear ou colecionar.",
     img: "",
   },
   {
@@ -242,32 +246,32 @@ const productCategories = [
   {
     title: "Planos de Tattoo",
     description:
-      "Opções para tattoos pequenas, projetos autorais, sessões personalizadas e flashes exclusivos.",
+      "OpÃ§Ãµes para tattoos pequenas, projetos autorais, sessÃµes personalizadas e flashes exclusivos.",
     cta: "Consultar planos",
     img: productGroups[0].img,
-    message: "Olá, Karina Sarte! Vim pelo site e gostaria de consultar os planos de tattoo.",
+    message: "OlÃ¡, Karina Sarte! Vim pelo site e gostaria de consultar os planos de tattoo.",
   },
   {
     title: "Flash Tattoos",
-    description: "Artes prontas e disponíveis para tatuar, com identidade própria e disponibilidade limitada.",
-    cta: "Ver flashes disponíveis",
+    description: "Artes prontas e disponÃ­veis para tatuar, com identidade prÃ³pria e disponibilidade limitada.",
+    cta: "Ver flashes disponÃ­veis",
     img: productGroups[1].img,
-    message: "Olá, Karina Sarte! Vim pelo site e gostaria de ver os flash tattoos disponíveis.",
+    message: "OlÃ¡, Karina Sarte! Vim pelo site e gostaria de ver os flash tattoos disponÃ­veis.",
     link: "/flash-tattoos",
   },
   {
     title: "Prints & Artes",
-    description: "Ilustrações autorais para decorar, presentear ou colecionar.",
+    description: "IlustraÃ§Ãµes autorais para decorar, presentear ou colecionar.",
     cta: "Consultar artes",
     img: productGroups[2].img,
-    message: "Olá, Karina Sarte! Vim pelo site e gostaria de consultar prints e artes.",
+    message: "OlÃ¡, Karina Sarte! Vim pelo site e gostaria de consultar prints e artes.",
   },
   {
     title: "Adesivos",
     description: "Adesivos autorais para colecionar, presentear e levar a arte da Karina para outros lugares.",
     cta: "Consultar adesivos",
     img: productGroups[3].img,
-    message: "Olá, Karina Sarte! Vim pelo site e gostaria de consultar os adesivos disponíveis.",
+    message: "OlÃ¡, Karina Sarte! Vim pelo site e gostaria de consultar os adesivos disponÃ­veis.",
   },
 ] as const;
 
@@ -275,73 +279,73 @@ const tattooGalleryMocks = ["", "", "", "", "", "", "", "", "", ""] as const;
 
 const tattooGalleryItems = [
   {
-    name: "Fine line botânica",
+    name: "Fine line botÃ¢nica",
     category: "Fine Line",
-    status: "Disponível",
-    description: "Composição botânica delicada em traço fino. Ideal para antebraço, costela ou tornozelo.",
+    status: "DisponÃ­vel",
+    description: "ComposiÃ§Ã£o botÃ¢nica delicada em traÃ§o fino. Ideal para antebraÃ§o, costela ou tornozelo.",
     img: tattooGalleryMocks[0],
   },
   {
-    name: "Traço ornamental",
+    name: "TraÃ§o ornamental",
     category: "Autoral",
-    status: "Disponível",
+    status: "DisponÃ­vel",
     description: "Projeto autoral com linhas ornamentais que acompanham a anatomia do corpo.",
     img: tattooGalleryMocks[1],
   },
   {
-    name: "Freehand orgânico",
+    name: "Freehand orgÃ¢nico",
     category: "Blackwork",
-    status: "Disponível",
-    description: "Desenho criado em freehand com formas orgânicas e presença autoral.",
+    status: "DisponÃ­vel",
+    description: "Desenho criado em freehand com formas orgÃ¢nicas e presenÃ§a autoral.",
     img: tattooGalleryMocks[2],
   },
   {
-    name: "Símbolos pequenos",
+    name: "SÃ­mbolos pequenos",
     category: "Minimalista",
-    status: "Disponível",
-    description: "Símbolos minimalistas para quem busca algo delicado e significativo.",
+    status: "DisponÃ­vel",
+    description: "SÃ­mbolos minimalistas para quem busca algo delicado e significativo.",
     img: tattooGalleryMocks[3],
   },
   {
     name: "Floral lunar",
     category: "Flash Tattoo",
-    status: "Disponível",
-    description: "Flash botânico com referência lunar, perfeito para braço ou nuca.",
+    status: "DisponÃ­vel",
+    description: "Flash botÃ¢nico com referÃªncia lunar, perfeito para braÃ§o ou nuca.",
     img: tattooGalleryMocks[4],
   },
   {
     name: "Ornamento estrela",
     category: "Flash Tattoo",
     status: "Reservado",
-    description: "Linhas finas com presença mística e tamanho médio. Consulte disponibilidade.",
+    description: "Linhas finas com presenÃ§a mÃ­stica e tamanho mÃ©dio. Consulte disponibilidade.",
     img: tattooGalleryMocks[5],
   },
   {
     name: "Ramo livre",
     category: "Flash Tattoo",
-    status: "Disponível",
-    description: "Flash botânico único, ideal para antebraço, tornozelo ou costela.",
+    status: "DisponÃ­vel",
+    description: "Flash botÃ¢nico Ãºnico, ideal para antebraÃ§o, tornozelo ou costela.",
     img: tattooGalleryMocks[6],
   },
   {
     name: "Floral cicatrizado",
-    category: "Referência",
+    category: "ReferÃªncia",
     status: "Tatuado",
-    description: "Referência de trabalho cicatrizado para inspirar novos projetos autorais.",
+    description: "ReferÃªncia de trabalho cicatrizado para inspirar novos projetos autorais.",
     img: tattooGalleryMocks[7],
   },
   {
     name: "Flash autoral",
     category: "Blackwork",
-    status: "Disponível",
-    description: "Flash autoral em preto, com traço firme e identidade visual.",
+    status: "DisponÃ­vel",
+    description: "Flash autoral em preto, com traÃ§o firme e identidade visual.",
     img: tattooGalleryMocks[8],
   },
   {
     name: "Selo autoral",
     category: "Autoral",
-    status: "Referência",
-    description: "Referência de flash já executado, útil para entender estilo e proporção.",
+    status: "ReferÃªncia",
+    description: "ReferÃªncia de flash jÃ¡ executado, Ãºtil para entender estilo e proporÃ§Ã£o.",
     img: tattooGalleryMocks[9],
   },
 ];
@@ -385,7 +389,7 @@ function AppLayout({
     navigate("/", { replace: true });
   }, [isBioRoute, location.pathname, navigate, siteMode.developmentMode]);
 
-  // Lenis só fora da /bio — na bio o scroll é 100% nativo no #ks-scroll-root.
+  // Lenis sÃ³ fora da /bio â€” na bio o scroll Ã© 100% nativo no #ks-scroll-root.
   useLayoutEffect(() => {
     if (isBioRoute) {
       pauseSmoothScroll();
@@ -397,41 +401,63 @@ function AppLayout({
   useEffect(() => {
     if (isBioRoute) return;
 
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
+    // Preferência de acessibilidade (OS) — separada de qualquer heurística de hardware/rede.
+    const reducedMotionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let destroyActive: (() => void) | undefined;
 
-    const lenis = new Lenis({
-      lerp: 0.12,
-      smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.2,
-      autoRaf: false,
-      autoResize: false,
-    });
+    const startLenis = () => {
+      if (reducedMotionMq.matches || destroyActive) return;
 
-    registerLenis(lenis);
+      // autoRaf: true — o loop próprio do Lenis. O acoplamento via gsap.ticker
+      // (autoRaf: false + lenis.raf no ticker) deixava a instância montada sem
+      // avançar o scroll: wheel atualizava target, mas raf nunca rodava.
+      // ScrollTrigger continua sincronizado no evento "scroll" (scroll.ts).
+      const lenis = new Lenis({
+        lerp: 0.12,
+        smoothWheel: true,
+        wheelMultiplier: 1.0,
+        touchMultiplier: 1.2,
+        autoRaf: true,
+        autoResize: false,
+      });
 
-    const tickerFn = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(tickerFn);
-    gsap.ticker.lagSmoothing(0);
+      registerLenis(lenis);
 
-    const onWindowLoad = () => refreshScrollMetrics();
-    const onVisibilityChange = () => {
-      if (document.visibilityState === "visible") refreshScrollMetrics();
+      const onWindowLoad = () => refreshScrollMetrics();
+      const onVisibilityChange = () => {
+        if (document.visibilityState === "visible") refreshScrollMetrics();
+      };
+
+      window.addEventListener("load", onWindowLoad);
+      document.addEventListener("visibilitychange", onVisibilityChange);
+      const refreshTimer = window.setTimeout(() => refreshScrollMetrics(), 300);
+
+      destroyActive = () => {
+        window.clearTimeout(refreshTimer);
+        window.removeEventListener("load", onWindowLoad);
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+        unobserveScrollRoot();
+        unregisterLenis();
+        lenis.destroy();
+      };
     };
 
-    window.addEventListener("load", onWindowLoad);
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    const refreshTimer = window.setTimeout(() => refreshScrollMetrics(), 300);
+    const stopLenis = () => {
+      destroyActive?.();
+      destroyActive = undefined;
+    };
+
+    const onReducedMotionChange = () => {
+      if (reducedMotionMq.matches) stopLenis();
+      else startLenis();
+    };
+
+    startLenis();
+    reducedMotionMq.addEventListener("change", onReducedMotionChange);
 
     return () => {
-      window.clearTimeout(refreshTimer);
-      window.removeEventListener("load", onWindowLoad);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-      gsap.ticker.remove(tickerFn);
-      unobserveScrollRoot();
-      unregisterLenis();
-      lenis.destroy();
+      reducedMotionMq.removeEventListener("change", onReducedMotionChange);
+      stopLenis();
     };
   }, [isBioRoute]);
 
@@ -613,14 +639,17 @@ function PageHero({
   }, [title]);
 
   return (
-    <section className={`ks-page-hero${hasImage ? "" : " ks-page-hero-no-image"}${className ? ` ${className}` : ""}`}>
+    <section
+      className={`ks-page-hero${hasImage ? "" : " ks-page-hero-no-image"}${className ? ` ${className}` : ""}`}
+      data-hero-tone={hasImage ? "dark" : "light"}
+    >
       {hasImage ? (
         <img
           className="ks-page-hero-image"
           src={image!}
-          alt={`${title} — Karina Sarte Tattoo em Teresópolis, RJ`}
+          alt={`${title} â€” Karina Sarte Tattoo em TeresÃ³polis, RJ`}
           loading="eager"
-          fetchPriority="high"
+          {...FETCH_PRIORITY_HIGH}
           decoding="async"
           style={imagePosition ? { objectPosition: imagePosition } : undefined}
         />
@@ -735,7 +764,7 @@ function DevelopmentHomePage({ data }: { data: SiteModeContent }) {
           <p className="ks-body-lg">{data.developmentText}</p>
           <a
             className="ks-primary-link"
-            href={data.developmentButtonUrl || whatsappHref("Oi, Karina! Vim pelo site e queria falar com você.")}
+            href={data.developmentButtonUrl || whatsappHref("Oi, Karina! Vim pelo site e queria falar com vocÃª.")}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -784,14 +813,14 @@ function HomeHero({ data }: { data: HomeContent }) {
   }, [preloaderDone]);
 
   return (
-    <section className="ks-home-hero">
+    <section className="ks-home-hero" data-hero-tone={data.heroImageUrl ? "dark" : "light"}>
       {data.heroImageUrl ? (
         <img
           className="ks-home-hero-bg"
           src={data.heroImageUrl}
-          alt={`${heroTitle} — Karina Sarte Tattoo em Teresópolis, RJ`}
+          alt={`${heroTitle} â€” Karina Sarte Tattoo em TeresÃ³polis, RJ`}
           loading="eager"
-          fetchPriority="high"
+          {...FETCH_PRIORITY_HIGH}
           decoding="async"
         />
       ) : null}
@@ -836,7 +865,7 @@ function EditorialSplitSection({ data }: { data: HomeContent }) {
         <h2 className="ks-headline-lg">{data.processTitle}</h2>
         <p className="ks-body-lg ks-muted">{data.processText}</p>
         {steps.length > 0 && (
-          <div className="ks-editorial-process" aria-label="Fluxo de criação">
+          <div className="ks-editorial-process" aria-label="Fluxo de criaÃ§Ã£o">
             {steps.map((step) => <span key={step.id}>{step.label}</span>)}
           </div>
         )}
@@ -846,18 +875,18 @@ function EditorialSplitSection({ data }: { data: HomeContent }) {
         {data.processImageUrl && (
           <img
             src={data.processImageUrl}
-            alt="Karina Sarte — detalhe de mãos, unhas e anéis"
+            alt="Karina Sarte â€” detalhe de mÃ£os, unhas e anÃ©is"
             loading="lazy"
           />
         )}
-        {/* A janela vive DENTRO do bloco da foto de propósito. Como irmã, em
-            coluna única ela reservava uma faixa de altura própria e, sendo
-            estreita, sobrava um bloco vazio ao lado — o "buraco" entre a foto e o
-            texto. Aqui ela é absoluta em relação à foto e não ocupa espaço.
-            Bônus no desktop: a foto é a coluna da direita, então a borda
-            esquerda dela É a divisória — left: 0 centra a janela no meio da seção.
+        {/* A janela vive DENTRO do bloco da foto de propÃ³sito. Como irmÃ£, em
+            coluna Ãºnica ela reservava uma faixa de altura prÃ³pria e, sendo
+            estreita, sobrava um bloco vazio ao lado â€” o "buraco" entre a foto e o
+            texto. Aqui ela Ã© absoluta em relaÃ§Ã£o Ã  foto e nÃ£o ocupa espaÃ§o.
+            BÃ´nus no desktop: a foto Ã© a coluna da direita, entÃ£o a borda
+            esquerda dela Ã‰ a divisÃ³ria â€” left: 0 centra a janela no meio da seÃ§Ã£o.
             O div externo posiciona e o interno anima: o motion escreve transform
-            inline e sobrescreveria o translate de centralização. */}
+            inline e sobrescreveria o translate de centralizaÃ§Ã£o. */}
         <div className="ks-editorial-split-portal" aria-hidden="true">
           <motion.div
             className="ks-editorial-split-portal-card"
@@ -931,12 +960,12 @@ function HomeServicesSection({ data }: { data: HomeContent }) {
 
 function MuralPortfolioPreview({ data }: { data: HomeContent }) {
   const portfolioItems = usePortfolioItems(false);
-  const featuredItems = portfolioItems.filter((item) => item.featured);
   const manualIds = data.portfolioIds || [];
   const manualItems = manualIds
     .map((id) => portfolioItems.find((item) => item.id === id))
     .filter((item): item is PortfolioWork => Boolean(item));
-  const selectedItems = featuredItems.length > 0 ? featuredItems : manualItems;
+  const selectedItems =
+    data.portfolioMode === "manual" && manualItems.length > 0 ? manualItems : portfolioItems;
   const displayedItems = selectedItems.slice(0, 6);
 
   return (
@@ -963,7 +992,13 @@ function MuralPortfolioPreview({ data }: { data: HomeContent }) {
                       loading="lazy"
                     />
                   ) : item.img ? (
-                    <img src={item.img} alt={item.alt} loading="lazy" decoding="async" />
+                    <img
+                      src={item.img}
+                      alt={item.alt}
+                      loading="lazy"
+                      decoding="async"
+                      style={focalStyle(item.focalX, item.focalY)}
+                    />
                   ) : (
                     <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
                   )}
@@ -982,7 +1017,7 @@ function MuralPortfolioPreview({ data }: { data: HomeContent }) {
         </p>
       )}
       <div className="ks-mural-footer">
-        <PrimaryLink to="/portfolio">Ver portfólio completo</PrimaryLink>
+        <PrimaryLink to="/portfolio">Ver portfÃ³lio completo</PrimaryLink>
       </div>
     </section>
   );
@@ -1059,19 +1094,19 @@ function AboutMeSection() {
           transition={{ duration: 0.9, delay: 0.15, ease: EASE }}
         >
           <span className="ks-label-caps ks-gold">Sobre mim</span>
-          <h2 className="ks-headline-lg">Arte na pele, feita com escuta e presença.</h2>
+          <h2 className="ks-headline-lg">Arte na pele, feita com escuta e presenÃ§a.</h2>
           <p className="ks-body-lg ks-muted">
-            Sou Karina, tatuadora autora em Teresópolis. Transformo referências, símbolos e histórias em tatuagens
-            que respeitam o corpo — com traço fino, botânica, freehand e composições pensadas para durar.
+            Sou Karina, tatuadora autora em TeresÃ³polis. Transformo referÃªncias, sÃ­mbolos e histÃ³rias em tatuagens
+            que respeitam o corpo â€” com traÃ§o fino, botÃ¢nica, freehand e composiÃ§Ãµes pensadas para durar.
           </p>
           <p className="ks-body-lg ks-muted">
-            Cada projeto começa com uma conversa: entender o que você quer levar, onde quer levar e como aquela arte precisa existir na sua pele. É assim que eu penso cada tattoo.
+            Cada projeto comeÃ§a com uma conversa: entender o que vocÃª quer levar, onde quer levar e como aquela arte precisa existir na sua pele. Ã‰ assim que eu penso cada tattoo.
           </p>
           <blockquote className="ks-about-me-quote">
-            “Tatuar é traduzir o que sentimos em algo que fica — linha, silêncio e história na pele.”
+            â€œTatuar Ã© traduzir o que sentimos em algo que fica â€” linha, silÃªncio e histÃ³ria na pele.â€
           </blockquote>
           <div className="ks-about-me-actions">
-            <PrimaryLink to="/sobre">Conheça minha história</PrimaryLink>
+            <PrimaryLink to="/sobre">ConheÃ§a minha histÃ³ria</PrimaryLink>
             <TextLink to="/orcamento">Quero uma tattoo</TextLink>
           </div>
         </motion.div>
@@ -1169,7 +1204,7 @@ function PortfolioPreview() {
             <span className="ks-carousel-count">
               {String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
             </span>
-            <button className="ks-carousel-btn" onClick={next} aria-label="Próximo">
+            <button className="ks-carousel-btn" onClick={next} aria-label="PrÃ³ximo">
               <ArrowRight size={18} />
             </button>
           </div>
@@ -1236,7 +1271,7 @@ function PortfolioCard({ item, index }: { item: PortfolioWork; index: number }) 
       />
       <div className="ks-portfolio-card-overlay">
         <span className="ks-label-caps ks-gold">
-          {String(index + 1).padStart(2, "0")} — {item.category}
+          {String(index + 1).padStart(2, "0")} â€” {item.category}
         </span>
         <h3>{item.title}</h3>
       </div>
@@ -1248,11 +1283,11 @@ function FlashPreview() {
   const [activeIndex, setActiveIndex] = useState(0);
   const visibleItems = flashItems.slice(0, 5);
   const active = visibleItems[activeIndex] ?? visibleItems[0];
-  const flashWhatsAppHref = wa("Olá, Karina Sarte! Vim pelo site e queria ver os flash tattoos disponíveis.");
+  const flashWhatsAppHref = wa("OlÃ¡, Karina Sarte! Vim pelo site e queria ver os flash tattoos disponÃ­veis.");
 
   return (
     <section className="ks-section ks-section-wine ks-flash-showcase">
-      <SectionTitle eyebrow="Flash Tattoos disponíveis" title="Artes autorais prontas para tatuar" text="Disponibilidade limitada — me consulte direto pelo WhatsApp." />
+      <SectionTitle eyebrow="Flash Tattoos disponÃ­veis" title="Artes autorais prontas para tatuar" text="Disponibilidade limitada â€” me consulte direto pelo WhatsApp." />
       <div className="ks-flash-scroll-layout">
         <div className="ks-flash-feature">
           <div className="ks-flash-feature-media">
@@ -1286,7 +1321,7 @@ function FlashPreview() {
                   href={flashWhatsAppHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Consultar flash tattoos disponíveis pelo WhatsApp"
+                  aria-label="Consultar flash tattoos disponÃ­veis pelo WhatsApp"
                 >
                   Consultar flashes <WhatsAppIcon />
                 </a>
@@ -1355,15 +1390,15 @@ function CareHomeSection() {
     <section className="ks-section ks-section-cream">
       <SectionTitle
         eyebrow="Cuidados"
-        title="Cuidado, segurança e responsabilidade"
-        text="Realizo cada atendimento com atenção à biossegurança, materiais adequados e orientações antes, durante e depois da tattoo."
+        title="Cuidado, seguranÃ§a e responsabilidade"
+        text="Realizo cada atendimento com atenÃ§Ã£o Ã  biosseguranÃ§a, materiais adequados e orientaÃ§Ãµes antes, durante e depois da tattoo."
       />
       <div className="ks-card-grid three">
-        {["Antes da tattoo", "Durante a sessão", "Depois da tattoo"].map((title) => (
+        {["Antes da tattoo", "Durante a sessÃ£o", "Depois da tattoo"].map((title) => (
           <MiniCard
             key={title}
             title={title}
-            text="Orientações claras para preparo, procedimento, higienização, hidratação e cicatrização."
+            text="OrientaÃ§Ãµes claras para preparo, procedimento, higienizaÃ§Ã£o, hidrataÃ§Ã£o e cicatrizaÃ§Ã£o."
           />
         ))}
       </div>
@@ -1457,7 +1492,7 @@ function YoutubeFeatureSection({ data }: { data: HomeContent }) {
             {data.youtubeThumbUrl && (
               <img
                 src={data.youtubeThumbUrl}
-                alt="Karina Sarte no estúdio, capa do primeiro Tattoo Vlog"
+                alt="Karina Sarte no estÃºdio, capa do primeiro Tattoo Vlog"
                 loading="lazy"
               />
             )}
@@ -1678,7 +1713,7 @@ function TattooGalleryModal({
             href={wa(tattooChoiceMessage(item.name))}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`Pedir orçamento da tattoo ${item.name} pelo WhatsApp`}
+            aria-label={`Pedir orÃ§amento da tattoo ${item.name} pelo WhatsApp`}
           >
             Eu escolho essa <WhatsAppIcon />
           </a>
@@ -1724,7 +1759,7 @@ function AboutPage() {
             )}
           </motion.div>
           <div className="ks-stack">
-            <blockquote className="ks-about-me-quote">“{about.quote}”</blockquote>
+            <blockquote className="ks-about-me-quote">â€œ{about.quote}â€</blockquote>
             <p className="ks-body-lg ks-muted" style={{ whiteSpace: "pre-line" }}>{about.biography}</p>
             <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
           </div>
@@ -1745,8 +1780,8 @@ function AboutPage() {
       {isSectionVisible(about, "abordagem") ? (
         <FeatureStrip
           eyebrow="Cuidado em cada etapa"
-          title="Como cada projeto é cuidado"
-          text="Da primeira conversa ao cuidado final, cada etapa é pensada para que a tattoo tenha intenção, presença e segurança."
+          title="Como cada projeto Ã© cuidado"
+          text="Da primeira conversa ao cuidado final, cada etapa Ã© pensada para que a tattoo tenha intenÃ§Ã£o, presenÃ§a e seguranÃ§a."
           cards={cards}
         />
       ) : null}
@@ -1757,18 +1792,47 @@ function AboutPage() {
 function PortfolioPage() {
   const [activeCategory, setActiveCategory] = useState("Todos");
   const portfolioItems = usePortfolioItems(false);
+  const featuredWork = useFeaturedPortfolioWork();
   const portfolioPage = usePortfolioPageContent();
   const sourceItems = portfolioItems;
-  // Filtros fixos da galeria (ordem e nomes da referência visual).
-  const categories = ["Todos", ...PORTFOLIO_CATEGORIES];
+
+  const publishedCategories = useMemo(() => {
+    const byKey = new Map<string, string>();
+    for (const item of sourceItems) {
+      const label = item.category?.trim();
+      if (!label) continue;
+      const key = label.toLowerCase();
+      if (!byKey.has(key)) byKey.set(key, label);
+    }
+
+    const ordered: string[] = [];
+    for (const known of PORTFOLIO_CATEGORIES) {
+      const key = known.toLowerCase();
+      const label = byKey.get(key);
+      if (label) {
+        ordered.push(label);
+        byKey.delete(key);
+      }
+    }
+    for (const label of byKey.values()) ordered.push(label);
+    return ordered;
+  }, [sourceItems]);
+
+  const showFilters = publishedCategories.length > 1;
+  const categories = showFilters ? ["Todos", ...publishedCategories] : [];
+
+  useEffect(() => {
+    if (activeCategory === "Todos") return;
+    const stillValid = publishedCategories.some(
+      (category) => category.toLowerCase() === activeCategory.toLowerCase(),
+    );
+    if (!stillValid) setActiveCategory("Todos");
+  }, [activeCategory, publishedCategories]);
+
   const filteredItems =
     activeCategory === "Todos"
       ? sourceItems
       : sourceItems.filter((item) => item.category.toLowerCase() === activeCategory.toLowerCase());
-  const featuredWork =
-    sourceItems.find((item) => item.img && item.featured) ||
-    sourceItems.find((item) => item.img) ||
-    null;
 
   if (!isPageVisible(portfolioPage)) return <HiddenPageRedirect />;
 
@@ -1786,8 +1850,8 @@ function PortfolioPage() {
       {isSectionVisible(portfolioPage, "trabalhos") ? (
         <>
           <section className="ks-portfolio-gallery">
-            <BrandStar variant={2} size={220} className="ks-portfolio-gallery-deco ks-portfolio-gallery-deco-a" />
-            <BrandStar variant={3} size={120} className="ks-portfolio-gallery-deco ks-portfolio-gallery-deco-b" />
+            <BrandStar variant={2} size={180} className="ks-portfolio-gallery-deco ks-portfolio-gallery-deco-a" />
+            <BrandStar variant={3} size={100} className="ks-portfolio-gallery-deco ks-portfolio-gallery-deco-b" />
 
             <div className="ks-portfolio-gallery-inner">
               <motion.header
@@ -1800,8 +1864,8 @@ function PortfolioPage() {
                 <div className="ks-portfolio-gallery-intro-copy">
                   <h2>Projetos na pele</h2>
                   <p>
-                    Uma seleção de tattoos, flashes e composições autorais criadas a partir de histórias,
-                    referências e corpos diferentes.
+                    Uma seleÃ§Ã£o de tattoos, flashes e composiÃ§Ãµes autorais criadas a partir de histÃ³rias,
+                    referÃªncias e corpos diferentes.
                   </p>
                 </div>
                 <p className="ks-portfolio-gallery-count" aria-live="polite">
@@ -1815,54 +1879,58 @@ function PortfolioPage() {
                 <StarGlyph size={12} color="#806E85" />
                 <span />
               </div>
+            </div>
 
-              <motion.div
-                className="ks-portfolio-filters"
-                role="toolbar"
-                aria-label="Filtrar portfólio por categoria"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-8%" }}
-                variants={{
-                  hidden: {},
-                  visible: { transition: { staggerChildren: 0.05 } },
-                }}
-              >
-                {categories.map((category) => {
-                  const active = activeCategory === category;
-                  return (
-                    <motion.button
-                      key={category}
-                      type="button"
-                      className={`ks-portfolio-chip${active ? " is-active" : ""}`}
-                      aria-pressed={active}
-                      onClick={() => setActiveCategory(category)}
-                      variants={{
-                        hidden: { opacity: 0, y: 10 },
-                        visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
-                      }}
-                    >
-                      <span className="ks-portfolio-chip-star" aria-hidden="true">
-                        <StarGlyph size={8} color={active ? "#F4EFE8" : "#806E85"} />
-                      </span>
-                      <span>{category}</span>
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
+            <PortfolioFeatured work={featuredWork} />
+
+            <div className="ks-portfolio-gallery-inner">
+              {showFilters ? (
+                <motion.div
+                  className="ks-portfolio-filters"
+                  role="toolbar"
+                  aria-label="Filtrar portfÃ³lio por categoria"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-8%" }}
+                  variants={{
+                    hidden: {},
+                    visible: { transition: { staggerChildren: 0.05 } },
+                  }}
+                >
+                  {categories.map((category) => {
+                    const active = activeCategory === category;
+                    return (
+                      <motion.button
+                        key={category}
+                        type="button"
+                        className={`ks-portfolio-chip${active ? " is-active" : ""}`}
+                        aria-pressed={active}
+                        onClick={() => setActiveCategory(category)}
+                        variants={{
+                          hidden: { opacity: 0, y: 10 },
+                          visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
+                        }}
+                      >
+                        <span className="ks-portfolio-chip-star" aria-hidden="true">
+                          <StarGlyph size={8} color={active ? "#F4EFE8" : "#806E85"} />
+                        </span>
+                        <span>{category}</span>
+                      </motion.button>
+                    );
+                  })}
+                </motion.div>
+              ) : null}
 
               {filteredItems.length > 0 ? (
                 <PortfolioMasonry items={filteredItems} />
               ) : (
                 <p className="ks-body-lg ks-muted ks-portfolio-gallery-empty" role="status">
                   {portfolioItems.length === 0
-                    ? "Ainda não há trabalhos publicados no portfólio."
-                    : "Ainda não há trabalhos publicados nesta categoria."}
+                    ? "Ainda nÃ£o hÃ¡ trabalhos publicados no portfÃ³lio."
+                    : "Nenhum trabalho nesta categoria no momento. Tente outro filtro ou volte em breve."}
                 </p>
               )}
             </div>
-
-            {featuredWork ? <PortfolioFeatured work={featuredWork} /> : null}
           </section>
         </>
       ) : null}
@@ -1872,7 +1940,7 @@ function PortfolioPage() {
 
 function PortfolioMasonry({ items }: { items: PortfolioWork[] }) {
   return (
-    <div className="ks-portfolio-masonry">
+    <div className={`ks-portfolio-masonry${items.length >= 8 ? " is-dense" : ""}`}>
       {items.map((item, index) => (
         <PortfolioMasonryCard key={item.id || `${item.title}-${index}`} item={item} index={index} />
       ))}
@@ -1901,7 +1969,13 @@ function PortfolioMasonryCard({ item, index }: { item: PortfolioWork; index: num
             loading={index < 2 ? "eager" : "lazy"}
           />
         ) : item.img ? (
-          <img src={item.img} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
+          <img
+            src={item.img}
+            alt={item.alt}
+            loading={index < 2 ? "eager" : "lazy"}
+            decoding="async"
+            style={focalStyle(item.focalX, item.focalY)}
+          />
         ) : (
           <div className="ks-portfolio-work-placeholder" aria-hidden="true">
             <BrandStar variant={2} size={88} className="ks-portfolio-work-placeholder-star" />
@@ -1922,6 +1996,7 @@ function PortfolioMasonryCard({ item, index }: { item: PortfolioWork; index: num
 
 function PortfolioFeatured({ work }: { work: PortfolioWork }) {
   const image = work.processVideo?.poster || work.img;
+  const alt = work.alt?.trim() || work.title;
 
   return (
     <motion.aside
@@ -1934,7 +2009,16 @@ function PortfolioFeatured({ work }: { work: PortfolioWork }) {
       <div className="ks-portfolio-featured-inner">
         <figure className="ks-portfolio-featured-media">
           {image ? (
-            <img src={image} alt={work.alt} loading="lazy" decoding="async" />
+            <img
+              src={image}
+              alt={alt}
+              width={960}
+              height={1200}
+              loading="eager"
+              decoding="async"
+              {...FETCH_PRIORITY_HIGH}
+              style={focalStyle(work.focalX, work.focalY)}
+            />
           ) : (
             <div className="ks-portfolio-work-placeholder" aria-hidden="true">
               <BrandStar variant={3} size={96} className="ks-portfolio-work-placeholder-star" />
@@ -1946,8 +2030,8 @@ function PortfolioFeatured({ work }: { work: PortfolioWork }) {
           <span className="ks-label-caps ks-gold">Projeto em destaque</span>
           <h2>Cada tattoo nasce de uma conversa.</h2>
           <p>
-            Alguns projetos começam com uma referência, outros com uma sensação. O desenho vai sendo
-            construído para conversar com o corpo, com a história e com o momento de quem vai levar
+            Alguns projetos comeÃ§am com uma referÃªncia, outros com uma sensaÃ§Ã£o. O desenho vai sendo
+            construÃ­do para conversar com o corpo, com a histÃ³ria e com o momento de quem vai levar
             aquela arte na pele.
           </p>
           <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
@@ -2039,7 +2123,7 @@ function ReformulacoesPage() {
                 <p className="ks-body-lg ks-muted">
                   {content.panelTextTwo}
                 </p>
-                <div className="ks-reformulacoes-intro-points" aria-label="Pontos avaliados na reformulação">
+                <div className="ks-reformulacoes-intro-points" aria-label="Pontos avaliados na reformulaÃ§Ã£o">
                   {pontos.map((point) => <span key={point.id}>{point.label}</span>)}
                 </div>
               </div>
@@ -2068,8 +2152,8 @@ function ReformulacoesPage() {
 }
 
 /**
- * Antes/depois de um caso. Por padrão mostra só a foto; passando o mouse por
- * cima, os dois vídeos (antes e depois) tocam juntos; clicando, abre o modal
+ * Antes/depois de um caso. Por padrÃ£o mostra sÃ³ a foto; passando o mouse por
+ * cima, os dois vÃ­deos (antes e depois) tocam juntos; clicando, abre o modal
  * ampliado (ReformulacaoCompareModal) com os dois lado a lado.
  */
 function ReformulacaoCompare({
@@ -2092,7 +2176,7 @@ function ReformulacaoCompare({
       onClick={canExpand ? onExpand : undefined}
       role={canExpand ? "button" : undefined}
       tabIndex={canExpand ? 0 : undefined}
-      aria-label={canExpand ? `Ver comparação ampliada de ${item.title}` : undefined}
+      aria-label={canExpand ? `Ver comparaÃ§Ã£o ampliada de ${item.title}` : undefined}
       onKeyDown={canExpand ? (event) => (event.key === "Enter" || event.key === " ") && onExpand() : undefined}
     >
       <ReformulacaoMedia label="Antes" imageSrc={item.beforeImageUrl} videoSrc={item.beforeVideoUrl} index={index} playing={hovering} />
@@ -2142,7 +2226,7 @@ function ReformulacaoMedia({
             <img
               className={videoSrc && playing ? "is-hidden" : ""}
               src={imageSrc}
-              alt={`Tattoo ${label.toLowerCase()} da reformulação`}
+              alt={`Tattoo ${label.toLowerCase()} da reformulaÃ§Ã£o`}
               loading="lazy"
             />
           ) : null}
@@ -2159,7 +2243,7 @@ function ReformulacaoMedia({
           ) : null}
         </div>
       ) : (
-        <div className="ks-reformulacao-photo-placeholder" aria-label={`Espaço para a foto de ${label.toLowerCase()}`}>
+        <div className="ks-reformulacao-photo-placeholder" aria-label={`EspaÃ§o para a foto de ${label.toLowerCase()}`}>
           <BrandStar variant={brandStarVariant(index)} size={120} className="ks-reformulacao-photo-star" />
           <span>Adicionar foto</span>
         </div>
@@ -2168,7 +2252,7 @@ function ReformulacaoMedia({
   );
 }
 
-/** Painel de vídeo (ou foto, se o caso não tiver vídeo) dentro do modal ampliado. */
+/** Painel de vÃ­deo (ou foto, se o caso nÃ£o tiver vÃ­deo) dentro do modal ampliado. */
 function ReformulacaoModalPanel({ label, imageSrc, videoSrc }: { label: "Antes" | "Depois"; imageSrc?: string; videoSrc?: string }) {
   return (
     <div className="ks-reformulacao-modal-media">
@@ -2176,9 +2260,9 @@ function ReformulacaoModalPanel({ label, imageSrc, videoSrc }: { label: "Antes" 
       {videoSrc ? (
         <video src={videoSrc} autoPlay muted loop playsInline controls />
       ) : imageSrc ? (
-        <img src={imageSrc} alt={`Tattoo ${label.toLowerCase()} da reformulação`} />
+        <img src={imageSrc} alt={`Tattoo ${label.toLowerCase()} da reformulaÃ§Ã£o`} />
       ) : (
-        <div className="ks-reformulacao-photo-placeholder" aria-label={`Sem mídia de ${label.toLowerCase()}`}>
+        <div className="ks-reformulacao-photo-placeholder" aria-label={`Sem mÃ­dia de ${label.toLowerCase()}`}>
           <BrandStar variant={2} size={140} className="ks-reformulacao-photo-star" />
         </div>
       )}
@@ -2252,16 +2336,18 @@ function FlashPage() {
                 <FlashCard
                   key={item.id}
                   name={item.title || "Flash sem nome"}
-                  status={item.status || "Disponível"}
+                  status={item.status || "DisponÃ­vel"}
                   text={item.description || ""}
                   img={item.imageUrl}
+                  focalX={item.focalX}
+                  focalY={item.focalY}
                   index={index}
                 />
               ))}
             </div>
           ) : (
             <p className="ks-body-lg ks-muted" style={{ textAlign: "center" }} role="status">
-              Nenhum flash disponível publicado ainda.
+              Nenhum flash disponÃ­vel publicado ainda.
             </p>
           )}
         </section>
@@ -2275,7 +2361,6 @@ function ProductsPage() {
   const stagger = Boolean((location.state as { fromProductsTransition?: boolean } | null)?.fromProductsTransition);
   const page = useProductsPageContent();
   const products = useProductItems();
-  const heroText = [page.heroText1, page.heroText2].filter(Boolean).join("\n\n");
 
   if (!isPageVisible(page)) return <HiddenPageRedirect />;
 
@@ -2285,7 +2370,7 @@ function ProductsPage() {
         <PageHero
           kicker={page.heroKicker || "Produtos"}
           title={page.heroTitle}
-          text={heroText}
+          text={page.heroText1}
           image={page.heroImageUrl}
         >
           {page.heroButton ? (
@@ -2303,6 +2388,9 @@ function ProductsPage() {
       ) : null}
       {isSectionVisible(page, "catalogo") ? (
         <section className="ks-section ks-products-catalog">
+          {page.heroText2 ? (
+            <p className="ks-body-lg ks-muted ks-products-catalog-lead">{page.heroText2}</p>
+          ) : null}
           {products.length > 0 ? (
             <motion.div
               className="ks-products-category-grid"
@@ -2327,17 +2415,17 @@ function ProductsPage() {
       <FeatureStrip
         eyebrow="Como comprar"
         title="Consulta simples pelo WhatsApp"
-        text="Minha vitrine funciona como catálogo comercial, sem carrinho ou checkout nesta fase."
+        text="Minha vitrine funciona como catÃ¡logo comercial, sem carrinho ou checkout nesta fase."
         cards={[
           {
             id: "buy-1",
             title: "Escolha o produto ou plano",
-            text: "Navegue pela vitrine e escolha o item, print ou plano que faz sentido para você.",
+            text: "Navegue pela vitrine e escolha o item, print ou plano que faz sentido para vocÃª.",
           },
           {
             id: "buy-2",
             title: "Chame no WhatsApp",
-            text: "Me chama com o que escolheu — te oriento sobre valores, prazos e disponibilidade.",
+            text: "Me chama com o que escolheu â€” te oriento sobre valores, prazos e disponibilidade.",
           },
           {
             id: "buy-3",
@@ -2347,7 +2435,7 @@ function ProductsPage() {
           {
             id: "buy-4",
             title: "Finalize a compra",
-            text: "Com tudo alinhado, confirmo o pedido e te acompanho até a entrega.",
+            text: "Com tudo alinhado, confirmo o pedido e te acompanho atÃ© a entrega.",
           },
         ]}
       />
@@ -2368,7 +2456,13 @@ function ProductCategoryCard({
     <>
       <div className="ks-products-category-media">
         {category.imageUrl ? (
-          <img src={category.imageUrl} alt={category.title} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
+          <img
+            src={category.imageUrl}
+            alt={category.title}
+            loading={index < 2 ? "eager" : "lazy"}
+            decoding="async"
+            style={focalStyle(category.focalX, category.focalY)}
+          />
         ) : (
           <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
         )}
@@ -2446,7 +2540,7 @@ function ProductsTransitionOverlay({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.35, ease: EASE }}
           >
-            Coleções da Karina Sarte
+            ColeÃ§Ãµes da Karina Sarte
           </motion.h2>
         </motion.div>
       )}
@@ -2513,14 +2607,14 @@ function BudgetPage() {
   const [error, setError] = useState(false);
 
   const buildMessage = () => {
-    const lines = [content.whatsappIntro || BUDGET_WHATSAPP_INTRO, "", "✨ *Briefing da tattoo*"];
+    const lines = [content.whatsappIntro || BUDGET_WHATSAPP_INTRO, "", "âœ¨ *Briefing da tattoo*"];
     if (form.name.trim()) lines.push("", `*Nome:* ${form.name.trim()}`);
     if (form.whatsapp.trim()) lines.push(`*WhatsApp:* ${form.whatsapp.trim()}`);
     if (form.idea.trim()) lines.push("", `*Ideia:*`, form.idea.trim());
     if (form.bodyPlace.trim()) lines.push("", `*Local do corpo:* ${form.bodyPlace.trim()}`);
     if (form.size.trim()) lines.push(`*Tamanho aproximado:* ${form.size.trim()}`);
-    if (form.references.trim()) lines.push("", `*Referências:*`, form.references.trim());
-    if (form.notes.trim()) lines.push("", `*Observações:*`, form.notes.trim());
+    if (form.references.trim()) lines.push("", `*ReferÃªncias:*`, form.references.trim());
+    if (form.notes.trim()) lines.push("", `*ObservaÃ§Ãµes:*`, form.notes.trim());
     return lines.join("\n");
   };
 
@@ -2547,13 +2641,19 @@ function BudgetPage() {
 
   return (
     <>
+      <PageHero
+        kicker={content.heroKicker}
+        title={content.heroTitle}
+        text={content.heroText}
+        image={content.heroImageUrl}
+      />
       {(showBriefing || showForm) ? (
         <section className="ks-section ks-budget-section">
           {showBriefing ? (
             <div className="ks-budget-intro">
               <BrandStar variant={3} size={126} className="ks-budget-intro-star" />
               <span className="ks-label-caps ks-gold">{content.introEyebrow}</span>
-              <h1 className="ks-headline-md">Quero um orçamento</h1>
+              <h2 className="ks-headline-md">{content.introTitle}</h2>
               <p className="ks-body-lg ks-muted">
                 {content.introText}
               </p>
@@ -2589,7 +2689,7 @@ function BudgetPage() {
               {showBriefing ? (
                 <h3>{content.formTitle}</h3>
               ) : (
-                <h1 className="ks-headline-md">{content.formTitle || "Quero um orçamento"}</h1>
+                <h1 className="ks-headline-md">{content.formTitle || "Quero um orÃ§amento"}</h1>
               )}
             </div>
           </div>
@@ -2611,7 +2711,7 @@ function BudgetPage() {
                 id="budget-idea"
                 className="ks-budget-textarea"
                 rows={4}
-                placeholder="Ex.: quero uma tattoo botânica delicada, com flores e um olho no centro..."
+                placeholder="Ex.: quero uma tattoo botÃ¢nica delicada, com flores e um olho no centro..."
                 value={form.idea}
                 aria-invalid={error}
                 onChange={update("idea")}
@@ -2620,28 +2720,28 @@ function BudgetPage() {
 
             <label className="ks-budget-field" htmlFor="budget-place">
               <span className="ks-budget-label">Local do corpo</span>
-              <input id="budget-place" className="ks-budget-input" placeholder="Braço, costela, costas..." value={form.bodyPlace} onChange={update("bodyPlace")} />
+              <input id="budget-place" className="ks-budget-input" placeholder="BraÃ§o, costela, costas..." value={form.bodyPlace} onChange={update("bodyPlace")} />
             </label>
 
             <label className="ks-budget-field" htmlFor="budget-size">
               <span className="ks-budget-label">Tamanho aproximado</span>
-              <input id="budget-size" className="ks-budget-input" placeholder="Ex.: 8 cm, palma da mão..." value={form.size} onChange={update("size")} />
+              <input id="budget-size" className="ks-budget-input" placeholder="Ex.: 8 cm, palma da mÃ£o..." value={form.size} onChange={update("size")} />
             </label>
 
             <label className="ks-budget-field is-full" htmlFor="budget-refs">
-              <span className="ks-budget-label">Referências</span>
-              <textarea id="budget-refs" className="ks-budget-textarea is-compact" rows={3} placeholder="Cole links, descreva imagens ou diga o estilo que você gosta." value={form.references} onChange={update("references")} />
+              <span className="ks-budget-label">ReferÃªncias</span>
+              <textarea id="budget-refs" className="ks-budget-textarea is-compact" rows={3} placeholder="Cole links, descreva imagens ou diga o estilo que vocÃª gosta." value={form.references} onChange={update("references")} />
             </label>
 
             <label className="ks-budget-field is-full" htmlFor="budget-notes">
-              <span className="ks-budget-label">Observações</span>
-              <textarea id="budget-notes" className="ks-budget-textarea is-compact" rows={3} placeholder="Disponibilidade, dúvidas, cobertura, cicatriz, primeira tattoo..." value={form.notes} onChange={update("notes")} />
+              <span className="ks-budget-label">ObservaÃ§Ãµes</span>
+              <textarea id="budget-notes" className="ks-budget-textarea is-compact" rows={3} placeholder="Disponibilidade, dÃºvidas, cobertura, cicatriz, primeira tattoo..." value={form.notes} onChange={update("notes")} />
             </label>
           </div>
 
           {error && (
             <span className="ks-budget-error" role="alert">
-              Conte sua ideia ou envie referências antes de chamar no WhatsApp.
+              Conte sua ideia ou envie referÃªncias antes de chamar no WhatsApp.
             </span>
           )}
           <div className="ks-budget-submit-row">
@@ -2673,19 +2773,29 @@ function FlashCard({
   status,
   text,
   img,
+  focalX,
+  focalY,
   index,
 }: {
   name: string;
   status: string;
   text: string;
   img?: string;
+  focalX?: number;
+  focalY?: number;
   index: number;
 }) {
   return (
     <article className="ks-flash-page-card">
       <div className="ks-flash-page-card-media">
         {img ? (
-          <img src={img} alt={name} loading={index < 2 ? "eager" : "lazy"} decoding="async" />
+          <img
+            src={img}
+            alt={name}
+            loading={index < 2 ? "eager" : "lazy"}
+            decoding="async"
+            style={focalStyle(focalX, focalY)}
+          />
         ) : (
           <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
         )}
@@ -2697,7 +2807,7 @@ function FlashCard({
         <p>{text}</p>
         <a
           className="ks-primary-link"
-          href={wa("Olá, Karina Sarte! Vim pelo site e queria saber se esse flash tattoo ainda está disponível.")}
+          href={wa("OlÃ¡, Karina Sarte! Vim pelo site e queria saber se esse flash tattoo ainda estÃ¡ disponÃ­vel.")}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Consultar disponibilidade do flash ${name} pelo WhatsApp`}
@@ -2732,7 +2842,7 @@ function ProductFaq({ full = false }: { full?: boolean }) {
 
   return (
     <section className="ks-section">
-      <SectionTitle eyebrow="FAQ" title={full ? "Dúvidas frequentes" : "FAQ rápido sobre produtos"} text="Informações essenciais para consulta, reserva e atendimento." />
+      <SectionTitle eyebrow="FAQ" title={full ? "DÃºvidas frequentes" : "FAQ rÃ¡pido sobre produtos"} text="InformaÃ§Ãµes essenciais para consulta, reserva e atendimento." />
       <div className="ks-faq-list">
         {list.map((item, i) => (
           <motion.div
@@ -2784,10 +2894,10 @@ function AboutBastidorSection({
   imageUrl: string;
   caption: string;
 }) {
-  const tags = ["tablet", "referências", "rabisco", "strogonoff", "ideia do nada"];
+  const tags = ["tablet", "referÃªncias", "rabisco", "strogonoff", "ideia do nada"];
   const displayCaption =
     caption ||
-    "Eu depois de comer strogonoff com feijão e decidir que era uma ótima hora pra criar arte.";
+    "Eu depois de comer strogonoff com feijÃ£o e decidir que era uma Ã³tima hora pra criar arte.";
 
   return (
     <section className="ks-section ks-about-bastidor">
@@ -2800,10 +2910,10 @@ function AboutBastidorSection({
           transition={{ duration: 0.85, ease: EASE }}
         >
           <p className="ks-label-caps ks-gold">Bastidor</p>
-          <h2 className="ks-headline-md">Nem toda ideia nasce séria.</h2>
+          <h2 className="ks-headline-md">Nem toda ideia nasce sÃ©ria.</h2>
           <span className="ks-about-bastidor-rule" aria-hidden="true" />
           <p className="ks-about-bastidor-lead">
-            Entre uma referência, um rabisco no tablet e uma pausa meio aleatória, as ideias vão aparecendo. Nem sempre o processo é poético — às vezes ele só começa depois de comer strogonoff com feijão mesmo.
+            Entre uma referÃªncia, um rabisco no tablet e uma pausa meio aleatÃ³ria, as ideias vÃ£o aparecendo. Nem sempre o processo Ã© poÃ©tico â€” Ã s vezes ele sÃ³ comeÃ§a depois de comer strogonoff com feijÃ£o mesmo.
           </p>
           <ul className="ks-about-bastidor-tags">
             {tags.map((tag, index) => (
@@ -2818,7 +2928,7 @@ function AboutBastidorSection({
               </motion.li>
             ))}
           </ul>
-          <p className="ks-about-bastidor-aside">Criação real, sem pose.</p>
+          <p className="ks-about-bastidor-aside">CriaÃ§Ã£o real, sem pose.</p>
         </motion.div>
 
         <motion.figure
@@ -2884,7 +2994,7 @@ function AboutStudioSection({
           transition={{ duration: 0.9, ease: EASE }}
         >
           <p className="ks-label-caps">Meu studio</p>
-          <h2 className="ks-headline-md">Quer entrar no meu espaço?</h2>
+          <h2 className="ks-headline-md">Quer entrar no meu espaÃ§o?</h2>
           <p>
             Se quiser, eu te mostro um pouco do lugar onde desenho, preparo cada detalhe e recebo quem chega para tatuar comigo.
           </p>
@@ -3052,7 +3162,7 @@ function StudioTourExperience({
           className="ks-studio-tour-arrow"
           onClick={goNext}
           disabled={isLast}
-          aria-label="Próxima etapa"
+          aria-label="PrÃ³xima etapa"
         >
           <ArrowRight size={18} />
         </button>
@@ -3250,7 +3360,7 @@ function TextLink({ to, children }: { to: string; children: React.ReactNode }) {
 }
 
 function NotFoundPage() {
-  const waHref = wa("Olá, Karina! Vim pelo site e queria conversar sobre uma tattoo.");
+  const waHref = wa("OlÃ¡, Karina! Vim pelo site e queria conversar sobre uma tattoo.");
 
   return (
     <section className="ks-section ks-not-found" aria-labelledby="ks-not-found-title">
@@ -3261,12 +3371,12 @@ function NotFoundPage() {
           Ops, essa arte saiu do caminho.
         </h1>
         <p className="ks-body-lg ks-muted">
-          A página que você tentou acessar não foi encontrada. Volte para o início, veja o portfólio ou
+          A pÃ¡gina que vocÃª tentou acessar nÃ£o foi encontrada. Volte para o inÃ­cio, veja o portfÃ³lio ou
           fale comigo pelo WhatsApp.
         </p>
         <div className="ks-not-found-actions ks-actions">
-          <PrimaryLink to="/">Voltar para o início</PrimaryLink>
-          <TextLink to="/portfolio">Ver portfólio</TextLink>
+          <PrimaryLink to="/">Voltar para o inÃ­cio</PrimaryLink>
+          <TextLink to="/portfolio">Ver portfÃ³lio</TextLink>
           <a
             className="ks-primary-link"
             href={waHref}

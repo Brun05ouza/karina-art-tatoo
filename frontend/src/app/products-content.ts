@@ -26,6 +26,8 @@ export type ProductCatalogItem = {
   whatsappMessage?: string;
   link?: string;
   imageUrl?: string;
+  focalX?: number;
+  focalY?: number;
 };
 
 export const defaultProductsPageContent: ProductsPageContent = {
@@ -58,6 +60,8 @@ function mapProducts(items: Awaited<ReturnType<typeof fetchGalleryItems>>): Prod
       whatsappMessage: `Olá! Quero saber sobre: ${item.title}`,
       link: item.link ?? "",
       imageUrl: item.image_url,
+      focalX: item.focal_x ?? 50,
+      focalY: item.focal_y ?? 50,
     }));
 }
 

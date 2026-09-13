@@ -21,7 +21,14 @@ npm install
 npm run dev
 ```
 
-Site em `http://localhost:5174`.
+Um único comando sobe **Vite** (HMR) e a **API** (Cloudflare Pages Functions):
+
+| Serviço | URL |
+|---|---|
+| Site + admin | `http://localhost:5174` |
+| API (proxy `/api`) | `127.0.0.1:8788` |
+
+Na primeira execução, se `frontend/dist` ainda não existir, o script faz o build inicial automaticamente.
 
 ## Build e deploy
 

@@ -2,6 +2,10 @@ import type { PagesFunction } from "@cloudflare/workers-types";
 import { authenticateRequest } from "../../../_lib/auth";
 import { deleteLink, findById, updateLink, validatePatch } from "../../../_lib/bio-links";
 import { type Env, error, handleError, json } from "../../../_lib/config";
+import {
+  BIO_LINKS_PUBLIC_PATH,
+  invalidatePublicPaths,
+} from "../../../_lib/public-cache";
 
 export const onRequestPatch: PagesFunction<Env> = async (context) => {
   try {
@@ -27,6 +31,10 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     const item = await updateLink(context.env, id, parsed.value);
     if (!item) return error(404, "Link não encontrado.");
 
+    context.waitUntil(
+      invalidatePublicPaths(context.request, context.env, [BIO_LINKS_PUBLIC_PATH]),
+    );
+
     return json({ ok: true, item });
   } catch (err) {
     return handleError(err);
@@ -43,6 +51,10 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
 
     const deleted = await deleteLink(context.env, id);
     if (!deleted) return error(404, "Link não encontrado.");
+
+    context.waitUntil(
+      invalidatePublicPaths(context.request, context.env, [BIO_LINKS_PUBLIC_PATH]),
+    );
 
     return json({ ok: true, id: deleted.id });
   } catch (err) {

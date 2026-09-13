@@ -82,7 +82,7 @@ export function Footer() {
               <span>Karina Sarte</span>
             </Link>
             <p>
-              Tatuagens autorais, flash tattoos e projetos personalizados em Teresópolis, RJ.
+              Pronta para transformar sua ideia em um projeto com intenção e cuidado.
             </p>
           </div>
           <div className="ks-footer-cta-action">

@@ -22,6 +22,9 @@ export type GalleryItem = {
   alt_text: string | null;
   sort_order: number;
   published: boolean;
+  featured: boolean;
+  focal_x: number;
+  focal_y: number;
   created_at: string;
   updated_at: string;
 };
@@ -36,11 +39,53 @@ function sql(env: Env): NeonQueryFunction<false, false> {
   return neon(requireEnv(env, "DATABASE_URL"));
 }
 
+function clampFocal(value: unknown, fallback = 50): number | null {
+  if (value === undefined) return null;
+  const n = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(n)) return Number.NaN;
+  const rounded = Math.round(n);
+  if (rounded < 0 || rounded > 100) return Number.NaN;
+  return rounded;
+}
+
+/** Lê focalX/focalY ou focal_x/focal_y do body. */
+function readFocalPair(
+  body: Record<string, unknown>,
+): { ok: true; x?: number; y?: number } | { ok: false; message: string } {
+  const hasX = "focalX" in body || "focal_x" in body;
+  const hasY = "focalY" in body || "focal_y" in body;
+  if (!hasX && !hasY) return { ok: true };
+
+  const xRaw = hasX ? ("focalX" in body ? body.focalX : body.focal_x) : undefined;
+  const yRaw = hasY ? ("focalY" in body ? body.focalY : body.focal_y) : undefined;
+
+  let x: number | undefined;
+  let y: number | undefined;
+
+  if (hasX) {
+    const parsed = clampFocal(xRaw);
+    if (parsed === null || Number.isNaN(parsed)) {
+      return { ok: false, message: "focalX deve ser um inteiro entre 0 e 100." };
+    }
+    x = parsed;
+  }
+  if (hasY) {
+    const parsed = clampFocal(yRaw);
+    if (parsed === null || Number.isNaN(parsed)) {
+      return { ok: false, message: "focalY deve ser um inteiro entre 0 e 100." };
+    }
+    y = parsed;
+  }
+  return { ok: true, x, y };
+}
+
 function mapItem(row: Record<string, unknown>): GalleryItem {
   const collection = String(row.collection);
   if (!isGalleryCollection(collection)) {
     throw new Error(`Coleção inválida no banco: ${collection}`);
   }
+  const fx = Number(row.focal_x);
+  const fy = Number(row.focal_y);
   return {
     id: String(row.id),
     collection,
@@ -54,6 +99,9 @@ function mapItem(row: Record<string, unknown>): GalleryItem {
     alt_text: row.alt_text != null ? String(row.alt_text) : null,
     sort_order: Number(row.sort_order) || 0,
     published: Boolean(row.published),
+    featured: Boolean(row.featured),
+    focal_x: Number.isFinite(fx) ? Math.min(100, Math.max(0, Math.round(fx))) : 50,
+    focal_y: Number.isFinite(fy) ? Math.min(100, Math.max(0, Math.round(fy))) : 50,
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
   };
@@ -82,6 +130,8 @@ export type GalleryCreateInput = {
   alt_text: string | null;
   sort_order: number | null;
   published: boolean;
+  focal_x: number;
+  focal_y: number;
 };
 
 export type GalleryPatchInput = Partial<{
@@ -95,6 +145,9 @@ export type GalleryPatchInput = Partial<{
   alt_text: string | null;
   sort_order: number;
   published: boolean;
+  featured: boolean;
+  focal_x: number;
+  focal_y: number;
 }>;
 
 export function validateCreate(
@@ -116,6 +169,9 @@ export function validateCreate(
     typeof body.sort_order === "number" && Number.isFinite(body.sort_order)
       ? Math.trunc(body.sort_order)
       : null;
+
+  const focal = readFocalPair(body);
+  if (!focal.ok) return focal;
 
   let category: string | null = null;
   let price: string | null = null;
@@ -170,6 +226,8 @@ export function validateCreate(
       alt_text,
       sort_order,
       published,
+      focal_x: focal.x ?? 50,
+      focal_y: focal.y ?? 50,
     },
   };
 }
@@ -187,6 +245,7 @@ export function validatePatch(
   }
   if ("alt_text" in body) patch.alt_text = trimStr(body.alt_text, 200);
   if ("published" in body) patch.published = Boolean(body.published);
+  if ("featured" in body) patch.featured = Boolean(body.featured);
   if ("sort_order" in body) {
     if (typeof body.sort_order !== "number" || !Number.isFinite(body.sort_order)) {
       return { ok: false, message: "sort_order inválido." };
@@ -201,7 +260,19 @@ export function validatePatch(
     }
     patch.image_url = image_url;
     patch.image_key = image_key;
+    // Nova foto: enquadramento anterior não vale.
+    patch.focal_x = 50;
+    patch.focal_y = 50;
   }
+
+  const focal = readFocalPair(body);
+  if (!focal.ok) return focal;
+  // Só aplica focal do body se a imagem NÃO está sendo trocada nesta request
+  // (troca já reseta para 50/50). Se vierem juntos, a foto nova + focal explícito
+  // do cliente após reset no UI é ok — se enviaram focal junto com nova imagem,
+  // respeitamos o focal enviado (UI envia 50/50 ao trocar).
+  if (focal.x !== undefined) patch.focal_x = focal.x;
+  if (focal.y !== undefined) patch.focal_y = focal.y;
 
   const reject = (field: string, label: string) => ({
     ok: false as const,
@@ -248,8 +319,8 @@ export async function listPublished(
   const db = sql(env);
   const rows = await db`
     SELECT id, collection, title, category, price, link, status,
-           image_url, image_key, alt_text, sort_order, published,
-           created_at, updated_at
+           image_url, image_key, alt_text, sort_order, published, featured,
+           focal_x, focal_y, created_at, updated_at
     FROM gallery_items
     WHERE collection = ${collection} AND published = TRUE
     ORDER BY sort_order ASC, created_at ASC
@@ -257,12 +328,40 @@ export async function listPublished(
   return (rows as Record<string, unknown>[]).map(mapItem);
 }
 
+export async function getFeaturedOrFirst(
+  env: Env,
+  collection: GalleryCollection,
+): Promise<GalleryItem | null> {
+  const db = sql(env);
+  const featured = await db`
+    SELECT id, collection, title, category, price, link, status,
+           image_url, image_key, alt_text, sort_order, published, featured,
+           focal_x, focal_y, created_at, updated_at
+    FROM gallery_items
+    WHERE collection = ${collection} AND published = TRUE AND featured = TRUE
+    LIMIT 1
+  `;
+  if (featured[0]) return mapItem(featured[0] as Record<string, unknown>);
+
+  const first = await db`
+    SELECT id, collection, title, category, price, link, status,
+           image_url, image_key, alt_text, sort_order, published, featured,
+           focal_x, focal_y, created_at, updated_at
+    FROM gallery_items
+    WHERE collection = ${collection} AND published = TRUE
+    ORDER BY sort_order ASC, created_at ASC
+    LIMIT 1
+  `;
+  if (!first[0]) return null;
+  return mapItem(first[0] as Record<string, unknown>);
+}
+
 export async function listAll(env: Env, collection: GalleryCollection): Promise<GalleryItem[]> {
   const db = sql(env);
   const rows = await db`
     SELECT id, collection, title, category, price, link, status,
-           image_url, image_key, alt_text, sort_order, published,
-           created_at, updated_at
+           image_url, image_key, alt_text, sort_order, published, featured,
+           focal_x, focal_y, created_at, updated_at
     FROM gallery_items
     WHERE collection = ${collection}
     ORDER BY sort_order ASC, created_at ASC
@@ -274,8 +373,8 @@ export async function findItemById(env: Env, id: string): Promise<GalleryItem | 
   const db = sql(env);
   const rows = await db`
     SELECT id, collection, title, category, price, link, status,
-           image_url, image_key, alt_text, sort_order, published,
-           created_at, updated_at
+           image_url, image_key, alt_text, sort_order, published, featured,
+           focal_x, focal_y, created_at, updated_at
     FROM gallery_items
     WHERE id = ${id}
     LIMIT 1
@@ -303,7 +402,8 @@ export async function createItem(
   const rows = await db`
     INSERT INTO gallery_items (
       collection, title, category, price, link, status,
-      image_url, image_key, alt_text, sort_order, published
+      image_url, image_key, alt_text, sort_order, published,
+      focal_x, focal_y
     ) VALUES (
       ${collection},
       ${input.title},
@@ -315,11 +415,13 @@ export async function createItem(
       ${input.image_key},
       ${input.alt_text},
       ${sortOrder},
-      ${input.published}
+      ${input.published},
+      ${input.focal_x},
+      ${input.focal_y}
     )
     RETURNING id, collection, title, category, price, link, status,
-              image_url, image_key, alt_text, sort_order, published,
-              created_at, updated_at
+              image_url, image_key, alt_text, sort_order, published, featured,
+              focal_x, focal_y, created_at, updated_at
   `;
   return mapItem(rows[0] as Record<string, unknown>);
 }
@@ -332,6 +434,10 @@ export async function updateItem(
   const current = await findItemById(env, id);
   if (!current) return null;
 
+  const published = patch.published ?? current.published;
+  const featured = published === false ? false : current.featured;
+  const imageChanged = Boolean(patch.image_url && patch.image_key);
+
   const next = {
     title: patch.title ?? current.title,
     category: patch.category !== undefined ? patch.category : current.category,
@@ -342,7 +448,10 @@ export async function updateItem(
     image_key: patch.image_key ?? current.image_key,
     alt_text: patch.alt_text !== undefined ? patch.alt_text : current.alt_text,
     sort_order: patch.sort_order ?? current.sort_order,
-    published: patch.published ?? current.published,
+    published,
+    featured,
+    focal_x: imageChanged && patch.focal_x === undefined ? 50 : (patch.focal_x ?? current.focal_x),
+    focal_y: imageChanged && patch.focal_y === undefined ? 50 : (patch.focal_y ?? current.focal_y),
   };
 
   const db = sql(env);
@@ -358,14 +467,60 @@ export async function updateItem(
       alt_text = ${next.alt_text},
       sort_order = ${next.sort_order},
       published = ${next.published},
+      featured = ${next.featured},
+      focal_x = ${next.focal_x},
+      focal_y = ${next.focal_y},
       updated_at = NOW()
     WHERE id = ${id}
     RETURNING id, collection, title, category, price, link, status,
-              image_url, image_key, alt_text, sort_order, published,
-              created_at, updated_at
+              image_url, image_key, alt_text, sort_order, published, featured,
+              focal_x, focal_y, created_at, updated_at
   `;
   if (!rows[0]) return null;
   return mapItem(rows[0] as Record<string, unknown>);
+}
+
+export async function setItemFeatured(
+  env: Env,
+  id: string,
+  featured: boolean,
+): Promise<GalleryItem | null> {
+  const current = await findItemById(env, id);
+  if (!current) return null;
+
+  if (featured && !current.published) {
+    throw new Error("HIDDEN_FEATURED");
+  }
+
+  const db = sql(env);
+
+  if (!featured) {
+    const rows = await db`
+      UPDATE gallery_items
+      SET featured = FALSE, updated_at = NOW()
+      WHERE id = ${id}
+      RETURNING id, collection, title, category, price, link, status,
+                image_url, image_key, alt_text, sort_order, published, featured,
+                focal_x, focal_y, created_at, updated_at
+    `;
+    if (!rows[0]) return null;
+    return mapItem(rows[0] as Record<string, unknown>);
+  }
+
+  await db.transaction((txn) => [
+    txn`
+      UPDATE gallery_items
+      SET featured = FALSE, updated_at = NOW()
+      WHERE collection = ${current.collection} AND featured = TRUE AND id <> ${id}
+    `,
+    txn`
+      UPDATE gallery_items
+      SET featured = TRUE, updated_at = NOW()
+      WHERE id = ${id}
+    `,
+  ]);
+
+  return findItemById(env, id);
 }
 
 export async function deleteItem(env: Env, id: string): Promise<GalleryItem | null> {
@@ -374,8 +529,8 @@ export async function deleteItem(env: Env, id: string): Promise<GalleryItem | nu
     DELETE FROM gallery_items
     WHERE id = ${id}
     RETURNING id, collection, title, category, price, link, status,
-              image_url, image_key, alt_text, sort_order, published,
-              created_at, updated_at
+              image_url, image_key, alt_text, sort_order, published, featured,
+              focal_x, focal_y, created_at, updated_at
   `;
   if (!rows[0]) return null;
   return mapItem(rows[0] as Record<string, unknown>);

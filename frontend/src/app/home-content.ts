@@ -85,7 +85,7 @@ export const defaultHomeContent: HomeContent = {
   heroButtonUrl: "/orcamento",
   heroSecondaryButton: "Ver portfólio",
   heroSecondaryUrl: "/portfolio",
-  heroImageUrl: "",
+  heroImageUrl: "/assets/hero.jpeg",
 
   processEyebrow: "Processo criativo",
   processTitle: "Da conversa nasce uma composição autoral.",

@@ -38,6 +38,8 @@ export type LinkBioContent = {
   name: string;
   bio: string;
   avatarUrl: string;
+  avatarFocalX?: number;
+  avatarFocalY?: number;
   backgroundUrl: string;
   instagram: string;
   footerLabel: string;
@@ -64,6 +66,8 @@ export type LinkBioContent = {
   studioTitle: string;
   studioText: string;
   studioImageUrl: string;
+  studioFocalX?: number;
+  studioFocalY?: number;
   studioButton: string;
   studioButtonUrl: string;
 
@@ -176,24 +180,51 @@ function normalizeLinkBio(raw: Partial<LinkBioContent> | null | undefined): Link
 
 export async function loadLinkBioContent(): Promise<LinkBioContent> {
   const base = normalizeLinkBio(defaultLinkBioContent);
-  try {
-    const res = await fetch("/api/bio-links", { headers: { Accept: "application/json" } });
-    if (!res.ok) return base;
-    const data = (await res.json()) as {
-      items?: Array<{
-        id: string;
-        label: string;
-        url: string;
-        icon: string | null;
-        featured: boolean;
-        sort_order: number;
-        published: boolean;
-      }>;
-    };
-    if (!Array.isArray(data.items)) return base;
-    return {
-      ...base,
-      buttons: data.items.map((item, index) => ({
+
+  const [linksResult, profileResult] = await Promise.allSettled([
+    fetch("/api/bio-links", { headers: { Accept: "application/json" } }).then(async (res) => {
+      if (!res.ok) throw new Error("bio-links");
+      return (await res.json()) as {
+        items?: Array<{
+          id: string;
+          label: string;
+          url: string;
+          icon: string | null;
+          featured: boolean;
+          sort_order: number;
+          published: boolean;
+        }>;
+      };
+    }),
+    fetch("/api/bio-profile", { headers: { Accept: "application/json" } }).then(async (res) => {
+      if (!res.ok) throw new Error("bio-profile");
+      return (await res.json()) as {
+        profile?: {
+          avatar_url?: string;
+          subtitle?: string;
+          studio_image_url?: string;
+          avatar_focal_x?: number;
+          avatar_focal_y?: number;
+          studio_focal_x?: number;
+          studio_focal_y?: number;
+        };
+        chips?: Array<{ id: string; label: string; sort_order: number }>;
+        testimonials?: Array<{
+          id: string;
+          quote: string;
+          sort_order: number;
+          published?: boolean;
+        }>;
+      };
+    }),
+  ]);
+
+  let next: LinkBioContent = { ...base };
+
+  if (linksResult.status === "fulfilled" && Array.isArray(linksResult.value.items)) {
+    next = {
+      ...next,
+      buttons: linksResult.value.items.map((item, index) => ({
         id: item.id,
         label: item.label,
         url: item.url,
@@ -203,9 +234,55 @@ export async function loadLinkBioContent(): Promise<LinkBioContent> {
         featured: Boolean(item.featured),
       })),
     };
-  } catch {
-    return base;
   }
+
+  if (profileResult.status === "fulfilled") {
+    const data = profileResult.value;
+    const profile = data.profile;
+    if (profile?.avatar_url) next = { ...next, avatarUrl: profile.avatar_url };
+    if (profile?.subtitle) next = { ...next, bio: profile.subtitle };
+    if (profile?.studio_image_url) next = { ...next, studioImageUrl: profile.studio_image_url };
+    if (profile?.avatar_focal_x != null || profile?.avatar_focal_y != null) {
+      next = {
+        ...next,
+        avatarFocalX: profile.avatar_focal_x ?? 50,
+        avatarFocalY: profile.avatar_focal_y ?? 50,
+      };
+    }
+    if (profile?.studio_focal_x != null || profile?.studio_focal_y != null) {
+      next = {
+        ...next,
+        studioFocalX: profile.studio_focal_x ?? 50,
+        studioFocalY: profile.studio_focal_y ?? 50,
+      };
+    }
+
+    if (Array.isArray(data.chips)) {
+      next = {
+        ...next,
+        styleChips: data.chips.map((chip, index) => ({
+          id: chip.id,
+          label: chip.label,
+          active: true,
+          order: chip.sort_order ?? index,
+        })),
+      };
+    }
+
+    if (Array.isArray(data.testimonials)) {
+      next = {
+        ...next,
+        testimonials: data.testimonials.map((item, index) => ({
+          id: item.id,
+          text: item.quote,
+          active: item.published !== false,
+          order: item.sort_order ?? index,
+        })),
+      };
+    }
+  }
+
+  return next;
 }
 
 export function useLinkBioContent(): LinkBioContent & { loaded: boolean } {

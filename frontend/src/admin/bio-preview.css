@@ -1,117 +1,36 @@
 /* Prévia + lista compacta da bio no admin. */
 
 .ks-bio-live-preview {
-  --ks-plum-rgb: 46, 23, 58;
-  --ks-plum-deep: #2e173a;
-  --ks-on-dark: #f7f5f6;
-  --ks-highlight: #f7f5f6;
-  --ks-font-meta: "IBM Plex Mono", ui-monospace, monospace;
-  padding: 18px;
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at 12% 8%, rgba(247, 245, 246, 0.55), transparent 32%),
-    linear-gradient(165deg, #c4a8d4 0%, #a888bc 42%, #8f6fa8 100%);
-  box-shadow: 0 12px 30px #38203f14;
-}
-
-.ks-bio-preview-kicker,
-.ks-bio-live-preview .ks-admin-kicker {
-  color: rgba(46, 23, 58, 0.82);
-  margin-bottom: 12px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-.ks-bio-preview-empty {
-  margin: 0;
-  padding: 16px 14px;
-  text-align: left;
-  color: rgba(46, 23, 58, 0.88);
-  font-size: 13px;
-  line-height: 1.45;
-  background: rgba(247, 245, 246, 0.72);
-  border-radius: 14px;
-}
-
-.ks-bio-live-preview .ks-link-bio-links {
-  display: grid;
-  gap: 12px;
-}
-
-.ks-bio-live-preview .ks-link-bio-action {
-  align-items: center;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 12px;
-  min-height: 56px;
-  padding: 0 18px;
-  border-radius: 999px;
-  font-family: var(--ks-font-meta);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: var(--ks-plum-deep);
-  background: rgba(247, 245, 246, 0.92);
-  border: 1px solid rgba(var(--ks-plum-rgb), 0.14);
-  box-shadow: 0 12px 28px rgba(var(--ks-plum-rgb), 0.1);
-  pointer-events: none;
-}
-
-.ks-bio-live-preview .ks-link-bio-action.is-primary {
-  background: var(--ks-plum-deep);
-  border-color: var(--ks-plum-deep);
-  color: var(--ks-highlight);
-  box-shadow: 0 16px 36px rgba(var(--ks-plum-rgb), 0.22);
-}
-
-.ks-bio-live-preview .ks-link-bio-action-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  background: rgba(var(--ks-plum-rgb), 0.1);
-  color: var(--ks-plum-deep);
-}
-
-.ks-bio-live-preview .ks-link-bio-action.is-primary .ks-link-bio-action-icon {
-  background: rgba(255, 255, 255, 0.14);
-  color: var(--ks-highlight);
-}
-
-.ks-bio-live-preview .ks-link-bio-action > span:not(.ks-link-bio-action-icon) {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* legado — prévia agora usa .ks-bio-device */
+  display: none;
 }
 
 .ks-bio-phone-card {
-  margin: 0 0 22px;
-  padding: 20px 22px;
-  max-width: 720px;
-  border-radius: 20px;
+  margin: 0 0 14px;
+  padding: 12px 16px;
+  max-width: none;
+  width: 100%;
+  border-radius: 14px;
   background: #fff;
   box-shadow: var(--admin-shadow, 0 12px 32px #38203f0d);
 }
 
 .ks-bio-phone-title {
-  margin: 0 0 6px;
-  font-size: 1.05rem;
+  margin: 0 0 2px;
+  font-size: 0.95rem;
   color: var(--admin-ink);
 }
 
 .ks-bio-phone-lead {
-  margin: 0 0 14px;
+  margin: 0 0 8px;
   color: var(--admin-muted);
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .ks-bio-phone-row {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   align-items: end;
 }
 
@@ -129,6 +48,7 @@
   border-radius: 10px;
   background: #fff;
   overflow: hidden;
+  min-height: 40px;
 }
 
 .ks-bio-phone-input:focus-within {
@@ -139,12 +59,20 @@
 .ks-bio-phone-prefix {
   display: grid;
   place-items: center;
-  padding: 0 12px;
+  padding: 0 10px;
   background: #f4eef6;
   color: #5b4964;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   border-right: 1px solid var(--admin-border);
+}
+
+.ks-bio-phone-field {
+  gap: 4px !important;
+}
+
+.ks-bio-phone-field > span:first-child {
+  font-size: 11px !important;
 }
 
 .ks-bio-phone-field input {
@@ -152,12 +80,24 @@
   border-radius: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
+  min-height: 40px !important;
+  padding-block: 8px !important;
+}
+
+.ks-bio-phone-field .ks-admin-muted {
+  font-size: 11px;
+}
+
+.ks-bio-phone-row .ks-admin-btn {
+  min-height: 40px;
+  padding: 8px 16px;
+  font-size: 12px !important;
 }
 
 .ks-bio-phone-status {
   display: inline-block;
-  margin-top: 8px;
-  font-size: 12px;
+  margin-top: 4px;
+  font-size: 11px;
   color: #5a7a5a;
 }
 
@@ -174,14 +114,24 @@
   align-items: start;
 }
 
+.ks-bio-list-col {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  align-content: start;
+}
+
 @media (min-width: 1024px) {
   .ks-bio-workspace {
-    grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+    grid-template-columns: minmax(0, 1fr) 340px;
   }
   .ks-bio-preview-aside {
     display: block !important;
     position: sticky;
-    top: 88px;
+    top: 16px;
+    justify-self: center;
+    align-self: start;
+    max-height: calc(100vh - 32px);
   }
   .ks-bio-preview-toggle { display: none !important; }
 }
@@ -208,6 +158,289 @@
 .ks-bio-kind-option strong { font-size: 13px; color: var(--admin-ink); }
 .ks-bio-kind-option span { font-size: 11px; color: var(--admin-muted); line-height: 1.35; }
 .ks-bio-kind-option.is-active { border-color: #91649c; box-shadow: 0 0 0 2px #a580af33; }
+
+.ks-bio-route-select {
+  display: grid;
+  gap: 8px;
+  position: relative;
+  min-width: 0;
+}
+
+.ks-bio-route-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #534459;
+  letter-spacing: 0.01em;
+}
+
+.ks-bio-route-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 12px 14px 12px 16px;
+  border: 0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--admin-border, #e6dce9);
+  color: var(--admin-ink, #2e173a);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    box-shadow 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+    background 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+    transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.ks-bio-route-trigger:hover:not(:disabled) {
+  background: #faf6fb;
+  box-shadow: inset 0 0 0 1px #c9b5d0;
+}
+
+.ks-bio-route-select.is-open .ks-bio-route-trigger,
+.ks-bio-route-trigger:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--admin-lilac, #a580af), 0 0 0 4px #a580af22;
+}
+
+.ks-bio-route-select.has-error .ks-bio-route-trigger {
+  box-shadow: inset 0 0 0 1px #c56b76, 0 0 0 3px #c56b7618;
+}
+
+.ks-bio-route-trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ks-bio-route-trigger-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ks-bio-route-trigger-copy strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--admin-ink, #2e173a);
+}
+
+.ks-bio-route-trigger-copy span,
+.ks-bio-route-option span {
+  font: 500 11px/1.35 var(--admin-mono, "IBM Plex Mono", ui-monospace, monospace);
+  letter-spacing: 0.04em;
+  color: #85708c;
+}
+
+.ks-bio-route-chevron {
+  flex-shrink: 0;
+  color: #85708c;
+  transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.ks-bio-route-select.is-open .ks-bio-route-chevron {
+  transform: rotate(180deg);
+  color: var(--admin-purple, #38203f);
+}
+
+.ks-bio-route-menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow:
+    0 18px 40px #38203f18,
+    inset 0 0 0 1px #ebe1ef;
+  max-height: min(320px, 50vh);
+  overflow: auto;
+  animation: admin-toast-in 0.22s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.ks-bio-route-menu li + li {
+  margin-top: 4px;
+}
+
+.ks-bio-route-option {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.ks-bio-route-option strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--admin-ink, #2e173a);
+}
+
+.ks-bio-route-option:hover {
+  background: #f4edf6;
+}
+
+.ks-bio-route-option.is-active {
+  background: linear-gradient(165deg, #faf6fb, #f3ebf6);
+  box-shadow: inset 0 0 0 1px #91649c, 0 0 0 2px #a580af33;
+}
+
+.ks-bio-route-option:focus-visible {
+  outline: 3px solid #ad83b8;
+  outline-offset: 1px;
+}
+
+.ks-bio-form-toolbar {
+  display: flex;
+  align-items: center;
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #ebe1ef;
+}
+
+.ks-bio-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: #f4edf6;
+  color: #705479;
+  font: 500 12px var(--admin-mono, "IBM Plex Mono", ui-monospace, monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+    color 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+    transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.ks-bio-back-btn:hover:not(:disabled) {
+  background: #ebe1ef;
+  color: var(--admin-purple, #38203f);
+  transform: translateX(-2px);
+}
+
+.ks-bio-back-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ks-bio-flags {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 520px) {
+  .ks-bio-flags {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.ks-bio-flag {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--admin-border, #e6dce9);
+  cursor: pointer;
+  transition:
+    border-color 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+    background 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.ks-bio-flag input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ks-bio-flag-switch {
+  position: relative;
+  width: 40px;
+  height: 24px;
+  border-radius: 999px;
+  background: #e8dfee;
+  box-shadow: inset 0 0 0 1px #d9c9e0;
+  transition: background 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.ks-bio-flag-switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px #38203f22;
+  transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.ks-bio-flag-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ks-bio-flag-copy strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--admin-ink, #2e173a);
+}
+
+.ks-bio-flag-copy span {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--admin-muted, #85708c);
+}
+
+.ks-bio-flag.is-on {
+  border-color: #91649c;
+  background: linear-gradient(165deg, #faf6fb, #f3ebf6);
+  box-shadow: 0 0 0 2px #a580af33;
+}
+
+.ks-bio-flag.is-on .ks-bio-flag-switch {
+  background: #38203f;
+  box-shadow: none;
+}
+
+.ks-bio-flag.is-on .ks-bio-flag-switch::after {
+  transform: translateX(16px);
+}
+
+.ks-bio-flag:has(input:focus-visible) {
+  outline: 3px solid #ad83b8;
+  outline-offset: 2px;
+}
+
+.ks-bio-flag:has(input:disabled) {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
 
 .ks-bio-icon-option-glyph {
   display: grid;
@@ -433,5 +666,677 @@
   .ks-bio-remove-btn {
     width: 44px;
     height: 44px;
+  }
+}
+
+/* —— Tabs + painéis Part B —— */
+
+.ks-bio-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 22px;
+  padding: 6px;
+  max-width: 720px;
+  border-radius: 16px;
+  background: #f4eef6;
+  box-shadow: inset 0 0 0 1px #ebe1ef;
+}
+
+.ks-bio-tab {
+  flex: 1 1 auto;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #705479;
+  font: 600 12px/1.2 var(--admin-mono, "IBM Plex Mono", ui-monospace, monospace);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+    color 0.22s cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.ks-bio-tab:hover {
+  color: var(--admin-ink, #2e173a);
+  background: #ebe1ef;
+}
+
+.ks-bio-tab.is-active {
+  background: #fff;
+  color: var(--admin-ink, #2e173a);
+  box-shadow: 0 6px 16px #38203f12;
+}
+
+.ks-bio-panel {
+  max-width: 720px;
+  padding: 20px 22px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: var(--admin-shadow, 0 12px 32px #38203f0d);
+  display: grid;
+  gap: 16px;
+}
+
+.ks-bio-panel-title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--admin-ink, #2e173a);
+}
+
+.ks-bio-panel-lead {
+  margin: -8px 0 0;
+  color: var(--admin-muted, #85708c);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.ks-bio-avatar-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+}
+
+.ks-bio-avatar-preview {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f3ebf6;
+  box-shadow: inset 0 0 0 1.5px #cbb7d488, 0 8px 20px #38203f12;
+}
+
+.ks-bio-focal-host {
+  position: relative;
+}
+
+.ks-bio-focal-host .ks-focal-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.ks-bio-focal-host .ks-focal-hint {
+  bottom: 10px;
+  font-size: 10px;
+  padding: 5px 8px;
+}
+
+.ks-bio-focal-host .ks-focal-toolbar {
+  top: 6px;
+  left: 6px;
+  right: 6px;
+}
+
+.ks-bio-focal-host--studio .ks-focal-hint {
+  bottom: 16px;
+}
+
+.ks-bio-avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ks-bio-avatar-placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(165deg, #efe6f3, #e0d0e8);
+}
+
+.ks-bio-upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.ks-bio-quick-add {
+  display: grid;
+  gap: 12px;
+  align-items: end;
+}
+
+@media (min-width: 560px) {
+  .ks-bio-quick-add {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.ks-bio-row-hit--static {
+  cursor: default;
+  pointer-events: auto;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ks-bio-row-hit--static:hover {
+  background: transparent;
+}
+
+.ks-bio-inline-edit {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.ks-bio-inline-edit:hover {
+  color: #91649c;
+}
+
+.ks-bio-inline-input {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #91649c;
+  border-radius: 10px;
+  font: inherit;
+  box-shadow: 0 0 0 2px #a580af33;
+}
+
+.ks-bio-testimonial-form {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.ks-bio-testimonial-main {
+  align-items: start;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.ks-bio-testimonial-main .ks-bio-row-label {
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ks-bio-studio-preview {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4 / 3;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #f3ebf6;
+  box-shadow: inset 0 0 0 1.5px #cbb7d488;
+}
+
+.ks-bio-studio-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ks-bio-studio-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: #85708c;
+  font-size: 13px;
+}
+
+/* Preview aside — mockup de celular fiel à /bio */
+
+.ks-bio-device-wrap {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+}
+
+.ks-bio-device-caption {
+  margin: 0;
+  font: 500 10px/1.2 var(--admin-mono, "IBM Plex Mono", ui-monospace, monospace);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #85708c;
+}
+
+.ks-bio-device {
+  --ks-plum-rgb: 46, 23, 58;
+  --ks-plum-deep: #2e173a;
+  --device-w: 320px;
+  --device-h: min(640px, calc(100vh - 48px));
+  position: relative;
+  width: var(--device-w);
+  height: var(--device-h);
+  padding: 10px;
+  border-radius: 42px;
+  background: linear-gradient(160deg, #2a1a30 0%, #1a101c 55%, #120c14 100%);
+  box-shadow:
+    0 28px 60px #38203f33,
+    inset 0 0 0 1px #ffffff14,
+    inset 0 1px 0 #ffffff22;
+}
+
+.ks-bio-device-bezel {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+}
+
+.ks-bio-device-island {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  z-index: 4;
+  width: 96px;
+  height: 26px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #0a070b;
+  box-shadow: inset 0 0 0 1px #ffffff10;
+}
+
+.ks-bio-device-screen {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 34px;
+  background: #cfc4d0;
+  box-shadow: inset 0 0 0 1px #00000022;
+}
+
+.ks-bio-device-status {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 14px 22px 0;
+  font: 600 12px/1 "SF Pro Text", "IBM Plex Sans", system-ui, sans-serif;
+  color: var(--ks-plum-deep);
+}
+
+.ks-bio-device-status-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ks-bio-device-signal,
+.ks-bio-device-wifi,
+.ks-bio-device-battery {
+  display: inline-block;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+.ks-bio-device-signal {
+  width: 16px;
+  height: 10px;
+  clip-path: polygon(0 100%, 20% 70%, 20% 100%, 40% 50%, 40% 100%, 60% 30%, 60% 100%, 80% 10%, 80% 100%, 100% 0, 100% 100%);
+}
+
+.ks-bio-device-wifi {
+  width: 12px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow:
+    inset 0 -2px 0 0 currentColor,
+    0 -3px 0 -1px currentColor,
+    0 -6px 0 -2px currentColor;
+}
+
+.ks-bio-device-battery {
+  width: 22px;
+  height: 10px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1.5px currentColor;
+  background: linear-gradient(90deg, currentColor 70%, transparent 70%) content-box;
+  padding: 1.5px;
+  position: relative;
+}
+
+.ks-bio-device-battery::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 2.5px;
+  width: 2px;
+  height: 5px;
+  border-radius: 0 1px 1px 0;
+  background: currentColor;
+}
+
+.ks-bio-device-scroll {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #91649c55 transparent;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(247, 245, 246, 0.55), transparent 32%),
+    radial-gradient(circle at 88% 18%, rgba(168, 152, 170, 0.35), transparent 34%),
+    radial-gradient(circle at 50% 100%, rgba(128, 110, 133, 0.22), transparent 42%),
+    linear-gradient(165deg, #e8e1e8 0%, #e5dde8 42%, #cfc4d0 100%);
+  color: var(--ks-plum-deep);
+}
+
+.ks-bio-device-card {
+  display: grid;
+  gap: 16px;
+  padding: 8px 16px 28px;
+}
+
+.ks-bio-device-profile {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  text-align: center;
+  padding-top: 4px;
+}
+
+.ks-bio-device-avatar-wrap {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(247, 245, 246, 0.7));
+  border: 1px solid rgba(var(--ks-plum-rgb), 0.16);
+  box-shadow: 0 14px 32px rgba(var(--ks-plum-rgb), 0.14);
+}
+
+.ks-bio-device-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ks-bio-device-avatar--empty {
+  display: block;
+  background: #efe6f3;
+}
+
+.ks-bio-device-eyebrow {
+  font: 500 9px/1 var(--admin-mono, "IBM Plex Mono", ui-monospace, monospace);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(var(--ks-plum-rgb), 0.62);
+}
+
+.ks-bio-device-name {
+  margin: 0;
+  font-family: "Kah Sarte Display", "Cormorant Garamond", Georgia, serif;
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--ks-plum-deep);
+}
+
+.ks-bio-device-subtitle {
+  margin: 0;
+  max-width: 26ch;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: rgba(var(--ks-plum-rgb), 0.78);
+}
+
+.ks-bio-device-links {
+  display: grid;
+  gap: 10px;
+}
+
+.ks-bio-device-links .ks-link-bio-action {
+  align-items: center;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-family: var(--admin-mono, "IBM Plex Mono", ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ks-plum-deep);
+  background: rgba(247, 245, 246, 0.92);
+  border: 1px solid rgba(var(--ks-plum-rgb), 0.14);
+  box-shadow: 0 10px 22px rgba(var(--ks-plum-rgb), 0.1);
+  pointer-events: none;
+}
+
+.ks-bio-device-links .ks-link-bio-action.is-primary {
+  background: var(--ks-plum-deep);
+  border-color: var(--ks-plum-deep);
+  color: #f7f5f6;
+  box-shadow: 0 14px 28px rgba(var(--ks-plum-rgb), 0.22);
+}
+
+.ks-bio-device-links .ks-link-bio-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(var(--ks-plum-rgb), 0.1);
+  color: var(--ks-plum-deep);
+}
+
+.ks-bio-device-links .ks-link-bio-action.is-primary .ks-link-bio-action-icon {
+  background: rgba(255, 255, 255, 0.14);
+  color: #f7f5f6;
+}
+
+.ks-bio-device-links .ks-link-bio-action > span:not(.ks-link-bio-action-icon) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ks-bio-device-empty {
+  margin: 0;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(247, 245, 246, 0.72);
+  color: rgba(46, 23, 58, 0.88);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ks-bio-device-site-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 auto;
+  font: 500 10px/1 var(--admin-mono, "IBM Plex Mono", ui-monospace, monospace);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(var(--ks-plum-rgb), 0.72);
+}
+
+.ks-bio-device-styles,
+.ks-bio-device-quotes,
+.ks-bio-device-studio {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  text-align: center;
+  padding-top: 6px;
+}
+
+.ks-bio-device-block-label {
+  font: 500 9px/1 var(--admin-mono, "IBM Plex Mono", ui-monospace, monospace);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(var(--ks-plum-rgb), 0.58);
+}
+
+.ks-bio-device-block-title {
+  margin: 0;
+  max-width: 22ch;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--ks-plum-deep);
+}
+
+.ks-bio-device-block-text {
+  margin: 0;
+  max-width: 32ch;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(var(--ks-plum-rgb), 0.72);
+}
+
+.ks-bio-device-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+  max-width: 280px;
+  margin-top: 4px;
+}
+
+.ks-bio-device-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--ks-plum-rgb), 0.14);
+  background: rgba(247, 245, 246, 0.78);
+  color: var(--ks-plum-deep);
+  font: 700 10px/1 "Hanken Grotesk", "IBM Plex Sans", sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: lowercase;
+  box-shadow: 0 8px 18px rgba(var(--ks-plum-rgb), 0.08);
+}
+
+.ks-bio-device-quote {
+  margin: 4px 0 0;
+  width: 100%;
+  padding: 16px 14px;
+  border-radius: 18px;
+  background: rgba(247, 245, 246, 0.92);
+  border: 1px solid rgba(var(--ks-plum-rgb), 0.1);
+  box-shadow: 0 12px 28px rgba(var(--ks-plum-rgb), 0.1);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.35;
+  color: var(--ks-plum-deep);
+}
+
+.ks-bio-device-quote cite {
+  display: block;
+  margin-top: 8px;
+  font: 500 10px/1.3 var(--admin-mono, "IBM Plex Mono", ui-monospace, monospace);
+  font-style: normal;
+  letter-spacing: 0.06em;
+  color: rgba(var(--ks-plum-rgb), 0.62);
+}
+
+.ks-bio-device-quote-meta {
+  margin: 0;
+  font-size: 11px;
+  color: rgba(var(--ks-plum-rgb), 0.58);
+}
+
+.ks-bio-device-studio-media {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  aspect-ratio: 16 / 11;
+  background: #efe6f3;
+  box-shadow: 0 12px 28px rgba(var(--ks-plum-rgb), 0.12);
+}
+
+.ks-bio-device-studio-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ks-bio-device-cta-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 11px/1 var(--admin-mono, "IBM Plex Mono", ui-monospace, monospace);
+  letter-spacing: 0.06em;
+  color: var(--ks-plum-deep);
+}
+
+.ks-bio-device-final {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  text-align: center;
+  margin-top: 4px;
+  padding: 18px 14px 16px;
+  border-radius: 20px;
+  background: rgba(247, 245, 246, 0.55);
+  border: 1px solid rgba(var(--ks-plum-rgb), 0.1);
+}
+
+.ks-bio-device-final-title {
+  margin: 0;
+  max-width: 16ch;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--ks-plum-deep);
+}
+
+.ks-bio-device-final-text {
+  margin: 0;
+  max-width: 30ch;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(var(--ks-plum-rgb), 0.72);
+}
+
+.ks-bio-device-final .ks-bio-device-links {
+  width: 100%;
+}
+
+.ks-bio-device-home {
+  justify-self: center;
+  width: 108px;
+  height: 4px;
+  margin: 6px 0 8px;
+  border-radius: 999px;
+  background: rgba(46, 23, 58, 0.28);
+}
+
+@media (max-width: 1100px) {
+  .ks-bio-device {
+    --device-w: 300px;
   }
 }

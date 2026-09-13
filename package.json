@@ -6,7 +6,10 @@
     "frontend"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace frontend",
+    "dev": "node scripts/dev.mjs",
+    "dev:clean": "node scripts/dev-clean.mjs",
+    "dev:web": "npm run dev --workspace frontend",
+    "dev:api": "node scripts/pages-dev.mjs",
     "build": "npm run build --workspace frontend",
     "migrate": "node scripts/migrate.mjs",
     "bench:pbkdf2": "node scripts/bench-pbkdf2.mjs",

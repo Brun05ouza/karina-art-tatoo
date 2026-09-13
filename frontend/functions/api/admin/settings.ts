@@ -2,6 +2,11 @@ import type { PagesFunction } from "@cloudflare/workers-types";
 import { authenticateRequest } from "../../_lib/auth";
 import { type Env, error, handleError, json } from "../../_lib/config";
 import {
+  BIO_LINKS_PUBLIC_PATH,
+  invalidatePublicPaths,
+  SETTINGS_PUBLIC_PATH,
+} from "../../_lib/public-cache";
+import {
   formatBrWhatsapp,
   getWhatsappPhone,
   setWhatsappPhone,
@@ -40,6 +45,13 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
     const result = await setWhatsappPhone(context.env, body.whatsappPhone);
     if (!result.ok) return error(400, result.message);
+
+    context.waitUntil(
+      invalidatePublicPaths(context.request, context.env, [
+        SETTINGS_PUBLIC_PATH,
+        BIO_LINKS_PUBLIC_PATH,
+      ]),
+    );
 
     return json({
       ok: true,

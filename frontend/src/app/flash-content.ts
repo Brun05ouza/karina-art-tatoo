@@ -20,6 +20,8 @@ export type FlashTattooItem = {
   price?: string;
   size?: string;
   imageUrl?: string;
+  focalX?: number;
+  focalY?: number;
 };
 
 export const defaultFlashPageContent: FlashPageContent = {
@@ -49,6 +51,8 @@ function mapFlash(items: Awaited<ReturnType<typeof fetchGalleryItems>>): FlashTa
       status: formatFlashStatus(item.status),
       price: item.price ?? undefined,
       imageUrl: item.image_url,
+      focalX: item.focal_x ?? 50,
+      focalY: item.focal_y ?? 50,
     }));
 }
 

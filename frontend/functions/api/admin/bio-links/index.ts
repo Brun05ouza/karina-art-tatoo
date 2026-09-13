@@ -2,6 +2,10 @@ import type { PagesFunction } from "@cloudflare/workers-types";
 import { authenticateRequest } from "../../../_lib/auth";
 import { createLink, listAll, validateCreate } from "../../../_lib/bio-links";
 import { type Env, error, handleError, json } from "../../../_lib/config";
+import {
+  BIO_LINKS_PUBLIC_PATH,
+  invalidatePublicPaths,
+} from "../../../_lib/public-cache";
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
@@ -31,6 +35,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (!parsed.ok) return error(400, parsed.message);
 
     const item = await createLink(context.env, parsed.value);
+
+    context.waitUntil(
+      invalidatePublicPaths(context.request, context.env, [BIO_LINKS_PUBLIC_PATH]),
+    );
+
     return json({ ok: true, item }, { status: 201 });
   } catch (err) {
     return handleError(err);

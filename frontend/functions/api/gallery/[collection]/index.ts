@@ -1,9 +1,7 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
-import { type Env, error, handleError, json } from "../../_lib/config";
-import { isGalleryCollection, listPublished, toPublicItem } from "../../_lib/gallery";
-
-const CACHE =
-  "public, max-age=60, s-maxage=300, stale-while-revalidate=86400";
+import { type Env, error, handleError, json } from "../../../_lib/config";
+import { isGalleryCollection, listPublished, toPublicItem } from "../../../_lib/gallery";
+import { PUBLIC_API_CACHE } from "../../../_lib/public-cache";
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
@@ -15,7 +13,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const items = await listPublished(context.env, collection);
     return json(
       { collection, items: items.map(toPublicItem) },
-      { headers: { "Cache-Control": CACHE } },
+      { headers: { "Cache-Control": PUBLIC_API_CACHE } },
     );
   } catch (err) {
     return handleError(err);

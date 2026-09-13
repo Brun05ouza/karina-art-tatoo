@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { CollectionConfig } from "./collections";
 import type { GalleryItem } from "../auth/api";
+import { DEFAULT_FOCAL, type FocalPoint } from "../../app/focal";
+import { FocalPreview } from "./FocalPreview";
 import {
   formatBytes,
   prepareImage,
@@ -79,6 +81,7 @@ type Props = {
   save: (payload: {
     values: ItemFormValues;
     image?: { imageUrl: string; imageKey: string };
+    focal: FocalPoint;
   }) => Promise<void>;
 };
 
@@ -88,6 +91,11 @@ export function ItemForm({ config, initial, onCancel, onSaved, save }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [values, setValues] = useState<ItemFormValues>(() =>
     initial ? fromItem(initial, config) : emptyValues(config),
+  );
+  const [focal, setFocal] = useState<FocalPoint>(() =>
+    initial
+      ? { x: initial.focal_x ?? 50, y: initial.focal_y ?? 50 }
+      : { ...DEFAULT_FOCAL },
   );
   const [prepared, setPrepared] = useState<PreparedImage | null>(null);
   const [stage, setStage] = useState<UploadStage>("idle");
@@ -121,6 +129,7 @@ export function ItemForm({ config, initial, onCancel, onSaved, save }: Props) {
     setErrors((e) => ({ ...e, image: undefined, form: undefined }));
     if (prepared?.previewUrl) URL.revokeObjectURL(prepared.previewUrl);
     setPrepared(null);
+    setFocal({ ...DEFAULT_FOCAL });
     try {
       const next = await prepareImage(file, (s, detail) => {
         setStage(s);
@@ -143,6 +152,11 @@ export function ItemForm({ config, initial, onCancel, onSaved, save }: Props) {
     setPrepared(null);
     setStage("idle");
     setStageDetail("");
+    if (initial) {
+      setFocal({ x: initial.focal_x ?? 50, y: initial.focal_y ?? 50 });
+    } else {
+      setFocal({ ...DEFAULT_FOCAL });
+    }
     if (inputRef.current) inputRef.current.value = "";
   }
 
@@ -169,7 +183,7 @@ export function ItemForm({ config, initial, onCancel, onSaved, save }: Props) {
         });
         image = { imageUrl: uploaded.imageUrl, imageKey: uploaded.imageKey };
       }
-      await save({ values, image });
+      await save({ values, image, focal });
       setStage("done");
       onSaved();
     } catch (err) {
@@ -218,13 +232,25 @@ export function ItemForm({ config, initial, onCancel, onSaved, save }: Props) {
 
             {previewSrc ? (
               <>
-                <img className="ks-gallery-drop-img" src={previewSrc} alt="" />
+                <FocalPreview
+                  src={previewSrc}
+                  value={focal}
+                  onChange={setFocal}
+                  disabled={busy}
+                  naturalWidth={prepared?.width}
+                  naturalHeight={prepared?.height}
+                />
                 <div className="ks-gallery-drop-actions">
                   <label htmlFor={fileId} className="ks-gallery-drop-btn">
                     Trocar foto
                   </label>
                   {prepared ? (
-                    <button type="button" className="ks-gallery-drop-btn ks-gallery-drop-btn--ghost" onClick={clearPrepared} disabled={busy}>
+                    <button
+                      type="button"
+                      className="ks-gallery-drop-btn ks-gallery-drop-btn--ghost"
+                      onClick={clearPrepared}
+                      disabled={busy}
+                    >
                       Remover
                     </button>
                   ) : null}
@@ -345,14 +371,18 @@ export function ItemForm({ config, initial, onCancel, onSaved, save }: Props) {
             ) : null}
 
             {config.fields.includes("published") ? (
-              <label className="ks-gallery-check">
+              <label className={`ks-gallery-flag${values.published ? " is-on" : ""}`}>
                 <input
                   type="checkbox"
                   checked={values.published}
                   onChange={(e) => setField("published", e.target.checked)}
                   disabled={busy}
                 />
-                <span>Publicado no site</span>
+                <span className="ks-gallery-flag-switch" aria-hidden="true" />
+                <span className="ks-gallery-flag-copy">
+                  <strong>Publicado no site</strong>
+                  <span>{values.published ? "Visível na galeria pública" : "Oculto — só no painel"}</span>
+                </span>
               </label>
             ) : null}
           </div>
