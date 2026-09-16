@@ -13,6 +13,13 @@ import type { Env } from "./config";
 export const PUBLIC_API_CACHE =
   "public, max-age=0, s-maxage=15, stale-while-revalidate=30";
 
+/**
+ * /api/settings liga ou desliga o site inteiro.
+ * s-maxage + stale-while-revalidate serviriam o flag antigo depois do "desligar"
+ * e o lançamento pareceria quebrado. Uma leitura por visita é barata; cache de borda, não.
+ */
+export const SETTINGS_API_CACHE = "no-store";
+
 export type CacheEnv = Env & {
   CF_ZONE_ID?: string;
   CF_API_TOKEN?: string;

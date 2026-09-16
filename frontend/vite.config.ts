@@ -1,8 +1,20 @@
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import { prerenderDist } from './scripts/prerender-seo'
 
+
+function prerenderSeo(): Plugin {
+  return {
+    name: 'prerender-seo',
+    apply: 'build',
+    closeBundle() {
+      const result = prerenderDist(path.resolve(__dirname, 'dist'))
+      console.log(`[prerender] ${result.routes.length} HTML, sitemap lastmod ${result.lastmod}`)
+    },
+  }
+}
 
 function figmaAssetResolver() {
   return {
@@ -23,6 +35,7 @@ export default defineConfig({
     // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
+    prerenderSeo(),
   ],
   resolve: {
     alias: {

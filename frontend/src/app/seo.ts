@@ -351,7 +351,7 @@ function buildFaqPage() {
   };
 }
 
-function buildPageGraph(pathname: string) {
+export function buildPageGraph(pathname: string) {
   const page = getPageSeo(pathname);
   const url = absoluteUrl(page.path === "/404" ? pathname : page.path);
   const graph: unknown[] = [
@@ -366,48 +366,82 @@ function buildPageGraph(pathname: string) {
   return { "@context": "https://schema.org", "@graph": graph };
 }
 
-/** Aplica title, meta tags, Open Graph, Twitter e JSON-LD da rota atual. */
-export function applyPageSeo(pathname: string) {
+const ROBOTS_INDEX = "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
+const ROBOTS_NOINDEX = "noindex, follow";
+
+/** Campos que o HTML pré-renderizado e o `applyPageSeo()` precisam gravar iguais. */
+export function pageSeoSnapshot(pathname: string) {
   const page = getPageSeo(pathname);
   const pageUrl = page.path === "/404" ? absoluteUrl(pathname) : absoluteUrl(page.path);
   const canonicalHref = page.path === "/404" ? absoluteUrl("/") : absoluteUrl(page.path);
   const ogImage = absoluteUrl(SITE.ogImagePath);
+  const ogUrl = page.path === "/404" ? canonicalHref : pageUrl;
 
-  document.documentElement.lang = SITE.language;
-  document.title = page.title;
+  return {
+    lang: SITE.language,
+    title: page.title,
+    description: page.description,
+    keywords: page.keywords,
+    author: SITE.shortName,
+    robots: page.noindex ? ROBOTS_NOINDEX : ROBOTS_INDEX,
+    themeColor: SITE.themeColor,
+    canonical: canonicalHref,
+    hreflang: SITE.language,
+    ogType: "website",
+    ogSiteName: SITE.name,
+    ogLocale: SITE.locale,
+    ogUrl,
+    ogTitle: page.title,
+    ogDescription: page.description,
+    ogImage,
+    ogImageAlt: SITE.ogImageAlt,
+    ogImageWidth: "1200",
+    ogImageHeight: "630",
+    twitterCard: "summary_large_image",
+    twitterSite: SITE.twitter,
+    twitterTitle: page.title,
+    twitterDescription: page.description,
+    twitterImage: ogImage,
+    twitterImageAlt: SITE.ogImageAlt,
+    jsonLd: buildPageGraph(pathname),
+  };
+}
 
-  upsertMeta({ name: "description", content: page.description });
-  upsertMeta({ name: "keywords", content: page.keywords });
-  upsertMeta({ name: "author", content: SITE.shortName });
-  upsertMeta({
-    name: "robots",
-    content: page.noindex
-      ? "noindex, follow"
-      : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
-  });
-  upsertMeta({ name: "theme-color", content: SITE.themeColor });
+/** Aplica title, meta tags, Open Graph, Twitter e JSON-LD da rota atual. */
+export function applyPageSeo(pathname: string, options?: { forceNoindex?: boolean }) {
+  const seo = pageSeoSnapshot(pathname);
+  const robots = options?.forceNoindex ? ROBOTS_NOINDEX : seo.robots;
+
+  document.documentElement.lang = seo.lang;
+  document.title = seo.title;
+
+  upsertMeta({ name: "description", content: seo.description });
+  upsertMeta({ name: "keywords", content: seo.keywords });
+  upsertMeta({ name: "author", content: seo.author });
+  upsertMeta({ name: "robots", content: robots });
+  upsertMeta({ name: "theme-color", content: seo.themeColor });
   upsertMeta({ name: "format-detection", content: "telephone=no" });
 
-  upsertLink("canonical", canonicalHref);
-  upsertLink("alternate", canonicalHref, { hreflang: SITE.language });
+  upsertLink("canonical", seo.canonical);
+  upsertLink("alternate", seo.canonical, { hreflang: seo.hreflang });
 
-  upsertMeta({ property: "og:type", content: "website" });
-  upsertMeta({ property: "og:site_name", content: SITE.name });
-  upsertMeta({ property: "og:locale", content: SITE.locale });
-  upsertMeta({ property: "og:url", content: page.path === "/404" ? canonicalHref : pageUrl });
-  upsertMeta({ property: "og:title", content: page.title });
-  upsertMeta({ property: "og:description", content: page.description });
-  upsertMeta({ property: "og:image", content: ogImage });
-  upsertMeta({ property: "og:image:alt", content: SITE.ogImageAlt });
-  upsertMeta({ property: "og:image:width", content: "1200" });
-  upsertMeta({ property: "og:image:height", content: "630" });
+  upsertMeta({ property: "og:type", content: seo.ogType });
+  upsertMeta({ property: "og:site_name", content: seo.ogSiteName });
+  upsertMeta({ property: "og:locale", content: seo.ogLocale });
+  upsertMeta({ property: "og:url", content: seo.ogUrl });
+  upsertMeta({ property: "og:title", content: seo.ogTitle });
+  upsertMeta({ property: "og:description", content: seo.ogDescription });
+  upsertMeta({ property: "og:image", content: seo.ogImage });
+  upsertMeta({ property: "og:image:alt", content: seo.ogImageAlt });
+  upsertMeta({ property: "og:image:width", content: seo.ogImageWidth });
+  upsertMeta({ property: "og:image:height", content: seo.ogImageHeight });
 
-  upsertMeta({ name: "twitter:card", content: "summary_large_image" });
-  upsertMeta({ name: "twitter:site", content: SITE.twitter });
-  upsertMeta({ name: "twitter:title", content: page.title });
-  upsertMeta({ name: "twitter:description", content: page.description });
-  upsertMeta({ name: "twitter:image", content: ogImage });
-  upsertMeta({ name: "twitter:image:alt", content: SITE.ogImageAlt });
+  upsertMeta({ name: "twitter:card", content: seo.twitterCard });
+  upsertMeta({ name: "twitter:site", content: seo.twitterSite });
+  upsertMeta({ name: "twitter:title", content: seo.twitterTitle });
+  upsertMeta({ name: "twitter:description", content: seo.twitterDescription });
+  upsertMeta({ name: "twitter:image", content: seo.twitterImage });
+  upsertMeta({ name: "twitter:image:alt", content: seo.twitterImageAlt });
 
-  upsertJsonLd("ks-page-jsonld", buildPageGraph(pathname));
+  upsertJsonLd("ks-page-jsonld", seo.jsonLd);
 }

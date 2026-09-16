@@ -67,7 +67,7 @@ import { useAboutContent, type AboutStudioStep } from "./about-content";
 import { applyPageSeo } from "./seo";
 import { isSectionVisible, isPageVisible } from "./section-visibility";
 import { useBootReady } from "./boot-ready";
-import { prefetchSiteSettings, whatsappHref } from "./site-settings";
+import { prefetchSiteSettings, useWhatsappPhone, whatsappHref } from "./site-settings";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -379,15 +379,10 @@ function AppLayout({
   const isBioRoute = location.pathname === "/bio";
   const bootReady = useBootReady(location.pathname);
   const siteMode = useSiteModeContent();
-  const isDevelopmentHome = location.pathname === "/" && siteMode.developmentMode;
-  const shouldShowSiteChrome = !isBioRoute && !siteMode.developmentMode;
-  const showPreloader = !isDevelopmentHome && !preloaderDone;
-
-  useEffect(() => {
-    if (!siteMode.developmentMode) return;
-    if (location.pathname === "/" || isBioRoute) return;
-    navigate("/", { replace: true });
-  }, [isBioRoute, location.pathname, navigate, siteMode.developmentMode]);
+  const wallUp = !isBioRoute && siteMode.developmentMode;
+  const waitingForMode = !isBioRoute && !siteMode.loaded && !wallUp;
+  const shouldShowSiteChrome = !isBioRoute && siteMode.loaded && !siteMode.developmentMode;
+  const showPreloader = !wallUp && !preloaderDone;
 
   // Lenis sÃ³ fora da /bio â€” na bio o scroll Ã© 100% nativo no #ks-scroll-root.
   useLayoutEffect(() => {
@@ -491,7 +486,7 @@ function AppLayout({
       {shouldShowSiteChrome && <CustomCursor />}
       {showPreloader && (
         <Preloader
-          ready={bootReady && (isBioRoute || Boolean(siteMode.loaded))}
+          ready={bootReady && (isBioRoute || Boolean(siteMode.loaded) || wallUp)}
           onComplete={() => {
             setPreloaderDone(true);
             window.setTimeout(() => refreshScrollMetrics(), 100);
@@ -501,9 +496,9 @@ function AppLayout({
       <div
         className={`ks-shell${isBioRoute ? " is-bio" : ""}`}
         style={{
-          opacity: isDevelopmentHome || preloaderDone ? 1 : 0,
+          opacity: wallUp || (!waitingForMode && preloaderDone) ? 1 : 0,
           transition: "opacity 0.55s ease",
-          pointerEvents: isDevelopmentHome || preloaderDone ? "auto" : "none",
+          pointerEvents: wallUp || (!waitingForMode && preloaderDone) ? "auto" : "none",
         }}
       >
         <PreloaderDoneContext.Provider value={preloaderDone}>
@@ -524,7 +519,7 @@ function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
   const location = useLocation();
   const hasSectionIntro = Boolean(SECTION_INTRO_TITLES[location.pathname]);
   const isBioRoute = location.pathname === "/bio";
-  const shouldRedirectToDevelopmentHome = siteMode.developmentMode && location.pathname !== "/" && !isBioRoute;
+  const showConstruction = siteMode.developmentMode && !isBioRoute;
   const skipEnterMotion = hasSectionIntro || isBioRoute;
 
   useEffect(() => {
@@ -535,11 +530,13 @@ function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
   }, []);
 
   useEffect(() => {
-    applyPageSeo(location.pathname);
+    applyPageSeo(location.pathname, {
+      forceNoindex: siteMode.developmentMode && location.pathname !== "/bio",
+    });
 
     const timer = window.setTimeout(queueRefresh, 350);
     return () => window.clearTimeout(timer);
-  }, [location.pathname]);
+  }, [location.pathname, siteMode.developmentMode]);
 
   return (
     <main id="ks-scroll-root" className={isBioRoute ? "is-bio-scroll" : undefined}>
@@ -562,8 +559,8 @@ function AnimatedRoutes({ siteMode }: { siteMode: SiteModeContent }) {
             if (definition === "animate") refreshScrollMetrics();
           }}
         >
-          {shouldRedirectToDevelopmentHome ? (
-            <Navigate to="/" replace />
+          {showConstruction ? (
+            <DevelopmentHomePage data={siteMode} />
           ) : (
             <Routes location={location}>
               <Route path="/" element={<HomePage siteMode={siteMode} />} />
@@ -735,44 +732,39 @@ function HomePage({ siteMode }: { siteMode: SiteModeContent }) {
   );
 }
 
+function DevelopmentTitle({ title }: { title: string }) {
+  if (title.trim() === "Esse site está em desenvolvimento") {
+    return (
+      <h1 className="ks-display-xl">
+        Esse site está em
+        <br />
+        desenvolvimento
+      </h1>
+    );
+  }
+  return <h1 className="ks-display-xl">{title}</h1>;
+}
+
 function DevelopmentHomePage({ data }: { data: SiteModeContent }) {
-  const featureImage = data.developmentImageUrl?.trim() || "";
+  const phone = useWhatsappPhone();
+  const href = data.developmentButtonUrl || whatsappHref("Oi, Karina! Vim pelo site e queria falar com você.", phone);
 
   return (
-    <section className="ks-development-home">
-      <motion.div
-        className={`ks-development-home-card${featureImage ? "" : " is-text-only"}`}
-        initial={{ opacity: 0, y: 28 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: EASE }}
-      >
-        {featureImage ? (
-          <div className="ks-development-home-image">
-            <img src={featureImage} alt="Karina Sarte" loading="eager" decoding="async" />
-          </div>
-        ) : null}
-        <div className="ks-development-home-content">
-          <div className="ks-development-home-starfield" aria-hidden="true">
-            <img src="/assets/brand/star-karina-filled.webp" alt="" />
-            <img src="/assets/brand/star-karina-outline.webp" alt="" />
-            <img src="/assets/brand/star-karina-filled.webp" alt="" />
-            <img src="/assets/brand/star-karina-outline.webp" alt="" />
-            <img src="/assets/brand/star-karina-filled.webp" alt="" />
-          </div>
-          <span className="ks-label-caps">{data.developmentEyebrow}</span>
-          <h1 className="ks-display-xl">{data.developmentTitle}</h1>
-          <p className="ks-body-lg">{data.developmentText}</p>
-          <a
-            className="ks-primary-link"
-            href={data.developmentButtonUrl || whatsappHref("Oi, Karina! Vim pelo site e queria falar com vocÃª.")}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {data.developmentButton}
-            <ArrowRight size={16} />
-          </a>
-        </div>
-      </motion.div>
+    <section className="ks-wait">
+      <div className="ks-wait-card">
+        <img className="ks-wait-star ks-wait-star--a" src="/assets/brand/star-karina-outline.webp" alt="" />
+        <img className="ks-wait-star ks-wait-star--b" src="/assets/brand/star-karina-filled.webp" alt="" />
+        <span className="ks-label-caps">{data.developmentEyebrow}</span>
+        <DevelopmentTitle title={data.developmentTitle} />
+        <p className="ks-body-lg">{data.developmentText}</p>
+        <a className="ks-primary-link" href={href} target="_blank" rel="noopener noreferrer">
+          {data.developmentButton}
+          <ArrowRight size={16} />
+        </a>
+        <Link className="ks-wait-bio" to="/bio">
+          Ver a página de links
+        </Link>
+      </div>
     </section>
   );
 }

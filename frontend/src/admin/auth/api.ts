@@ -376,16 +376,19 @@ export function reorderBioTestimonials(ids: string[]) {
   });
 }
 
+export type AdminSettings = {
+  whatsappPhone: string;
+  whatsappPhoneDisplay: string;
+  developmentMode: boolean;
+};
+
 export function getAdminSettings() {
-  return request<{ whatsappPhone: string; whatsappPhoneDisplay: string }>("/api/admin/settings");
+  return request<AdminSettings>("/api/admin/settings");
 }
 
-export function patchAdminSettings(body: { whatsappPhone: string }) {
-  return request<{ ok: true; whatsappPhone: string; whatsappPhoneDisplay: string }>(
-    "/api/admin/settings",
-    {
-      method: "PATCH",
-      body: JSON.stringify(body),
-    },
-  );
+export function patchAdminSettings(body: { whatsappPhone?: string; developmentMode?: boolean }) {
+  return request<AdminSettings & { ok: true }>("/api/admin/settings", {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
 }

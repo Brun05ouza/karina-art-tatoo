@@ -139,6 +139,127 @@
 .ks-admin-account-menu a.active { background: #76537e55; }
 .ks-admin-account-logout { color: #d9b8c0 !important; font-weight: 400; }
 .ks-admin-workspace-main { min-width: 0; display: flex; flex-direction: column; }
+
+.ks-construction-switch-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.ks-construction-switch-error {
+  margin: 0;
+  color: #8a3040;
+  font-size: 13px;
+}
+
+.ks-construction-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 4px 12px 4px 4px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--admin-ink);
+  cursor: pointer;
+  font: inherit;
+}
+
+.ks-construction-switch:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.ks-construction-switch-knob {
+  width: 36px;
+  height: 22px;
+  border-radius: 999px;
+  background: #e8dfee;
+  box-shadow: inset 0 0 0 1px #d9c9e0;
+  position: relative;
+}
+
+.ks-construction-switch-knob::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px #38203f22;
+  transition: transform 0.22s var(--admin-ease);
+}
+
+.ks-construction-switch.is-on .ks-construction-switch-knob {
+  background: #38203f;
+}
+
+.ks-construction-switch.is-on .ks-construction-switch-knob::after {
+  transform: translateX(14px);
+}
+
+.ks-construction-switch-label {
+  font-family: var(--admin-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ks-admin-construction {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 8px 0 22px;
+  padding: 18px 20px;
+  border-radius: var(--admin-radius);
+  background: #fff;
+  box-shadow: var(--admin-shadow);
+}
+
+.ks-admin-construction h2 {
+  margin: 4px 0 6px;
+  font-family: var(--admin-serif);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.ks-admin-construction p {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--admin-muted);
+}
+
+.ks-admin-construction a {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--admin-lilac);
+}
+
+@media (max-width: 767px) {
+  .ks-admin-construction {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.ks-construction-flag {
+  margin-top: 16px;
+}
+
+.ks-construction-bio-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--admin-lilac, #91649c);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 .ks-admin-mobile-bar { display: none; }
 .ks-admin-shell {
   width: min(100% - 96px, 1180px); margin-inline: auto; padding: 44px 0 64px;
@@ -387,6 +508,8 @@
 
 /* Celular: uma linha de galerias + menu de conta */
 @media (max-width: 767px) {
+  .ks-admin-sticky-head { position: sticky; top: 0; z-index: 30; }
+  .ks-admin-sticky-head .ks-admin-mobile-bar { position: static; }
   .ks-admin-access { grid-template-columns: 1fr; }
   .ks-admin-access-art { padding: 27px; }
   .ks-admin-access-story, .ks-admin-access-signature, .ks-admin-art-star { display: none; }

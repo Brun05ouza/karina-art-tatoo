@@ -216,6 +216,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
       </aside>
 
       <div className="ks-admin-workspace-main">
+        <div className="ks-admin-sticky-head">
         <header className="ks-admin-mobile-bar">
           <div className="ks-admin-mobile-brand">
             <a href="/" className="ks-admin-logo ks-admin-logo--compact" aria-label="Karina Sarte — voltar ao site">
@@ -226,6 +227,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
           <GalleryNav />
           <AccountBlock id={`${menuId}-mobile`} />
         </header>
+        </div>
         <main id="admin-content">{children}</main>
         <footer className="ks-admin-workspace-footer">
           Karina Sarte <span>Feito para cuidar do que é seu.</span>

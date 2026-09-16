@@ -1,5 +1,18 @@
+# Site ainda não lançado. O HTML pré-renderizado sai com index,follow;
+# o interruptor do painel só muda o noindex no JavaScript. Para rastreador
+# sem JS, esta regra é a trava. No lançamento, junto com SITE_LAUNCHED em
+# frontend/src/app/site-mode-content.ts: apague o Disallow: / e o Allow
+# de exceção, e volte ao Allow: /.
+
 User-agent: *
-Allow: /
+Allow: /bio
+Allow: /assets/
+Allow: /favicon.ico
+Allow: /favicon.svg
+Allow: /apple-touch-icon.png
+Allow: /site.webmanifest
+Allow: /sitemap.xml
+Disallow: /
 Disallow: /admin
 Disallow: /admin/
 

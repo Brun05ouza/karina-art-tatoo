@@ -11542,3 +11542,111 @@ button.ks-product-visual-card {
     min-height: 50px;
   }
 }
+
+/* Página de espera — card central. Estrelas fora do texto. */
+.ks-wait {
+  display: grid;
+  place-items: center;
+  min-height: 100svh;
+  padding: clamp(28px, 5vw, 64px) 20px;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(145, 100, 156, 0.22), transparent 28%),
+    radial-gradient(circle at 84% 88%, rgba(46, 23, 58, 0.12), transparent 32%),
+    #f6f1f6;
+}
+
+.ks-wait-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  width: min(100%, 640px);
+  padding: clamp(36px, 6vw, 56px) clamp(24px, 5vw, 48px);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(46, 23, 58, 0.1);
+  border-radius: 32px;
+  box-shadow: 0 28px 70px rgba(46, 23, 58, 0.1);
+}
+
+.ks-wait-card > :not(.ks-wait-star) {
+  position: relative;
+  z-index: 1;
+}
+
+.ks-wait-star {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ks-wait-star--a {
+  top: 14px;
+  right: 16px;
+  width: 42px;
+  opacity: 0.45;
+  transform: rotate(18deg);
+}
+
+.ks-wait-star--b {
+  left: 12px;
+  bottom: 16px;
+  width: 28px;
+  opacity: 0.35;
+  transform: rotate(-12deg);
+}
+
+.ks-wait .ks-label-caps {
+  display: block;
+  margin-bottom: 14px;
+  color: #6f6278;
+}
+
+.ks-wait h1 {
+  margin: 0;
+  font-size: clamp(34px, 4.4vw, 52px);
+  line-height: 0.95;
+  color: #2e173a;
+}
+
+.ks-wait p {
+  margin: 18px auto 0;
+  max-width: 36ch;
+  color: #5c4d62;
+}
+
+.ks-wait .ks-primary-link {
+  margin-top: 28px;
+}
+
+.ks-wait-bio {
+  display: block;
+  margin-top: 16px;
+  color: #91649c;
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 390px) {
+  .ks-wait {
+    padding: 16px;
+  }
+
+  .ks-wait-card {
+    padding: 32px 18px;
+    border-radius: 24px;
+  }
+
+  .ks-wait h1 {
+    font-size: 36px;
+  }
+
+  .ks-wait .ks-primary-link {
+    width: 100%;
+    white-space: normal;
+  }
+}

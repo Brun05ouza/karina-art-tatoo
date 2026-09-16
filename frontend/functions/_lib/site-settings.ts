@@ -5,6 +5,7 @@ import { requireEnv, type Env } from "./config";
 
 export const SETTINGS_KEYS = {
   whatsappPhone: "whatsapp_phone",
+  developmentMode: "development_mode",
 } as const;
 
 /** Fallback alinhado a SITE.phone (seo.ts) — CTAs nunca ficam sem número. */
@@ -91,6 +92,20 @@ export async function getWhatsappPhone(env: Env): Promise<string> {
   if (!value) return FALLBACK_WHATSAPP_PHONE;
   const digits = digitsOnly(value);
   return digits || FALLBACK_WHATSAPP_PHONE;
+}
+
+export function parseDevelopmentMode(value: string | null): boolean {
+  return value === "true";
+}
+
+/** Ausente no banco = desligado. O frontend decide o fallback se a API falhar. */
+export async function getDevelopmentMode(env: Env): Promise<boolean> {
+  const value = await getSetting(env, SETTINGS_KEYS.developmentMode);
+  return parseDevelopmentMode(value);
+}
+
+export async function setDevelopmentMode(env: Env, enabled: boolean): Promise<void> {
+  await setSetting(env, SETTINGS_KEYS.developmentMode, enabled ? "true" : "false");
 }
 
 export async function setWhatsappPhone(

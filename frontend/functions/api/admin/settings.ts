@@ -8,7 +8,9 @@ import {
 } from "../../_lib/public-cache";
 import {
   formatBrWhatsapp,
+  getDevelopmentMode,
   getWhatsappPhone,
+  setDevelopmentMode,
   setWhatsappPhone,
 } from "../../_lib/site-settings";
 
@@ -18,9 +20,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     if (!identity) return error(401, "Faça login para continuar.");
 
     const whatsappPhone = await getWhatsappPhone(context.env);
+    const developmentMode = await getDevelopmentMode(context.env);
     return json({
       whatsappPhone,
       whatsappPhoneDisplay: formatBrWhatsapp(whatsappPhone),
+      developmentMode,
     });
   } catch (err) {
     return handleError(err);
@@ -39,12 +43,25 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       return error(400, "Corpo da requisição inválido.");
     }
 
-    if (!("whatsappPhone" in body)) {
-      return error(400, "Informe whatsappPhone.");
+    if (!("whatsappPhone" in body) && !("developmentMode" in body)) {
+      return error(400, "Informe whatsappPhone ou developmentMode.");
     }
 
-    const result = await setWhatsappPhone(context.env, body.whatsappPhone);
-    if (!result.ok) return error(400, result.message);
+    let whatsappPhone = await getWhatsappPhone(context.env);
+    if ("whatsappPhone" in body) {
+      const result = await setWhatsappPhone(context.env, body.whatsappPhone);
+      if (!result.ok) return error(400, result.message);
+      whatsappPhone = result.phone;
+    }
+
+    let developmentMode = await getDevelopmentMode(context.env);
+    if ("developmentMode" in body) {
+      if (typeof body.developmentMode !== "boolean") {
+        return error(400, "developmentMode precisa ser verdadeiro ou falso.");
+      }
+      await setDevelopmentMode(context.env, body.developmentMode);
+      developmentMode = body.developmentMode;
+    }
 
     context.waitUntil(
       invalidatePublicPaths(context.request, context.env, [
@@ -55,8 +72,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
     return json({
       ok: true,
-      whatsappPhone: result.phone,
-      whatsappPhoneDisplay: formatBrWhatsapp(result.phone),
+      whatsappPhone,
+      whatsappPhoneDisplay: formatBrWhatsapp(whatsappPhone),
+      developmentMode,
     });
   } catch (err) {
     return handleError(err);

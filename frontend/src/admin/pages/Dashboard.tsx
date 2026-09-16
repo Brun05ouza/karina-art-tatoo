@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { ArrowRight, Images, KeyRound, LinkIcon, Sparkles, ShoppingBag } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
+import { ConstructionSwitch } from "../ConstructionSwitch";
 import { listGallery, type GalleryCollectionId } from "../auth/api";
 import { COLLECTION_LIST } from "../gallery/collections";
 
@@ -46,6 +47,20 @@ export function DashboardPage() {
           Adicione e organize fotos do portfólio, flashes e produtos.
         </p>
       </header>
+
+      <section className="ks-admin-construction" aria-labelledby="ks-dash-construction">
+        <div>
+          <p className="ks-admin-kicker">Site público</p>
+          <h2 id="ks-dash-construction">Site em construção</h2>
+          <p>
+            Ligado, o restante do site mostra o aviso. A página de links continua no ar.
+          </p>
+          <a href="/bio" target="_blank" rel="noopener noreferrer">
+            Abrir a página de links
+          </a>
+        </div>
+        <ConstructionSwitch labelledBy="ks-dash-construction" />
+      </section>
 
       <nav className="ks-admin-nav-cards ks-gallery-dash" aria-label="Galerias">
         {COLLECTION_LIST.map((c) => {
