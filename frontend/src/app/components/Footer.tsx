@@ -61,11 +61,6 @@ export function Footer() {
   return (
     <footer className="ks-footer">
       <div className="ks-footer-texture" aria-hidden="true" />
-      <BrandStar variant={2} size={380} className="ks-footer-star ks-footer-star-lg" />
-      <BrandStar variant={3} size={120} className="ks-footer-star ks-footer-star-md" />
-      <BrandStar variant={2} size={54} className="ks-footer-star ks-footer-star-sm-1" />
-      <BrandStar variant={3} size={36} className="ks-footer-star ks-footer-star-sm-2" />
-      <BrandStar variant={2} size={28} className="ks-footer-star ks-footer-star-sm-3" />
 
       <div className="ks-footer-inner">
         <motion.div

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
@@ -30,6 +30,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [heroTone, setHeroTone] = useState<HeroTone>("light");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [settled, setSettled] = useState(false);
   const reduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
   const location = useLocation();
@@ -39,7 +40,13 @@ export function Header() {
 
   // A barra muda de estado uma única vez perto do topo. A histerese evita
   // oscilações e deixa a interpolação visual inteiramente a cargo do CSS.
-  useEffect(() => {
+  //
+  // Sem .ks-home-hero / .ks-page-hero a pílula começa ligada (is-scrolled).
+  // Não é condição de rota: /orcamento entra aqui de propósito, porque
+  // aquela página não tem hero de viewport. is-over-hero só serve para
+  // contrastar sobre foto; numa página clara o estado transparente vira
+  // barra reta e empurra o CTA contra a borda.
+  useLayoutEffect(() => {
     const hero = document.querySelector<HTMLElement>(".ks-home-hero, .ks-page-hero");
     if (!hero) {
       setScrolled(true);
@@ -48,16 +55,22 @@ export function Header() {
     }
 
     setHeroTone(hero.dataset.heroTone === "dark" ? "dark" : "light");
-    setScrolled(window.scrollY > (window.innerWidth >= 768 ? 56 : 12));
+    setScrolled(window.scrollY > 56);
   }, [location.pathname]);
 
+  // Depois do fade-in do header, a pílula “encaixa” no hero claro.
+  useEffect(() => {
+    setSettled(false);
+    if (reduceMotion) {
+      setSettled(true);
+      return;
+    }
+    const timer = window.setTimeout(() => setSettled(true), 480);
+    return () => window.clearTimeout(timer);
+  }, [location.pathname, reduceMotion]);
+
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const desktop = window.innerWidth >= 768;
-    setScrolled((current) => {
-      const enterAt = desktop ? 56 : 12;
-      const leaveAt = desktop ? 24 : 4;
-      return current ? latest > leaveAt : latest > enterAt;
-    });
+    setScrolled((current) => (current ? latest > 24 : latest > 56));
   });
 
   useEffect(() => {
@@ -76,12 +89,13 @@ export function Header() {
     ...(showBudgetCta ? [{ label: "Orçamento", href: "/orcamento" }] : []),
   ];
 
-  const onDark = !scrolled && heroTone === "dark";
+  const onDark = !scrolled && !menuOpen && heroTone === "dark";
   const headerClass = [
     "ks-header",
     scrolled ? "is-scrolled" : "is-over-hero",
     onDark ? "is-on-dark" : "",
     menuOpen ? "is-open" : "",
+    settled ? "is-settled" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -106,8 +120,9 @@ export function Header() {
               <NavItem key={link.href} {...link} active={location.pathname === link.href} />
             ))}
             {showBudgetCta ? (
-              <Link className="ks-nav-cta" to="/orcamento">
-                Quero um orçamento
+              <Link className="ks-nav-cta" to="/orcamento" aria-label="Quero um orçamento">
+                <span className="ks-nav-cta-full">Quero um orçamento</span>
+                <span className="ks-nav-cta-short">Orçamento</span>
               </Link>
             ) : null}
           </nav>

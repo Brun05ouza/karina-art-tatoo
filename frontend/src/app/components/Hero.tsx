@@ -1,6 +1,5 @@
 import { useRef, useState, type ReactNode } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
-import { StarGlyph } from "./StarGlyph";
 import { scrollTo } from "../scroll";
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -16,25 +15,6 @@ function RevealLine({ children, delay = 0, large = false }: { children: ReactNod
         {children}
       </motion.div>
     </div>
-  );
-}
-
-function FloatingStar({ x, y, delay = 0, size = 8, opacity = 1 }: { x: string; y: string; delay?: number; size?: number; opacity?: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.4 }}
-      animate={{ opacity, scale: 1 }}
-      transition={{ duration: 1.4, delay, ease: EASE }}
-      style={{
-        position: "absolute",
-        left: x,
-        top: y,
-        animation: `ks-star-pulse ${3.5 + delay * 0.5}s ease-in-out infinite`,
-        pointerEvents: "none",
-      }}
-    >
-      <StarGlyph size={size} color="#A898AA" />
-    </motion.div>
   );
 }
 
@@ -179,13 +159,6 @@ export function Hero() {
           pointerEvents: "none",
         }}
       />
-
-      <FloatingStar x="68%" y="22%" delay={0.6} size={9} />
-      <FloatingStar x="82%" y="45%" delay={1.1} size={6} opacity={0.7} />
-      <FloatingStar x="24%" y="14%" delay={1.5} size={5} opacity={0.6} />
-      <FloatingStar x="55%" y="65%" delay={0.9} size={7} opacity={0.5} />
-      <FloatingStar x="90%" y="28%" delay={1.8} size={4} opacity={0.5} />
-      <FloatingStar x="12%" y="72%" delay={1.3} size={5} opacity={0.4} />
 
       <motion.div
         initial={{ opacity: 0 }}

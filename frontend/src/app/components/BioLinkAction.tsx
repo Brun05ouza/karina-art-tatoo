@@ -40,7 +40,7 @@ export function BioLinkAction({ button, preview = false, className = "" }: Props
     <>
       <span className="ks-link-bio-action-icon">{bioActionIcon(button.icon)}</span>
       <span>{button.label || "Rótulo"}</span>
-      <ArrowRight size={16} />
+      <ArrowRight size={16} className="ks-link-bio-action-arrow" />
     </>
   );
 

@@ -12,7 +12,7 @@ const ROUTE_ASSETS: Record<string, string[]> = {
   ],
   "/bio": [
     "/assets/karina-sarte.png",
-    "/assets/studio/studio-5.jpeg",
+    "/assets/studio/processo.jpeg",
     "/assets/brand/star-karina-filled.webp",
     "/assets/brand/star-karina-outline.webp",
   ],

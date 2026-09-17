@@ -220,9 +220,89 @@ export async function prepareImage(
   };
 }
 
+export const YOUTUBE_VIDEO_MAX_BYTES = 10 * 1024 * 1024;
+
+export function youtubeVideoRejection(file: File): string | null {
+  const name = file.name.toLowerCase();
+  const mov = file.type === "video/quicktime" || name.endsWith(".mov");
+  if (mov) {
+    return "MOV não é aceito. No iPhone, exporte em MP4: Fotos → vídeo → Compartilhar → Salvar vídeo (Mais compatível), ou exporte pelo app que gravou.";
+  }
+  const webm = file.type === "video/webm" || name.endsWith(".webm");
+  const mp4 = file.type === "video/mp4" || name.endsWith(".mp4");
+  if (!webm && !mp4) {
+    return "Use MP4 ou WebM. MOV precisa ser exportado em MP4 antes de enviar.";
+  }
+  if (file.size > YOUTUBE_VIDEO_MAX_BYTES) {
+    return `Esse vídeo tem ${formatBytes(file.size)}. O limite é 10 MB — um teaser de 15 a 30 segundos cabe.`;
+  }
+  return null;
+}
+
+export async function uploadAdminBlob(
+  blob: Blob,
+  contentType: string,
+  collection:
+    | "portfolio"
+    | "flash"
+    | "produtos"
+    | "reformulacoes"
+    | "bio-avatar"
+    | "bio-studio"
+    | "youtube-thumb"
+    | "youtube-trailer"
+    | "products-hero",
+  bytes?: number,
+): Promise<{ url: string; key: string }> {
+  const presignRes = await fetch("/api/admin/uploads/presign", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ collection, contentType, bytes }),
+  });
+  const presign = (await presignRes.json()) as {
+    error?: string;
+    signedUrl?: string;
+    path?: string;
+    publicUrl?: string;
+    token?: string;
+  };
+  if (!presignRes.ok || !presign.signedUrl || !presign.path || !presign.publicUrl) {
+    throw new Error(presign.error || "Não foi possível preparar o envio.");
+  }
+
+  let put = await fetch(presign.signedUrl, {
+    method: "PUT",
+    headers: { "Content-Type": contentType },
+    body: blob,
+  });
+  if (!put.ok) {
+    put = await fetch(presign.signedUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": contentType,
+        ...(presign.token ? { Authorization: `Bearer ${presign.token}` } : {}),
+      },
+      body: blob,
+    });
+  }
+  if (!put.ok) {
+    throw new Error("O envio falhou. Verifique a conexão e tente de novo.");
+  }
+  return { url: presign.publicUrl, key: presign.path };
+}
+
 export async function uploadPreparedImage(
   prepared: PreparedImage,
-  collection: "portfolio" | "flash" | "produtos" | "bio-avatar" | "bio-studio",
+  collection:
+    | "portfolio"
+    | "flash"
+    | "produtos"
+    | "reformulacoes"
+    | "bio-avatar"
+    | "bio-studio"
+    | "youtube-thumb"
+    | "products-hero",
   onStage?: (stage: UploadStage, detail?: string) => void,
 ): Promise<UploadedImage> {
   onStage?.("presigning", "Preparando envio…");
@@ -234,6 +314,7 @@ export async function uploadPreparedImage(
     body: JSON.stringify({
       collection,
       contentType: prepared.contentType,
+      bytes: prepared.bytes,
     }),
   });
   const presign = (await presignRes.json()) as {

@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { ArrowRight, Images, KeyRound, LinkIcon, Sparkles, ShoppingBag } from "lucide-react";
+import { ArrowRight, Images, KeyRound, LinkIcon, RefreshCw, Sparkles, ShoppingBag } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
 import { ConstructionSwitch } from "../ConstructionSwitch";
-import { listGallery, type GalleryCollectionId } from "../auth/api";
-import { COLLECTION_LIST } from "../gallery/collections";
+import { YoutubeSettings } from "../YoutubeSettings";
+import { ProductsHeroSettings } from "../ProductsHeroSettings";
+import { listGallery, type GalleryCollectionId, type GalleryItem } from "../auth/api";
+import { COLLECTION_LIST, isIncompleteReformulation } from "../gallery/collections";
 
 const ICONS: Record<GalleryCollectionId, typeof Images> = {
   portfolio: Images,
   flash: Sparkles,
   produtos: ShoppingBag,
+  reformulacoes: RefreshCw,
 };
 
 export function DashboardPage() {
   const { user } = useAuth();
   const [counts, setCounts] = useState<Partial<Record<GalleryCollectionId, number>>>({});
+  const [pending, setPending] = useState<Partial<Record<GalleryCollectionId, number>>>({});
 
   useEffect(() => {
     let active = true;
@@ -22,16 +26,26 @@ export function DashboardPage() {
       COLLECTION_LIST.map(async (c) => {
         try {
           const data = await listGallery(c.id);
-          return [c.id, data.items.length] as const;
+          const items = data.items as GalleryItem[];
+          const pendingCount =
+            c.imageMode === "before-after"
+              ? items.filter(isIncompleteReformulation).length
+              : 0;
+          return [c.id, items.length, pendingCount] as const;
         } catch {
-          return [c.id, 0] as const;
+          return [c.id, 0, 0] as const;
         }
       }),
-    ).then((pairs) => {
+    ).then((rows) => {
       if (!active) return;
-      const next: Partial<Record<GalleryCollectionId, number>> = {};
-      for (const [id, n] of pairs) next[id] = n;
-      setCounts(next);
+      const nextCounts: Partial<Record<GalleryCollectionId, number>> = {};
+      const nextPending: Partial<Record<GalleryCollectionId, number>> = {};
+      for (const [id, n, p] of rows) {
+        nextCounts[id] = n;
+        nextPending[id] = p;
+      }
+      setCounts(nextCounts);
+      setPending(nextPending);
     });
     return () => {
       active = false;
@@ -44,7 +58,7 @@ export function DashboardPage() {
         <p className="ks-admin-kicker">Visão geral</p>
         <h1 className="ks-admin-title">Suas galerias</h1>
         <p className="ks-admin-lead">
-          Adicione e organize fotos do portfólio, flashes e produtos.
+          Adicione e organize fotos do portfólio, flashes, produtos e reformulações.
         </p>
       </header>
 
@@ -62,10 +76,15 @@ export function DashboardPage() {
         <ConstructionSwitch labelledBy="ks-dash-construction" />
       </section>
 
+      <YoutubeSettings />
+
+      <ProductsHeroSettings />
+
       <nav className="ks-admin-nav-cards ks-gallery-dash" aria-label="Galerias">
         {COLLECTION_LIST.map((c) => {
           const Icon = ICONS[c.id];
           const n = counts[c.id];
+          const p = pending[c.id] ?? 0;
           return (
             <Link key={c.id} className="ks-admin-card-link" to={c.path}>
               <span className="ks-admin-card-icon">
@@ -80,6 +99,14 @@ export function DashboardPage() {
                       <>
                         <span className="ks-admin-num">{n}</span>
                         {` ${n === 1 ? "item" : "itens"}`}
+                        {p > 0 ? (
+                          <>
+                            {" · "}
+                            <span className="ks-admin-pending-count">
+                              {p === 1 ? "1 aguardando depois" : `${p} aguardando depois`}
+                            </span>
+                          </>
+                        ) : null}
                       </>
                     )
                   : "Carregando…"}

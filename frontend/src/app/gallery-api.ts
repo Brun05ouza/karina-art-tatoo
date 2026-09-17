@@ -1,6 +1,6 @@
 /** Cliente público das galerias — uma tentativa, sem retry longo. */
 
-export type PublicGalleryCollection = "portfolio" | "flash" | "produtos";
+export type PublicGalleryCollection = "portfolio" | "flash" | "produtos" | "reformulacoes";
 
 export type PublicGalleryItem = {
   id: string;
@@ -17,6 +17,9 @@ export type PublicGalleryItem = {
   featured?: boolean;
   focal_x?: number;
   focal_y?: number;
+  after_image_url?: string | null;
+  after_focal_x?: number;
+  after_focal_y?: number;
   created_at: string;
   updated_at: string;
 };

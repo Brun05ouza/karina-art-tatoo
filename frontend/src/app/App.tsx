@@ -1,4 +1,4 @@
-﻿import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+﻿import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { gsap } from "gsap";
@@ -38,7 +38,12 @@ import { useFlashItems, useFlashPageContent } from "./flash-content";
 import { useFaqItems } from "./faq-content";
 import { PORTFOLIO_CATEGORIES, useFeaturedPortfolioWork, usePortfolioItems, usePortfolioPageContent, type PortfolioWork } from "./portfolio-works";
 import { focalStyle } from "./focal";
-import { useProductItems, useProductsPageContent, type ProductCatalogItem } from "./products-content";
+import {
+  PRODUCTS_HERO_MOLD_SRC,
+  useProductItems,
+  useProductsPageContent,
+  type ProductCatalogItem,
+} from "./products-content";
 import { useReformulationCases, useReformulationsContent, type ReformulationCase } from "./reformulations-content";
 import { useBudgetPageContent } from "./budget-content";
 import { BrandStar } from "./components/BrandStar";
@@ -85,7 +90,7 @@ function statusClass(status: string): string {
 }
 
 const WA_DEFAULT = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo.";
-const WA_PRODUCTS = "OlÃ¡, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponÃ­veis.";
+const WA_PRODUCTS = "Olá, Karina Sarte! Vim pelo site e queria saber mais sobre os produtos disponíveis.";
 
 const ProductsNavContext = createContext<(() => void) | null>(null);
 const PreloaderDoneContext = createContext(false);
@@ -94,28 +99,6 @@ const looseStarAssets = [
   "/assets/brand/star-karina-filled.webp",
   "/assets/brand/star-karina-outline.webp",
 ] as const;
-
-function StarSprinkle({ className = "", light = false }: { className?: string; light?: boolean }) {
-  const stars = [
-    { variant: 2, size: 128 },
-    { variant: 3, size: 92 },
-    { variant: 2, size: 74 },
-    { variant: 3, size: 52 },
-  ] as const;
-
-  return (
-    <div className={`ks-star-sprinkle${light ? " ks-star-sprinkle-light" : ""}${className ? " " + className : ""}`} aria-hidden="true">
-      {stars.map((star, index) => (
-        <BrandStar
-          key={`${star.variant}-${index}`}
-          variant={star.variant}
-          size={star.size}
-          className={`ks-star-sprinkle-mark mark-${index + 1}`}
-        />
-      ))}
-    </div>
-  );
-}
 
 function SectionStarBreak({
   align = "right",
@@ -151,19 +134,19 @@ function SectionStarBreak({
 
 const SECTION_INTRO_TITLES: Record<string, string> = {
   "/sobre": "Sobre a Karina Sarte",
-  "/portfolio": "PortfÃ³lio",
-  "/reformulacoes": "ReformulaÃ§Ãµes",
+  "/portfolio": "Portfólio",
+  "/reformulacoes": "Reformulações",
   "/flash-tattoos": "Flash Tattoos",
-  "/produtos": "ColeÃ§Ãµes da Karina Sarte",
+  "/produtos": "Coleções da Karina Sarte",
 };
-const BUDGET_WHATSAPP_INTRO = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo âœ¨";
+const BUDGET_WHATSAPP_INTRO = "Oi, Karina! Vim pelo site e queria te contar uma ideia de tattoo ✨";
 
 function productWhatsAppMessage(productName: string) {
-  return `OlÃ¡, Karina Sarte! Vim pelo site e me interessei por ${productName}. Gostaria de saber mais.`;
+  return `Olá, Karina Sarte! Vim pelo site e me interessei por ${productName}. Gostaria de saber mais.`;
 }
 
 function tattooChoiceMessage(tattooName: string) {
-  return `OlÃ¡, Karina Sarte! Vim pelo site e escolhi a tattoo "${tattooName}". Gostaria de saber mais.`;
+  return `Olá, Karina Sarte! Vim pelo site e escolhi a tattoo "${tattooName}". Gostaria de saber mais.`;
 }
 
 
@@ -179,38 +162,38 @@ function tattooStatusClass(status: string) {
 const flashItems = [
   {
     name: "Floral lunar",
-    status: "DisponÃ­vel",
-    text: "ComposiÃ§Ã£o delicada para braÃ§o, costela ou tornozelo.",
+    status: "Disponível",
+    text: "Composição delicada para braço, costela ou tornozelo.",
     img: "",
   },
   {
     name: "Ornamento estrela",
     status: "Reservado",
-    text: "Linhas finas com presenÃ§a mÃ­stica e tamanho mÃ©dio.",
+    text: "Linhas finas com presença mística e tamanho médio.",
     img: "",
   },
   {
     name: "Ramo livre",
-    status: "DisponÃ­vel",
-    text: "Flash botÃ¢nico Ãºnico, ideal para antebraÃ§o ou nuca.",
+    status: "Disponível",
+    text: "Flash botânico único, ideal para antebraço ou nuca.",
     img: "",
   },
   {
     name: "Selo autoral",
     status: "Tatuado",
-    text: "ReferÃªncia de flash jÃ¡ executado para inspiraÃ§Ã£o.",
+    text: "Referência de flash já executado para inspiração.",
     img: "",
   },
   {
-    name: "TraÃ§o ornamental",
-    status: "DisponÃ­vel",
-    text: "Linhas ornamentais autorais, perfeitas para antebraÃ§o ou panturrilha.",
+    name: "Traço ornamental",
+    status: "Disponível",
+    text: "Linhas ornamentais autorais, perfeitas para antebraço ou panturrilha.",
     img: "",
   },
   {
-    name: "Freehand orgÃ¢nico",
-    status: "DisponÃ­vel",
-    text: "Formas orgÃ¢nicas criadas em freehand, com traÃ§o Ãºnico e presenÃ§a autoral.",
+    name: "Freehand orgânico",
+    status: "Disponível",
+    text: "Formas orgânicas criadas em freehand, com traço único e presença autoral.",
     img: "",
   },
 ];
@@ -219,19 +202,19 @@ const productGroups = [
   {
     title: "Planos de Tattoo",
     cta: "Consultar planos",
-    hoverText: "OpÃ§Ãµes para tattoos pequenas, projetos autorais e sessÃµes personalizadas.",
+    hoverText: "Opções para tattoos pequenas, projetos autorais e sessões personalizadas.",
     img: "",
   },
   {
     title: "Flash Tattoos",
-    cta: "Ver flashes disponÃ­veis",
-    hoverText: "Artes prontas com identidade prÃ³pria e disponibilidade limitada.",
+    cta: "Ver flashes disponíveis",
+    hoverText: "Artes prontas com identidade própria e disponibilidade limitada.",
     img: "",
   },
   {
     title: "Prints & Artes",
     cta: "Consultar artes",
-    hoverText: "IlustraÃ§Ãµes autorais para decorar, presentear ou colecionar.",
+    hoverText: "Ilustrações autorais para decorar, presentear ou colecionar.",
     img: "",
   },
   {
@@ -246,32 +229,32 @@ const productCategories = [
   {
     title: "Planos de Tattoo",
     description:
-      "OpÃ§Ãµes para tattoos pequenas, projetos autorais, sessÃµes personalizadas e flashes exclusivos.",
+      "Opções para tattoos pequenas, projetos autorais, sessões personalizadas e flashes exclusivos.",
     cta: "Consultar planos",
     img: productGroups[0].img,
-    message: "OlÃ¡, Karina Sarte! Vim pelo site e gostaria de consultar os planos de tattoo.",
+    message: "Olá, Karina Sarte! Vim pelo site e gostaria de consultar os planos de tattoo.",
   },
   {
     title: "Flash Tattoos",
-    description: "Artes prontas e disponÃ­veis para tatuar, com identidade prÃ³pria e disponibilidade limitada.",
-    cta: "Ver flashes disponÃ­veis",
+    description: "Artes prontas e disponíveis para tatuar, com identidade própria e disponibilidade limitada.",
+    cta: "Ver flashes disponíveis",
     img: productGroups[1].img,
-    message: "OlÃ¡, Karina Sarte! Vim pelo site e gostaria de ver os flash tattoos disponÃ­veis.",
+    message: "Olá, Karina Sarte! Vim pelo site e gostaria de ver os flash tattoos disponíveis.",
     link: "/flash-tattoos",
   },
   {
     title: "Prints & Artes",
-    description: "IlustraÃ§Ãµes autorais para decorar, presentear ou colecionar.",
+    description: "Ilustrações autorais para decorar, presentear ou colecionar.",
     cta: "Consultar artes",
     img: productGroups[2].img,
-    message: "OlÃ¡, Karina Sarte! Vim pelo site e gostaria de consultar prints e artes.",
+    message: "Olá, Karina Sarte! Vim pelo site e gostaria de consultar prints e artes.",
   },
   {
     title: "Adesivos",
     description: "Adesivos autorais para colecionar, presentear e levar a arte da Karina para outros lugares.",
     cta: "Consultar adesivos",
     img: productGroups[3].img,
-    message: "OlÃ¡, Karina Sarte! Vim pelo site e gostaria de consultar os adesivos disponÃ­veis.",
+    message: "Olá, Karina Sarte! Vim pelo site e gostaria de consultar os adesivos disponíveis.",
   },
 ] as const;
 
@@ -279,73 +262,73 @@ const tattooGalleryMocks = ["", "", "", "", "", "", "", "", "", ""] as const;
 
 const tattooGalleryItems = [
   {
-    name: "Fine line botÃ¢nica",
+    name: "Fine line botânica",
     category: "Fine Line",
-    status: "DisponÃ­vel",
-    description: "ComposiÃ§Ã£o botÃ¢nica delicada em traÃ§o fino. Ideal para antebraÃ§o, costela ou tornozelo.",
+    status: "Disponível",
+    description: "Composição botânica delicada em traço fino. Ideal para antebraço, costela ou tornozelo.",
     img: tattooGalleryMocks[0],
   },
   {
-    name: "TraÃ§o ornamental",
+    name: "Traço ornamental",
     category: "Autoral",
-    status: "DisponÃ­vel",
+    status: "Disponível",
     description: "Projeto autoral com linhas ornamentais que acompanham a anatomia do corpo.",
     img: tattooGalleryMocks[1],
   },
   {
-    name: "Freehand orgÃ¢nico",
+    name: "Freehand orgânico",
     category: "Blackwork",
-    status: "DisponÃ­vel",
-    description: "Desenho criado em freehand com formas orgÃ¢nicas e presenÃ§a autoral.",
+    status: "Disponível",
+    description: "Desenho criado em freehand com formas orgânicas e presença autoral.",
     img: tattooGalleryMocks[2],
   },
   {
-    name: "SÃ­mbolos pequenos",
+    name: "Símbolos pequenos",
     category: "Minimalista",
-    status: "DisponÃ­vel",
-    description: "SÃ­mbolos minimalistas para quem busca algo delicado e significativo.",
+    status: "Disponível",
+    description: "Símbolos minimalistas para quem busca algo delicado e significativo.",
     img: tattooGalleryMocks[3],
   },
   {
     name: "Floral lunar",
     category: "Flash Tattoo",
-    status: "DisponÃ­vel",
-    description: "Flash botÃ¢nico com referÃªncia lunar, perfeito para braÃ§o ou nuca.",
+    status: "Disponível",
+    description: "Flash botânico com referência lunar, perfeito para braço ou nuca.",
     img: tattooGalleryMocks[4],
   },
   {
     name: "Ornamento estrela",
     category: "Flash Tattoo",
     status: "Reservado",
-    description: "Linhas finas com presenÃ§a mÃ­stica e tamanho mÃ©dio. Consulte disponibilidade.",
+    description: "Linhas finas com presença mística e tamanho médio. Consulte disponibilidade.",
     img: tattooGalleryMocks[5],
   },
   {
     name: "Ramo livre",
     category: "Flash Tattoo",
-    status: "DisponÃ­vel",
-    description: "Flash botÃ¢nico Ãºnico, ideal para antebraÃ§o, tornozelo ou costela.",
+    status: "Disponível",
+    description: "Flash botânico único, ideal para antebraço, tornozelo ou costela.",
     img: tattooGalleryMocks[6],
   },
   {
     name: "Floral cicatrizado",
-    category: "ReferÃªncia",
+    category: "Referência",
     status: "Tatuado",
-    description: "ReferÃªncia de trabalho cicatrizado para inspirar novos projetos autorais.",
+    description: "Referência de trabalho cicatrizado para inspirar novos projetos autorais.",
     img: tattooGalleryMocks[7],
   },
   {
     name: "Flash autoral",
     category: "Blackwork",
-    status: "DisponÃ­vel",
-    description: "Flash autoral em preto, com traÃ§o firme e identidade visual.",
+    status: "Disponível",
+    description: "Flash autoral em preto, com traço firme e identidade visual.",
     img: tattooGalleryMocks[8],
   },
   {
     name: "Selo autoral",
     category: "Autoral",
-    status: "ReferÃªncia",
-    description: "ReferÃªncia de flash jÃ¡ executado, Ãºtil para entender estilo e proporÃ§Ã£o.",
+    status: "Referência",
+    description: "Referência de flash já executado, útil para entender estilo e proporção.",
     img: tattooGalleryMocks[9],
   },
 ];
@@ -384,7 +367,7 @@ function AppLayout({
   const shouldShowSiteChrome = !isBioRoute && siteMode.loaded && !siteMode.developmentMode;
   const showPreloader = !wallUp && !preloaderDone;
 
-  // Lenis sÃ³ fora da /bio â€” na bio o scroll Ã© 100% nativo no #ks-scroll-root.
+  // Lenis só fora da /bio — na bio o scroll é 100% nativo no #ks-scroll-root.
   useLayoutEffect(() => {
     if (isBioRoute) {
       pauseSmoothScroll();
@@ -591,7 +574,13 @@ function PageHero({
   text,
   image = null,
   imagePosition,
+  imageFocal,
+  imageWidth,
+  imageHeight,
+  imageClassName = "",
+  tone,
   className = "",
+  deco = null,
   children,
 }: {
   kicker: string;
@@ -599,10 +588,17 @@ function PageHero({
   text: string;
   image?: string | null;
   imagePosition?: string;
+  imageFocal?: { x: number; y: number } | null;
+  imageWidth?: number;
+  imageHeight?: number;
+  imageClassName?: string;
+  tone?: "light" | "dark";
   className?: string;
+  deco?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   const hasImage = Boolean(image);
+  const heroTone = tone ?? (hasImage ? "dark" : "light");
   const titleRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
@@ -638,17 +634,23 @@ function PageHero({
   return (
     <section
       className={`ks-page-hero${hasImage ? "" : " ks-page-hero-no-image"}${className ? ` ${className}` : ""}`}
-      data-hero-tone={hasImage ? "dark" : "light"}
+      data-hero-tone={heroTone}
     >
+      {deco}
       {hasImage ? (
         <img
-          className="ks-page-hero-image"
+          className={`ks-page-hero-image${imageClassName ? ` ${imageClassName}` : ""}`}
           src={image!}
-          alt={`${title} â€” Karina Sarte Tattoo em TeresÃ³polis, RJ`}
+          alt={`${title} — Karina Sarte Tattoo em Teresópolis, RJ`}
+          width={imageWidth}
+          height={imageHeight}
           loading="eager"
           {...FETCH_PRIORITY_HIGH}
           decoding="async"
-          style={imagePosition ? { objectPosition: imagePosition } : undefined}
+          style={{
+            ...(imageFocal ? focalStyle(imageFocal.x, imageFocal.y) : undefined),
+            ...(imagePosition && !imageFocal ? { objectPosition: imagePosition } : undefined),
+          }}
         />
       ) : null}
       {hasImage ? <div className="ks-page-hero-shade" aria-hidden="true" /> : null}
@@ -710,12 +712,7 @@ function HomePage({ siteMode }: { siteMode: SiteModeContent }) {
           <ProductsPreview data={home} />
         </>
       ) : null}
-      {isSectionVisible(home, "youtube") && home.youtubeActive ? (
-        <>
-          <SectionStarBreak align="left" dense />
-          <YoutubeFeatureSection data={home} />
-        </>
-      ) : null}
+      {isSectionVisible(home, "youtube") ? <YoutubeFeatureSlot data={home} /> : null}
       {isSectionVisible(home, "cta") ? (
         <>
           <SectionStarBreak align="right" light />
@@ -810,7 +807,7 @@ function HomeHero({ data }: { data: HomeContent }) {
         <img
           className="ks-home-hero-bg"
           src={data.heroImageUrl}
-          alt={`${heroTitle} â€” Karina Sarte Tattoo em TeresÃ³polis, RJ`}
+          alt={`${heroTitle} — Karina Sarte Tattoo em Teresópolis, RJ`}
           loading="eager"
           {...FETCH_PRIORITY_HIGH}
           decoding="async"
@@ -857,7 +854,7 @@ function EditorialSplitSection({ data }: { data: HomeContent }) {
         <h2 className="ks-headline-lg">{data.processTitle}</h2>
         <p className="ks-body-lg ks-muted">{data.processText}</p>
         {steps.length > 0 && (
-          <div className="ks-editorial-process" aria-label="Fluxo de criaÃ§Ã£o">
+          <div className="ks-editorial-process" aria-label="Fluxo de criação">
             {steps.map((step) => <span key={step.id}>{step.label}</span>)}
           </div>
         )}
@@ -867,18 +864,19 @@ function EditorialSplitSection({ data }: { data: HomeContent }) {
         {data.processImageUrl && (
           <img
             src={data.processImageUrl}
-            alt="Karina Sarte â€” detalhe de mÃ£os, unhas e anÃ©is"
+            alt=""
+            aria-hidden="true"
             loading="lazy"
           />
         )}
-        {/* A janela vive DENTRO do bloco da foto de propÃ³sito. Como irmÃ£, em
-            coluna Ãºnica ela reservava uma faixa de altura prÃ³pria e, sendo
-            estreita, sobrava um bloco vazio ao lado â€” o "buraco" entre a foto e o
-            texto. Aqui ela Ã© absoluta em relaÃ§Ã£o Ã  foto e nÃ£o ocupa espaÃ§o.
-            BÃ´nus no desktop: a foto Ã© a coluna da direita, entÃ£o a borda
-            esquerda dela Ã‰ a divisÃ³ria â€” left: 0 centra a janela no meio da seÃ§Ã£o.
+        {/* A janela vive DENTRO do bloco da foto de propósito. Como irmã, em
+            coluna única ela reservava uma faixa de altura própria e, sendo
+            estreita, sobrava um bloco vazio ao lado — o "buraco" entre a foto e o
+            texto. Aqui ela é absoluta em relação à foto e não ocupa espaço.
+            Bônus no desktop: a foto é a coluna da direita, então a borda
+            esquerda dela É a divisória — left: 0 centra a janela no meio da seção.
             O div externo posiciona e o interno anima: o motion escreve transform
-            inline e sobrescreveria o translate de centralizaÃ§Ã£o. */}
+            inline e sobrescreveria o translate de centralização. */}
         <div className="ks-editorial-split-portal" aria-hidden="true">
           <motion.div
             className="ks-editorial-split-portal-card"
@@ -1009,7 +1007,7 @@ function MuralPortfolioPreview({ data }: { data: HomeContent }) {
         </p>
       )}
       <div className="ks-mural-footer">
-        <PrimaryLink to="/portfolio">Ver portfÃ³lio completo</PrimaryLink>
+        <PrimaryLink to="/portfolio">Ver portfólio completo</PrimaryLink>
       </div>
     </section>
   );
@@ -1086,19 +1084,19 @@ function AboutMeSection() {
           transition={{ duration: 0.9, delay: 0.15, ease: EASE }}
         >
           <span className="ks-label-caps ks-gold">Sobre mim</span>
-          <h2 className="ks-headline-lg">Arte na pele, feita com escuta e presenÃ§a.</h2>
+          <h2 className="ks-headline-lg">Arte na pele, feita com escuta e presença.</h2>
           <p className="ks-body-lg ks-muted">
-            Sou Karina, tatuadora autora em TeresÃ³polis. Transformo referÃªncias, sÃ­mbolos e histÃ³rias em tatuagens
-            que respeitam o corpo â€” com traÃ§o fino, botÃ¢nica, freehand e composiÃ§Ãµes pensadas para durar.
+            Sou Karina, tatuadora autora em Teresópolis. Transformo referências, símbolos e histórias em tatuagens
+            que respeitam o corpo — com traço fino, botânica, freehand e composições pensadas para durar.
           </p>
           <p className="ks-body-lg ks-muted">
-            Cada projeto comeÃ§a com uma conversa: entender o que vocÃª quer levar, onde quer levar e como aquela arte precisa existir na sua pele. Ã‰ assim que eu penso cada tattoo.
+            Cada projeto começa com uma conversa: entender o que você quer levar, onde quer levar e como aquela arte precisa existir na sua pele. É assim que eu penso cada tattoo.
           </p>
           <blockquote className="ks-about-me-quote">
-            â€œTatuar Ã© traduzir o que sentimos em algo que fica â€” linha, silÃªncio e histÃ³ria na pele.â€
+            “Tatuar é traduzir o que sentimos em algo que fica — linha, silêncio e história na pele.”
           </blockquote>
           <div className="ks-about-me-actions">
-            <PrimaryLink to="/sobre">ConheÃ§a minha histÃ³ria</PrimaryLink>
+            <PrimaryLink to="/sobre">Conheça minha história</PrimaryLink>
             <TextLink to="/orcamento">Quero uma tattoo</TextLink>
           </div>
         </motion.div>
@@ -1134,7 +1132,6 @@ function PreviewSection({
         {image && (
           <div className="ks-preview-image ks-preview-image-mobile">
             <img src={image} alt={imageAlt ?? ""} loading="lazy" />
-            <BrandStar variant={2} size={46} className="ks-preview-image-star ks-brand-star-light" />
           </div>
         )}
         {image && <p className="ks-body-lg ks-muted">{text}</p>}
@@ -1149,7 +1146,6 @@ function PreviewSection({
           transition={{ duration: 1.2, ease: EASE }}
         >
           <img src={image} alt={imageAlt ?? ""} loading="lazy" />
-          <BrandStar variant={2} size={58} className="ks-preview-image-star ks-brand-star-light" />
         </motion.div>
       ) : (
         <div>
@@ -1196,7 +1192,7 @@ function PortfolioPreview() {
             <span className="ks-carousel-count">
               {String(active + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
             </span>
-            <button className="ks-carousel-btn" onClick={next} aria-label="PrÃ³ximo">
+            <button className="ks-carousel-btn" onClick={next} aria-label="Próximo">
               <ArrowRight size={18} />
             </button>
           </div>
@@ -1256,14 +1252,9 @@ function PortfolioCard({ item, index }: { item: PortfolioWork; index: number }) 
         loading={index < 2 ? "eager" : "lazy"}
         decoding="async"
       />
-      <BrandStar
-        variant={brandStarVariant(index)}
-        size={172}
-        className="ks-card-starfield ks-brand-star-light"
-      />
       <div className="ks-portfolio-card-overlay">
         <span className="ks-label-caps ks-gold">
-          {String(index + 1).padStart(2, "0")} â€” {item.category}
+          {String(index + 1).padStart(2, "0")} — {item.category}
         </span>
         <h3>{item.title}</h3>
       </div>
@@ -1275,11 +1266,11 @@ function FlashPreview() {
   const [activeIndex, setActiveIndex] = useState(0);
   const visibleItems = flashItems.slice(0, 5);
   const active = visibleItems[activeIndex] ?? visibleItems[0];
-  const flashWhatsAppHref = wa("OlÃ¡, Karina Sarte! Vim pelo site e queria ver os flash tattoos disponÃ­veis.");
+  const flashWhatsAppHref = wa("Olá, Karina Sarte! Vim pelo site e queria ver os flash tattoos disponíveis.");
 
   return (
     <section className="ks-section ks-section-wine ks-flash-showcase">
-      <SectionTitle eyebrow="Flash Tattoos disponÃ­veis" title="Artes autorais prontas para tatuar" text="Disponibilidade limitada â€” me consulte direto pelo WhatsApp." />
+      <SectionTitle eyebrow="Flash Tattoos disponíveis" title="Artes autorais prontas para tatuar" text="Disponibilidade limitada — me consulte direto pelo WhatsApp." />
       <div className="ks-flash-scroll-layout">
         <div className="ks-flash-feature">
           <div className="ks-flash-feature-media">
@@ -1313,7 +1304,7 @@ function FlashPreview() {
                   href={flashWhatsAppHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Consultar flash tattoos disponÃ­veis pelo WhatsApp"
+                  aria-label="Consultar flash tattoos disponíveis pelo WhatsApp"
                 >
                   Consultar flashes <WhatsAppIcon />
                 </a>
@@ -1382,15 +1373,15 @@ function CareHomeSection() {
     <section className="ks-section ks-section-cream">
       <SectionTitle
         eyebrow="Cuidados"
-        title="Cuidado, seguranÃ§a e responsabilidade"
-        text="Realizo cada atendimento com atenÃ§Ã£o Ã  biosseguranÃ§a, materiais adequados e orientaÃ§Ãµes antes, durante e depois da tattoo."
+        title="Cuidado, segurança e responsabilidade"
+        text="Realizo cada atendimento com atenção à biossegurança, materiais adequados e orientações antes, durante e depois da tattoo."
       />
       <div className="ks-card-grid three">
-        {["Antes da tattoo", "Durante a sessÃ£o", "Depois da tattoo"].map((title) => (
+        {["Antes da tattoo", "Durante a sessão", "Depois da tattoo"].map((title) => (
           <MiniCard
             key={title}
             title={title}
-            text="OrientaÃ§Ãµes claras para preparo, procedimento, higienizaÃ§Ã£o, hidrataÃ§Ã£o e cicatrizaÃ§Ã£o."
+            text="Orientações claras para preparo, procedimento, higienização, hidratação e cicatrização."
           />
         ))}
       </div>
@@ -1425,22 +1416,115 @@ function ProductsPreview({ data }: { data: HomeContent }) {
   );
 }
 
-function YoutubeFeatureSection({ data }: { data: HomeContent }) {
+type YoutubeMedia = {
+  visible: boolean;
+  youtubeUrl: string;
+  thumbUrl: string;
+  trailerUrl: string;
+  loaded: boolean;
+};
+
+function useYoutubeMedia(): YoutubeMedia {
+  const [data, setData] = useState<YoutubeMedia>({
+    visible: false,
+    youtubeUrl: "",
+    thumbUrl: "",
+    trailerUrl: "",
+    loaded: false,
+  });
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/settings", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((entry: {
+        youtubeVisible?: boolean;
+        youtubeUrl?: string;
+        youtubeThumbUrl?: string;
+        youtubeTrailerUrl?: string;
+      } | null) => {
+        if (!active || !entry) return;
+        setData({
+          visible: entry.youtubeVisible !== false,
+          youtubeUrl: entry.youtubeUrl?.trim() ?? "",
+          thumbUrl: entry.youtubeThumbUrl?.trim() ?? "",
+          trailerUrl: entry.youtubeTrailerUrl?.trim() ?? "",
+          loaded: true,
+        });
+      })
+      .catch(() => {
+        if (active) setData((current) => ({ ...current, loaded: true }));
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return data;
+}
+
+function YoutubeFeatureSlot({ data }: { data: HomeContent }) {
+  const media = useYoutubeMedia();
+  const hasThumb = Boolean(media.thumbUrl);
+  const hasTrailer = Boolean(media.trailerUrl);
+  if (!media.loaded || !data.youtubeActive || !media.visible || (!hasThumb && !hasTrailer)) {
+    return null;
+  }
+  return (
+    <>
+      <SectionStarBreak align="left" dense />
+      <YoutubeFeatureSection data={data} media={media} />
+    </>
+  );
+}
+
+function YoutubeFeatureSection({ data, media }: { data: HomeContent; media: YoutubeMedia }) {
+  const sectionRef = useRef<HTMLElement>(null);
   const trailerRef = useRef<HTMLVideoElement>(null);
+  const [inView, setInView] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const hasThumb = Boolean(media.thumbUrl);
+  const hasTrailer = Boolean(media.trailerUrl);
+  const hasLink = Boolean(media.youtubeUrl);
+
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node || !hasTrailer) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setInView(true);
+        observer.disconnect();
+      },
+      { rootMargin: "160px 0px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasTrailer]);
 
   const toggleTrailerSound = () => {
     const nextSoundEnabled = !soundEnabled;
     setSoundEnabled(nextSoundEnabled);
-
-    if (trailerRef.current) {
-      trailerRef.current.muted = !nextSoundEnabled;
-      if (nextSoundEnabled) void trailerRef.current.play();
-    }
+    setInView(true);
+    const video = trailerRef.current;
+    if (!video) return;
+    video.muted = !nextSoundEnabled;
+    if (nextSoundEnabled) void video.play();
   };
 
+  const thumbInner = (
+    <>
+      <img
+        src={media.thumbUrl}
+        alt="Karina Sarte no estúdio, capa do vídeo"
+        loading="lazy"
+      />
+      {hasLink ? <span>Assistir no YouTube <ArrowRight size={15} /></span> : null}
+    </>
+  );
+
   return (
-    <section id="youtube" className="ks-youtube-feature" aria-labelledby="youtube-feature-title">
+    <section ref={sectionRef} id="youtube" className="ks-youtube-feature" aria-labelledby="youtube-feature-title">
       <div className="ks-youtube-feature-grid">
         <motion.div
           className="ks-youtube-feature-content"
@@ -1454,61 +1538,65 @@ function YoutubeFeatureSection({ data }: { data: HomeContent }) {
             <span>{data.youtubeTitle}</span>
           </h2>
           <p className="ks-body-lg ks-muted">{data.youtubeText}</p>
-          <a
-            className="ks-primary-link ks-youtube-feature-cta"
-            href={data.youtubeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-cursor="cta"
-          >
-            <Play size={16} fill="currentColor" />
-            {data.youtubeButton}
-          </a>
+          {hasLink ? (
+            <a
+              className="ks-primary-link ks-youtube-feature-cta"
+              href={media.youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="cta"
+            >
+              <Play size={16} fill="currentColor" />
+              {data.youtubeButton}
+            </a>
+          ) : null}
           <span className="ks-youtube-feature-meta">{data.youtubeMeta}</span>
         </motion.div>
 
         <motion.div
-          className="ks-youtube-feature-media"
+          className={`ks-youtube-feature-media${hasThumb && !hasTrailer ? " is-thumb-only" : ""}${hasTrailer && !hasThumb ? " is-trailer-only" : ""}`}
           initial={{ opacity: 0, y: 34 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-8%" }}
           transition={{ duration: 0.9, delay: 0.12, ease: EASE }}
         >
-          <a
-            className="ks-youtube-feature-thumb"
-            href={data.youtubeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Assistir ao Tattoo Vlog completo no YouTube"
-          >
-            {data.youtubeThumbUrl && (
-              <img
-                src={data.youtubeThumbUrl}
-                alt="Karina Sarte no estÃºdio, capa do primeiro Tattoo Vlog"
-                loading="lazy"
-              />
-            )}
-            <span>Assistir no YouTube <ArrowRight size={15} /></span>
-          </a>
+          {hasThumb ? (
+            hasLink ? (
+              <a
+                className="ks-youtube-feature-thumb"
+                href={media.youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Assistir ao vídeo completo no YouTube"
+              >
+                {thumbInner}
+              </a>
+            ) : (
+              <div className="ks-youtube-feature-thumb">{thumbInner}</div>
+            )
+          ) : null}
 
-          {data.youtubeTrailerUrl && (
+          {hasTrailer ? (
             <div className="ks-youtube-feature-trailer">
               <div className="ks-youtube-feature-trailer-meta" aria-hidden="true">
                 <span>Trailer</span>
-                <span>00:17</span>
               </div>
-              <video
-                ref={trailerRef}
-                autoPlay
-                muted={!soundEnabled}
-                loop
-                playsInline
-                preload="metadata"
-                poster={data.youtubeThumbUrl || undefined}
-                aria-label="Trailer vertical do primeiro Tattoo Vlog da Karina Sarte"
-              >
-                <source src={data.youtubeTrailerUrl} type="video/mp4" />
-              </video>
+              {inView ? (
+                <video
+                  ref={trailerRef}
+                  autoPlay
+                  muted={!soundEnabled}
+                  loop
+                  playsInline
+                  preload="none"
+                  poster={media.thumbUrl || undefined}
+                  aria-label="Trailer vertical da Karina Sarte"
+                >
+                  <source src={media.trailerUrl} type={media.trailerUrl.endsWith(".webm") ? "video/webm" : "video/mp4"} />
+                </video>
+              ) : media.thumbUrl ? (
+                <img src={media.thumbUrl} alt="" />
+              ) : null}
               <button
                 type="button"
                 className="ks-youtube-feature-sound"
@@ -1521,7 +1609,7 @@ function YoutubeFeatureSection({ data }: { data: HomeContent }) {
                 <span>{soundEnabled ? "Som ativado" : "Ativar som"}</span>
               </button>
             </div>
-          )}
+          ) : null}
         </motion.div>
       </div>
     </section>
@@ -1705,7 +1793,7 @@ function TattooGalleryModal({
             href={wa(tattooChoiceMessage(item.name))}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`Pedir orÃ§amento da tattoo ${item.name} pelo WhatsApp`}
+            aria-label={`Pedir orçamento da tattoo ${item.name} pelo WhatsApp`}
           >
             Eu escolho essa <WhatsAppIcon />
           </a>
@@ -1751,7 +1839,7 @@ function AboutPage() {
             )}
           </motion.div>
           <div className="ks-stack">
-            <blockquote className="ks-about-me-quote">â€œ{about.quote}â€</blockquote>
+            <blockquote className="ks-about-me-quote">“{about.quote}”</blockquote>
             <p className="ks-body-lg ks-muted" style={{ whiteSpace: "pre-line" }}>{about.biography}</p>
             <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
           </div>
@@ -1772,8 +1860,8 @@ function AboutPage() {
       {isSectionVisible(about, "abordagem") ? (
         <FeatureStrip
           eyebrow="Cuidado em cada etapa"
-          title="Como cada projeto Ã© cuidado"
-          text="Da primeira conversa ao cuidado final, cada etapa Ã© pensada para que a tattoo tenha intenÃ§Ã£o, presenÃ§a e seguranÃ§a."
+          title="Como cada projeto é cuidado"
+          text="Da primeira conversa ao cuidado final, cada etapa é pensada para que a tattoo tenha intenção, presença e segurança."
           cards={cards}
         />
       ) : null}
@@ -1842,9 +1930,6 @@ function PortfolioPage() {
       {isSectionVisible(portfolioPage, "trabalhos") ? (
         <>
           <section className="ks-portfolio-gallery">
-            <BrandStar variant={2} size={180} className="ks-portfolio-gallery-deco ks-portfolio-gallery-deco-a" />
-            <BrandStar variant={3} size={100} className="ks-portfolio-gallery-deco ks-portfolio-gallery-deco-b" />
-
             <div className="ks-portfolio-gallery-inner">
               <motion.header
                 className="ks-portfolio-gallery-intro"
@@ -1856,8 +1941,8 @@ function PortfolioPage() {
                 <div className="ks-portfolio-gallery-intro-copy">
                   <h2>Projetos na pele</h2>
                   <p>
-                    Uma seleÃ§Ã£o de tattoos, flashes e composiÃ§Ãµes autorais criadas a partir de histÃ³rias,
-                    referÃªncias e corpos diferentes.
+                    Uma seleção de tattoos, flashes e composições autorais criadas a partir de histórias,
+                    referências e corpos diferentes.
                   </p>
                 </div>
                 <p className="ks-portfolio-gallery-count" aria-live="polite">
@@ -1880,7 +1965,7 @@ function PortfolioPage() {
                 <motion.div
                   className="ks-portfolio-filters"
                   role="toolbar"
-                  aria-label="Filtrar portfÃ³lio por categoria"
+                  aria-label="Filtrar portfólio por categoria"
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, margin: "-8%" }}
@@ -1918,7 +2003,7 @@ function PortfolioPage() {
               ) : (
                 <p className="ks-body-lg ks-muted ks-portfolio-gallery-empty" role="status">
                   {portfolioItems.length === 0
-                    ? "Ainda nÃ£o hÃ¡ trabalhos publicados no portfÃ³lio."
+                    ? "Ainda não há trabalhos publicados no portfólio."
                     : "Nenhum trabalho nesta categoria no momento. Tente outro filtro ou volte em breve."}
                 </p>
               )}
@@ -2022,8 +2107,8 @@ function PortfolioFeatured({ work }: { work: PortfolioWork }) {
           <span className="ks-label-caps ks-gold">Projeto em destaque</span>
           <h2>Cada tattoo nasce de uma conversa.</h2>
           <p>
-            Alguns projetos comeÃ§am com uma referÃªncia, outros com uma sensaÃ§Ã£o. O desenho vai sendo
-            construÃ­do para conversar com o corpo, com a histÃ³ria e com o momento de quem vai levar
+            Alguns projetos começam com uma referência, outros com uma sensação. O desenho vai sendo
+            construído para conversar com o corpo, com a história e com o momento de quem vai levar
             aquela arte na pele.
           </p>
           <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
@@ -2039,6 +2124,9 @@ function ReformulacoesPage() {
   const pontos = [...content.panelPoints].filter((point) => point.active).sort((a, b) => a.order - b.order);
   const possibilidades = [...content.possibilityCards].filter((card) => card.active).sort((a, b) => a.order - b.order);
   const [expandedCase, setExpandedCase] = useState<ReformulationCase | null>(null);
+  const hasCompleteCases = reformulacoes.some(
+    (item) => Boolean(item.beforeImageUrl?.trim() && item.afterImageUrl?.trim()),
+  );
 
   useEffect(() => {
     if (!expandedCase) return;
@@ -2086,10 +2174,12 @@ function ReformulacoesPage() {
                   <h3>{item.title}</h3>
                 </header>
                 <ReformulacaoCompare item={item} index={index} onExpand={() => setExpandedCase(item)} />
-                {content.caseNote ? <p className="ks-reformulacao-case-note">{content.caseNote}</p> : null}
               </article>
             ))}
           </div>
+          {!hasCompleteCases && content.caseNote ? (
+            <p className="ks-reformulacao-case-note">{content.caseNote}</p>
+          ) : null}
         </section>
       ) : null}
 
@@ -2097,7 +2187,6 @@ function ReformulacoesPage() {
         <>
           <SectionStarBreak align="right" />
           <section className="ks-section ks-section-cream ks-reformulacoes-intro">
-            <BrandStar variant={3} size={260} className="ks-reformulacoes-intro-star" />
             <div className="ks-reformulacoes-intro-grid">
               <div className="ks-reformulacoes-intro-heading">
                 <span className="ks-label-caps">{content.introEyebrow}</span>
@@ -2115,7 +2204,7 @@ function ReformulacoesPage() {
                 <p className="ks-body-lg ks-muted">
                   {content.panelTextTwo}
                 </p>
-                <div className="ks-reformulacoes-intro-points" aria-label="Pontos avaliados na reformulaÃ§Ã£o">
+                <div className="ks-reformulacoes-intro-points" aria-label="Pontos avaliados na reformulação">
                   {pontos.map((point) => <span key={point.id}>{point.label}</span>)}
                 </div>
               </div>
@@ -2144,8 +2233,8 @@ function ReformulacoesPage() {
 }
 
 /**
- * Antes/depois de um caso. Por padrÃ£o mostra sÃ³ a foto; passando o mouse por
- * cima, os dois vÃ­deos (antes e depois) tocam juntos; clicando, abre o modal
+ * Antes/depois de um caso. Por padrão mostra só a foto; passando o mouse por
+ * cima, os dois vídeos (antes e depois) tocam juntos; clicando, abre o modal
  * ampliado (ReformulacaoCompareModal) com os dois lado a lado.
  */
 function ReformulacaoCompare({
@@ -2168,14 +2257,30 @@ function ReformulacaoCompare({
       onClick={canExpand ? onExpand : undefined}
       role={canExpand ? "button" : undefined}
       tabIndex={canExpand ? 0 : undefined}
-      aria-label={canExpand ? `Ver comparaÃ§Ã£o ampliada de ${item.title}` : undefined}
+      aria-label={canExpand ? `Ver comparação ampliada de ${item.title}` : undefined}
       onKeyDown={canExpand ? (event) => (event.key === "Enter" || event.key === " ") && onExpand() : undefined}
     >
-      <ReformulacaoMedia label="Antes" imageSrc={item.beforeImageUrl} videoSrc={item.beforeVideoUrl} index={index} playing={hovering} />
+      <ReformulacaoMedia
+        label="Antes"
+        imageSrc={item.beforeImageUrl}
+        videoSrc={item.beforeVideoUrl}
+        focalX={item.beforeFocalX}
+        focalY={item.beforeFocalY}
+        index={index}
+        playing={hovering}
+      />
       <span className="ks-reformulacao-arrow" aria-hidden="true">
         <ArrowRight size={18} />
       </span>
-      <ReformulacaoMedia label="Depois" imageSrc={item.afterImageUrl} videoSrc={item.afterVideoUrl} index={index + 1} playing={hovering} />
+      <ReformulacaoMedia
+        label="Depois"
+        imageSrc={item.afterImageUrl}
+        videoSrc={item.afterVideoUrl}
+        focalX={item.afterFocalX}
+        focalY={item.afterFocalY}
+        index={index + 1}
+        playing={hovering}
+      />
       {canExpand && (
         <span className="ks-reformulacao-expand" aria-hidden="true">
           <Maximize2 size={14} />
@@ -2189,12 +2294,16 @@ function ReformulacaoMedia({
   label,
   imageSrc,
   videoSrc,
+  focalX = 50,
+  focalY = 50,
   index,
   playing = false,
 }: {
   label: "Antes" | "Depois";
   imageSrc?: string;
   videoSrc?: string;
+  focalX?: number;
+  focalY?: number;
   index: number;
   playing?: boolean;
 }) {
@@ -2218,8 +2327,12 @@ function ReformulacaoMedia({
             <img
               className={videoSrc && playing ? "is-hidden" : ""}
               src={imageSrc}
-              alt={`Tattoo ${label.toLowerCase()} da reformulaÃ§Ã£o`}
+              alt={`Tattoo ${label.toLowerCase()} da reformulação`}
+              width={640}
+              height={800}
               loading="lazy"
+              decoding="async"
+              style={focalStyle(focalX, focalY)}
             />
           ) : null}
           {videoSrc ? (
@@ -2235,7 +2348,7 @@ function ReformulacaoMedia({
           ) : null}
         </div>
       ) : (
-        <div className="ks-reformulacao-photo-placeholder" aria-label={`EspaÃ§o para a foto de ${label.toLowerCase()}`}>
+        <div className="ks-reformulacao-photo-placeholder" aria-label={`Espaço para a foto de ${label.toLowerCase()}`}>
           <BrandStar variant={brandStarVariant(index)} size={120} className="ks-reformulacao-photo-star" />
           <span>Adicionar foto</span>
         </div>
@@ -2244,17 +2357,35 @@ function ReformulacaoMedia({
   );
 }
 
-/** Painel de vÃ­deo (ou foto, se o caso nÃ£o tiver vÃ­deo) dentro do modal ampliado. */
-function ReformulacaoModalPanel({ label, imageSrc, videoSrc }: { label: "Antes" | "Depois"; imageSrc?: string; videoSrc?: string }) {
+/** Painel de vídeo (ou foto, se o caso não tiver vídeo) dentro do modal ampliado. */
+function ReformulacaoModalPanel({
+  label,
+  imageSrc,
+  videoSrc,
+  focalX = 50,
+  focalY = 50,
+}: {
+  label: "Antes" | "Depois";
+  imageSrc?: string;
+  videoSrc?: string;
+  focalX?: number;
+  focalY?: number;
+}) {
   return (
     <div className="ks-reformulacao-modal-media">
       <span className="ks-reformulacao-photo-label">{label}</span>
       {videoSrc ? (
         <video src={videoSrc} autoPlay muted loop playsInline controls />
       ) : imageSrc ? (
-        <img src={imageSrc} alt={`Tattoo ${label.toLowerCase()} da reformulaÃ§Ã£o`} />
+        <img
+          src={imageSrc}
+          alt={`Tattoo ${label.toLowerCase()} da reformulação`}
+          width={960}
+          height={1200}
+          style={focalStyle(focalX, focalY)}
+        />
       ) : (
-        <div className="ks-reformulacao-photo-placeholder" aria-label={`Sem mÃ­dia de ${label.toLowerCase()}`}>
+        <div className="ks-reformulacao-photo-placeholder" aria-label={`Sem mídia de ${label.toLowerCase()}`}>
           <BrandStar variant={2} size={140} className="ks-reformulacao-photo-star" />
         </div>
       )}
@@ -2294,8 +2425,20 @@ function ReformulacaoCompareModal({ item, onClose }: { item: ReformulationCase; 
         </header>
 
         <div className="ks-reformulacao-modal-compare">
-          <ReformulacaoModalPanel label="Antes" imageSrc={item.beforeImageUrl} videoSrc={item.beforeVideoUrl} />
-          <ReformulacaoModalPanel label="Depois" imageSrc={item.afterImageUrl} videoSrc={item.afterVideoUrl} />
+          <ReformulacaoModalPanel
+            label="Antes"
+            imageSrc={item.beforeImageUrl}
+            videoSrc={item.beforeVideoUrl}
+            focalX={item.beforeFocalX}
+            focalY={item.beforeFocalY}
+          />
+          <ReformulacaoModalPanel
+            label="Depois"
+            imageSrc={item.afterImageUrl}
+            videoSrc={item.afterVideoUrl}
+            focalX={item.afterFocalX}
+            focalY={item.afterFocalY}
+          />
         </div>
       </motion.div>
     </motion.div>
@@ -2312,6 +2455,8 @@ function FlashPage() {
     <>
       {isSectionVisible(page, "hero") ? (
         <PageHero
+          className="ks-flash-page-hero"
+          tone="light"
           kicker={page.heroKicker}
           title={page.heroTitle}
           text={page.heroText}
@@ -2321,15 +2466,15 @@ function FlashPage() {
         </PageHero>
       ) : null}
       {isSectionVisible(page, "catalogo") ? (
-        <section className="ks-section">
+        <section className="ks-section ks-flash-catalog">
           {flashes.length > 0 ? (
             <div className="ks-flash-page-grid">
               {flashes.map((item, index) => (
                 <FlashCard
                   key={item.id}
                   name={item.title || "Flash sem nome"}
-                  status={item.status || "DisponÃ­vel"}
-                  text={item.description || ""}
+                  status={item.status || "disponivel"}
+                  price={item.price}
                   img={item.imageUrl}
                   focalX={item.focalX}
                   focalY={item.focalY}
@@ -2339,7 +2484,7 @@ function FlashPage() {
             </div>
           ) : (
             <p className="ks-body-lg ks-muted" style={{ textAlign: "center" }} role="status">
-              Nenhum flash disponÃ­vel publicado ainda.
+              Nenhum flash disponível publicado ainda.
             </p>
           )}
         </section>
@@ -2348,11 +2493,67 @@ function FlashPage() {
   );
 }
 
+function ProductsHeroFrame({
+  src,
+  alt,
+  focalX,
+  focalY,
+}: {
+  src: string;
+  alt: string;
+  focalX: number;
+  focalY: number;
+}) {
+  return (
+    <div className="ks-products-art-float ks-products-mold">
+      <div className="ks-products-art-opening">
+        <img
+          className="ks-products-art-img"
+          src={src}
+          alt={alt}
+          width={800}
+          height={800}
+          loading="eager"
+          {...FETCH_PRIORITY_HIGH}
+          decoding="async"
+          style={focalStyle(focalX, focalY)}
+        />
+      </div>
+      <img
+        className="ks-products-art-mold"
+        src={PRODUCTS_HERO_MOLD_SRC}
+        alt=""
+        width={800}
+        height={800}
+        decoding="async"
+        draggable={false}
+      />
+    </div>
+  );
+}
+
 function ProductsPage() {
   const location = useLocation();
   const stagger = Boolean((location.state as { fromProductsTransition?: boolean } | null)?.fromProductsTransition);
   const page = useProductsPageContent();
   const products = useProductItems();
+  const hasArt = Boolean(page.heroImageUrl);
+
+  useEffect(() => {
+    if (!page.heroImageUrl) return;
+    const links: HTMLLinkElement[] = [];
+    for (const href of [page.heroImageUrl, PRODUCTS_HERO_MOLD_SRC]) {
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = href;
+      document.head.appendChild(link);
+      links.push(link);
+    }
+    return () => {
+      for (const link of links) link.remove();
+    };
+  }, [page.heroImageUrl]);
 
   if (!isPageVisible(page)) return <HiddenPageRedirect />;
 
@@ -2360,10 +2561,22 @@ function ProductsPage() {
     <>
       {isSectionVisible(page, "hero") ? (
         <PageHero
+          className={`ks-products-art-hero${hasArt ? "" : " is-text-only"}`}
+          tone="light"
           kicker={page.heroKicker || "Produtos"}
           title={page.heroTitle}
           text={page.heroText1}
-          image={page.heroImageUrl}
+          image={null}
+          deco={
+            hasArt ? (
+              <ProductsHeroFrame
+                src={page.heroImageUrl}
+                alt={`${page.heroTitle} — Karina Sarte Tattoo em Teresópolis, RJ`}
+                focalX={page.heroFocal.x}
+                focalY={page.heroFocal.y}
+              />
+            ) : null
+          }
         >
           {page.heroButton ? (
             <a
@@ -2407,17 +2620,17 @@ function ProductsPage() {
       <FeatureStrip
         eyebrow="Como comprar"
         title="Consulta simples pelo WhatsApp"
-        text="Minha vitrine funciona como catÃ¡logo comercial, sem carrinho ou checkout nesta fase."
+        text="Minha vitrine funciona como catálogo comercial, sem carrinho ou checkout nesta fase."
         cards={[
           {
             id: "buy-1",
             title: "Escolha o produto ou plano",
-            text: "Navegue pela vitrine e escolha o item, print ou plano que faz sentido para vocÃª.",
+            text: "Navegue pela vitrine e escolha o item, print ou plano que faz sentido para você.",
           },
           {
             id: "buy-2",
             title: "Chame no WhatsApp",
-            text: "Me chama com o que escolheu â€” te oriento sobre valores, prazos e disponibilidade.",
+            text: "Me chama com o que escolheu — te oriento sobre valores, prazos e disponibilidade.",
           },
           {
             id: "buy-3",
@@ -2427,7 +2640,7 @@ function ProductsPage() {
           {
             id: "buy-4",
             title: "Finalize a compra",
-            text: "Com tudo alinhado, confirmo o pedido e te acompanho atÃ© a entrega.",
+            text: "Com tudo alinhado, confirmo o pedido e te acompanho até a entrega.",
           },
         ]}
       />
@@ -2532,7 +2745,7 @@ function ProductsTransitionOverlay({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.35, ease: EASE }}
           >
-            ColeÃ§Ãµes da Karina Sarte
+            Coleções da Karina Sarte
           </motion.h2>
         </motion.div>
       )}
@@ -2586,6 +2799,9 @@ function formatBrazilPhone(value: string) {
 }
 
 function BudgetPage() {
+  /* /orcamento é exceção à padronização de altura dos heroes
+     (--ks-hero-min-height). Sem faixa de viewport de propósito:
+     o formulário precisa aparecer sem rolar. Não recolocar PageHero. */
   const content = useBudgetPageContent();
   const [form, setForm] = useState({
     name: "",
@@ -2599,14 +2815,14 @@ function BudgetPage() {
   const [error, setError] = useState(false);
 
   const buildMessage = () => {
-    const lines = [content.whatsappIntro || BUDGET_WHATSAPP_INTRO, "", "âœ¨ *Briefing da tattoo*"];
+    const lines = [content.whatsappIntro || BUDGET_WHATSAPP_INTRO, "", "✨ *Briefing da tattoo*"];
     if (form.name.trim()) lines.push("", `*Nome:* ${form.name.trim()}`);
     if (form.whatsapp.trim()) lines.push(`*WhatsApp:* ${form.whatsapp.trim()}`);
     if (form.idea.trim()) lines.push("", `*Ideia:*`, form.idea.trim());
     if (form.bodyPlace.trim()) lines.push("", `*Local do corpo:* ${form.bodyPlace.trim()}`);
     if (form.size.trim()) lines.push(`*Tamanho aproximado:* ${form.size.trim()}`);
-    if (form.references.trim()) lines.push("", `*ReferÃªncias:*`, form.references.trim());
-    if (form.notes.trim()) lines.push("", `*ObservaÃ§Ãµes:*`, form.notes.trim());
+    if (form.references.trim()) lines.push("", `*Referências:*`, form.references.trim());
+    if (form.notes.trim()) lines.push("", `*Observações:*`, form.notes.trim());
     return lines.join("\n");
   };
 
@@ -2630,20 +2846,163 @@ function BudgetPage() {
 
   const showBriefing = isSectionVisible(content, "briefing");
   const showForm = isSectionVisible(content, "formulario");
+  const missingBrief = error && !form.idea.trim() && !form.references.trim();
 
   return (
-    <>
-      <PageHero
-        kicker={content.heroKicker}
-        title={content.heroTitle}
-        text={content.heroText}
-        image={content.heroImageUrl}
-      />
+    <section className="ks-section ks-budget-page">
+      <header className="ks-budget-page-head">
+        <span className="ks-label-caps ks-gold">{content.heroKicker}</span>
+        <h1 className="ks-headline-md">{content.heroTitle}</h1>
+        <p className="ks-body-lg ks-muted">{content.heroText}</p>
+      </header>
+
       {(showBriefing || showForm) ? (
-        <section className="ks-section ks-budget-section">
+        <div className="ks-budget-layout">
+          {showForm ? (
+        <form
+          className="ks-budget-form"
+          noValidate
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (!form.idea.trim() && !form.references.trim()) {
+              setError(true);
+              document.getElementById("budget-idea")?.focus();
+              return;
+            }
+            window.open(wa(buildMessage()), "_blank", "noopener,noreferrer");
+          }}
+        >
+          <div className="ks-budget-form-header">
+            <span className="ks-budget-form-icon"><HeartHandshake size={20} /></span>
+            <div>
+              <span className="ks-label-caps ks-gold">{content.formEyebrow}</span>
+              <h2>{content.formTitle}</h2>
+            </div>
+          </div>
+
+          <div className="ks-budget-fields">
+            <label className="ks-budget-field" htmlFor="budget-name">
+              <span className="ks-budget-label">Nome</span>
+              <input
+                id="budget-name"
+                name="name"
+                className="ks-budget-input"
+                type="text"
+                autoComplete="name"
+                placeholder="Seu nome"
+                value={form.name}
+                onChange={update("name")}
+              />
+            </label>
+
+            <label className="ks-budget-field" htmlFor="budget-whatsapp">
+              <span className="ks-budget-label">WhatsApp</span>
+              <input
+                id="budget-whatsapp"
+                name="tel"
+                className="ks-budget-input"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="(21) 99999-9999"
+                value={form.whatsapp}
+                onChange={updateWhatsapp}
+              />
+            </label>
+
+            <label className="ks-budget-field is-full" htmlFor="budget-idea">
+              <span className="ks-budget-label">Ideia da tattoo</span>
+              <textarea
+                id="budget-idea"
+                name="idea"
+                className="ks-budget-textarea"
+                rows={4}
+                placeholder="Ex.: quero uma tattoo botânica delicada, com flores e um olho no centro..."
+                value={form.idea}
+                aria-invalid={missingBrief}
+                aria-describedby={missingBrief ? "budget-brief-error" : "budget-idea-hint"}
+                onChange={update("idea")}
+              />
+              {missingBrief ? (
+                <span id="budget-brief-error" className="ks-budget-error" role="alert">
+                  Conte sua ideia ou envie referências antes de chamar no WhatsApp.
+                </span>
+              ) : (
+                <span id="budget-idea-hint" className="ks-budget-hint">
+                  Conta o tema, o estilo e o que você já imaginou. Pode ser solto.
+                </span>
+              )}
+            </label>
+
+            <label className="ks-budget-field" htmlFor="budget-place">
+              <span className="ks-budget-label">Local do corpo</span>
+              <input
+                id="budget-place"
+                name="bodyPlace"
+                className="ks-budget-input"
+                type="text"
+                autoComplete="off"
+                placeholder="Braço, costela, costas..."
+                value={form.bodyPlace}
+                onChange={update("bodyPlace")}
+              />
+            </label>
+
+            <label className="ks-budget-field" htmlFor="budget-size">
+              <span className="ks-budget-label">Tamanho aproximado</span>
+              <input
+                id="budget-size"
+                name="size"
+                className="ks-budget-input"
+                type="text"
+                inputMode="text"
+                autoComplete="off"
+                placeholder="Ex.: 8 cm, palma da mão..."
+                value={form.size}
+                onChange={update("size")}
+              />
+            </label>
+
+            <label className="ks-budget-field is-full" htmlFor="budget-refs">
+              <span className="ks-budget-label">Referências</span>
+              <textarea
+                id="budget-refs"
+                name="references"
+                className="ks-budget-textarea is-compact"
+                rows={3}
+                placeholder="Cole links, descreva imagens ou diga o estilo que você gosta."
+                value={form.references}
+                aria-invalid={missingBrief}
+                aria-describedby={missingBrief ? "budget-brief-error" : undefined}
+                onChange={update("references")}
+              />
+            </label>
+
+            <label className="ks-budget-field is-full" htmlFor="budget-notes">
+              <span className="ks-budget-label">Observações</span>
+              <textarea
+                id="budget-notes"
+                name="notes"
+                className="ks-budget-textarea is-compact"
+                rows={3}
+                enterKeyHint="send"
+                placeholder="Disponibilidade, dúvidas, cobertura, cicatriz, primeira tattoo..."
+                value={form.notes}
+                onChange={update("notes")}
+              />
+            </label>
+          </div>
+
+          <div className="ks-budget-submit-row">
+            <p>{content.submitHelper}</p>
+            <button type="submit" className="ks-primary-link">
+              {content.submitButton} <WhatsAppIcon />
+            </button>
+          </div>
+        </form>
+          ) : null}
           {showBriefing ? (
             <div className="ks-budget-intro">
-              <BrandStar variant={3} size={126} className="ks-budget-intro-star" />
               <span className="ks-label-caps ks-gold">{content.introEyebrow}</span>
               <h2 className="ks-headline-md">{content.introTitle}</h2>
               <p className="ks-body-lg ks-muted">
@@ -2662,91 +3021,9 @@ function BudgetPage() {
               </div>
             </div>
           ) : null}
-          {showForm ? (
-        <form
-          className="ks-budget-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            if (!form.idea.trim() && !form.references.trim()) {
-              setError(true);
-              return;
-            }
-            window.open(wa(buildMessage()), "_blank", "noopener,noreferrer");
-          }}
-        >
-          <div className="ks-budget-form-header">
-            <span className="ks-budget-form-icon"><HeartHandshake size={20} /></span>
-            <div>
-              <span className="ks-label-caps ks-gold">{content.formEyebrow}</span>
-              {showBriefing ? (
-                <h3>{content.formTitle}</h3>
-              ) : (
-                <h1 className="ks-headline-md">{content.formTitle || "Quero um orÃ§amento"}</h1>
-              )}
-            </div>
-          </div>
-
-          <div className="ks-budget-fields">
-            <label className="ks-budget-field" htmlFor="budget-name">
-              <span className="ks-budget-label">Nome</span>
-              <input id="budget-name" className="ks-budget-input" placeholder="Seu nome" value={form.name} onChange={update("name")} />
-            </label>
-
-            <label className="ks-budget-field" htmlFor="budget-whatsapp">
-              <span className="ks-budget-label">WhatsApp</span>
-              <input id="budget-whatsapp" className="ks-budget-input" placeholder="(21) 99999-9999" inputMode="tel" autoComplete="tel" value={form.whatsapp} onChange={updateWhatsapp} />
-            </label>
-
-            <label className="ks-budget-field is-full" htmlFor="budget-idea">
-              <span className="ks-budget-label">Ideia da tattoo</span>
-              <textarea
-                id="budget-idea"
-                className="ks-budget-textarea"
-                rows={4}
-                placeholder="Ex.: quero uma tattoo botÃ¢nica delicada, com flores e um olho no centro..."
-                value={form.idea}
-                aria-invalid={error}
-                onChange={update("idea")}
-              />
-            </label>
-
-            <label className="ks-budget-field" htmlFor="budget-place">
-              <span className="ks-budget-label">Local do corpo</span>
-              <input id="budget-place" className="ks-budget-input" placeholder="BraÃ§o, costela, costas..." value={form.bodyPlace} onChange={update("bodyPlace")} />
-            </label>
-
-            <label className="ks-budget-field" htmlFor="budget-size">
-              <span className="ks-budget-label">Tamanho aproximado</span>
-              <input id="budget-size" className="ks-budget-input" placeholder="Ex.: 8 cm, palma da mÃ£o..." value={form.size} onChange={update("size")} />
-            </label>
-
-            <label className="ks-budget-field is-full" htmlFor="budget-refs">
-              <span className="ks-budget-label">ReferÃªncias</span>
-              <textarea id="budget-refs" className="ks-budget-textarea is-compact" rows={3} placeholder="Cole links, descreva imagens ou diga o estilo que vocÃª gosta." value={form.references} onChange={update("references")} />
-            </label>
-
-            <label className="ks-budget-field is-full" htmlFor="budget-notes">
-              <span className="ks-budget-label">ObservaÃ§Ãµes</span>
-              <textarea id="budget-notes" className="ks-budget-textarea is-compact" rows={3} placeholder="Disponibilidade, dÃºvidas, cobertura, cicatriz, primeira tattoo..." value={form.notes} onChange={update("notes")} />
-            </label>
-          </div>
-
-          {error && (
-            <span className="ks-budget-error" role="alert">
-              Conte sua ideia ou envie referÃªncias antes de chamar no WhatsApp.
-            </span>
-          )}
-          <div className="ks-budget-submit-row">
-            <p>{content.submitHelper}</p>
-            <button type="submit" className="ks-primary-link">
-              {content.submitButton} <WhatsAppIcon />
-            </button>
-          </div>
-        </form>
-          ) : null}
-        </section>
+        </div>
       ) : null}
-    </>
+    </section>
   );
 }
 
@@ -2763,7 +3040,7 @@ function SectionTitle({ eyebrow, title, text }: { eyebrow: string; title: string
 function FlashCard({
   name,
   status,
-  text,
+  price,
   img,
   focalX,
   focalY,
@@ -2771,42 +3048,53 @@ function FlashCard({
 }: {
   name: string;
   status: string;
-  text: string;
+  price?: string;
   img?: string;
   focalX?: number;
   focalY?: number;
   index: number;
 }) {
+  const sold = status.toLowerCase() === "vendido";
+  const waMessage = sold
+    ? `Olá, Karina Sarte! Vim pelo site. O flash “${name}” já foi vendido — queria algo parecido.`
+    : `Olá, Karina Sarte! Vim pelo site e queria o flash “${name}”.`;
+  const ctaLabel = sold ? "Quero algo parecido" : "Quero esse flash";
+
   return (
-    <article className="ks-flash-page-card">
-      <div className="ks-flash-page-card-media">
-        {img ? (
-          <img
-            src={img}
-            alt={name}
-            loading={index < 2 ? "eager" : "lazy"}
-            decoding="async"
-            style={focalStyle(focalX, focalY)}
-          />
-        ) : (
-          <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
-        )}
-      </div>
-      <div className="ks-flash-page-card-body">
-        <StencilCrosshair size={14} color="#806E85" />
-        <span className={`ks-status ${statusClass(status)}`}>{status}</span>
-        <h3>{name}</h3>
-        <p>{text}</p>
-        <a
-          className="ks-primary-link"
-          href={wa("OlÃ¡, Karina Sarte! Vim pelo site e queria saber se esse flash tattoo ainda estÃ¡ disponÃ­vel.")}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Consultar disponibilidade do flash ${name} pelo WhatsApp`}
-        >
-          Quero esse flash <WhatsAppIcon />
-        </a>
-      </div>
+    <article className={`ks-flash-page-card${sold ? " is-sold" : ""}`}>
+      <a
+        className="ks-flash-page-card-hit"
+        href={wa(waMessage)}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${ctaLabel}: ${name}${price ? ` — ${price}` : ""}`}
+      >
+        <div className="ks-flash-page-card-media">
+          {img ? (
+            <img
+              src={img}
+              alt={name}
+              width={640}
+              height={640}
+              loading={index < 2 ? "eager" : "lazy"}
+              decoding="async"
+              style={focalStyle(focalX, focalY)}
+            />
+          ) : (
+            <NumberedPlaceholder number={String(index + 1).padStart(2, "0")} />
+          )}
+          {sold ? <span className="ks-flash-page-card-badge">Vendido</span> : null}
+        </div>
+        <div className="ks-flash-page-card-body">
+          <div className="ks-flash-page-card-copy">
+            <h3>{name}</h3>
+            <p className="ks-flash-page-card-price">{price || ""}</p>
+          </div>
+          <span className="ks-flash-page-card-cta">
+            {ctaLabel} <WhatsAppIcon />
+          </span>
+        </div>
+      </a>
     </article>
   );
 }
@@ -2834,7 +3122,7 @@ function ProductFaq({ full = false }: { full?: boolean }) {
 
   return (
     <section className="ks-section">
-      <SectionTitle eyebrow="FAQ" title={full ? "DÃºvidas frequentes" : "FAQ rÃ¡pido sobre produtos"} text="InformaÃ§Ãµes essenciais para consulta, reserva e atendimento." />
+      <SectionTitle eyebrow="FAQ" title={full ? "Dúvidas frequentes" : "FAQ rápido sobre produtos"} text="Informações essenciais para consulta, reserva e atendimento." />
       <div className="ks-faq-list">
         {list.map((item, i) => (
           <motion.div
@@ -2886,10 +3174,10 @@ function AboutBastidorSection({
   imageUrl: string;
   caption: string;
 }) {
-  const tags = ["tablet", "referÃªncias", "rabisco", "strogonoff", "ideia do nada"];
+  const tags = ["tablet", "referências", "rabisco", "strogonoff", "ideia do nada"];
   const displayCaption =
     caption ||
-    "Eu depois de comer strogonoff com feijÃ£o e decidir que era uma Ã³tima hora pra criar arte.";
+    "Eu depois de comer strogonoff com feijão e decidir que era uma ótima hora pra criar arte.";
 
   return (
     <section className="ks-section ks-about-bastidor">
@@ -2902,10 +3190,10 @@ function AboutBastidorSection({
           transition={{ duration: 0.85, ease: EASE }}
         >
           <p className="ks-label-caps ks-gold">Bastidor</p>
-          <h2 className="ks-headline-md">Nem toda ideia nasce sÃ©ria.</h2>
+          <h2 className="ks-headline-md">Nem toda ideia nasce séria.</h2>
           <span className="ks-about-bastidor-rule" aria-hidden="true" />
           <p className="ks-about-bastidor-lead">
-            Entre uma referÃªncia, um rabisco no tablet e uma pausa meio aleatÃ³ria, as ideias vÃ£o aparecendo. Nem sempre o processo Ã© poÃ©tico â€” Ã s vezes ele sÃ³ comeÃ§a depois de comer strogonoff com feijÃ£o mesmo.
+            Entre uma referência, um rabisco no tablet e uma pausa meio aleatória, as ideias vão aparecendo. Nem sempre o processo é poético — às vezes ele só começa depois de comer strogonoff com feijão mesmo.
           </p>
           <ul className="ks-about-bastidor-tags">
             {tags.map((tag, index) => (
@@ -2920,7 +3208,7 @@ function AboutBastidorSection({
               </motion.li>
             ))}
           </ul>
-          <p className="ks-about-bastidor-aside">CriaÃ§Ã£o real, sem pose.</p>
+          <p className="ks-about-bastidor-aside">Criação real, sem pose.</p>
         </motion.div>
 
         <motion.figure
@@ -2930,7 +3218,6 @@ function AboutBastidorSection({
           viewport={{ once: true, margin: "-10%" }}
           transition={{ duration: 0.95, ease: EASE, delay: 0.08 }}
         >
-          <BrandStar variant={2} size={96} className="ks-about-bastidor-star" />
           <div className="ks-about-bastidor-frame">
             {imageUrl ? (
               <img src={imageUrl} alt="Karina Sarte criando no tablet" loading="lazy" />
@@ -2975,8 +3262,6 @@ function AboutStudioSection({
           {coverImage ? <img src={coverImage} alt="" loading="lazy" /> : null}
         </div>
         <div className="ks-studio-invite-veil" aria-hidden="true" />
-        <BrandStar variant={3} size={88} className="ks-studio-invite-star ks-studio-invite-star-a" />
-        <BrandStar variant={2} size={36} className="ks-studio-invite-star ks-studio-invite-star-b" />
 
         <motion.div
           className="ks-studio-invite-content"
@@ -2986,7 +3271,7 @@ function AboutStudioSection({
           transition={{ duration: 0.9, ease: EASE }}
         >
           <p className="ks-label-caps">Meu studio</p>
-          <h2 className="ks-headline-md">Quer entrar no meu espaÃ§o?</h2>
+          <h2 className="ks-headline-md">Quer entrar no meu espaço?</h2>
           <p>
             Se quiser, eu te mostro um pouco do lugar onde desenho, preparo cada detalhe e recebo quem chega para tatuar comigo.
           </p>
@@ -3093,8 +3378,6 @@ function StudioTourExperience({
           </motion.div>
         </AnimatePresence>
         <div className="ks-studio-tour-veil" aria-hidden="true" />
-        <BrandStar variant={3} size={72} className="ks-studio-tour-star ks-studio-tour-star-a" />
-        <BrandStar variant={2} size={28} className="ks-studio-tour-star ks-studio-tour-star-b" />
       </div>
 
       <button type="button" className="ks-studio-tour-close" onClick={onClose} aria-label="Fechar tour do studio">
@@ -3154,7 +3437,7 @@ function StudioTourExperience({
           className="ks-studio-tour-arrow"
           onClick={goNext}
           disabled={isLast}
-          aria-label="PrÃ³xima etapa"
+          aria-label="Próxima etapa"
         >
           <ArrowRight size={18} />
         </button>
@@ -3183,8 +3466,6 @@ function FeatureStrip({
       <div className="ks-care-path-backdrop" aria-hidden="true">
         <div className="ks-care-path-grain" />
       </div>
-      <BrandStar variant={2} size={280} className="ks-care-path-deco ks-care-path-deco-a" />
-      <BrandStar variant={3} size={160} className="ks-care-path-deco ks-care-path-deco-b" />
 
       <motion.header
         className="ks-care-path-intro"
@@ -3324,11 +3605,15 @@ function CtaBand({
   artwork?: string;
 }) {
   return (
-    <section className="ks-cta-band">
-      {artwork && <img className="ks-cta-band-artwork" src={artwork} alt="" aria-hidden="true" />}
-      <h2 className="ks-headline-md">{title}</h2>
-      <p className="ks-body-lg ks-muted">{text}</p>
-      {to ? <PrimaryLink to={to}>{cta}</PrimaryLink> : <a className="ks-primary-link" href={href}>{cta}<ArrowRight size={16} /></a>}
+    <section
+      className={`ks-cta-band${artwork ? " has-artwork" : ""}`}
+      style={artwork ? ({ "--ks-cta-artwork": `url("${artwork}")` } as CSSProperties) : undefined}
+    >
+      <div className="ks-cta-band-copy">
+        <h2 className="ks-headline-md">{title}</h2>
+        <p className="ks-body-lg ks-muted">{text}</p>
+        {to ? <PrimaryLink to={to}>{cta}</PrimaryLink> : <a className="ks-primary-link" href={href}>{cta}<ArrowRight size={16} /></a>}
+      </div>
     </section>
   );
 }
@@ -3352,23 +3637,22 @@ function TextLink({ to, children }: { to: string; children: React.ReactNode }) {
 }
 
 function NotFoundPage() {
-  const waHref = wa("OlÃ¡, Karina! Vim pelo site e queria conversar sobre uma tattoo.");
+  const waHref = wa("Olá, Karina! Vim pelo site e queria conversar sobre uma tattoo.");
 
   return (
     <section className="ks-section ks-not-found" aria-labelledby="ks-not-found-title">
-      <BrandStar variant={2} size={180} className="ks-not-found-deco" />
       <div className="ks-not-found-inner">
         <span className="ks-label-caps ks-gold">404</span>
         <h1 id="ks-not-found-title" className="ks-headline-md">
           Ops, essa arte saiu do caminho.
         </h1>
         <p className="ks-body-lg ks-muted">
-          A pÃ¡gina que vocÃª tentou acessar nÃ£o foi encontrada. Volte para o inÃ­cio, veja o portfÃ³lio ou
+          A página que você tentou acessar não foi encontrada. Volte para o início, veja o portfólio ou
           fale comigo pelo WhatsApp.
         </p>
         <div className="ks-not-found-actions ks-actions">
-          <PrimaryLink to="/">Voltar para o inÃ­cio</PrimaryLink>
-          <TextLink to="/portfolio">Ver portfÃ³lio</TextLink>
+          <PrimaryLink to="/">Voltar para o início</PrimaryLink>
+          <TextLink to="/portfolio">Ver portfólio</TextLink>
           <a
             className="ks-primary-link"
             href={waHref}

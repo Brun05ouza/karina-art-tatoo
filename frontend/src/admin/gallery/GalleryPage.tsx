@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { ChevronDown, ChevronUp, Pencil, Star, Trash2 } from "lucide-react";
 import {
@@ -10,13 +10,19 @@ import {
   reorderGallery,
   type GalleryItem,
 } from "../auth/api";
-import { COLLECTIONS, type GalleryCollectionId } from "./collections";
-import { ItemForm, type ItemFormValues } from "./ItemForm";
+import {
+  COLLECTIONS,
+  isIncompleteReformulation,
+  type GalleryCollectionId,
+} from "./collections";
+import { ItemForm, type ItemFormSavePayload } from "./ItemForm";
+import { focalStyle } from "../../app/focal";
 
 type Mode = { type: "list" } | { type: "create" } | { type: "edit"; item: GalleryItem };
 
 export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionId }) {
   const config = COLLECTIONS[collectionId];
+  const beforeAfter = config.imageMode === "before-after";
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,6 +31,21 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
   const [busyId, setBusyId] = useState<string | null>(null);
   const [leavingId, setLeavingId] = useState<string | null>(null);
   const supportsFeatured = collectionId === "portfolio";
+
+  const displayItems = useMemo(() => {
+    if (!beforeAfter) return items;
+    return [...items].sort((a, b) => {
+      const aPending = isIncompleteReformulation(a);
+      const bPending = isIncompleteReformulation(b);
+      if (aPending !== bPending) return aPending ? -1 : 1;
+      return a.sort_order - b.sort_order;
+    });
+  }, [items, beforeAfter]);
+
+  const pendingCount = useMemo(
+    () => (beforeAfter ? items.filter(isIncompleteReformulation).length : 0),
+    [items, beforeAfter],
+  );
 
   const reload = useCallback(async () => {
     setError(null);
@@ -51,11 +72,7 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
     return () => window.clearTimeout(t);
   }, [notice]);
 
-  async function saveItem(payload: {
-    values: ItemFormValues;
-    image?: { imageUrl: string; imageKey: string };
-    focal: { x: number; y: number };
-  }) {
+  async function saveItem(payload: ItemFormSavePayload) {
     const v = payload.values;
     const base: Record<string, unknown> = {
       title: v.title.trim(),
@@ -69,6 +86,15 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
     if (config.fields.includes("link")) base.link = v.link.trim() || null;
     if (config.fields.includes("status")) base.status = v.status;
 
+    if (beforeAfter) {
+      base.afterFocalX = payload.afterFocal.x;
+      base.afterFocalY = payload.afterFocal.y;
+      if (payload.afterImage) {
+        base.after_image_url = payload.afterImage.imageUrl;
+        base.after_image_key = payload.afterImage.imageKey;
+      }
+    }
+
     if (mode.type === "edit") {
       if (payload.image) {
         base.image_url = payload.image.imageUrl;
@@ -76,7 +102,7 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
       }
       await patchGalleryItem(mode.item.id, base);
     } else {
-      if (!payload.image) throw new Error("Escolha uma foto.");
+      if (!payload.image) throw new Error(beforeAfter ? "Escolha a foto do antes." : "Escolha uma foto.");
       base.image_url = payload.image.imageUrl;
       base.image_key = payload.image.imageKey;
       await createGalleryItem(collectionId, base);
@@ -84,10 +110,10 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
   }
 
   async function move(id: string, dir: -1 | 1) {
-    const index = items.findIndex((i) => i.id === id);
+    const index = displayItems.findIndex((i) => i.id === id);
     const next = index + dir;
-    if (index < 0 || next < 0 || next >= items.length) return;
-    const ids = items.map((i) => i.id);
+    if (index < 0 || next < 0 || next >= displayItems.length) return;
+    const ids = displayItems.map((i) => i.id);
     const tmp = ids[index]!;
     ids[index] = ids[next]!;
     ids[next] = tmp;
@@ -152,6 +178,7 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
 
   function metaLine(item: GalleryItem): string {
     const parts: string[] = [];
+    if (beforeAfter && isIncompleteReformulation(item)) parts.push("Aguardando depois");
     if (item.featured) parts.push("Destaque");
     if (!item.published) parts.push("Oculto");
     if (item.category) parts.push(item.category);
@@ -206,6 +233,13 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
           <p className="ks-admin-kicker">Galeria</p>
           <h1 className="ks-admin-title">{config.label}</h1>
           <p className="ks-admin-lead">{config.help}</p>
+          {beforeAfter && pendingCount > 0 ? (
+            <p className="ks-gallery-pending-summary" role="status">
+              {pendingCount === 1
+                ? "1 caso aguardando foto do depois"
+                : `${pendingCount} casos aguardando foto do depois`}
+            </p>
+          ) : null}
         </div>
         <button type="button" className="ks-admin-btn ks-gallery-add" onClick={() => setMode({ type: "create" })}>
           Adicionar {config.singular}
@@ -229,7 +263,7 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
       {!loading && items.length === 0 ? (
         <div className="ks-gallery-empty">
           <img src="/assets/brand/star-karina-outline.webp" alt="" className="ks-gallery-empty-star" />
-          <p>Nenhum item ainda — comece pela foto.</p>
+          <p>{beforeAfter ? "Nenhum caso ainda — comece pela foto do antes." : "Nenhum item ainda — comece pela foto."}</p>
           <button type="button" className="ks-admin-btn" onClick={() => setMode({ type: "create" })}>
             Adicionar o primeiro
           </button>
@@ -237,101 +271,132 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
       ) : null}
 
       <ul className="ks-gallery-grid">
-        {items.map((item, index) => (
-          <li
-            key={item.id}
-            className={`ks-gallery-tile${item.published ? "" : " is-hidden"}${item.featured ? " is-featured" : ""}${leavingId === item.id ? " is-leave" : ""}`}
-          >
-            <button
-              type="button"
-              className="ks-gallery-tile-main"
-              disabled={busyId === item.id}
-              onClick={() => setMode({ type: "edit", item })}
+        {displayItems.map((item, index) => {
+          const incomplete = beforeAfter && isIncompleteReformulation(item);
+          return (
+            <li
+              key={item.id}
+              className={`ks-gallery-tile${item.published ? "" : " is-hidden"}${item.featured ? " is-featured" : ""}${incomplete ? " is-pending" : ""}${leavingId === item.id ? " is-leave" : ""}`}
             >
-              <span className="ks-gallery-tile-media">
-                <img
-                  src={item.image_url}
-                  alt={item.alt_text || item.title}
-                  width={400}
-                  height={500}
-                  loading="lazy"
-                  decoding="async"
-                  style={{
-                    ["--focal-x" as string]: `${item.focal_x ?? 50}%`,
-                    ["--focal-y" as string]: `${item.focal_y ?? 50}%`,
-                    objectPosition: `${item.focal_x ?? 50}% ${item.focal_y ?? 50}%`,
-                  }}
-                />
-                {item.featured ? (
-                  <span className="ks-gallery-featured-badge">Destaque</span>
-                ) : null}
-              </span>
-              <span className="ks-gallery-tile-copy">
-                <span className="ks-gallery-tile-title">{item.title}</span>
-                {metaLine(item) ? <span className="ks-gallery-tile-meta">{metaLine(item)}</span> : null}
-              </span>
-            </button>
-
-            <div className="ks-gallery-tile-toolbar">
-              <div className="ks-gallery-order">
-                <button
-                  type="button"
-                  className="ks-gallery-icon-btn"
-                  aria-label="Subir"
-                  disabled={index === 0 || busyId === item.id}
-                  onClick={() => void move(item.id, -1)}
-                >
-                  <ChevronUp size={18} />
-                </button>
-                <button
-                  type="button"
-                  className="ks-gallery-icon-btn"
-                  aria-label="Descer"
-                  disabled={index === items.length - 1 || busyId === item.id}
-                  onClick={() => void move(item.id, 1)}
-                >
-                  <ChevronDown size={18} />
-                </button>
-              </div>
-              {supportsFeatured ? (
-                <button
-                  type="button"
-                  className={`ks-gallery-icon-btn${item.featured ? " is-featured" : ""}`}
-                  aria-label={item.featured ? "Remover destaque" : "Marcar como destaque"}
-                  aria-pressed={item.featured}
-                  disabled={busyId === item.id}
-                  title={
-                    !item.published && !item.featured
-                      ? "Publique o item antes de destacá-lo"
-                      : item.featured
-                        ? "Remover destaque"
-                        : "Projeto em destaque"
-                  }
-                  onClick={() => void toggleFeatured(item)}
-                >
-                  <Star size={16} fill={item.featured ? "currentColor" : "none"} />
-                </button>
-              ) : null}
               <button
                 type="button"
-                className="ks-gallery-edit-btn"
+                className="ks-gallery-tile-main"
                 disabled={busyId === item.id}
                 onClick={() => setMode({ type: "edit", item })}
               >
-                <Pencil size={15} /> Editar
+                {beforeAfter ? (
+                  <span className="ks-gallery-tile-media ks-gallery-tile-media--pair">
+                    <img
+                      src={item.image_url}
+                      alt={`Antes — ${item.alt_text || item.title}`}
+                      width={200}
+                      height={250}
+                      loading="lazy"
+                      decoding="async"
+                      style={focalStyle(item.focal_x, item.focal_y)}
+                    />
+                    {item.after_image_url ? (
+                      <img
+                        src={item.after_image_url}
+                        alt={`Depois — ${item.alt_text || item.title}`}
+                        width={200}
+                        height={250}
+                        loading="lazy"
+                        decoding="async"
+                        style={focalStyle(item.after_focal_x, item.after_focal_y)}
+                      />
+                    ) : (
+                      <span className="ks-gallery-tile-after-empty" aria-hidden="true">
+                        Depois
+                      </span>
+                    )}
+                    {incomplete ? (
+                      <span className="ks-gallery-pending-badge">Aguardando foto do depois</span>
+                    ) : null}
+                  </span>
+                ) : (
+                  <span className="ks-gallery-tile-media">
+                    <img
+                      src={item.image_url}
+                      alt={item.alt_text || item.title}
+                      width={400}
+                      height={500}
+                      loading="lazy"
+                      decoding="async"
+                      style={focalStyle(item.focal_x, item.focal_y)}
+                    />
+                    {item.featured ? (
+                      <span className="ks-gallery-featured-badge">Destaque</span>
+                    ) : null}
+                  </span>
+                )}
+                <span className="ks-gallery-tile-copy">
+                  <span className="ks-gallery-tile-title">{item.title}</span>
+                  {metaLine(item) ? <span className="ks-gallery-tile-meta">{metaLine(item)}</span> : null}
+                </span>
               </button>
-              <button
-                type="button"
-                className="ks-gallery-icon-btn ks-gallery-icon-btn--danger"
-                aria-label={`Remover ${item.title}`}
-                disabled={busyId === item.id}
-                onClick={() => void remove(item)}
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          </li>
-        ))}
+
+              <div className="ks-gallery-tile-toolbar">
+                <div className="ks-gallery-order">
+                  <button
+                    type="button"
+                    className="ks-gallery-icon-btn"
+                    aria-label="Subir"
+                    disabled={index === 0 || busyId === item.id}
+                    onClick={() => void move(item.id, -1)}
+                  >
+                    <ChevronUp size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    className="ks-gallery-icon-btn"
+                    aria-label="Descer"
+                    disabled={index === displayItems.length - 1 || busyId === item.id}
+                    onClick={() => void move(item.id, 1)}
+                  >
+                    <ChevronDown size={18} />
+                  </button>
+                </div>
+                {supportsFeatured ? (
+                  <button
+                    type="button"
+                    className={`ks-gallery-icon-btn${item.featured ? " is-featured" : ""}`}
+                    aria-label={item.featured ? "Remover destaque" : "Marcar como destaque"}
+                    aria-pressed={item.featured}
+                    disabled={busyId === item.id}
+                    title={
+                      !item.published && !item.featured
+                        ? "Publique o item antes de destacá-lo"
+                        : item.featured
+                          ? "Remover destaque"
+                          : "Projeto em destaque"
+                    }
+                    onClick={() => void toggleFeatured(item)}
+                  >
+                    <Star size={16} fill={item.featured ? "currentColor" : "none"} />
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className="ks-gallery-edit-btn"
+                  disabled={busyId === item.id}
+                  onClick={() => setMode({ type: "edit", item })}
+                >
+                  <Pencil size={15} /> Editar
+                </button>
+                <button
+                  type="button"
+                  className="ks-gallery-icon-btn ks-gallery-icon-btn--danger"
+                  aria-label={`Remover ${item.title}`}
+                  disabled={busyId === item.id}
+                  onClick={() => void remove(item)}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 export type LinkBioButton = {
+  kind?: "whatsapp" | "external" | "internal";
   id: string;
   label: string;
   url: string;
@@ -137,7 +138,7 @@ export const defaultLinkBioContent: LinkBioContent = {
   studioLabel: "meu studio",
   studioTitle: "Um espaço para criar com calma",
   studioText: "É aqui que eu desenho, preparo cada detalhe e recebo quem chega para transformar ideia em pele.",
-  studioImageUrl: "/assets/studio/studio-5.jpeg",
+  studioImageUrl: "/assets/studio/processo.jpeg",
   studioButton: "Conhecer o studio",
   studioButtonUrl: "/sobre",
 
@@ -178,16 +179,17 @@ function normalizeLinkBio(raw: Partial<LinkBioContent> | null | undefined): Link
   };
 }
 
-export async function loadLinkBioContent(): Promise<LinkBioContent> {
+export async function loadLinkBioContent(): Promise<LinkBioContent & { linksError: boolean }> {
   const base = normalizeLinkBio(defaultLinkBioContent);
 
   const [linksResult, profileResult] = await Promise.allSettled([
-    fetch("/api/bio-links", { headers: { Accept: "application/json" } }).then(async (res) => {
+    fetch("/api/bio-links", { cache: "no-store", signal: AbortSignal.timeout(10000), headers: { Accept: "application/json" } }).then(async (res) => {
       if (!res.ok) throw new Error("bio-links");
       return (await res.json()) as {
         items?: Array<{
           id: string;
           label: string;
+          kind?: "whatsapp" | "external" | "internal";
           url: string;
           icon: string | null;
           featured: boolean;
@@ -196,7 +198,7 @@ export async function loadLinkBioContent(): Promise<LinkBioContent> {
         }>;
       };
     }),
-    fetch("/api/bio-profile", { headers: { Accept: "application/json" } }).then(async (res) => {
+    fetch("/api/bio-profile", { cache: "no-store", signal: AbortSignal.timeout(10000), headers: { Accept: "application/json" } }).then(async (res) => {
       if (!res.ok) throw new Error("bio-profile");
       return (await res.json()) as {
         profile?: {
@@ -219,13 +221,15 @@ export async function loadLinkBioContent(): Promise<LinkBioContent> {
     }),
   ]);
 
-  let next: LinkBioContent = { ...base };
+  // Defaults are editorial copy, never a fallback for admin-managed links.
+  let next: LinkBioContent = { ...base, buttons: [] };
 
   if (linksResult.status === "fulfilled" && Array.isArray(linksResult.value.items)) {
     next = {
       ...next,
       buttons: linksResult.value.items.map((item, index) => ({
         id: item.id,
+        kind: item.kind,
         label: item.label,
         url: item.url,
         icon: item.icon || "link",
@@ -282,24 +286,42 @@ export async function loadLinkBioContent(): Promise<LinkBioContent> {
     }
   }
 
-  return next;
+  return { ...next, linksError: linksResult.status !== "fulfilled" || !Array.isArray(linksResult.value.items) };
 }
 
-export function useLinkBioContent(): LinkBioContent & { loaded: boolean } {
-  const [data, setData] = useState<LinkBioContent>(() => normalizeLinkBio(defaultLinkBioContent));
-  const [loaded, setLoaded] = useState(true);
+export function useLinkBioContent() {
+  const [data, setData] = useState<LinkBioContent>(() => ({ ...normalizeLinkBio(defaultLinkBioContent), buttons: [] }));
+  const [loaded, setLoaded] = useState(false);
+  const [linksError, setLinksError] = useState(false);
+  const [revision, setRevision] = useState(0);
 
   useEffect(() => {
     let active = true;
-    loadLinkBioContent().then((next) => {
-      if (!active) return;
-      setData(next);
-      setLoaded(true);
-    });
+    let pending = false;
+    const refresh = async () => {
+      if (pending || document.visibilityState === "hidden") return;
+      pending = true;
+      try {
+        const next = await loadLinkBioContent();
+        if (!active) return;
+        setData(next);
+        setLinksError(next.linksError);
+        setLoaded(true);
+      } finally { pending = false; }
+    };
+    void refresh();
+    window.addEventListener("focus", refresh);
+    window.addEventListener("online", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    const timer = window.setInterval(refresh, 30000);
     return () => {
       active = false;
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("online", refresh);
+      document.removeEventListener("visibilitychange", refresh);
     };
-  }, []);
+  }, [revision]);
 
-  return { ...data, loaded };
+  return { ...data, loaded, linksError, retry: () => setRevision((value) => value + 1) };
 }

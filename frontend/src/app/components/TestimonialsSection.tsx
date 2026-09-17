@@ -1,7 +1,6 @@
 import { useRef, useState, type CSSProperties } from "react";
 import { motion, useInView, useReducedMotion } from "motion/react";
 import { ArrowRight, Pause, Play } from "lucide-react";
-import { BrandStar } from "./BrandStar";
 import { GuardedLink } from "./ComingSoonModal";
 import { StarGlyph } from "./StarGlyph";
 
@@ -104,9 +103,6 @@ export function TestimonialsSection() {
     <section className="ks-testimonials" aria-labelledby="ks-testimonials-title">
       <div className="ks-testimonials-grain" aria-hidden="true" />
       <div className="ks-testimonials-glow" aria-hidden="true" />
-      <BrandStar variant={2} size={280} className="ks-testimonials-deco ks-testimonials-deco-a" />
-      <BrandStar variant={3} size={150} className="ks-testimonials-deco ks-testimonials-deco-b" />
-      <BrandStar variant={2} size={64} className="ks-testimonials-deco ks-testimonials-deco-c" />
 
       <div className="ks-testimonials-inner">
         <motion.div

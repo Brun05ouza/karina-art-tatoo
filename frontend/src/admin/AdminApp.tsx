@@ -91,6 +91,14 @@ export function AdminApp() {
               }
             />
             <Route
+              path="/admin/galeria/reformulacoes"
+              element={
+                <RequireAuth>
+                  <GalleryPage collectionId="reformulacoes" />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/admin/bio-links"
               element={
                 <RequireAuth>

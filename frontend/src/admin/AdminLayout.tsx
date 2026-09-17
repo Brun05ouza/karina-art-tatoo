@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   LinkIcon,
   LogOut,
+  RefreshCw,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
@@ -18,6 +19,7 @@ function screenLabel(pathname: string): string {
   if (pathname.startsWith("/admin/galeria/portfolio")) return "Portfólio";
   if (pathname.startsWith("/admin/galeria/flash")) return "Flash tattoos";
   if (pathname.startsWith("/admin/galeria/produtos")) return "Produtos";
+  if (pathname.startsWith("/admin/galeria/reformulacoes")) return "Reformulações";
   if (pathname.startsWith("/admin/bio-links")) return "Links da bio";
   if (pathname === "/admin/usuarios") return "Usuários";
   if (pathname === "/admin/senha") return "Segurança";
@@ -137,6 +139,10 @@ export function AdminLayout({ children }: { children: ReactNode }) {
         <NavLink to="/admin/galeria/produtos" title="Produtos">
           <ShoppingBag size={18} aria-hidden />
           <span>Produtos</span>
+        </NavLink>
+        <NavLink to="/admin/galeria/reformulacoes" title="Reformulações">
+          <RefreshCw size={18} aria-hidden />
+          <span>Reform.</span>
         </NavLink>
         <NavLink to="/admin/bio-links" title="Links da bio">
           <LinkIcon size={18} aria-hidden />

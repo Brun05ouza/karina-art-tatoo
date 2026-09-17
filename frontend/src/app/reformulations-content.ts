@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { PublicGalleryItem } from "./gallery-api";
 
 export type ReformulationPoint = { id: string; label: string; active: boolean; order: number };
 export type ReformulationCard = { id: string; title: string; text: string; active: boolean; order: number };
@@ -15,6 +16,10 @@ export type ReformulationCase = {
   afterImageUrl?: string;
   beforeVideoUrl?: string;
   afterVideoUrl?: string;
+  beforeFocalX?: number;
+  beforeFocalY?: number;
+  afterFocalX?: number;
+  afterFocalY?: number;
 };
 
 export type ReformulationsContent = {
@@ -34,6 +39,7 @@ export type ReformulationsContent = {
   portfolioEyebrow: string;
   portfolioTitle: string;
   portfolioText: string;
+  /** Placeholder de seção vazia — some quando há casos completos. */
   caseNote: string;
   possibilitiesEyebrow: string;
   possibilitiesTitle: string;
@@ -52,7 +58,7 @@ export const defaultReformulationsContent: ReformulationsContent = {
   heroText: "Um novo projeto criado a partir da tattoo que você já tem, para melhorar desenho, composição e leitura sem apagar sua história.",
   heroButton: "Quero avaliar minha tattoo",
   heroButtonUrl: "/orcamento",
-  heroImageUrl: "",
+  heroImageUrl: "/assets/hero-reformulacoes.png",
   introEyebrow: "Reconstruir para evoluir",
   introTitle: "A tattoo continua sendo sua. O desenho evolui.",
   introText: "Partimos do desenho existente para corrigir, reorganizar e aprimorar o que já está na sua pele.",
@@ -82,10 +88,30 @@ export const defaultReformulationsContent: ReformulationsContent = {
   ctaButtonUrl: "/orcamento",
 };
 
+/** Fallback se a API falhar — casos sem foto (placeholders). */
 export const defaultReformulationCases: ReformulationCase[] = [
   { id: "reform-1", order: 1, active: true, title: "Cobertura botânica", description: "Releitura com folhagens e novas linhas.", category: "Cobertura", status: "Publicado", beforeImageUrl: "", afterImageUrl: "" },
   { id: "reform-2", order: 2, active: true, title: "Renovação ornamental", description: "Redesenho e recuperação de contraste.", category: "Revitalização", status: "Publicado", beforeImageUrl: "", afterImageUrl: "" },
 ];
+
+function mapReformulationCases(items: PublicGalleryItem[]): ReformulationCase[] {
+  return items
+    .filter((item) => Boolean(item.image_url && item.after_image_url))
+    .map((item, index) => ({
+      id: item.id,
+      order: item.sort_order ?? index,
+      active: true,
+      title: item.title,
+      category: item.category?.trim() || "Reformulação",
+      status: "Publicado",
+      beforeImageUrl: item.image_url,
+      afterImageUrl: item.after_image_url ?? undefined,
+      beforeFocalX: item.focal_x ?? 50,
+      beforeFocalY: item.focal_y ?? 50,
+      afterFocalX: item.after_focal_x ?? 50,
+      afterFocalY: item.after_focal_y ?? 50,
+    }));
+}
 
 export function useReformulationsContent(): ReformulationsContent {
   const [data, setData] = useState<ReformulationsContent>(defaultReformulationsContent);
@@ -104,13 +130,25 @@ export function useReformulationsContent(): ReformulationsContent {
 }
 
 export function useReformulationCases(): ReformulationCase[] {
-  const [items, setItems] = useState<ReformulationCase[]>(defaultReformulationCases);
+  const [items, setItems] = useState<ReformulationCase[]>([]);
 
   useEffect(() => {
     let active = true;
-    void Promise.resolve(defaultReformulationCases).then((next) => {
-      if (active) setItems(next);
-    });
+    void (async () => {
+      try {
+        const res = await fetch("/api/gallery/reformulacoes", {
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = (await res.json()) as { items?: PublicGalleryItem[] };
+        if (!active) return;
+        const rows = Array.isArray(data.items) ? data.items : [];
+        setItems(mapReformulationCases(rows));
+      } catch {
+        if (!active) return;
+        setItems(defaultReformulationCases);
+      }
+    })();
     return () => {
       active = false;
     };

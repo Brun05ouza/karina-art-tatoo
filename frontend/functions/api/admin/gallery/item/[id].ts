@@ -7,6 +7,7 @@ import {
   setItemFeatured,
   updateItem,
   validatePatch,
+  assertPublishAllowed,
 } from "../../../../_lib/gallery";
 import {
   galleryPublicPaths,
@@ -35,6 +36,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     const parsed = validatePatch(current.collection, body);
     if (!parsed.ok) return error(400, parsed.message);
 
+    const publishGate = assertPublishAllowed(current.collection, current, parsed.value);
+    if (!publishGate.ok) return error(400, publishGate.message);
+
     if (parsed.value.featured === true && !(parsed.value.published ?? current.published)) {
       return error(
         400,
@@ -45,6 +49,13 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     const previousKey =
       parsed.value.image_key && parsed.value.image_key !== current.image_key
         ? current.image_key
+        : null;
+
+    const previousAfterKey =
+      parsed.value.after_image_key !== undefined &&
+      parsed.value.after_image_key !== current.after_image_key &&
+      current.after_image_key
+        ? current.after_image_key
         : null;
 
     const { featured: featuredPatch, ...restPatch } = parsed.value;
@@ -72,14 +83,15 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       if (!item) return error(404, "Item não encontrado.");
     }
 
-    if (previousKey) {
+    for (const key of [previousKey, previousAfterKey]) {
+      if (!key) continue;
       try {
-        const removed = await removeObject(context.env, previousKey);
+        const removed = await removeObject(context.env, key);
         if (!removed.ok) {
-          console.error("[gallery] falha ao apagar imagem antiga", previousKey, removed);
+          console.error("[gallery] falha ao apagar imagem antiga", key, removed);
         }
       } catch (err) {
-        console.error("[gallery] falha ao apagar imagem antiga", previousKey, err);
+        console.error("[gallery] falha ao apagar imagem antiga", key, err);
       }
     }
 
@@ -108,17 +120,22 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
       invalidatePublicPaths(context.request, context.env, galleryPublicPaths(deleted.collection)),
     );
 
-    try {
-      const removed = await removeObject(context.env, deleted.image_key);
-      if (!removed.ok) {
-        console.error(
-          "[gallery] item removido do Neon, mas falhou no bucket:",
-          deleted.image_key,
-          removed,
-        );
+    const keys = [deleted.image_key, deleted.after_image_key].filter(
+      (key): key is string => Boolean(key?.trim()),
+    );
+    for (const key of keys) {
+      try {
+        const removed = await removeObject(context.env, key);
+        if (!removed.ok) {
+          console.error(
+            "[gallery] item removido do Neon, mas falhou no bucket:",
+            key,
+            removed,
+          );
+        }
+      } catch (err) {
+        console.error("[gallery] falha ao limpar bucket após delete:", key, err);
       }
-    } catch (err) {
-      console.error("[gallery] falha ao limpar bucket após delete:", deleted.image_key, err);
     }
 
     return json({ ok: true, id: deleted.id });

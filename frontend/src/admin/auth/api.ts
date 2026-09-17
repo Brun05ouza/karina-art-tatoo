@@ -147,7 +147,7 @@ export function setUserActive(id: string, active: boolean) {
   });
 }
 
-export type GalleryCollectionId = "portfolio" | "flash" | "produtos";
+export type GalleryCollectionId = "portfolio" | "flash" | "produtos" | "reformulacoes";
 
 export type GalleryItem = {
   id: string;
@@ -165,6 +165,10 @@ export type GalleryItem = {
   featured: boolean;
   focal_x: number;
   focal_y: number;
+  after_image_url: string | null;
+  after_image_key: string | null;
+  after_focal_x: number;
+  after_focal_y: number;
   created_at: string;
   updated_at: string;
 };
@@ -380,13 +384,39 @@ export type AdminSettings = {
   whatsappPhone: string;
   whatsappPhoneDisplay: string;
   developmentMode: boolean;
+  youtubeVisible: boolean;
+  youtubeUrl: string;
+  youtubeThumbUrl: string;
+  youtubeThumbKey: string;
+  youtubeTrailerUrl: string;
+  youtubeTrailerKey: string;
+  productsHeroImageUrl: string;
+  productsHeroImageKey: string;
+  productsHeroFocalX: number;
+  productsHeroFocalY: number;
 };
 
 export function getAdminSettings() {
   return request<AdminSettings>("/api/admin/settings");
 }
 
-export function patchAdminSettings(body: { whatsappPhone?: string; developmentMode?: boolean }) {
+export function patchAdminSettings(body: {
+  whatsappPhone?: string;
+  developmentMode?: boolean;
+  youtubeVisible?: boolean;
+  youtubeUrl?: string;
+  youtubeThumbUrl?: string;
+  youtubeThumbKey?: string;
+  youtubeTrailerUrl?: string;
+  youtubeTrailerKey?: string;
+  clearYoutubeThumb?: boolean;
+  clearYoutubeTrailer?: boolean;
+  productsHeroImageUrl?: string;
+  productsHeroImageKey?: string;
+  productsHeroFocalX?: number;
+  productsHeroFocalY?: number;
+  clearProductsHeroImage?: boolean;
+}) {
   return request<AdminSettings & { ok: true }>("/api/admin/settings", {
     method: "PATCH",
     body: JSON.stringify(body),

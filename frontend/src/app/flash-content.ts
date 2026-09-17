@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchGalleryItems } from "./gallery-api";
+import { fetchGalleryItems, type PublicGalleryItem } from "./gallery-api";
 
 export type FlashPageContent = {
   heroKicker: string;
@@ -16,7 +16,7 @@ export type FlashTattooItem = {
   title: string;
   description?: string;
   category?: string;
-  status: string;
+  status: "disponivel" | "vendido" | string;
   price?: string;
   size?: string;
   imageUrl?: string;
@@ -28,18 +28,18 @@ export const defaultFlashPageContent: FlashPageContent = {
   heroKicker: "Flash Tattoos",
   heroTitle: "Flash Tattoos disponíveis",
   heroText: "Artes autorais prontas para tatuar, com disponibilidade limitada.",
-  heroImageUrl: "",
+  heroImageUrl: "/assets/flashs/gatin-sem-bkg.png",
 };
 
 export const defaultFlashItems: FlashTattooItem[] = [];
 
-function formatFlashStatus(raw: string | null | undefined): string {
+function formatFlashStatus(raw: string | null | undefined): "disponivel" | "vendido" {
   const value = (raw || "disponivel").toLowerCase();
-  if (value === "vendido") return "Vendido";
-  return "Disponível";
+  if (value === "vendido") return "vendido";
+  return "disponivel";
 }
 
-function mapFlash(items: Awaited<ReturnType<typeof fetchGalleryItems>>): FlashTattooItem[] {
+function mapFlash(items: PublicGalleryItem[]): FlashTattooItem[] {
   return items
     .filter((item) => Boolean(item.image_url))
     .map((item, index) => ({
@@ -47,9 +47,8 @@ function mapFlash(items: Awaited<ReturnType<typeof fetchGalleryItems>>): FlashTa
       order: item.sort_order ?? index,
       active: true,
       title: item.title,
-      description: item.price ? `Preço: ${item.price}` : undefined,
       status: formatFlashStatus(item.status),
-      price: item.price ?? undefined,
+      price: item.price?.trim() || undefined,
       imageUrl: item.image_url,
       focalX: item.focal_x ?? 50,
       focalY: item.focal_y ?? 50,
@@ -61,7 +60,17 @@ export async function loadFlashPageContent(): Promise<FlashPageContent> {
 }
 
 export async function loadFlashItems(): Promise<FlashTattooItem[]> {
-  return mapFlash(await fetchGalleryItems("flash"));
+  try {
+    const res = await fetch("/api/gallery/flash", {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = (await res.json()) as { items?: PublicGalleryItem[] };
+    return mapFlash(Array.isArray(data.items) ? data.items : []);
+  } catch {
+    return mapFlash(await fetchGalleryItems("flash"));
+  }
 }
 
 export function useFlashPageContent(): FlashPageContent & { loaded: boolean } {

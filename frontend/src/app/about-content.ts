@@ -48,11 +48,11 @@ export const defaultAboutContent: AboutContent = {
   eyebrow: "A artista",
   title: "Sobre a Karina Sarte",
   intro: "Karina Sarte cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele.",
-  heroImageUrl: "",
+  heroImageUrl: "/assets/hero-sobre.jpeg",
 
   biography: "Minha estética é autoral, com traço fino e referências botânicas. Construo projetos que equilibram delicadeza e presença. Todo atendimento começa com escuta: quero entender suas referências, as proporções e o significado por trás da ideia.\n\nEm Teresópolis, criei um espaço de criação e cuidado. Da primeira mensagem à cicatrização, acompanho cada etapa com orientação clara e muita atenção.",
   quote: "Crio projetos que abraçam o corpo e são uma extensão da sua personalidade.",
-  imageUrl: "",
+  imageUrl: "/assets/karina-sarte.png",
 
   approachCards: [
     { id: "1", title: "Processo criativo", text: "Penso cada projeto como uma conversa entre sua história, seu corpo e minha linguagem visual.", active: true, order: 1 },
@@ -60,10 +60,10 @@ export const defaultAboutContent: AboutContent = {
     { id: "3", title: "Ambiente seguro", text: "Trabalho com materiais adequados, biossegurança e orientações claras em cada etapa.", active: true, order: 3 },
   ],
 
-  behindScenesImageUrl: "",
+  behindScenesImageUrl: "/assets/karina-sarte-bastidores.webp",
   behindScenesCaption: "Eu depois de comer strogonoff com feijão e decidir que era uma ótima hora pra criar arte.",
 
-  studioInviteImageUrl: "/assets/studio/studio-1.jpeg",
+  studioInviteImageUrl: "/assets/studio/entrada.jpeg",
   studioTourSteps: [
     {
       id: "entrada",
@@ -72,7 +72,7 @@ export const defaultAboutContent: AboutContent = {
       label: "Entrada",
       title: "Essa é a entrada.",
       text: "É daqui que começa a experiência: um espaço mais íntimo, calmo e preparado para te receber.",
-      imageUrl: "/assets/studio/studio-1.jpeg",
+      imageUrl: "/assets/studio/entrada.jpeg",
     },
     {
       id: "espaco",
@@ -81,7 +81,7 @@ export const defaultAboutContent: AboutContent = {
       label: "Espaço",
       title: "Meu cantinho de criação.",
       text: "É aqui que eu desenho, organizo referências e preparo cada detalhe antes da tattoo acontecer.",
-      imageUrl: "/assets/studio/studio-3.jpeg",
+      imageUrl: "/assets/studio/espaco.jpeg",
     },
     {
       id: "processo",
@@ -90,7 +90,7 @@ export const defaultAboutContent: AboutContent = {
       label: "Processo",
       title: "Onde o projeto ganha forma.",
       text: "Entre conversas, traços e ajustes, cada ideia vai encontrando o próprio lugar.",
-      imageUrl: "/assets/studio/studio-5.jpeg",
+      imageUrl: "/assets/studio/processo.jpeg",
     },
     {
       id: "vista",
@@ -99,16 +99,7 @@ export const defaultAboutContent: AboutContent = {
       label: "Vista",
       title: "Uma vista que acompanha o processo.",
       text: "Meu studio também carrega um pouco de Teresópolis — e isso faz parte do clima do espaço.",
-      imageUrl: "/assets/studio/studio-8.jpeg",
-    },
-    {
-      id: "cuidado",
-      order: 5,
-      active: true,
-      label: "Cuidado",
-      title: "Tudo pensado com cuidado.",
-      text: "Do ambiente aos materiais, eu gosto que cada detalhe faça a experiência ser leve, segura e especial.",
-      imageUrl: "/assets/studio/studio-11.jpeg",
+      imageUrl: "/assets/studio/vista.jpeg",
     },
   ],
 };

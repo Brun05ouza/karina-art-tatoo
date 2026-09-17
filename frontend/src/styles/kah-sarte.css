@@ -1,7 +1,7 @@
-/* Karina Sarte â€” Vintage Editorial Tattoo Studio */
+/* Karina Sarte — Vintage Editorial Tattoo Studio */
 
 :root {
-  /* â”€â”€ Paleta base (5 cores) â”€â”€ */
+  /* ── Paleta base (5 cores) ── */
   --ks-purple-deep: #2e173a;
   --ks-purple-dark: #40294e;
   --ks-purple-burnt: #5b4964;
@@ -29,7 +29,7 @@
   --ks-peach-rgb: 168, 152, 170;
   --ks-coral-rgb: 91, 73, 100;
 
-  /* â”€â”€ PapÃ©is: uma cor, um trabalho â”€â”€ */
+  /* ── Papéis: uma cor, um trabalho ── */
   --ks-role-base: var(--ks-paper-lavender);
   --ks-role-warm: var(--ks-light-gray);
   --ks-role-cool: var(--ks-purple-dark);
@@ -41,7 +41,7 @@
   --ks-btn-hover: var(--ks-purple-burnt);
   --ks-decor: var(--ks-lavender-aged);
 
-  /* â”€â”€ SuperfÃ­cies por seÃ§Ã£o â”€â”€ */
+  /* ── Superfícies por seção ── */
   --ks-bg: var(--ks-role-base);
   --ks-paper: var(--ks-light-gray);
   --ks-surface: var(--ks-lavender-aged);
@@ -53,14 +53,14 @@
   --ks-surface-cool: var(--ks-purple-dark);
   --ks-cream: var(--ks-highlight);
 
-  /* â”€â”€ Texto â”€â”€ */
+  /* ── Texto ── */
   --ks-primary: var(--ks-ink);
   --ks-on-surface: var(--ks-purple-deep);
   --ks-on-surface-variant: var(--ks-purple-burnt);
   --ks-outline: var(--ks-lilac-dark);
   --ks-outline-variant: var(--ks-lavender-aged);
 
-  /* â”€â”€ Acentos legados (mapeados) â”€â”€ */
+  /* ── Acentos legados (mapeados) ── */
   --ks-aged-gold: var(--ks-label);
   --ks-aged-gold-muted: var(--ks-lilac-dark);
   --ks-accent-olive: var(--ks-surface-cool);
@@ -70,24 +70,24 @@
   --ks-moss: var(--ks-teal-dark);
   --ks-purple: var(--ks-plum);
 
-  /* â”€â”€ Sobre fundos escuros / teal â”€â”€ */
+  /* ── Sobre fundos escuros / teal ── */
   --ks-on-dark: var(--ks-highlight);
   --ks-on-dark-muted: var(--ks-paper-lavender);
   --ks-on-cool: var(--ks-highlight);
   --ks-on-cool-muted: rgba(var(--ks-beige-rgb), 0.78);
 
-  /* â”€â”€ SeÃ§Ãµes quentes (peach) â”€â”€ */
+  /* ── Seções quentes (peach) ── */
   --ks-on-cream: var(--ks-ink);
   --ks-on-cream-muted: var(--ks-purple-burnt);
   --ks-on-cream-gold: var(--ks-purple-deep);
 
-  /* â”€â”€ Faixas de aÃ§Ã£o â”€â”€ */
+  /* ── Faixas de ação ── */
   --ks-wine: var(--ks-plum-dark);
   --ks-wine-mid: var(--ks-plum);
 
   --ks-radius-btn: 100px;
 
-  /* Escala tipogrÃ¡fica */
+  /* Escala tipográfica */
   --ks-text-display: clamp(64px, 10vw, 132px);
   --ks-text-headline-lg: clamp(44px, 6vw, 86px);
   --ks-text-headline-md: clamp(30px, 3.5vw, 52px);
@@ -108,11 +108,19 @@
   --ks-font-body-accent: "Libre Baskerville", serif;
   --ks-font-meta: "IBM Plex Mono", monospace;
 
-  /* Hero das páginas internas (home tem altura própria, maior). */
+  /* Hero das páginas internas (home tem altura própria, maior).
+     EXCEÇÃO: /orcamento não usa este token. Lá o formulário é o
+     motivo da visita; altura de viewport obrigaria a rolar.
+     Ver .ks-budget-page — não "corrigir" para este valor. */
   --ks-hero-min-height: min(70vh, 700px);
   --ks-hero-pad-top: clamp(100px, 11vh, 120px);
   --ks-hero-pad-bottom: clamp(36px, 4.5vh, 56px);
-  --ks-hero-pad-inline: clamp(24px, 5vw, 64px);
+  /* Mesma margem lateral do header (logo) — senão o hero “não encaixa”. */
+  --ks-header-pad: clamp(24px, 4vw, 56px);
+  --ks-pill-inset: max(12px, calc(var(--ks-header-pad) - 20px));
+  --ks-header-cap: 32px;
+  --ks-content-inline: var(--ks-header-pad);
+  --ks-hero-pad-inline: var(--ks-content-inline);
   --ks-hero-content-width: min(36rem, 100%);
   --ks-hero-text-max: 65ch;
 }
@@ -224,7 +232,7 @@ summary {
   opacity: 0.5;
 }
 
-/* Cursor autoral com as estrelas usadas nas divisÃµes de seÃ§Ã£o */
+/* Cursor autoral com as estrelas usadas nas divisões de seção */
 html.ks-custom-cursor-enabled body,
 html.ks-custom-cursor-enabled a,
 html.ks-custom-cursor-enabled button,
@@ -308,9 +316,9 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   to { transform: rotate(0deg); }
 }
 
-/* Esconde a estrela quando NÃƒO existe nenhum ponteiro preciso com hover.
-   As variantes any-* sÃ£o necessÃ¡rias porque no iPad com trackpad o ponteiro
-   primÃ¡rio segue sendo o toque: (hover: none) e (pointer: coarse) casariam e
+/* Esconde a estrela quando NÃO existe nenhum ponteiro preciso com hover.
+   As variantes any-* são necessárias porque no iPad com trackpad o ponteiro
+   primário segue sendo o toque: (hover: none) e (pointer: coarse) casariam e
    apagariam o cursor mesmo com o trackpad conectado. Espelha a checagem do
    CustomCursor.tsx. */
 @media not all and (any-hover: hover) and (any-pointer: fine) {
@@ -515,16 +523,16 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   transform: rotate(-8deg);
 }
 
-/* â”€â”€ Divisores estrelados entre seÃ§Ãµes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-   Valem para as pÃ¡ginas internas (.ks-page-sections), para a home
-   (.ks-home-flow) e para rotas sem wrapper prÃ³prio (.ks-route-content).
-   ReformulaÃ§Ãµes fica de fora porque traz as quebras explÃ­citas no JSX.
+/* ── Divisores estrelados entre seções ───────────────────────────────────────
+   Valem para as páginas internas (.ks-page-sections), para a home
+   (.ks-home-flow) e para rotas sem wrapper próprio (.ks-route-content).
+   Reformulações fica de fora porque traz as quebras explícitas no JSX.
 
-   Cada transiÃ§Ã£o recebe DOIS grupos: o principal (::before) de um lado e um
-   secundÃ¡rio (::after), menor e mais discreto, do lado oposto. Os lados
-   alternam a cada seÃ§Ã£o para o ritmo nÃ£o ficar mecÃ¢nico.
+   Cada transição recebe DOIS grupos: o principal (::before) de um lado e um
+   secundário (::after), menor e mais discreto, do lado oposto. Os lados
+   alternam a cada seção para o ritmo não ficar mecânico.
 
-   :is() colapsa a lista de wrappers â€” antes cada regra repetia os seletores. */
+   :is() colapsa a lista de wrappers — antes cada regra repetia os seletores. */
 :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child) {
   position: relative;
 }
@@ -534,7 +542,8 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   content: "";
   position: absolute;
   top: 0;
-  z-index: 0;
+  /* Na frente do hero anterior — senão o fundo opaco corta o cluster na costura. */
+  z-index: 2;
   background-repeat: no-repeat;
   filter: drop-shadow(0 2px 1px rgba(var(--ks-ink-rgb), 0.12));
   transform: translateY(-50%);
@@ -571,7 +580,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     18% auto;
 }
 
-/* Grupo secundÃ¡rio, no lado oposto */
+/* Grupo secundário, no lado oposto */
 :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child)::after {
   width: clamp(165px, 19vw, 300px);
   height: clamp(108px, 12vw, 185px);
@@ -611,11 +620,13 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
 }
 
 /* Sobre fundos escuros as estrelas precisam clarear para aparecer.
-   O seletor repete o wrapper e o :not(:first-child) da regra base de propÃ³sito:
-   sem isso a especificidade fica abaixo dela â€” (0,2,1) contra (0,3,1) â€” e o
+   O seletor repete o wrapper e o :not(:first-child) da regra base de propósito:
+   sem isso a especificidade fica abaixo dela — (0,2,1) contra (0,3,1) — e o
    filtro nunca aplica. Assim fica (0,4,1) e vence independente da ordem. */
-:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child):is(.ks-section-wine, .ks-cta-band, .ks-services-section, .ks-studio-invite, .ks-testimonials)::before,
-:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child):is(.ks-section-wine, .ks-cta-band, .ks-services-section, .ks-studio-invite, .ks-testimonials)::after {
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child):is(.ks-section-wine, .ks-services-section, .ks-studio-invite, .ks-testimonials)::before,
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child):is(.ks-section-wine, .ks-services-section, .ks-studio-invite, .ks-testimonials)::after,
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child).ks-cta-band:not(.has-artwork)::before,
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child).ks-cta-band:not(.has-artwork)::after {
   opacity: 0.64;
   filter: brightness(1.65) saturate(0.82) drop-shadow(0 2px 1px rgba(var(--ks-ink-rgb), 0.18));
 }
@@ -627,10 +638,40 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
 :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section.ks-testimonials::before,
 :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section.ks-testimonials::after,
 :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section.ks-cta-band::before,
-:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section.ks-cta-band::after,
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section.ks-cta-band:not(.has-artwork)::after,
 :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section.ks-editorial-split::before,
 :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section.ks-editorial-split::after {
   content: none;
+}
+
+@media (max-width: 767px) {
+  /* Divisores menores no mobile — menos densidade e menos invasão no hero. */
+  :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child)::before {
+    width: clamp(140px, 42vw, 200px);
+    height: clamp(90px, 26vw, 130px);
+    opacity: 0.42;
+  }
+
+  :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child)::after {
+    width: clamp(96px, 30vw, 140px);
+    height: clamp(64px, 18vw, 96px);
+    opacity: 0.28;
+  }
+
+  .ks-section-star-break-field {
+    width: clamp(140px, 42vw, 200px);
+    height: clamp(90px, 26vw, 130px);
+    transform: translateY(-58%);
+    opacity: 0.7;
+  }
+
+  .ks-section-star-break-right .ks-section-star-break-field {
+    transform: translateY(-58%) scaleX(-1);
+  }
+
+  .ks-section-star-break-center .ks-section-star-break-field {
+    transform: translate(-50%, -58%);
+  }
 }
 
 /* Grain overlay */
@@ -713,28 +754,15 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   transition: background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease;
 }
 
-/* Mobile (<768): barra sólida — comportamento anterior preservado */
-@media (max-width: 767px) {
-  .ks-header.is-scrolled,
-  .ks-header.is-open {
-    background: rgba(var(--ks-beige-light-rgb), 0.96);
-    border-bottom-color: rgba(var(--ks-ink-rgb), 0.12);
-    backdrop-filter: blur(10px);
-  }
-}
-
-/* Mobile: o wrapper não cria caixa — layout do header segue idêntico ao anterior. */
+/* O wrapper só vira caixa na pílula. */
 .ks-header-inner {
   display: contents;
 }
 
-/* Desktop / notebook / iPad: a barra entra como uma pílula em um único gesto.
-   A animação usa somente transform e opacity para não recalcular o layout no scroll. */
-@media (min-width: 768px) {
+/* Pílula em todas as larguras. Um único gesto, só transform e opacity. */
+@media (min-width: 0px) {
   .ks-header {
     --ks-header-h: 72px;
-    --ks-header-pad: clamp(24px, 4vw, 56px);
-    --ks-pill-inset: max(12px, calc(var(--ks-header-pad) - 20px));
     display: block;
     top: 0;
     left: 0;
@@ -761,38 +789,41 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
     width: 100%;
     height: var(--ks-header-h);
     margin: 0;
-    padding: 0 var(--ks-header-pad);
+    padding: 0 var(--ks-content-inline);
     isolation: isolate;
   }
 
   .ks-header-inner > .ks-logo,
   .ks-header-inner > .ks-desktop-nav,
   .ks-header-inner > .ks-menu-button {
-    transform: translate3d(0, 0, 0);
     transition:
-      transform 0.62s cubic-bezier(0.16, 1, 0.3, 1),
       color 0.3s ease,
       background 0.3s ease,
-      border-color 0.3s ease;
-    will-change: transform;
+      border-color 0.3s ease,
+      translate 0.62s cubic-bezier(0.16, 1, 0.3, 1);
+    translate: 0 0;
   }
 
-  .ks-header.is-scrolled .ks-header-inner > .ks-logo,
-  .ks-header.is-scrolled .ks-header-inner > .ks-desktop-nav,
-  .ks-header.is-scrolled .ks-header-inner > .ks-menu-button {
-    transform: translate3d(0, 6px, 0);
-  }
-
-  .ks-header-inner::before,
-  .ks-header-inner::after {
+  /* Uma superfície só. Fundo e blur no mesmo elemento: separados, o blur
+     amostrava a foto do hero numa faixa e o creme opaco cobria a outra.
+     top: 12px deixa a pílula abaixo do centro flex — o translate: 0 6px
+     do conteúdo (não `transform`, p/ não brigar com o Motion) encaixa. */
+  .ks-header-inner::before {
     content: "";
     position: absolute;
+    z-index: 0;
     top: 12px;
+    bottom: auto;
     left: var(--ks-pill-inset);
     right: var(--ks-pill-inset);
     height: calc(var(--ks-header-h) - 12px);
     pointer-events: none;
-    border-radius: 30px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--ks-plum-rgb), 0.1);
+    background: rgba(247, 245, 246, 0.82);
+    box-shadow: 0 12px 40px rgba(17, 16, 20, 0.12);
+    backdrop-filter: blur(16px) saturate(1.12);
+    -webkit-backdrop-filter: blur(16px) saturate(1.12);
     opacity: 0;
     transform: translate3d(0, -14px, 0) scale(0.985);
     transform-origin: center top;
@@ -801,26 +832,43 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
       transform 0.62s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .ks-header-inner::before {
-    z-index: -1;
-    border: 1px solid rgba(var(--ks-plum-rgb), 0.1);
-    background: rgba(247, 245, 246, 0.86);
-    box-shadow: 0 12px 40px rgba(17, 16, 20, 0.12);
-  }
-
-  .ks-header-inner::after {
-    z-index: -2;
-    background: rgba(247, 245, 246, 0.24);
-    backdrop-filter: blur(14px) saturate(1.12);
-    -webkit-backdrop-filter: blur(14px) saturate(1.12);
+  .ks-header-inner > .ks-logo,
+  .ks-header-inner > .ks-desktop-nav,
+  .ks-header-inner > .ks-menu-button {
+    position: relative;
+    z-index: 1;
   }
 
   .ks-header.is-scrolled .ks-header-inner::before,
-  .ks-header.is-scrolled .ks-header-inner::after,
-  .ks-header.is-open .ks-header-inner::before,
-  .ks-header.is-open .ks-header-inner::after {
+  .ks-header.is-open .ks-header-inner::before {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  .ks-header.is-scrolled .ks-header-inner > .ks-logo,
+  .ks-header.is-scrolled .ks-header-inner > .ks-desktop-nav,
+  .ks-header.is-scrolled .ks-header-inner > .ks-menu-button,
+  .ks-header.is-open .ks-header-inner > .ks-logo,
+  .ks-header.is-open .ks-header-inner > .ks-desktop-nav,
+  .ks-header.is-open .ks-header-inner > .ks-menu-button {
+    translate: 0 6px;
+  }
+
+  /* Heroes claros: a pílula encaixa depois do settle (desce + conteúdo aninha). */
+  .ks-header.is-over-hero:not(.is-on-dark).is-settled .ks-header-inner::before {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    background: rgba(247, 245, 246, 0.92);
+    border-color: rgba(var(--ks-plum-rgb), 0.16);
+    box-shadow:
+      0 10px 28px rgba(17, 16, 20, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.7) inset;
+  }
+
+  .ks-header.is-over-hero:not(.is-on-dark).is-settled .ks-header-inner > .ks-logo,
+  .ks-header.is-over-hero:not(.is-on-dark).is-settled .ks-header-inner > .ks-desktop-nav,
+  .ks-header.is-over-hero:not(.is-on-dark).is-settled .ks-header-inner > .ks-menu-button {
+    translate: 0 6px;
   }
 
   /* Contraste sobre hero escuro (home com foto) */
@@ -858,26 +906,33 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
 
   /* Pílula sempre em tipografia escura (sai do contraste do hero). */
   .ks-header.is-scrolled .ks-logo,
-  .ks-header.is-scrolled .ks-nav-item {
+  .ks-header.is-scrolled .ks-nav-item,
+  .ks-header.is-open .ks-logo,
+  .ks-header.is-open .ks-nav-item {
     color: var(--ks-primary);
   }
 
   .ks-header.is-scrolled .ks-nav-item:hover,
-  .ks-header.is-scrolled .ks-nav-item.active {
+  .ks-header.is-scrolled .ks-nav-item.active,
+  .ks-header.is-open .ks-nav-item:hover,
+  .ks-header.is-open .ks-nav-item.active {
     color: var(--ks-link);
   }
 
-  .ks-header.is-scrolled .ks-nav-item span {
+  .ks-header.is-scrolled .ks-nav-item span,
+  .ks-header.is-open .ks-nav-item span {
     background: var(--ks-link);
   }
 
-  .ks-header.is-scrolled .ks-menu-button {
+  .ks-header.is-scrolled .ks-menu-button,
+  .ks-header.is-open .ks-menu-button {
     border-color: rgba(var(--ks-plum-rgb), 0.22);
     background: rgba(var(--ks-beige-light-rgb), 0.9);
     color: var(--ks-primary);
   }
 
-  .ks-header.is-scrolled .ks-nav-cta {
+  .ks-header.is-scrolled .ks-nav-cta,
+  .ks-header.is-open .ks-nav-cta {
     border-color: var(--ks-btn);
     background: var(--ks-btn);
     color: var(--ks-on-dark);
@@ -918,8 +973,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   .ks-header-inner > .ks-logo,
   .ks-header-inner > .ks-desktop-nav,
   .ks-header-inner > .ks-menu-button,
-  .ks-header-inner::before,
-  .ks-header-inner::after {
+  .ks-header-inner::before {
     scroll-behavior: auto !important;
     transition: none !important;
     animation: none !important;
@@ -988,6 +1042,14 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   transform-origin: left;
 }
 
+.ks-nav-cta {
+  flex: 0 0 auto;
+}
+
+.ks-nav-cta-short {
+  display: none;
+}
+
 .ks-nav-cta,
 .ks-primary-link {
   display: inline-flex;
@@ -1009,7 +1071,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease, transform 0.3s ease, min-height 0.35s ease, padding 0.35s ease, font-size 0.35s ease;
 }
 
-/* BotÃµes e CTAs com borda arredondada */
+/* Botões e CTAs com borda arredondada */
 .ks-menu-button,
 .ks-carousel-btn,
 .ks-filter-row button,
@@ -1150,7 +1212,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   letter-spacing: 0.2em;
 }
 
-/* Evita que os primeiros e Ãºltimos links sejam cortados em telas baixas. */
+/* Evita que os primeiros e últimos links sejam cortados em telas baixas. */
 @media (max-width: 1120px) and (max-height: 760px) {
   .ks-mobile-menu {
     justify-content: flex-start;
@@ -1193,7 +1255,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   justify-content: flex-start;
   min-height: min(92vh, 920px);
   height: auto;
-  padding: clamp(100px, 14vh, 140px) clamp(24px, 5vw, 64px) clamp(56px, 8vw, 96px);
+  padding: clamp(100px, 14vh, 140px) var(--ks-content-inline) clamp(56px, 8vw, 96px);
   overflow: hidden;
   isolation: isolate;
   text-align: left;
@@ -1346,6 +1408,241 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
 
 .ks-portfolio-page-hero .ks-body-lg {
   max-width: var(--ks-hero-text-max);
+}
+
+/* Flash: arte sticker (sem fundo) como peça gráfica — fundo claro p/ contorno branco. */
+.ks-flash-page-hero.ks-page-hero {
+  background:
+    radial-gradient(ellipse 50% 60% at 88% 40%, rgba(var(--ks-plum-rgb), 0.1), transparent 55%),
+    radial-gradient(circle at 18% 72%, rgba(var(--ks-peach-rgb), 0.2), transparent 38%),
+    linear-gradient(135deg, var(--ks-surface-warm), var(--ks-bg));
+}
+
+.ks-flash-page-hero .ks-page-hero-image {
+  inset: auto;
+  top: 50%;
+  right: clamp(2%, 6vw, 10%);
+  bottom: auto;
+  left: auto;
+  z-index: 1;
+  width: min(64vw, 720px);
+  height: min(96%, 740px);
+  object-fit: contain;
+  object-position: center right;
+  filter: none;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.ks-flash-page-hero .ks-page-hero-shade {
+  display: none;
+}
+
+.ks-flash-page-hero .ks-page-hero-content {
+  width: min(32rem, 46%);
+  max-width: 100%;
+}
+
+.ks-flash-page-hero .ks-page-hero-content .ks-label-caps {
+  color: var(--ks-primary);
+  text-shadow: none;
+}
+
+.ks-flash-page-hero h1 {
+  margin: 16px 0 22px;
+  color: var(--ks-primary);
+  text-shadow: none;
+}
+
+.ks-flash-page-hero .ks-page-hero-content .ks-body-lg {
+  color: var(--ks-on-surface);
+  text-shadow: none;
+}
+
+/*
+ * Produtos: moldura fixa (molde-produto.png 800×800) + arte editável.
+ *
+ * Abertura medida no PNG (alpha interior, laterais verticais):
+ *   TL 139,53 · TR 690,152 · BR 690,750 · BL 139,737
+ * Se reexportar a moldura, re-medir esses cantos e atualizar as vars abaixo.
+ * (Estimativas de tela 136/51–705/156… caíam fora do alpha — valores corrigidos.)
+ */
+.ks-products-mold {
+  --ks-mold-tl-x: 17.375%;
+  --ks-mold-tl-y: 6.625%;
+  --ks-mold-tr-x: 86.25%;
+  --ks-mold-tr-y: 19%;
+  --ks-mold-br-x: 86.25%;
+  --ks-mold-br-y: 93.75%;
+  --ks-mold-bl-x: 17.375%;
+  --ks-mold-bl-y: 92.125%;
+  --ks-mold-opening: polygon(
+    var(--ks-mold-tl-x) var(--ks-mold-tl-y),
+    var(--ks-mold-tr-x) var(--ks-mold-tr-y),
+    var(--ks-mold-br-x) var(--ks-mold-br-y),
+    var(--ks-mold-bl-x) var(--ks-mold-bl-y)
+  );
+}
+
+@keyframes ks-products-art-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.ks-products-art-hero.ks-page-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(240px, 400px);
+  align-items: center;
+  justify-content: center;
+  column-gap: clamp(28px, 3.5vw, 52px);
+  row-gap: clamp(20px, 3vw, 28px);
+  min-height: var(--ks-hero-min-height);
+  padding:
+    var(--ks-hero-pad-top)
+    max(var(--ks-hero-pad-inline), calc((100% - 1120px) / 2))
+    var(--ks-hero-pad-bottom);
+  /* Atmosfera de atelier: lilás em camadas, topo mais denso p/ a pílula ler. */
+  background:
+    radial-gradient(ellipse 70% 55% at 50% -8%, rgba(var(--ks-plum-rgb), 0.18), transparent 55%),
+    radial-gradient(ellipse 58% 64% at 96% 8%, rgba(var(--ks-plum-rgb), 0.24), transparent 60%),
+    radial-gradient(ellipse 52% 58% at 4% 96%, rgba(var(--ks-peach-rgb), 0.42), transparent 56%),
+    radial-gradient(circle at 34% 4%, rgba(var(--ks-teal-rgb), 0.28), transparent 32%),
+    radial-gradient(ellipse 64% 42% at 78% 72%, rgba(var(--ks-plum-rgb), 0.14), transparent 58%),
+    radial-gradient(ellipse 40% 28% at 18% 42%, rgba(255, 255, 255, 0.28), transparent 70%),
+    linear-gradient(
+      180deg,
+      transparent 55%,
+      rgba(247, 245, 246, 0.45) 82%,
+      rgba(247, 245, 246, 0.95) 100%
+    ),
+    linear-gradient(152deg, #d8ccd8 0%, #cfc2d0 26%, var(--ks-paper-lavender) 52%, #b5a8b6 100%);
+  overflow: visible;
+}
+
+.ks-products-art-hero.is-text-only.ks-page-hero {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ks-products-art-hero .ks-products-art-float {
+  position: relative;
+  inset: unset;
+  top: auto;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 1;
+  display: block;
+  width: min(100%, 400px);
+  max-width: 400px;
+  height: auto;
+  max-height: none;
+  aspect-ratio: 1 / 1;
+  justify-self: end;
+  align-self: center;
+  margin: 0;
+  /* drop-shadow no conjunto — segue o alpha da moldura. */
+  filter: drop-shadow(0 18px 28px rgba(var(--ks-plum-rgb), 0.2));
+  transform: translateY(0);
+  pointer-events: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  animation: ks-products-art-float 5.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+.ks-products-art-opening {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  clip-path: var(--ks-mold-opening);
+  -webkit-clip-path: var(--ks-mold-opening);
+  background: #1a1020;
+}
+
+.ks-products-art-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--focal-x, 50%) var(--focal-y, 50%);
+}
+
+.ks-products-art-mold {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ks-products-art-hero.is-text-only .ks-products-art-float {
+  display: none;
+}
+
+.ks-products-art-hero .ks-page-hero-shade {
+  display: none;
+}
+
+.ks-products-art-hero .ks-page-hero-content {
+  position: relative;
+  z-index: 2;
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  max-width: 40rem;
+  min-width: 0;
+}
+
+.ks-products-art-hero.is-text-only .ks-page-hero-content {
+  max-width: 42rem;
+}
+
+.ks-products-art-hero .ks-page-hero-content .ks-label-caps {
+  color: var(--ks-primary);
+  text-shadow: none;
+}
+
+.ks-products-art-hero h1 {
+  margin: 16px 0 18px;
+  color: var(--ks-primary);
+  text-shadow: none;
+}
+
+.ks-products-art-hero .ks-page-hero-content .ks-body-lg {
+  color: var(--ks-on-surface);
+  text-shadow: none;
+  max-width: 40ch;
+}
+
+.ks-products-art-hero .ks-primary-link {
+  margin-top: 8px;
+  max-width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-products-art-hero .ks-products-art-float {
+    animation: none;
+    will-change: auto;
+  }
+}
+
+.ks-products-art-hero.ks-page-hero {
+  /* Deixa as estrelas da seção seguinte cruzarem a costura sem cortar. */
+  overflow: visible;
+  isolation: auto;
 }
 
 /* —— Modal: página/sessão oculta no admin —— */
@@ -1869,13 +2166,6 @@ button.ks-product-visual-card {
   color: var(--ks-plum);
 }
 
-.ks-portfolio-gallery-deco-a {
-  top: clamp(24px, 3vw, 48px);
-  right: clamp(48px, 6vw, 96px);
-  width: min(180px, 18vw) !important;
-  height: auto !important;
-}
-
 .ks-portfolio-gallery-deco-b {
   bottom: 18%;
   left: clamp(24px, 3vw, 48px);
@@ -1892,11 +2182,12 @@ button.ks-product-visual-card {
 
 .ks-portfolio-gallery-intro {
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
+  align-items: flex-start;
+  justify-content: space-between;
   flex-wrap: nowrap;
   gap: clamp(20px, 3vw, 40px) clamp(28px, 4vw, 48px);
-  max-width: min(48rem, 100%);
+  width: 100%;
+  max-width: none;
   margin-bottom: clamp(28px, 4vw, 40px);
 }
 
@@ -1926,6 +2217,9 @@ button.ks-product-visual-card {
 .ks-portfolio-gallery-count {
   margin: 0;
   flex: none;
+  align-self: flex-start;
+  margin-left: auto;
+  text-align: right;
   color: var(--ks-on-surface-variant);
   font-family: var(--ks-font-meta);
   font-size: 11px;
@@ -2335,7 +2629,7 @@ button.ks-product-visual-card {
   .ks-portfolio-gallery-intro {
     flex-direction: column;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: stretch;
     max-width: none;
   }
 
@@ -2343,8 +2637,13 @@ button.ks-product-visual-card {
     max-width: 58ch;
   }
 
+  .ks-portfolio-gallery-count {
+    align-self: flex-end;
+    margin-left: 0;
+  }
+
   .ks-portfolio-gallery-count span {
-    text-align: left;
+    text-align: right;
   }
 
   .ks-portfolio-filters {
@@ -2504,16 +2803,40 @@ button.ks-product-visual-card {
   align-content: center;
 }
 
-.ks-budget-section {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-  gap: clamp(28px, 5vw, 72px);
-  align-items: start;
-  overflow: hidden;
+/* EXCEÇÃO DELIBERADA à padronização de --ks-hero-min-height
+   (min(70vh, 700px) nas páginas internas). /orcamento não tem
+   hero de viewport: o formulário é o motivo da visita. Não
+   reintroduzir min-height de hero nesta página. */
+.ks-budget-page {
+  min-height: 0;
+  padding-top: calc(var(--ks-header-h, 72px) + clamp(28px, 4vh, 48px));
+  padding-bottom: clamp(56px, 8vw, 96px);
+  overflow: visible;
   background:
     radial-gradient(circle at 10% 0%, rgba(var(--ks-plum-rgb), 0.08), transparent 30%),
     linear-gradient(180deg, var(--ks-bg), var(--ks-paper));
+}
+
+.ks-budget-page-head {
+  max-width: 38rem;
+  margin: 0 0 clamp(28px, 4vw, 40px);
+}
+
+.ks-budget-page-head h1 {
+  margin: 10px 0 14px;
+  color: var(--ks-primary);
+}
+
+.ks-budget-page-head p {
+  margin: 0;
+  max-width: 65ch;
+}
+
+.ks-budget-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
 }
 
 .ks-not-found {
@@ -2558,7 +2881,7 @@ button.ks-product-visual-card {
 .ks-budget-intro {
   position: sticky;
   top: 112px;
-  min-height: clamp(520px, 62vh, 680px);
+  min-height: 0;
   padding: clamp(28px, 4vw, 46px);
   border: 1px solid rgba(var(--ks-plum-rgb), 0.14);
   border-radius: 34px;
@@ -2645,6 +2968,7 @@ button.ks-product-visual-card {
   border-bottom: 1px solid rgba(var(--ks-ink-rgb), 0.1);
 }
 
+.ks-budget-form-header h2,
 .ks-budget-form-header h3 {
   margin: 4px 0 0;
   color: var(--ks-primary);
@@ -2689,6 +3013,12 @@ button.ks-product-visual-card {
   text-transform: uppercase;
 }
 
+.ks-budget-hint {
+  color: var(--ks-on-surface-variant);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 .ks-budget-input,
 .ks-budget-textarea {
   width: 100%;
@@ -2706,8 +3036,8 @@ button.ks-product-visual-card {
 }
 
 .ks-budget-textarea {
-  min-height: 160px;
-  padding: 18px 20px;
+  min-height: 128px;
+  padding: 16px 18px;
   resize: vertical;
 }
 
@@ -2728,23 +3058,31 @@ button.ks-product-visual-card {
   box-shadow: 0 0 0 4px rgba(var(--ks-plum-rgb), 0.08);
 }
 
-.ks-budget-textarea[aria-invalid="true"] {
+.ks-budget-input:focus-visible,
+.ks-budget-textarea:focus-visible {
+  outline: 2px solid var(--ks-purple-deep);
+  outline-offset: 2px;
+}
+
+.ks-budget-textarea[aria-invalid="true"],
+.ks-budget-input[aria-invalid="true"] {
   border-color: rgba(212, 24, 61, 0.62);
   box-shadow: 0 0 0 4px rgba(212, 24, 61, 0.08);
 }
 
 .ks-budget-error {
-  display: inline-flex;
-  align-items: center;
+  display: block;
   width: fit-content;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: rgba(212, 24, 61, 0.08);
-  color: var(--ks-coral);
+  max-width: 100%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(155, 39, 72, 0.1);
+  color: #7a1d38;
   font-family: var(--ks-font-meta);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-transform: none;
 }
 
 .ks-budget-submit-row {
@@ -2765,11 +3103,12 @@ button.ks-product-visual-card {
 
 .ks-budget-form .ks-primary-link {
   width: fit-content;
+  min-height: 48px;
   cursor: inherit;
 }
 
-@media (max-width: 1020px) {
-  .ks-budget-section {
+@media (max-width: 1024px) {
+  .ks-budget-layout {
     grid-template-columns: 1fr;
   }
 
@@ -2777,6 +3116,11 @@ button.ks-product-visual-card {
     position: relative;
     top: auto;
     min-height: 0;
+    order: 1;
+  }
+
+  .ks-budget-form {
+    order: 0;
   }
 
   .ks-budget-intro h2,
@@ -2786,7 +3130,7 @@ button.ks-product-visual-card {
 }
 
 @media (max-width: 640px) {
-  .ks-budget-section {
+  .ks-budget-page {
     padding-inline: 16px;
   }
 
@@ -2797,6 +3141,20 @@ button.ks-product-visual-card {
 
   .ks-budget-fields {
     grid-template-columns: 1fr;
+  }
+
+  .ks-budget-input,
+  .ks-budget-textarea,
+  .ks-budget-form .ks-primary-link {
+    min-height: 44px;
+  }
+
+  .ks-budget-textarea {
+    min-height: 140px;
+  }
+
+  .ks-budget-textarea.is-compact {
+    min-height: 108px;
   }
 
   .ks-budget-submit-row {
@@ -3530,7 +3888,7 @@ button.ks-product-visual-card {
   border-block: 1px solid rgba(247, 245, 246, 0.06);
 }
 
-/* â”€â”€ Sobre: linha de cuidado (pilares sem cards) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Sobre: linha de cuidado (pilares sem cards) ─────────────── */
 .ks-care-path {
   position: relative;
   overflow: visible;
@@ -3961,7 +4319,7 @@ button.ks-product-visual-card {
   text-shadow: none;
 }
 
-/* â”€â”€ Portfolio â€” Carousel â”€â”€ */
+/* ── Portfolio — Carousel ── */
 
 .ks-portfolio-carousel {
   padding-block: clamp(56px, 8vw, 110px);
@@ -4260,7 +4618,7 @@ button.ks-product-visual-card {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-/* â”€â”€ ReformulaÃ§Ãµes: abertura editorial â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Reformulações: abertura editorial ───────────────────────── */
 .ks-reformulacoes-intro {
   position: relative;
   overflow: visible;
@@ -4393,7 +4751,7 @@ button.ks-product-visual-card {
   }
 }
 
-/* â”€â”€ ReformulaÃ§Ãµes: portfÃ³lio antes e depois â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Reformulações: portfólio antes e depois ────────────────── */
 .ks-reformulacoes-portfolio {
   background: #fff;
   color: var(--ks-on-cream);
@@ -4463,11 +4821,12 @@ button.ks-product-visual-card {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: var(--focal-x, 50%) var(--focal-y, 50%);
 }
 
 /*
- * Foto e vÃ­deo ocupam o mesmo espaÃ§o, empilhados por position:absolute â€” a
- * troca entre os dois Ã© um crossfade de opacidade (ver .is-visible/.is-hidden
+ * Foto e vídeo ocupam o mesmo espaço, empilhados por position:absolute — a
+ * troca entre os dois é um crossfade de opacidade (ver .is-visible/.is-hidden
  * abaixo), controlado pelo hover em .ks-reformulacao-compare.
  */
 .ks-reformulacao-media-stack {
@@ -4586,7 +4945,7 @@ button.ks-product-visual-card {
   opacity: 1;
 }
 
-/* Sem hover real (touch), mantÃ©m o badge sempre visÃ­vel como pista de que dÃ¡ pra tocar. */
+/* Sem hover real (touch), mantém o badge sempre visível como pista de que dá pra tocar. */
 @media (hover: none) {
   .ks-reformulacao-expand {
     opacity: 0.85;
@@ -4704,7 +5063,7 @@ button.ks-product-visual-card {
   background: linear-gradient(120deg, rgba(var(--ks-ink-rgb), 0.94), rgba(var(--ks-teal-rgb), 0.42));
 }
 
-/* Products Preview â€” visual grid */
+/* Products Preview — visual grid */
 .ks-products-preview {
   position: relative;
   overflow: hidden;
@@ -4835,7 +5194,7 @@ button.ks-product-visual-card {
   gap: 12px;
 }
 
-/* Overlay da galeria de tattoos (nÃ£o dos cards de coleÃ§Ã£o) */
+/* Overlay da galeria de tattoos (não dos cards de coleção) */
 .ks-product-visual-overlay {
   position: absolute;
   inset: 0;
@@ -5035,8 +5394,8 @@ button.ks-product-visual-card {
   margin-top: 4px;
 }
 
-/* Modal ampliado de antes/depois de uma reformulaÃ§Ã£o â€” mais largo que o modal
-   padrÃ£o (uma imagem sÃ³) porque mostra dois vÃ­deos lado a lado. */
+/* Modal ampliado de antes/depois de uma reformulação — mais largo que o modal
+   padrão (uma imagem só) porque mostra dois vídeos lado a lado. */
 .ks-reformulacao-modal-panel {
   width: min(100%, 920px);
 }
@@ -5072,6 +5431,7 @@ button.ks-product-visual-card {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: var(--focal-x, 50%) var(--focal-y, 50%);
 }
 
 .ks-reformulacao-modal-media .ks-reformulacao-photo-placeholder {
@@ -5151,13 +5511,39 @@ button.ks-product-visual-card {
 .ks-cta-band {
   position: relative;
   margin: 0;
-  padding: clamp(56px, 8vw, 96px) clamp(24px, 5vw, 64px);
+  padding: clamp(36px, 4.5vw, 56px) clamp(24px, 5vw, 64px);
   border-top: 3px solid rgba(var(--ks-peach-rgb), 0.5);
   background: linear-gradient(118deg, var(--ks-plum-deep) 0%, var(--ks-plum) 52%, var(--ks-plum-dark) 100%);
   color: var(--ks-on-dark);
   text-align: center;
   overflow: hidden;
   isolation: isolate;
+}
+
+/* Arte decorativa via ::after — fora do fluxo, não pode inflar a altura. */
+:is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section.ks-cta-band.has-artwork::after,
+.ks-cta-band.has-artwork::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: clamp(-44px, 2vw, 28px);
+  left: auto;
+  z-index: 0;
+  width: clamp(150px, 16vw, 240px);
+  height: clamp(150px, 16vw, 240px);
+  background-image: var(--ks-cta-artwork);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  opacity: 0.34;
+  transform: translateY(-50%) rotate(7deg);
+  pointer-events: none;
+  filter: none;
+}
+
+.ks-cta-band-copy {
+  position: relative;
+  z-index: 1;
 }
 
 .ks-cta-band-starfield {
@@ -5171,23 +5557,6 @@ button.ks-product-visual-card {
   opacity: 0.16;
   transform: translateY(-50%) rotate(-17deg) scaleX(1.14);
   mix-blend-mode: soft-light;
-}
-
-.ks-cta-band-artwork {
-  position: absolute;
-  top: 50%;
-  right: clamp(-44px, 2vw, 28px);
-  z-index: 0;
-  width: clamp(170px, 19vw, 290px);
-  height: auto;
-  opacity: 0.34;
-  transform: translateY(-50%) rotate(7deg);
-  pointer-events: none;
-}
-
-.ks-cta-band > :not(.ks-cta-band-starfield):not(.ks-star-sprinkle):not(.ks-cta-band-artwork) {
-  position: relative;
-  z-index: 1;
 }
 
 .ks-star-sprinkle-cta {
@@ -5269,10 +5638,16 @@ button.ks-product-visual-card {
   background: rgba(var(--ks-plum-rgb), 0.06);
 }
 
+.ks-flash-catalog {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(var(--ks-plum-rgb), 0.05), transparent 36%),
+    linear-gradient(180deg, #ebe4e8 0%, var(--ks-surface-warm) 42%, #e8e1e6 100%);
+}
+
 .ks-flash-page-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 320px));
-  justify-content: start;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 300px));
+  justify-content: center;
   align-items: stretch;
   gap: clamp(18px, 2.5vw, 28px);
 }
@@ -5281,12 +5656,32 @@ button.ks-product-visual-card {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 320px;
-  height: auto;
-  min-height: 0;
-  border: 1px solid rgba(var(--ks-ink-rgb), 0.12);
-  background: var(--ks-surface-lowest);
+  max-width: 300px;
+  height: 100%;
+  border: 0;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(20, 11, 25, 0.04),
+    0 10px 28px rgba(20, 11, 25, 0.08);
   overflow: hidden;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ks-flash-page-card-hit {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ks-flash-page-card-hit:focus-visible {
+  outline: 2px solid #ad83b8;
+  outline-offset: 3px;
 }
 
 .ks-flash-page-card-media {
@@ -5295,6 +5690,7 @@ button.ks-product-visual-card {
   aspect-ratio: 1;
   width: 100%;
   overflow: hidden;
+  background: #f3ecf5;
 }
 
 .ks-flash-page-card-media img {
@@ -5302,45 +5698,150 @@ button.ks-product-visual-card {
   height: 100%;
   object-fit: cover;
   object-position: var(--focal-x, 50%) var(--focal-y, 50%);
-  filter: grayscale(30%) sepia(8%);
+  display: block;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ks-flash-page-card-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 1;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(17, 16, 20, 0.78);
+  color: #f7f5f6;
+  font-family: var(--ks-font-meta);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
 }
 
 .ks-flash-page-card-body {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  padding: 20px;
-  min-height: 0;
+  gap: 10px;
+  padding: 16px 18px 18px;
+  min-height: 7.5rem;
+}
+
+.ks-flash-page-card-copy {
+  display: grid;
+  gap: 4px;
+  flex: 1 1 auto;
 }
 
 .ks-flash-page-card-body h3 {
-  margin: 10px 0 8px;
-}
-
-.ks-flash-page-card-body p {
-  flex: 1 1 auto;
   margin: 0;
-  color: var(--ks-on-surface-variant);
-  font-family: var(--ks-font-body);
-  font-size: 16px;
-  line-height: 1.6;
+  color: var(--ks-plum-deep);
+  font-family: var(--ks-font-serif);
+  font-size: clamp(20px, 1.8vw, 24px);
+  font-weight: 500;
+  line-height: 1.2;
+  min-height: 2.4em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.ks-flash-page-card-body .ks-primary-link {
+.ks-flash-page-card-price {
+  margin: 0;
+  min-height: 1.4em;
+  color: var(--ks-on-surface-variant);
+  font-family: var(--ks-font-meta);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+}
+
+.ks-flash-page-card-price:empty::before {
+  content: "\00a0";
+}
+
+.ks-flash-page-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin-top: auto;
-  padding-top: 18px;
-  width: 100%;
+  color: var(--ks-plum);
+  font-family: var(--ks-font-meta);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.72;
+  transform: translateY(2px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease,
+    color 0.3s ease;
+}
+
+.ks-flash-page-card-cta svg {
+  width: 14px;
+  height: 14px;
+}
+
+.ks-flash-page-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 2px 4px rgba(20, 11, 25, 0.05),
+    0 18px 40px rgba(20, 11, 25, 0.12);
+}
+
+.ks-flash-page-card:hover .ks-flash-page-card-media img {
+  transform: scale(1.04);
+}
+
+.ks-flash-page-card:hover .ks-flash-page-card-cta {
+  opacity: 1;
+  transform: translateY(0);
+  color: var(--ks-plum-deep);
+}
+
+.ks-flash-page-card.is-sold .ks-flash-page-card-media img {
+  filter: grayscale(28%) contrast(0.96) brightness(0.94);
+}
+
+.ks-flash-page-card.is-sold .ks-flash-page-card-cta {
+  opacity: 0.8;
+}
+
+@media (hover: none) {
+  .ks-flash-page-card-cta {
+    opacity: 0.9;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-flash-page-card,
+  .ks-flash-page-card-media img,
+  .ks-flash-page-card-cta {
+    transition: none;
+  }
+
+  .ks-flash-page-card:hover {
+    transform: none;
+  }
+
+  .ks-flash-page-card:hover .ks-flash-page-card-media img {
+    transform: none;
+  }
 }
 
 @media (max-width: 900px) {
   .ks-flash-page-grid {
-    grid-template-columns: minmax(0, 320px);
+    grid-template-columns: minmax(0, 300px);
     justify-content: center;
   }
 
   .ks-flash-page-card {
-    min-height: 0;
-    max-width: 320px;
+    max-width: 300px;
     margin-inline: auto;
   }
 }
@@ -5503,7 +6004,7 @@ button.ks-product-visual-card {
   }
 }
 
-/* â”€â”€ Section theme: cream (light parchment) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Section theme: cream (light parchment) ─────────────────── */
 .ks-section-cream {
   background: #fff;
   color: var(--ks-on-cream);
@@ -5518,7 +6019,7 @@ button.ks-product-visual-card {
   color: var(--ks-on-cream);
 }
 
-/* h3 dos cards de coleÃ§Ã£o herda o tom cream; overlay da galeria fica no prÃ³prio seletor */
+/* h3 dos cards de coleção herda o tom cream; overlay da galeria fica no próprio seletor */
 .ks-section-cream .ks-product-visual-body h3 {
   color: var(--ks-on-cream);
 }
@@ -5701,7 +6202,7 @@ button.ks-product-visual-card {
   }
 }
 
-/* â”€â”€ Section theme: wine (plum) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Section theme: wine (plum) ─────────────────────────────── */
 .ks-section-wine {
   background: var(--ks-wine);
   color: var(--ks-on-dark);
@@ -6042,10 +6543,20 @@ button.ks-product-visual-card {
 }
 
 
-/* MantÃ©m o menu desktop em uma Ãºnica linha nos notebooks menores. */
+/* Nav desktop: o padding precisa ultrapassar a curva da pílula.
+   Sem isso, "Quero um orçamento" encosta no cap e some na borda. */
+@media (min-width: 1121px) {
+  :root {
+    --ks-content-inline: max(var(--ks-header-pad), calc(var(--ks-pill-inset) + var(--ks-header-cap)));
+    --ks-hero-pad-inline: var(--ks-content-inline);
+  }
+}
+
+/* Mantém o menu desktop em uma única linha nos notebooks menores. */
 @media (min-width: 1121px) and (max-width: 1450px) {
-  .ks-header {
+  :root {
     --ks-header-pad: clamp(20px, 2.5vw, 36px);
+    --ks-header-cap: 30px;
   }
 
   .ks-logo {
@@ -6069,6 +6580,16 @@ button.ks-product-visual-card {
   }
 }
 
+@media (min-width: 1121px) and (max-width: 1360px) {
+  .ks-nav-cta-full {
+    display: none;
+  }
+
+  .ks-nav-cta-short {
+    display: inline;
+  }
+}
+
 @media (max-width: 1120px) {
   .ks-desktop-nav { display: none !important; }
   .ks-menu-button { display: inline-flex; }
@@ -6085,10 +6606,58 @@ button.ks-product-visual-card {
   }
 }
 
-/* â”€â”€ Mobile layout â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Mobile layout ───────────────────────────────────────────── */
 @media (max-width: 767px) {
 
-  /* â”€â”€ Base â”€â”€ */
+  /* Pílula mais baixa, solta das bordas e do notch. */
+  :root {
+    --ks-header-pad: 20px;
+    --ks-pill-inset: 14px;
+    --ks-content-inline: 20px;
+    --ks-hero-pad-inline: 20px;
+  }
+
+  .ks-header {
+    --ks-header-h: 64px;
+  }
+
+  .ks-header-inner {
+    height: calc(var(--ks-header-h) + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .ks-header-inner::before {
+    top: calc(10px + env(safe-area-inset-top));
+    bottom: auto;
+    height: calc(var(--ks-header-h) - 10px);
+  }
+
+  /* Pílula mobile começa a 10px; o nest do desktop (6px) sobra — usa 3px. */
+  .ks-header.is-scrolled .ks-header-inner > .ks-logo,
+  .ks-header.is-scrolled .ks-header-inner > .ks-menu-button,
+  .ks-header.is-open .ks-header-inner > .ks-logo,
+  .ks-header.is-open .ks-header-inner > .ks-menu-button,
+  .ks-header.is-over-hero:not(.is-on-dark).is-settled .ks-header-inner > .ks-logo,
+  .ks-header.is-over-hero:not(.is-on-dark).is-settled .ks-header-inner > .ks-menu-button {
+    translate: 0 3px;
+  }
+
+  .ks-logo {
+    font-size: 22px;
+  }
+
+  .ks-menu-button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .ks-mobile-menu {
+    padding-top: calc(80px + env(safe-area-inset-top));
+  }
+
+  /* ── Base ── */
   .ks-desktop-nav { display: none !important; }
   .ks-menu-button { display: inline-flex; }
   .ks-hide-mobile { display: none !important; }
@@ -6145,9 +6714,10 @@ button.ks-product-visual-card {
     opacity: 0.13;
   }
 
-  .ks-cta-band-artwork {
+  .ks-cta-band.has-artwork::after {
     right: -42px;
-    width: clamp(130px, 40vw, 180px);
+    width: clamp(110px, 32vw, 160px);
+    height: clamp(110px, 32vw, 160px);
     opacity: 0.22;
   }
 
@@ -6158,7 +6728,7 @@ button.ks-product-visual-card {
     opacity: 0.08;
   }
 
-  /* â”€â”€ Typography â”€â”€ */
+  /* ── Typography ── */
   .ks-display-xl   { font-size: clamp(48px, 14vw, 72px); }
   .ks-headline-lg  { font-size: clamp(36px, 10vw, 58px); }
   .ks-headline-md  { font-size: clamp(24px, 7vw, 40px); }
@@ -6206,6 +6776,76 @@ button.ks-product-visual-card {
     object-position: center center;
     filter: contrast(1.04) brightness(0.88);
   }
+
+  .ks-flash-page-hero .ks-page-hero-image {
+    top: auto;
+    right: -2%;
+    bottom: -4%;
+    width: min(88vw, 400px);
+    height: min(64%, 380px);
+    object-position: center bottom;
+    transform: none;
+    filter: none;
+    opacity: 0.96;
+  }
+
+  .ks-flash-page-hero .ks-page-hero-content {
+    width: min(36rem, 100%);
+    padding-bottom: clamp(140px, 42vw, 220px);
+  }
+
+  .ks-products-art-hero.ks-page-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(24px, 5vw, 32px);
+    /* Topo maior: pílula (≈62px) + respiro até o rótulo. */
+    padding:
+      calc(72px + env(safe-area-inset-top, 0px) + 36px)
+      var(--ks-hero-pad-inline)
+      clamp(28px, 5vw, 40px);
+  }
+
+  .ks-products-art-hero .ks-products-art-float {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: center;
+    width: min(100%, 300px);
+    max-width: min(100%, 300px);
+    max-height: none;
+    aspect-ratio: 1 / 1;
+    border-radius: 0;
+    transform: translateY(0);
+  }
+
+  .ks-products-art-hero .ks-page-hero-content {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding-bottom: 0;
+    gap: 0;
+  }
+
+  .ks-products-art-hero h1 {
+    margin: 18px 0 18px;
+  }
+
+  .ks-products-art-hero .ks-page-hero-content .ks-body-lg {
+    margin: 0;
+    max-width: none;
+    line-height: 1.45;
+  }
+
+  .ks-products-art-hero .ks-primary-link {
+    margin-top: 24px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.35;
+    height: auto;
+    max-width: 100%;
+    padding-inline: 18px;
+  }
+
   .ks-actions {
     flex-direction: column;
     align-items: stretch;
@@ -6216,7 +6856,7 @@ button.ks-product-visual-card {
     justify-content: center;
   }
 
-  /* â”€â”€ Two-col â†’ single â”€â”€ */
+  /* ── Two-col → single ── */
   .ks-two-col {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
@@ -6282,7 +6922,7 @@ button.ks-product-visual-card {
   }
   .ks-gallery-offset { margin-top: 0 !important; }
 
-  /* â”€â”€ Card grids de texto â†’ uma coluna â”€â”€ */
+  /* ── Card grids de texto → uma coluna ── */
   .ks-card-grid.four,
   .ks-card-grid.three,
   .ks-step-grid {
@@ -6292,11 +6932,11 @@ button.ks-product-visual-card {
   .ks-product-card,
   .ks-step { min-height: auto; }
 
-  /* â”€â”€ Grade de fotos do portfÃ³lio â†’ duas colunas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  /* ── Grade de fotos do portfólio → duas colunas ─────────────────────────────
      Ficava em uma coluna: 6 fotos ocupavam 2838px de rolagem, uma por tela.
-     Duas colunas espelham o mural da home (que jÃ¡ era assim) e cortam a grade
-     para cerca de um terÃ§o da altura.
-     min-height: 0 Ã© essencial â€” com 300px de altura mÃ­nima num card de ~167px de
+     Duas colunas espelham o mural da home (que já era assim) e cortam a grade
+     para cerca de um terço da altura.
+     min-height: 0 é essencial — com 300px de altura mínima num card de ~167px de
      largura, o object-fit: cover voltaria a recortar as fotos verticais. */
   .ks-image-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -6308,7 +6948,7 @@ button.ks-product-visual-card {
     min-height: 0;
   }
 
-  /* Card pequeno pede legenda menor, senÃ£o o degradÃª engole a foto. */
+  /* Card pequeno pede legenda menor, senão o degradê engole a foto. */
   .ks-image-card-overlay {
     padding: 40px 12px 12px;
   }
@@ -6324,12 +6964,12 @@ button.ks-product-visual-card {
   }
 
   /* Sem estrela nos cards pequenos: a 94px ela cobria mais da metade da largura.
-     O mural da home tambÃ©m nÃ£o usa. */
+     O mural da home também não usa. */
   .ks-image-card .ks-card-starfield {
     display: none;
   }
 
-  /* Filtros: faixa rolÃ¡vel em vez de quebrar em duas linhas â€” e continua
+  /* Filtros: faixa rolável em vez de quebrar em duas linhas — e continua
      funcionando quando houver as seis categorias. */
   .ks-filter-row {
     flex-wrap: nowrap;
@@ -6350,11 +6990,11 @@ button.ks-product-visual-card {
     flex: 0 0 auto;
   }
 
-  /* â”€â”€ CTA band â”€â”€ */
+  /* ── CTA band ── */
   .ks-cta-band { padding-inline: 20px; }
   .ks-cta-band .ks-primary-link { width: 100%; }
 
-  /* â”€â”€ Portfolio â€” carousel mobile â”€â”€ */
+  /* ── Portfolio — carousel mobile ── */
   .ks-portfolio-head {
     flex-direction: column;
     align-items: flex-start;
@@ -6376,7 +7016,7 @@ button.ks-product-visual-card {
     justify-content: center;
   }
 
-  /* â”€â”€ Flash Tattoos â€” imagem em cima, tira de thumbs embaixo â”€â”€ */
+  /* ── Flash Tattoos — imagem em cima, tira de thumbs embaixo ── */
   .ks-flash-showcase { padding-inline: 20px; }
   .ks-flash-scroll-layout {
     grid-template-columns: 1fr;
@@ -6459,7 +7099,7 @@ button.ks-product-visual-card {
     box-shadow: 0 0 0 1px rgba(var(--ks-peach-rgb), 0.28);
   }
 
-  /* â”€â”€ Produtos â€” grid visual â”€â”€ */
+  /* ── Produtos — grid visual ── */
   .ks-products-preview { padding-inline: 20px; }
   .ks-products-header { margin-bottom: 24px; }
   .ks-products-grid {
@@ -6491,7 +7131,7 @@ button.ks-product-visual-card {
     color: var(--ks-on-dark);
   }
 
-  /* â”€â”€ WhatsApp flutuante â”€â”€ */
+  /* ── WhatsApp flutuante ── */
   .ks-floating-whatsapp-label {
     display: none;
   }
@@ -6548,7 +7188,7 @@ button.ks-product-visual-card {
     padding: 18px 16px 20px;
   }
 
-  /* â”€â”€ Gallery â”€â”€ */
+  /* ── Gallery ── */
   .ks-gallery-frame {
     height: auto !important;
     aspect-ratio: 3 / 4;
@@ -6556,7 +7196,7 @@ button.ks-product-visual-card {
   .ks-gallery-spacer { display: none !important; }
 }
 
-/* â”€â”€ Preloader â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Preloader ────────────────────────────────────────────────── */
 .ks-preloader {
   position: fixed;
   inset: 0;
@@ -6644,7 +7284,7 @@ button.ks-product-visual-card {
   scrollbar-width: none;
 }
 
-/* â”€â”€ Home: fluxo entre seÃ§Ãµes (junÃ§Ã£o direta, sem faixas de gradiente) â”€ */
+/* ── Home: fluxo entre seções (junção direta, sem faixas de gradiente) ─ */
 .ks-home-flow {
   display: flex;
   flex-direction: column;
@@ -6752,28 +7392,28 @@ button.ks-product-visual-card {
   background: var(--ks-surface-warm);
 }
 
-/* De 768px para cima a seÃ§Ã£o tem duas colunas e a janela fica centrada sobre a
-   divisÃ³ria, invadindo a metade esquerda: reservamos espaÃ§o Ã  direita para o
-   tÃ­tulo nÃ£o correr por baixo dela. Em â‰¤767px a seÃ§Ã£o empilha e o padding
-   padrÃ£o volta a valer. */
-/* EspaÃ§o Ã  direita do texto sÃ³ onde a seÃ§Ã£o realmente tem DUAS colunas e a
-   janela fica sobre a divisÃ³ria, invadindo a metade do texto. Medido: duas
-   colunas acontecem acima de 1120px e na faixa 901â€“1220 em paisagem. Em retrato
-   atÃ© 1220px a seÃ§Ã£o Ã© uma coluna sÃ³, a janela cai centralizada sobre a foto e
-   reservar 150px ali sÃ³ estreitaria o texto sem motivo.
+/* De 768px para cima a seção tem duas colunas e a janela fica centrada sobre a
+   divisória, invadindo a metade esquerda: reservamos espaço à direita para o
+   título não correr por baixo dela. Em ≤767px a seção empilha e o padding
+   padrão volta a valer. */
+/* Espaço à direita do texto só onde a seção realmente tem DUAS colunas e a
+   janela fica sobre a divisória, invadindo a metade do texto. Medido: duas
+   colunas acontecem acima de 1120px e na faixa 901–1220 em paisagem. Em retrato
+   até 1220px a seção é uma coluna só, a janela cai centralizada sobre a foto e
+   reservar 150px ali só estreitaria o texto sem motivo.
 
-   O combinador > eleva a especificidade para (0,3,0) de propÃ³sito: blocos mais
+   O combinador > eleva a especificidade para (0,3,0) de propósito: blocos mais
    abaixo no arquivo redefinem `padding` pelo atalho com (0,2,0) e zerariam este
-   padding-right, deixando o tÃ­tulo correr por baixo da janela. */
+   padding-right, deixando o título correr por baixo da janela. */
 @media (min-width: 1121px),
        (min-width: 901px) and (max-width: 1220px) and (orientation: landscape) {
   .ks-home-flow .ks-editorial-split > .ks-editorial-split-text {
     padding-right: clamp(150px, 15vw, 230px);
   }
 
-  /* Duas colunas: a janela sai do canto e vai para o centro da seÃ§Ã£o. Como a
-     foto Ã© a coluna da direita, a borda esquerda dela Ã© exatamente a divisÃ³ria,
-     entÃ£o left: 0 + translateX(-50%) centra a janela no meio da seÃ§Ã£o sem
+  /* Duas colunas: a janela sai do canto e vai para o centro da seção. Como a
+     foto é a coluna da direita, a borda esquerda dela é exatamente a divisória,
+     então left: 0 + translateX(-50%) centra a janela no meio da seção sem
      depender da largura das colunas. */
   .ks-home-flow .ks-editorial-split .ks-editorial-split-portal {
     top: 50%;
@@ -6938,7 +7578,7 @@ button.ks-product-visual-card {
   color: var(--ks-primary);
 }
 
-/* â”€â”€ Home: destaque editorial do canal no YouTube â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Home: destaque editorial do canal no YouTube ───────────── */
 .ks-youtube-feature {
   position: relative;
   padding: clamp(72px, 9vw, 124px) clamp(24px, 5vw, 64px);
@@ -7079,12 +7719,40 @@ button.ks-product-visual-card {
   transform: translateY(-50%) rotate(2deg);
 }
 
-.ks-youtube-feature-trailer video {
+.ks-youtube-feature-trailer video,
+.ks-youtube-feature-trailer img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
+}
+
+.ks-youtube-feature-media.is-thumb-only {
+  min-height: 0;
+}
+
+.ks-youtube-feature-media.is-thumb-only .ks-youtube-feature-thumb {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: min(100%, 640px);
+  transform: rotate(-2deg);
+}
+
+.ks-youtube-feature-media.is-trailer-only {
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+}
+
+.ks-youtube-feature-media.is-trailer-only .ks-youtube-feature-trailer {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: min(280px, 72%);
+  max-height: min(72vh, 560px);
+  transform: rotate(2deg);
 }
 
 .ks-youtube-feature-trailer-meta {
@@ -7223,8 +7891,8 @@ button.ks-product-visual-card {
     padding-bottom: 30px;
   }
 
-  /* No celular, a thumbnail Ã© a peÃ§a principal e o trailer vira uma prÃ©via
-     compacta sobreposta no canto, preservando a composiÃ§Ã£o do desktop. */
+  /* No celular, a thumbnail é a peça principal e o trailer vira uma prévia
+     compacta sobreposta no canto, preservando a composição do desktop. */
   .ks-youtube-feature-thumb {
     position: relative;
     grid-area: 1 / 1;
@@ -7283,13 +7951,13 @@ button.ks-product-visual-card {
   }
 }
 
-/* â”€â”€ Home: estÃºdio com scroll-scrub (frames do vÃ­deo) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Home: estúdio com scroll-scrub (frames do vídeo) ─────────── */
 .ks-studio-section {
   position: relative;
   background: var(--ks-ink);
 }
 
-/* Altura extra = distÃ¢ncia de scroll usada para "tocar" o vÃ­deo */
+/* Altura extra = distância de scroll usada para "tocar" o vídeo */
 .ks-studio-section.is-scrub {
   height: 400vh;
 }
@@ -7381,7 +8049,7 @@ button.ks-product-visual-card {
   transform-origin: left center;
 }
 
-/* â”€â”€ Home: editorial split â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Home: editorial split ────────────────────────────────────── */
 .ks-editorial-split {
   position: relative;
   display: grid;
@@ -7443,17 +8111,17 @@ button.ks-product-visual-card {
   min-height: 420px;
   object-fit: cover;
   object-position: center 30%;
-  filter: grayscale(55%) sepia(12%) contrast(1.05) brightness(0.72);
-  opacity: 0.55;
+  filter: saturate(0.86) contrast(1.04) brightness(0.78);
+  opacity: 1;
 }
 
 /* Janela com o retrato da artista, posicionada dentro do bloco da foto.
-   A altura manda (e a largura vem do aspect-ratio) porque a seÃ§Ã£o tem altura
+   A altura manda (e a largura vem do aspect-ratio) porque a seção tem altura
    limitada: dimensionar pela largura estouraria o recorte.
 
-   PADRÃƒO = canto inferior direito da foto. Ã‰ o comportamento seguro em qualquer
-   largura, inclusive nas vÃ¡rias faixas em que a seÃ§Ã£o Ã© uma coluna sÃ³. A versÃ£o
-   centrada na divisÃ³ria vem depois, restrita Ã s faixas de duas colunas. */
+   PADRÃO = canto inferior direito da foto. É o comportamento seguro em qualquer
+   largura, inclusive nas várias faixas em que a seção é uma coluna só. A versão
+   centrada na divisória vem depois, restrita às faixas de duas colunas. */
 .ks-editorial-split-portal {
   position: absolute;
   right: clamp(14px, 3vw, 26px);
@@ -7483,8 +8151,8 @@ button.ks-product-visual-card {
 }
 
 .ks-editorial-split-portal .ks-window-portal > img {
-  object-position: center 24%;
-  filter: grayscale(22%) sepia(12%) contrast(1.04);
+  object-position: center 18%;
+  filter: contrast(1.04);
 }
 
 .ks-svg-clip-defs {
@@ -7494,7 +8162,7 @@ button.ks-product-visual-card {
   overflow: hidden;
 }
 
-/* Portal janela â€” manifesto + cards de serviÃ§o (mesmo recorte) */
+/* Portal janela — manifesto + cards de serviço (mesmo recorte) */
 .ks-window-portal {
   position: relative;
   isolation: isolate;
@@ -7613,7 +8281,7 @@ button.ks-product-visual-card {
   filter: grayscale(15%) sepia(8%);
 }
 
-/* â”€â”€ Hover: vÃ­deo de processo criativo â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Hover: vídeo de processo criativo ─────────────────────────── */
 .ks-hover-process-media {
   position: relative;
   display: block;
@@ -7706,7 +8374,7 @@ button.ks-product-visual-card {
   filter: grayscale(0%) sepia(4%);
 }
 
-/* â”€â”€ Home: serviÃ§os â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Home: serviços ───────────────────────────────────────────── */
 .ks-services-section {
   position: relative;
   padding: clamp(64px, 8vw, 110px) clamp(24px, 5vw, 64px);
@@ -7875,7 +8543,7 @@ button.ks-product-visual-card {
   background: var(--ks-plum);
 }
 
-/* â”€â”€ Home: mural portfÃ³lio â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Home: mural portfólio ──────────────────────────────────── */
 .ks-mural-section {
   padding: clamp(64px, 8vw, 110px) clamp(24px, 5vw, 64px);
 }
@@ -8103,7 +8771,7 @@ button.ks-product-visual-card {
 
   .ks-home-hero {
     min-height: min(88svh, 720px);
-    padding: 92px 20px 44px;
+    padding: 92px var(--ks-content-inline) 44px;
   }
 
   .ks-page-hero h1.ks-display-xl {
@@ -8156,9 +8824,9 @@ button.ks-product-visual-card {
     height: auto;
   }
 
-  /* 3/3.6 tambÃ©m distorcia a mÃ¡scara. A regra de â‰¤767px jÃ¡ cobre esta faixa e
+  /* 3/3.6 também distorcia a máscara. A regra de ≤767px já cobre esta faixa e
      vem depois no arquivo; mantida aqui apenas com o aspecto correto para o
-     arquivo nÃ£o sugerir um valor errado. */
+     arquivo não sugerir um valor errado. */
   .ks-service-card-media .ks-window-portal {
     aspect-ratio: 29 / 54;
   }
@@ -8184,7 +8852,7 @@ button.ks-product-visual-card {
   }
 }
 
-/* â”€â”€ TransiÃ§Ã£o para Produtos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Transição para Produtos ──────────────────────────────────── */
 .ks-products-transition {
   position: fixed;
   inset: 0;
@@ -8223,7 +8891,7 @@ button.ks-product-visual-card {
   transform: scale(1.04);
 }
 
-/* â”€â”€ PÃ¡gina Produtos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Página Produtos ──────────────────────────────────────────── */
 .ks-products-page-hero {
   position: relative;
   display: grid;
@@ -8282,7 +8950,7 @@ button.ks-product-visual-card {
   object-position: center;
 }
 
-/* As estrelas assumem a separaÃ§Ã£o visual; sem linhas entre seÃ§Ãµes. */
+/* As estrelas assumem a separação visual; sem linhas entre seções. */
 .ks-home-flow > section,
 .ks-page-sections > section,
 .ks-route-content > section,
@@ -8376,6 +9044,37 @@ button.ks-product-visual-card {
 }
 
 @media (max-width: 900px) {
+  .ks-products-art-hero.ks-page-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(22px, 4vw, 30px);
+    padding-inline: var(--ks-hero-pad-inline);
+  }
+
+  .ks-products-art-hero .ks-products-art-float {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: center;
+    width: min(100%, 320px);
+    max-width: min(100%, 320px);
+    max-height: none;
+    aspect-ratio: 1 / 1;
+  }
+
+  .ks-products-art-hero .ks-page-hero-content {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .ks-products-art-hero .ks-primary-link {
+    white-space: normal;
+    max-width: 100%;
+    text-align: center;
+    line-height: 1.35;
+    height: auto;
+  }
+
   .ks-products-category-grid {
     grid-template-columns: minmax(0, 420px);
     justify-content: center;
@@ -8529,8 +9228,8 @@ button.ks-product-visual-card {
     letter-spacing: 0.14em;
   }
 
-  /* A janela Ã© absoluta dentro da foto e jÃ¡ cai no canto inferior direito pela
-     regra base â€” nÃ£o precisa de nada aqui. Antes ela era irmÃ£ da foto e ficava
+  /* A janela é absoluta dentro da foto e já cai no canto inferior direito pela
+     regra base — não precisa de nada aqui. Antes ela era irmã da foto e ficava
      no fluxo, reservando uma faixa de altura que sobrava vazia ao lado dela. */
 
   .ks-home-hero-starfield,
@@ -8602,7 +9301,7 @@ button.ks-product-visual-card {
     opacity: 0.66;
   }
 
-  /* No celular o grupo secundÃ¡rio fica bem menor: com pouca largura os dois
+  /* No celular o grupo secundário fica bem menor: com pouca largura os dois
      grupos se encontrariam no meio da tela. */
   :is(.ks-page-sections:not(.ks-page-sections-reformulacoes), .ks-route-content, .ks-home-flow) > section:not(:first-child)::after {
     width: 132px;
@@ -8716,11 +9415,11 @@ button.ks-product-visual-card {
     padding-top: 10px;
   }
 
-  /* A moldura Ã© uma mÃ¡scara com mask-size: 185% 100% sobre um PNG quadrado, o
-     que sÃ³ renderiza sem distorÃ§Ã£o quando a caixa tem aspecto 29/54 (0,537) â€”
-     o mesmo do desenho. O 3/3.85 (0,779) que estava aqui esticava a mÃ¡scara 44%
+  /* A moldura é uma máscara com mask-size: 185% 100% sobre um PNG quadrado, o
+     que só renderiza sem distorção quando a caixa tem aspecto 29/54 (0,537) —
+     o mesmo do desenho. O 3/3.85 (0,779) que estava aqui esticava a máscara 44%
      na horizontal, e era isso que achatava o arco. Mantemos a altura que o card
-     jÃ¡ tinha e deixamos a largura ser derivada, entÃ£o nada cresce. */
+     já tinha e deixamos a largura ser derivada, então nada cresce. */
   .ks-service-card-media .ks-window-portal {
     width: auto;
     height: min(58vh, 390px);
@@ -8868,8 +9567,8 @@ button.ks-product-visual-card {
     padding-inline: 16px;
   }
 
-  /* Vem depois da regra de â‰¤767px, entÃ£o precisa repetir o sizing pela altura â€”
-     senÃ£o volta a ser derivado da largura e o arco fica alto demais. */
+  /* Vem depois da regra de ≤767px, então precisa repetir o sizing pela altura —
+     senão volta a ser derivado da largura e o arco fica alto demais. */
   .ks-service-card-media .ks-window-portal {
     width: auto;
     height: min(54vh, 330px);
@@ -8890,7 +9589,7 @@ button.ks-product-visual-card {
   }
 }
 
-/* â”€â”€ iPad Pro 11â€³ e tablets equivalentes (834 Ã— 1210 CSS px) â”€â”€ */
+/* ── iPad Pro 11″ e tablets equivalentes (834 × 1210 CSS px) ── */
 @media (min-width: 768px) and (max-width: 1220px) {
   html {
     -webkit-text-size-adjust: 100%;
@@ -8899,7 +9598,12 @@ button.ks-product-visual-card {
 
   .ks-header {
     --ks-header-h: 76px;
+  }
+
+  :root {
     --ks-header-pad: max(30px, env(safe-area-inset-left));
+    --ks-content-inline: var(--ks-header-pad);
+    --ks-hero-pad-inline: var(--ks-header-pad);
   }
 
   .ks-logo {
@@ -8947,7 +9651,7 @@ button.ks-product-visual-card {
   .ks-home-hero {
     min-height: min(88svh, 900px);
     padding-top: 116px;
-    padding-inline: clamp(36px, 6vw, 68px);
+    padding-inline: var(--ks-content-inline);
     align-items: center;
   }
 
@@ -9071,17 +9775,17 @@ button.ks-product-visual-card {
   }
 }
 
-/* â”€â”€ Enquadramento do hero da home em telas retrato â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-   A foto Ã© paisagem (1600x1200, aspecto 1.333) e o hero em retrato tem aspecto
+/* ── Enquadramento do hero da home em telas retrato ──────────────────────────
+   A foto é paisagem (1600x1200, aspecto 1.333) e o hero em retrato tem aspecto
    ~0.53: o object-fit: cover escala pela altura e descarta ~61% da largura.
-   Com o padrÃ£o "center center" sobrava a faixa 30%â€“70% da foto, que Ã© justamente
-   o fundo vazio â€” o braÃ§o com a tattoo fica entre 60% e 80% (pico de pele em
-   65â€“70%). Deslocar para 75% traz a faixa para 45%â€“85%, centrada no braÃ§o.
+   Com o padrão "center center" sobrava a faixa 30%–70% da foto, que é justamente
+   o fundo vazio — o braço com a tattoo fica entre 60% e 80% (pico de pele em
+   65–70%). Deslocar para 75% traz a faixa para 45%–85%, centrada no braço.
 
-   SÃ³ em retrato: em paisagem o aspecto do hero passa o da foto, o recorte vira
-   vertical e um deslocamento no eixo X nÃ£o teria efeito nenhum.
+   Só em retrato: em paisagem o aspecto do hero passa o da foto, o recorte vira
+   vertical e um deslocamento no eixo X não teria efeito nenhum.
 
-   Vem no fim do arquivo de propÃ³sito: trÃªs regras anteriores fixam
+   Vem no fim do arquivo de propósito: três regras anteriores fixam
    "object-position: center center" para .ks-home-hero-bg, e a ordem decide. */
 @media (max-width: 1120px) and (orientation: portrait) {
   .ks-home-hero-bg {
@@ -9111,6 +9815,7 @@ button.ks-product-visual-card {
   display: grid;
   gap: 22px;
   max-width: 430px;
+  min-width: 0;
   padding: clamp(24px, 5vw, 34px);
   position: relative;
   width: min(100%, 430px);
@@ -9629,7 +10334,7 @@ button.ks-product-visual-card {
   }
 }
 
-/* BotÃµes da bio: mais autorais, menos componente genÃ©rico */
+/* Botões da bio: mais autorais, menos componente genérico */
 .ks-link-bio-links {
   gap: 12px;
 }
@@ -9788,8 +10493,8 @@ button.ks-product-visual-card {
 }
 
 /* Bio: trava anti-corte para celulares e telas mobile mais largas.
-   Depois das iteraÃ§Ãµes visuais, algumas regras finais voltavam os destaques
-   para 3 colunas atÃ© em ~515px, deixando texto espremido/cortado. */
+   Depois das iterações visuais, algumas regras finais voltavam os destaques
+   para 3 colunas até em ~515px, deixando texto espremido/cortado. */
 .ks-link-bio-page {
   -ms-overflow-style: none;
   overscroll-behavior-y: auto;
@@ -10081,8 +10786,13 @@ button.ks-product-visual-card {
   display: grid;
   gap: 10px;
   margin-top: 8px;
+  min-width: 0;
   text-align: center;
   width: 100%;
+}
+
+.ks-bio-block:has(.ks-bio-quote-marquee) {
+  overflow-x: clip;
 }
 
 .ks-bio-block__label {
@@ -10137,9 +10847,10 @@ button.ks-product-visual-card {
 .ks-bio-snap {
   display: flex;
   gap: 12px;
-  margin: 4px -18px 2px;
+  margin: 4px 0 2px;
   overflow-x: auto;
-  padding: 4px 18px 10px;
+  padding: 4px 4px 10px;
+  scroll-padding-inline: 4px;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
@@ -10155,11 +10866,23 @@ button.ks-product-visual-card {
   border-radius: 22px;
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.18);
   display: grid;
-  flex: 0 0 clamp(72vw, 76vw, 300px);
+  /* Peek deliberado e simétrico do próximo card — não corte acidental. */
+  flex: 0 0 min(86%, 300px);
   gap: 0;
   overflow: hidden;
   scroll-snap-align: center;
   text-align: left;
+}
+
+.ks-bio-snap-hint {
+  color: rgba(var(--ks-plum-rgb), 0.48);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  margin: 0;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .ks-bio-flash-card__media {
@@ -10350,74 +11073,158 @@ button.ks-product-visual-card {
   margin: 0;
 }
 
-.ks-bio-quote-carousel {
-  margin: 6px 0 2px;
+.ks-bio-quote-marquee {
+  box-sizing: border-box;
+  margin: 8px 0 4px;
+  max-width: 100%;
+  overflow: hidden;
   position: relative;
   width: 100%;
 }
 
-.ks-bio-quote-carousel__stage {
-  isolation: isolate;
-  margin-inline: 0;
+.ks-bio-quote-marquee__viewport {
+  box-sizing: border-box;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   overflow: hidden;
-  padding: 0;
+  padding-block: 4px 8px;
   position: relative;
+  width: 100%;
 }
 
-.ks-bio-quote--carousel {
+.ks-bio-quote-marquee__track {
+  display: flex;
+  gap: 0;
+  width: max-content;
+  will-change: transform;
+}
+
+.ks-bio-quote-marquee[data-paused="false"] .ks-bio-quote-marquee__track {
+  animation: ks-bio-quote-marquee var(--ks-bio-marquee-duration, 36s) linear infinite;
+}
+
+.ks-bio-quote-marquee[data-paused="true"] .ks-bio-quote-marquee__track {
+  animation-play-state: paused;
+}
+
+.ks-bio-quote-marquee__group {
+  display: flex;
+  flex-shrink: 0;
+  gap: 12px;
+  /* Trailing gap entra na largura do grupo → loop seamless em -50%. */
+  padding-right: 12px;
+}
+
+.ks-bio-quote--marquee {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(246, 242, 246, 0.9)),
     rgba(247, 245, 246, 0.92);
   border: 1px solid rgba(201, 166, 216, 0.45);
-  border-radius: 22px;
-  box-shadow: none;
+  border-radius: 20px;
+  box-shadow: 0 10px 24px rgba(48, 20, 63, 0.1);
   display: grid;
-  flex: none;
+  flex: 0 0 min(72vw, 260px);
   gap: 10px;
   justify-items: start;
-  min-height: 118px;
-  padding: 22px 22px 20px;
-  position: relative;
+  min-height: 112px;
+  padding: 18px 16px 16px;
   text-align: left;
-  width: 100%;
 }
 
-.ks-bio-quote--carousel > span {
+.ks-bio-quote--marquee > span {
   color: #8b3da5;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
 }
 
-.ks-bio-quote--carousel p {
+.ks-bio-quote--marquee p {
   color: #30143f;
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(1.15rem, 4.8vw, 1.35rem);
+  font-size: clamp(1.05rem, 4.2vw, 1.22rem);
   font-weight: 500;
   line-height: 1.28;
   margin: 0;
-  max-width: 18ch;
 }
 
-.ks-bio-quote-carousel__dots {
-  display: flex;
-  gap: 7px;
-  justify-content: center;
-  margin-top: 12px;
-}
-
-.ks-bio-quote-carousel__dots button {
-  background: rgba(245, 241, 243, 0.28);
-  border: 0;
+.ks-bio-quote-marquee__pause {
+  align-items: center;
+  appearance: none;
+  backdrop-filter: blur(10px);
+  background: rgba(247, 245, 246, 0.88);
+  border: 1px solid rgba(201, 166, 216, 0.4);
   border-radius: 999px;
+  bottom: 14px;
+  color: #5b3a6a;
   cursor: pointer;
-  height: 6px;
-  padding: 0;
-  transition: width 0.25s ease, background 0.25s ease;
-  width: 6px;
+  display: inline-flex;
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  gap: 5px;
+  letter-spacing: 0.1em;
+  padding: 7px 11px;
+  position: absolute;
+  right: 10px;
+  text-transform: uppercase;
+  z-index: 2;
 }
 
-.ks-bio-quote-carousel__dots button.is-active {
-  background: #c9a6d8;
-  width: 18px;
+@keyframes ks-bio-quote-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-bio-quote-marquee__track {
+    animation: none !important;
+  }
+
+  .ks-bio-quote-marquee__viewport {
+    mask-image: none;
+    -webkit-mask-image: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .ks-bio-quote-marquee__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ks-bio-quote-marquee__group:last-child {
+    display: none;
+  }
+
+  .ks-bio-quote--marquee {
+    scroll-snap-align: center;
+  }
+}
+
+.ks-bio-dev-credit {
+  color: rgba(48, 20, 63, 0.42);
+  font-family: "Hanken Grotesk", sans-serif;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  margin: 2px 0 0;
+  padding: 4px 0 2px;
+  text-align: center;
+}
+
+.ks-bio-dev-credit a {
+  color: rgba(48, 20, 63, 0.55);
+  text-decoration: underline;
+  text-decoration-color: rgba(48, 20, 63, 0.18);
+  text-underline-offset: 2px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.ks-bio-dev-credit a:hover {
+  color: rgba(48, 20, 63, 0.78);
+  text-decoration-color: rgba(48, 20, 63, 0.4);
 }
 
 .ks-bio-studio__media {
@@ -10779,10 +11586,241 @@ button.ks-product-visual-card {
 }
 
 .ks-link-bio-page--lilac .ks-link-bio-star {
-  display: none;
+  display: block;
+  opacity: 0.22;
+  z-index: 0;
 }
 
-/* â”€â”€ Home em modo desenvolvimento â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── /bio motion (CSS only) ─────────────────────────────────────────────── */
+
+.ks-link-bio-atmosphere {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.ks-link-bio-atmosphere .ks-link-bio-star {
+  background: center / contain no-repeat url("/assets/brand/star-karina-outline.webp");
+  display: block;
+  height: clamp(56px, 14vw, 110px);
+  opacity: 0.2;
+  position: absolute;
+  width: clamp(56px, 14vw, 110px);
+}
+
+.ks-link-bio-atmosphere .star-1 {
+  animation: ks-bio-star-twinkle 5.4s ease-in-out infinite;
+  left: 6%;
+  top: 12%;
+  transform: rotate(-16deg);
+}
+
+.ks-link-bio-atmosphere .star-2 {
+  animation: ks-bio-star-twinkle 7.2s ease-in-out infinite 1.4s;
+  right: 8%;
+  top: 22%;
+  transform: rotate(12deg);
+  width: clamp(40px, 10vw, 72px);
+  height: clamp(40px, 10vw, 72px);
+}
+
+.ks-link-bio-atmosphere .star-3 {
+  animation: ks-bio-star-twinkle 6.1s ease-in-out infinite 2.6s;
+  bottom: 18%;
+  left: 10%;
+  transform: rotate(22deg);
+  width: clamp(36px, 9vw, 64px);
+  height: clamp(36px, 9vw, 64px);
+}
+
+@keyframes ks-bio-star-twinkle {
+  0%,
+  100% {
+    opacity: 0.12;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.34;
+    filter: brightness(1.25);
+  }
+}
+
+/* Entrada acima da dobra: elementos já clicáveis; animação não bloqueia toque. */
+.ks-link-bio-page:not(.is-reduced-motion) .ks-bio-enter {
+  animation: ks-bio-enter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--ks-bio-enter-delay, 0ms);
+}
+
+@keyframes ks-bio-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* Botões: feedback imediato */
+.ks-link-bio-action {
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.ks-link-bio-action:hover {
+  transform: translateY(-1px);
+}
+
+.ks-link-bio-action:active {
+  transform: translateY(1px) scale(0.985);
+  box-shadow: 0 6px 16px rgba(var(--ks-plum-rgb), 0.16);
+  transition-duration: 0.08s;
+}
+
+.ks-link-bio-action-arrow {
+  transition: transform 0.15s ease;
+}
+
+.ks-link-bio-action:hover .ks-link-bio-action-arrow,
+.ks-link-bio-action:hover > svg.ks-link-bio-action-arrow {
+  transform: translateX(3px);
+}
+
+.ks-link-bio-action-icon {
+  transition: transform 0.15s ease;
+}
+
+.ks-link-bio-action:hover .ks-link-bio-action-icon {
+  transform: scale(1.06);
+}
+
+.ks-link-bio-action.is-primary:hover {
+  box-shadow: 0 18px 40px rgba(var(--ks-plum-rgb), 0.3);
+}
+
+/* Avatar: um único efeito — anel pulsante */
+.ks-link-bio-avatar-wrap {
+  position: relative;
+}
+
+.ks-link-bio-page:not(.is-reduced-motion) .ks-link-bio-avatar-wrap::after {
+  animation: ks-bio-avatar-pulse 3.8s ease-in-out infinite;
+  border: 1.5px solid rgba(var(--ks-plum-rgb), 0.28);
+  border-radius: 999px;
+  content: "";
+  inset: -5px;
+  pointer-events: none;
+  position: absolute;
+}
+
+@keyframes ks-bio-avatar-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.045);
+  }
+}
+
+/* Chips: reveal + toque + twinkle dessincronizado */
+[data-bio-reveal] {
+  opacity: 1;
+  transform: none;
+}
+
+.ks-link-bio-page:not(.is-reduced-motion) [data-bio-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ks-link-bio-page:not(.is-reduced-motion) [data-bio-reveal].is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.ks-link-bio-page:not(.is-reduced-motion) [data-bio-reveal].is-revealed .bio-style-tags__chip {
+  animation: ks-bio-chip-in 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--ks-chip-delay, 0ms);
+}
+
+@keyframes ks-bio-chip-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.bio-style-tags__chip {
+  -webkit-tap-highlight-color: transparent;
+  cursor: default;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.bio-style-tags__chip:active {
+  transform: scale(0.96);
+}
+
+.ks-link-bio-page:not(.is-reduced-motion) .bio-style-tags__chip::before {
+  animation: ks-bio-chip-twinkle var(--ks-chip-twinkle, 3.2s) ease-in-out infinite;
+}
+
+@keyframes ks-bio-chip-twinkle {
+  0%,
+  70%,
+  100% {
+    opacity: 0.45;
+    filter: brightness(1);
+  }
+  78% {
+    opacity: 0.95;
+    filter: brightness(1.35);
+  }
+}
+
+.ks-link-bio-page.is-reduced-motion .ks-bio-enter,
+.ks-link-bio-page.is-reduced-motion [data-bio-reveal],
+.ks-link-bio-page.is-reduced-motion .ks-link-bio-avatar-wrap::after,
+.ks-link-bio-page.is-reduced-motion .ks-link-bio-atmosphere .ks-link-bio-star,
+.ks-link-bio-page.is-reduced-motion .bio-style-tags__chip::before {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ks-link-bio-page .ks-bio-enter,
+  .ks-link-bio-page [data-bio-reveal],
+  .ks-link-bio-page .ks-link-bio-avatar-wrap::after,
+  .ks-link-bio-page .ks-link-bio-atmosphere .ks-link-bio-star,
+  .ks-link-bio-page .bio-style-tags__chip::before,
+  .ks-link-bio-page .ks-bio-quote-marquee__track {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ── Home em modo desenvolvimento ───────────────────────────────────────── */
 .ks-development-home {
   align-items: center;
   background:
@@ -10899,7 +11937,7 @@ button.ks-product-visual-card {
   }
 }
 
-/* Refinamento visual do modo desenvolvimento: tela prÃ³pria, sem cara de header/site normal. */
+/* Refinamento visual do modo desenvolvimento: tela própria, sem cara de header/site normal. */
 .ks-development-home {
   background: #fff;
   min-height: 100svh;
@@ -11141,7 +12179,7 @@ button.ks-product-visual-card {
   }
 }
 
-/* Ajuste final responsivo do modo desenvolvimento â€” foco em mobile e iPad 11. */
+/* Ajuste final responsivo do modo desenvolvimento — foco em mobile e iPad 11. */
 .ks-development-home {
   box-sizing: border-box;
   overflow-x: hidden;
@@ -11421,7 +12459,7 @@ button.ks-product-visual-card {
   }
 }
 
-/* Mobile: imagem total no fundo + conteÃºdo em glass central. */
+/* Mobile: imagem total no fundo + conteúdo em glass central. */
 @media (max-width: 767px) {
   .ks-development-home {
     background: #120d15;

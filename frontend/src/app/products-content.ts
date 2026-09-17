@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { DEFAULT_FOCAL, normalizeFocal, type FocalPoint } from "./focal";
 import { fetchGalleryItems } from "./gallery-api";
 
 export type ProductsPageContent = {
@@ -7,7 +8,9 @@ export type ProductsPageContent = {
   heroText1: string;
   heroText2: string;
   heroButton: string;
+  /** URL da arte (só o desenho) — a moldura é asset de design fixo. */
   heroImageUrl: string;
+  heroFocal: FocalPoint;
   ctaTitle: string;
   ctaText: string;
   ctaButton: string;
@@ -38,6 +41,7 @@ export const defaultProductsPageContent: ProductsPageContent = {
     "Produtos autorais, planos, flashes, prints e criações exclusivas feitas para aproximar ainda mais a arte da Karina Sarte de quem acompanha seu trabalho.",
   heroButton: "Consultar produtos pelo WhatsApp",
   heroImageUrl: "",
+  heroFocal: { ...DEFAULT_FOCAL },
   ctaTitle: "Quer levar a arte da Karina Sarte para além da pele?",
   ctaText: "Consulte disponibilidade, valores e opções personalizadas pelo WhatsApp.",
   ctaButton: "Consultar pelo WhatsApp",
@@ -45,6 +49,9 @@ export const defaultProductsPageContent: ProductsPageContent = {
 
 /** Fallback vazio — catálogo vem da API. */
 export const defaultProductItems: ProductCatalogItem[] = [];
+
+/** Moldura fixa do hero de produtos (design, versionada em public/assets). */
+export const PRODUCTS_HERO_MOLD_SRC = "/assets/molde-produto.png";
 
 function mapProducts(items: Awaited<ReturnType<typeof fetchGalleryItems>>): ProductCatalogItem[] {
   return items
@@ -70,9 +77,26 @@ export function useProductsPageContent(): ProductsPageContent {
 
   useEffect(() => {
     let active = true;
-    void Promise.resolve(defaultProductsPageContent).then((next) => {
-      if (active) setData(next);
-    });
+    void fetch("/api/settings", { cache: "no-store" })
+      .then(async (res) => {
+        if (!res.ok) return defaultProductsPageContent;
+        const json = (await res.json()) as {
+          productsHeroImageUrl?: string;
+          productsHeroFocalX?: number;
+          productsHeroFocalY?: number;
+        };
+        return {
+          ...defaultProductsPageContent,
+          heroImageUrl: json.productsHeroImageUrl?.trim() ?? "",
+          heroFocal: normalizeFocal(json.productsHeroFocalX, json.productsHeroFocalY),
+        };
+      })
+      .then((next) => {
+        if (active) setData(next);
+      })
+      .catch(() => {
+        if (active) setData(defaultProductsPageContent);
+      });
     return () => {
       active = false;
     };

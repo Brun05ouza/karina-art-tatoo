@@ -39,7 +39,7 @@ export const defaultPortfolioPageContent: PortfolioPageContent = {
   heroKicker: "Portfólio",
   heroTitle: "Portfólio",
   heroText: "Conheça tattoos, flashes e projetos autorais criados pela Karina Sarte.",
-  heroImageUrl: "",
+  heroImageUrl: "/assets/hero-portifolio.png",
 };
 
 /** Fallback vazio — se a API falhar, a UI mostra mensagem discreta. */
@@ -53,7 +53,7 @@ export const featuredProjectFallback: PortfolioWork = {
   title: "Projeto em destaque",
   category: "Autoral",
   label: "Autoral",
-  img: "/assets/hero-home.png",
+  img: "/assets/projeto-destaque.jpeg",
   alt: "Projeto em destaque da Karina Sarte",
   featured: true,
 };

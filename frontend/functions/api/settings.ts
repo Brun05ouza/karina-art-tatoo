@@ -4,18 +4,29 @@ import { SETTINGS_API_CACHE } from "../_lib/public-cache";
 import {
   formatBrWhatsapp,
   getDevelopmentMode,
+  getProductsHero,
   getWhatsappPhone,
+  getYoutubeFeature,
 } from "../_lib/site-settings";
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
     const whatsappPhone = await getWhatsappPhone(context.env);
     const developmentMode = await getDevelopmentMode(context.env);
+    const youtube = await getYoutubeFeature(context.env);
+    const productsHero = await getProductsHero(context.env);
     return json(
       {
         whatsappPhone,
         whatsappPhoneDisplay: formatBrWhatsapp(whatsappPhone),
         developmentMode,
+        youtubeVisible: youtube.visible,
+        youtubeUrl: youtube.youtubeUrl,
+        youtubeThumbUrl: youtube.thumbUrl,
+        youtubeTrailerUrl: youtube.trailerUrl,
+        productsHeroImageUrl: productsHero.imageUrl,
+        productsHeroFocalX: productsHero.focalX,
+        productsHeroFocalY: productsHero.focalY,
       },
       { headers: { "Cache-Control": SETTINGS_API_CACHE } },
     );
