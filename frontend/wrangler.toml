@@ -4,5 +4,5 @@ pages_build_output_dir = "dist"
 
 # Valores públicos / não-secretos. SERVICE_ROLE só em .dev.vars / Pages Secrets.
 [vars]
-SUPABASE_BUCKET = "gallery"
+SUPABASE_BUCKET = "karina-sarte-media"
 SUPABASE_URL = "https://gjrwpckxbacdtkzgpxpi.supabase.co"
