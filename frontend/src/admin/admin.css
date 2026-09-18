@@ -1299,6 +1299,11 @@
 .ks-gallery-form-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
 @keyframes admin-toast-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes admin-dialog-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes admin-dialog-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
 @keyframes admin-tile-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes admin-tile-out { from { opacity: 1; } to { opacity: 0; transform: scale(.98); } }
 
@@ -1339,17 +1344,21 @@
   display: grid;
   place-items: center;
   padding: 24px;
-  background: #2e173a66;
-  backdrop-filter: blur(4px);
-  animation: admin-toast-in .28s var(--admin-ease) both;
+  background: rgba(46, 23, 58, 0.52);
+  /* Sem backdrop-filter: isolation no .ks-admin-app deixa o blur irregular
+     (sidebar nítida / conteúdo pastoso); transform na animação piora. */
+  animation: admin-dialog-fade 0.2s var(--admin-ease) both;
 }
 .ks-admin-dialog {
   width: min(100%, 420px);
   padding: 28px 26px 24px;
   border-radius: 20px;
-  background: linear-gradient(165deg, #fffcfa, #f7f1f8);
+  background: #fffcfa;
   color: var(--admin-ink);
-  box-shadow: var(--admin-shadow-lg), inset 0 0 0 1px #e8deec;
+  box-shadow:
+    0 28px 56px rgba(46, 23, 58, 0.28),
+    inset 0 0 0 1px #e8deec;
+  animation: admin-dialog-pop 0.22s var(--admin-ease) both;
 }
 .ks-admin-dialog h2 {
   margin: 0 0 10px;
