@@ -819,7 +819,7 @@
 .ks-admin-loading { min-height: 100dvh; display: grid; place-items: center; color: #897193; font-size: 14px; }
 .ks-admin-skip { position: fixed; top: -100px; left: 20px; background: white; padding: 12px; z-index: 20; }
 .ks-admin-skip:focus { top: 12px; }
-@keyframes admin-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes admin-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @media (min-width: 1500px) { .ks-admin-access-main > .ks-admin-shell { width: 460px; } }
 
 /* Desktop largo: sidebar completa */
@@ -1340,7 +1340,7 @@
 .ks-admin-dialog-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 80;
+  z-index: 200;
   display: grid;
   place-items: center;
   padding: 24px;

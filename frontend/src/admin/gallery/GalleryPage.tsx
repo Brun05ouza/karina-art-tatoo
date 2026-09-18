@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router";
 import { ChevronDown, ChevronUp, Pencil, Star, Trash2 } from "lucide-react";
 import {
@@ -437,60 +438,71 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
         })}
       </ul>
 
-      {featuredSwap ? (
-        <div
-          className="ks-admin-dialog-backdrop"
-          role="presentation"
-          onClick={() => setFeaturedSwap(null)}
-        >
-          <div
-            className="ks-admin-dialog"
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="ks-featured-swap-title"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 id="ks-featured-swap-title">Trocar destaque?</h2>
-            <p>
-              Já existe um destaque nesta coleção. Ao confirmar,{" "}
-              <strong>{featuredSwap.candidate.title}</strong> passa a ser o destaque e o atual
-              deixa de ser.
-            </p>
-            <div className="ks-admin-featured-dialog-thumb">
-              <img
-                src={featuredSwap.current.image_url}
-                alt=""
-                width={72}
-                height={90}
-                style={focalStyle(featuredSwap.current.focal_x, featuredSwap.current.focal_y)}
-              />
-              <div>
-                <p className="ks-admin-muted" style={{ margin: 0, fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-                  Destaque atual
+      {featuredSwap
+        ? createPortal(
+            <div
+              className="ks-admin-dialog-backdrop"
+              role="presentation"
+              onClick={() => setFeaturedSwap(null)}
+            >
+              <div
+                className="ks-admin-dialog"
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="ks-featured-swap-title"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2 id="ks-featured-swap-title">Trocar destaque?</h2>
+                <p>
+                  Já existe um destaque nesta coleção. Ao confirmar,{" "}
+                  <strong>{featuredSwap.candidate.title}</strong> passa a ser o destaque e o atual
+                  deixa de ser.
                 </p>
-                <p style={{ margin: "4px 0 0", fontWeight: 600 }}>{featuredSwap.current.title}</p>
+                <div className="ks-admin-featured-dialog-thumb">
+                  <img
+                    src={featuredSwap.current.image_url}
+                    alt=""
+                    width={72}
+                    height={90}
+                    style={focalStyle(featuredSwap.current.focal_x, featuredSwap.current.focal_y)}
+                  />
+                  <div>
+                    <p
+                      className="ks-admin-muted"
+                      style={{
+                        margin: 0,
+                        fontSize: 11,
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Destaque atual
+                    </p>
+                    <p style={{ margin: "4px 0 0", fontWeight: 600 }}>{featuredSwap.current.title}</p>
+                  </div>
+                </div>
+                <div className="ks-admin-dialog-actions">
+                  <button
+                    type="button"
+                    className="ks-admin-btn ks-admin-btn--secondary"
+                    onClick={() => setFeaturedSwap(null)}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="ks-admin-btn"
+                    disabled={busyId !== null}
+                    onClick={() => void confirmFeaturedSwap()}
+                  >
+                    Confirmar
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="ks-admin-dialog-actions">
-              <button
-                type="button"
-                className="ks-admin-btn ks-admin-btn--secondary"
-                onClick={() => setFeaturedSwap(null)}
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className="ks-admin-btn"
-                disabled={busyId !== null}
-                onClick={() => void confirmFeaturedSwap()}
-              >
-                Confirmar
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

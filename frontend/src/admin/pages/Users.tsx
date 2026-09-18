@@ -1,4 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Search, UserPlus, Users, CheckCircle2, Trash2 } from "lucide-react";
 import {
   ApiError,
@@ -323,50 +324,53 @@ export function UsersPage() {
         </section>
       </div>
 
-      {confirmDelete ? (
-        <div className="ks-admin-dialog-backdrop" role="presentation" onClick={closeDelete}>
-          <div
-            className="ks-admin-dialog"
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="ks-user-delete-title"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 id="ks-user-delete-title">Excluir conta?</h2>
-            <p>
-              Isso remove permanentemente o acesso de{" "}
-              <strong>{confirmDelete.email}</strong>. Não dá para desfazer.
-            </p>
-            <label className="ks-admin-field">
-              <span>Digite o email para confirmar</span>
-              <input
-                type="email"
-                value={deleteEmailCheck}
-                onChange={(e) => setDeleteEmailCheck(e.target.value)}
-                placeholder={confirmDelete.email}
-                autoComplete="off"
-                autoFocus
-              />
-            </label>
-            <div className="ks-admin-dialog-actions">
-              <button type="button" className="ks-admin-btn ks-admin-btn--secondary" onClick={closeDelete}>
-                Cancelar
-              </button>
-              <button
-                type="button"
-                className="ks-admin-btn ks-admin-btn--danger"
-                disabled={
-                  busyId === confirmDelete.id ||
-                  deleteEmailCheck.trim().toLowerCase() !== confirmDelete.email.toLowerCase()
-                }
-                onClick={() => void confirmDeleteUser()}
+      {confirmDelete
+        ? createPortal(
+            <div className="ks-admin-dialog-backdrop" role="presentation" onClick={closeDelete}>
+              <div
+                className="ks-admin-dialog"
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="ks-user-delete-title"
+                onClick={(e) => e.stopPropagation()}
               >
-                {busyId === confirmDelete.id ? "Excluindo…" : "Excluir definitivamente"}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+                <h2 id="ks-user-delete-title">Excluir conta?</h2>
+                <p>
+                  Isso remove permanentemente o acesso de{" "}
+                  <strong>{confirmDelete.email}</strong>. Não dá para desfazer.
+                </p>
+                <label className="ks-admin-field">
+                  <span>Digite o email para confirmar</span>
+                  <input
+                    type="email"
+                    value={deleteEmailCheck}
+                    onChange={(e) => setDeleteEmailCheck(e.target.value)}
+                    placeholder={confirmDelete.email}
+                    autoComplete="off"
+                    autoFocus
+                  />
+                </label>
+                <div className="ks-admin-dialog-actions">
+                  <button type="button" className="ks-admin-btn ks-admin-btn--secondary" onClick={closeDelete}>
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    className="ks-admin-btn ks-admin-btn--danger"
+                    disabled={
+                      busyId === confirmDelete.id ||
+                      deleteEmailCheck.trim().toLowerCase() !== confirmDelete.email.toLowerCase()
+                    }
+                    onClick={() => void confirmDeleteUser()}
+                  >
+                    {busyId === confirmDelete.id ? "Excluindo…" : "Excluir definitivamente"}
+                  </button>
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }
