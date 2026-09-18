@@ -18,6 +18,7 @@ export type PortfolioWork = {
   img: string;
   alt: string;
   featured: boolean;
+  showInRecent?: boolean;
   focalX?: number;
   focalY?: number;
   order?: number;
@@ -71,6 +72,7 @@ function mapPortfolio(items: Awaited<ReturnType<typeof fetchGalleryItems>>): Por
         img: item.image_url,
         alt: item.alt_text?.trim() || item.title,
         featured: Boolean(item.featured),
+        showInRecent: item.show_in_recent !== false,
         focalX: item.focal_x ?? 50,
         focalY: item.focal_y ?? 50,
         order: item.sort_order ?? index,
@@ -88,6 +90,7 @@ function mapOne(item: NonNullable<Awaited<ReturnType<typeof fetchGalleryFeatured
     img: item.image_url,
     alt: item.alt_text?.trim() || item.title,
     featured: true,
+    showInRecent: item.show_in_recent !== false,
     focalX: item.focal_x ?? 50,
     focalY: item.focal_y ?? 50,
     order: item.sort_order ?? 0,

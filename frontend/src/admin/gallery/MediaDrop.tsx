@@ -2,7 +2,6 @@ import { useId, useRef, useState, type DragEvent, type ReactNode } from "react";
 
 type Props = {
   accept: string;
-  capture?: boolean | "user" | "environment";
   disabled?: boolean;
   hasMedia: boolean;
   error?: boolean;
@@ -19,7 +18,6 @@ type Props = {
 
 export function MediaDrop({
   accept,
-  capture,
   disabled = false,
   hasMedia,
   error = false,
@@ -74,7 +72,6 @@ export function MediaDrop({
         id={fileId}
         type="file"
         accept={accept}
-        capture={capture}
         disabled={disabled}
         tabIndex={hasMedia ? -1 : 0}
         onChange={(event) => takeFile(event.target.files?.[0] ?? null)}

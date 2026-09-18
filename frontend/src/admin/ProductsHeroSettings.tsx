@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { DEFAULT_FOCAL, normalizeFocal, type FocalPoint } from "../app/focal";
 import { PRODUCTS_HERO_MOLD_SRC } from "../app/products-content";
-import { ApiError, getAdminSettings, patchAdminSettings, type AdminSettings } from "./auth/api";
+import { ApiError, EMPTY_ABOUT_MEDIA, getAdminSettings, patchAdminSettings, type AdminSettings } from "./auth/api";
 import { FocalPreview } from "./gallery/FocalPreview";
 import { MediaDrop } from "./gallery/MediaDrop";
 import {
@@ -24,6 +24,7 @@ const EMPTY: AdminSettings = {
   productsHeroImageKey: "",
   productsHeroFocalX: 50,
   productsHeroFocalY: 50,
+  aboutMedia: EMPTY_ABOUT_MEDIA,
 };
 
 const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif,.heic,.heif";

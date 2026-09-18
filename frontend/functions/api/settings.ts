@@ -3,10 +3,12 @@ import { type Env, json } from "../_lib/config";
 import { SETTINGS_API_CACHE } from "../_lib/public-cache";
 import {
   formatBrWhatsapp,
+  getAboutMedia,
   getDevelopmentMode,
   getProductsHero,
   getWhatsappPhone,
   getYoutubeFeature,
+  publicAboutMedia,
 } from "../_lib/site-settings";
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
@@ -15,6 +17,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const developmentMode = await getDevelopmentMode(context.env);
     const youtube = await getYoutubeFeature(context.env);
     const productsHero = await getProductsHero(context.env);
+    const aboutMedia = await getAboutMedia(context.env);
     return json(
       {
         whatsappPhone,
@@ -27,6 +30,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         productsHeroImageUrl: productsHero.imageUrl,
         productsHeroFocalX: productsHero.focalX,
         productsHeroFocalY: productsHero.focalY,
+        ...publicAboutMedia(aboutMedia),
       },
       { headers: { "Cache-Control": SETTINGS_API_CACHE } },
     );

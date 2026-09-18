@@ -16,6 +16,7 @@ export const SETTINGS_KEYS = {
   productsHeroImageKey: "products_hero_image_key",
   productsHeroFocalX: "products_hero_focal_x",
   productsHeroFocalY: "products_hero_focal_y",
+  aboutMedia: "about_media",
 } as const;
 
 export const YOUTUBE_VIDEO_MAX_BYTES = 10 * 1024 * 1024;
@@ -275,6 +276,187 @@ export async function setProductsHeroFocal(
 ): Promise<void> {
   await setSetting(env, SETTINGS_KEYS.productsHeroFocalX, String(clampFocalSetting(String(focalX))));
   await setSetting(env, SETTINGS_KEYS.productsHeroFocalY, String(clampFocalSetting(String(focalY))));
+}
+
+/** Slot de mídia da página Sobre (url + chave R2 + enquadramento). */
+export type AboutMediaSlot = {
+  url: string;
+  key: string;
+  focalX: number;
+  focalY: number;
+};
+
+export type AboutMediaSettings = {
+  heroImage: AboutMediaSlot;
+  image: AboutMediaSlot;
+  behindScenesImage: AboutMediaSlot;
+  studioInviteImage: AboutMediaSlot;
+  /** Entrada, Espaço, Processo, Vista — sempre 4 slots. */
+  studioTourSteps: [AboutMediaSlot, AboutMediaSlot, AboutMediaSlot, AboutMediaSlot];
+  /** IDs de seção da /sobre ocultas no site (ex.: "bastidores"). */
+  hiddenSections: string[];
+};
+
+export type AboutMediaSlotId =
+  | "heroImage"
+  | "image"
+  | "behindScenesImage"
+  | "studioInviteImage"
+  | "studioTour0"
+  | "studioTour1"
+  | "studioTour2"
+  | "studioTour3";
+
+const EMPTY_ABOUT_SLOT: AboutMediaSlot = {
+  url: "",
+  key: "",
+  focalX: 50,
+  focalY: 50,
+};
+
+function emptyAboutMedia(): AboutMediaSettings {
+  return {
+    heroImage: { ...EMPTY_ABOUT_SLOT },
+    image: { ...EMPTY_ABOUT_SLOT },
+    behindScenesImage: { ...EMPTY_ABOUT_SLOT },
+    studioInviteImage: { ...EMPTY_ABOUT_SLOT },
+    studioTourSteps: [
+      { ...EMPTY_ABOUT_SLOT },
+      { ...EMPTY_ABOUT_SLOT },
+      { ...EMPTY_ABOUT_SLOT },
+      { ...EMPTY_ABOUT_SLOT },
+    ],
+    hiddenSections: [],
+  };
+}
+
+function normalizeAboutHiddenSections(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  const allowed = new Set(["bastidores"]);
+  return [
+    ...new Set(
+      raw
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim())
+        .filter((item) => allowed.has(item)),
+    ),
+  ];
+}
+
+function normalizeAboutSlot(raw: unknown): AboutMediaSlot {
+  if (!raw || typeof raw !== "object") return { ...EMPTY_ABOUT_SLOT };
+  const value = raw as Record<string, unknown>;
+  return {
+    url: typeof value.url === "string" ? value.url.trim() : "",
+    key: typeof value.key === "string" ? value.key.trim() : "",
+    focalX: clampFocalSetting(
+      value.focalX != null ? String(value.focalX) : undefined,
+    ),
+    focalY: clampFocalSetting(
+      value.focalY != null ? String(value.focalY) : undefined,
+    ),
+  };
+}
+
+function parseAboutMediaJson(raw: string | null): AboutMediaSettings {
+  const empty = emptyAboutMedia();
+  if (!raw?.trim()) return empty;
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const tourRaw = Array.isArray(parsed.studioTourSteps) ? parsed.studioTourSteps : [];
+    return {
+      heroImage: normalizeAboutSlot(parsed.heroImage),
+      image: normalizeAboutSlot(parsed.image),
+      behindScenesImage: normalizeAboutSlot(parsed.behindScenesImage),
+      studioInviteImage: normalizeAboutSlot(parsed.studioInviteImage),
+      studioTourSteps: [
+        normalizeAboutSlot(tourRaw[0]),
+        normalizeAboutSlot(tourRaw[1]),
+        normalizeAboutSlot(tourRaw[2]),
+        normalizeAboutSlot(tourRaw[3]),
+      ],
+      hiddenSections: normalizeAboutHiddenSections(parsed.hiddenSections),
+    };
+  } catch {
+    return empty;
+  }
+}
+
+export async function getAboutMedia(env: Env): Promise<AboutMediaSettings> {
+  const raw = await getSetting(env, SETTINGS_KEYS.aboutMedia);
+  return parseAboutMediaJson(raw);
+}
+
+export async function setAboutMedia(env: Env, media: AboutMediaSettings): Promise<void> {
+  await setSetting(env, SETTINGS_KEYS.aboutMedia, JSON.stringify(media));
+}
+
+export function getAboutMediaSlot(
+  media: AboutMediaSettings,
+  slotId: AboutMediaSlotId,
+): AboutMediaSlot {
+  if (slotId === "heroImage") return media.heroImage;
+  if (slotId === "image") return media.image;
+  if (slotId === "behindScenesImage") return media.behindScenesImage;
+  if (slotId === "studioInviteImage") return media.studioInviteImage;
+  const index = Number(slotId.slice("studioTour".length));
+  return media.studioTourSteps[index] ?? { ...EMPTY_ABOUT_SLOT };
+}
+
+export function withAboutMediaSlot(
+  media: AboutMediaSettings,
+  slotId: AboutMediaSlotId,
+  slot: AboutMediaSlot,
+): AboutMediaSettings {
+  if (slotId === "heroImage") return { ...media, heroImage: slot };
+  if (slotId === "image") return { ...media, image: slot };
+  if (slotId === "behindScenesImage") return { ...media, behindScenesImage: slot };
+  if (slotId === "studioInviteImage") return { ...media, studioInviteImage: slot };
+  const index = Number(slotId.slice("studioTour".length));
+  if (index < 0 || index > 3) return media;
+  const studioTourSteps = [...media.studioTourSteps] as AboutMediaSettings["studioTourSteps"];
+  studioTourSteps[index] = slot;
+  return { ...media, studioTourSteps };
+}
+
+export function isAboutMediaSlotId(value: unknown): value is AboutMediaSlotId {
+  return (
+    value === "heroImage" ||
+    value === "image" ||
+    value === "behindScenesImage" ||
+    value === "studioInviteImage" ||
+    value === "studioTour0" ||
+    value === "studioTour1" ||
+    value === "studioTour2" ||
+    value === "studioTour3"
+  );
+}
+
+/** Payload público/admin sem a chave interna do blob. */
+export function publicAboutMedia(media: AboutMediaSettings) {
+  return {
+    aboutMedia: {
+      heroImage: media.heroImage,
+      image: media.image,
+      behindScenesImage: media.behindScenesImage,
+      studioInviteImage: media.studioInviteImage,
+      studioTourSteps: media.studioTourSteps,
+      hiddenSections: media.hiddenSections,
+    },
+  };
+}
+
+export function withAboutHiddenSection(
+  media: AboutMediaSettings,
+  sectionId: string,
+  hidden: boolean,
+): AboutMediaSettings | null {
+  const allowed = new Set(["bastidores"]);
+  if (!allowed.has(sectionId)) return null;
+  const set = new Set(media.hiddenSections);
+  if (hidden) set.add(sectionId);
+  else set.delete(sectionId);
+  return { ...media, hiddenSections: [...set] };
 }
 
 export async function setWhatsappPhone(

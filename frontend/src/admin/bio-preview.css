@@ -22,10 +22,15 @@
 }
 
 .ks-bio-phone-lead {
-  margin: 0 0 8px;
-  color: var(--admin-muted);
-  font-size: 12px;
-  line-height: 1.35;
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f3ebf6, #faf6fb);
+  box-shadow: inset 0 0 0 1px #e4d6ea;
+  color: var(--admin-ink, #2e173a);
+  font-size: 13.5px;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 .ks-bio-phone-row {
@@ -99,6 +104,12 @@
   margin-top: 4px;
   font-size: 11px;
   color: #5a7a5a;
+}
+
+.ks-bio-site-footer-flag {
+  margin: 0 0 14px;
+  max-width: none;
+  width: 100%;
 }
 
 .ks-bio-header-actions {
@@ -735,6 +746,35 @@
   line-height: 1.45;
 }
 
+.ks-bio-field-label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--admin-muted, #85708c);
+}
+
+.ks-bio-cover-block {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.ks-bio-cover-preview {
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 16 / 10;
+  border-radius: 72px 72px 8px 8px;
+  overflow: hidden;
+  background: #f3ebf6;
+  box-shadow: inset 0 0 0 1.5px #cbb7d488, 0 8px 20px #38203f12;
+}
+
+.ks-bio-focal-host--cover .ks-focal-hint {
+  bottom: 14px;
+}
+
 .ks-bio-avatar-block {
   display: flex;
   flex-wrap: wrap;
@@ -1034,6 +1074,43 @@
     radial-gradient(circle at 50% 100%, rgba(128, 110, 133, 0.22), transparent 42%),
     linear-gradient(165deg, #e8e1e8 0%, #e5dde8 42%, #cfc4d0 100%);
   color: var(--ks-plum-deep);
+}
+
+/* Prévia ao vivo: markup real da /bio dentro do frame */
+.ks-bio-device-scroll .ks-bio-device-live.ks-link-bio-page {
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+}
+.ks-bio-device-scroll .ks-bio-device-live .ks-link-bio-shell {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.ks-bio-device-scroll .ks-bio-device-live .ks-link-bio-card {
+  margin: 0;
+  padding: 8px 14px 28px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.ks-bio-device-scroll .ks-bio-device-live .ks-link-bio-profile h1 {
+  font-size: 34px;
+}
+.ks-bio-device-scroll .ks-bio-device-live .ks-link-bio-avatar {
+  width: 88px;
+  height: 88px;
+}
+.ks-bio-device-scroll .ks-bio-device-empty {
+  margin: 8px 0 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+  color: rgba(var(--ks-plum-rgb), 0.72);
 }
 
 .ks-bio-device-card {

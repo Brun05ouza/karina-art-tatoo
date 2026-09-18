@@ -107,7 +107,7 @@ export const defaultHomeContent: HomeContent = {
     { id: "service-1", title: "Tatuagens Autorais", text: "Projetos personalizados criados a partir da sua ideia, referência e estilo.", url: "/portfolio", cta: "Ver projetos", imageUrl: "", active: true, order: 1 },
     { id: "service-2", title: "Flash Tattoos", text: "Artes prontas e exclusivas, com disponibilidade limitada para tatuar.", url: "/flash-tattoos", cta: "Ver flashes", imageUrl: "", active: true, order: 2 },
     { id: "service-3", title: "Produtos Autorais", text: "Produtos, prints e coleções criadas dentro do universo visual da Karina Sarte.", url: "/produtos", cta: "Ver produtos", imageUrl: "", active: true, order: 3 },
-    { id: "service-4", title: "Cuidados e Experiência", text: "Atendimento com cuidado, orientação e responsabilidade em todas as etapas.", url: "/orcamento", cta: "Saiba mais", imageUrl: "", active: true, order: 4 },
+    { id: "service-4", title: "Reformulações", text: "Coberturas e releituras que transformam tatuagens antigas em um novo capítulo na pele.", url: "/reformulacoes", cta: "Ver reformulações", imageUrl: "", active: true, order: 4 },
   ],
 
   portfolioEyebrow: "Portfólio",

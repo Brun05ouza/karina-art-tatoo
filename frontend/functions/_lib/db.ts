@@ -139,6 +139,36 @@ export async function setUserActive(
   return toPublicUser(mapUser(rows[0] as Record<string, unknown>));
 }
 
+/** Conta owners ativos (para impedir apagar o último responsável). */
+export async function countActiveOwners(env: Env): Promise<number> {
+  const db = sql(env);
+  const rows = await db`
+    SELECT COUNT(*)::int AS count
+    FROM admin_users
+    WHERE role = 'owner' AND active = TRUE
+  `;
+  return Number((rows[0] as { count: number })?.count ?? 0);
+}
+
+/**
+ * Hard-delete: não há FKs apontando para admin_users.
+ * login_attempts guarda só email/ip — não bloqueia exclusão.
+ */
+export async function deleteUser(
+  env: Env,
+  userId: string,
+): Promise<PublicAdminUser | null> {
+  const db = sql(env);
+  const rows = await db`
+    DELETE FROM admin_users
+    WHERE id = ${userId}
+    RETURNING id, email, password_hash, role, active, must_change_password,
+              last_login_at, created_at, updated_at
+  `;
+  if (!rows[0]) return null;
+  return toPublicUser(mapUser(rows[0] as Record<string, unknown>));
+}
+
 export async function touchLastLogin(env: Env, userId: string): Promise<void> {
   const db = sql(env);
   await db`

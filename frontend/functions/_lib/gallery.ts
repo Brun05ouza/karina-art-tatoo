@@ -23,6 +23,7 @@ export type GalleryItem = {
   sort_order: number;
   published: boolean;
   featured: boolean;
+  show_in_recent: boolean;
   focal_x: number;
   focal_y: number;
   after_image_url: string | null;
@@ -140,6 +141,7 @@ function mapItem(row: Record<string, unknown>): GalleryItem {
     sort_order: Number(row.sort_order) || 0,
     published: Boolean(row.published),
     featured: Boolean(row.featured),
+    show_in_recent: row.show_in_recent === undefined ? true : Boolean(row.show_in_recent),
     focal_x: mapFocal(row, "focal_x"),
     focal_y: mapFocal(row, "focal_y"),
     after_image_url: afterUrl,
@@ -206,6 +208,7 @@ export type GalleryCreateInput = {
   alt_text: string | null;
   sort_order: number | null;
   published: boolean;
+  show_in_recent: boolean;
   focal_x: number;
   focal_y: number;
   after_image_url: string | null;
@@ -226,6 +229,7 @@ export type GalleryPatchInput = Partial<{
   sort_order: number;
   published: boolean;
   featured: boolean;
+  show_in_recent: boolean;
   focal_x: number;
   focal_y: number;
   after_image_url: string | null;
@@ -255,6 +259,10 @@ export function validateCreate(
 
   const alt_text = trimStr(body.alt_text, 200);
   let published = body.published === undefined ? true : Boolean(body.published);
+  const show_in_recent =
+    "show_in_recent" in body || "showInRecent" in body
+      ? Boolean("show_in_recent" in body ? body.show_in_recent : body.showInRecent)
+      : true;
   const sort_order =
     typeof body.sort_order === "number" && Number.isFinite(body.sort_order)
       ? Math.trunc(body.sort_order)
@@ -342,6 +350,7 @@ export function validateCreate(
       alt_text,
       sort_order,
       published,
+      show_in_recent,
       focal_x: focal.x ?? 50,
       focal_y: focal.y ?? 50,
       after_image_url,
@@ -366,6 +375,11 @@ export function validatePatch(
   if ("alt_text" in body) patch.alt_text = trimStr(body.alt_text, 200);
   if ("published" in body) patch.published = Boolean(body.published);
   if ("featured" in body) patch.featured = Boolean(body.featured);
+  if ("show_in_recent" in body || "showInRecent" in body) {
+    patch.show_in_recent = Boolean(
+      "show_in_recent" in body ? body.show_in_recent : body.showInRecent,
+    );
+  }
   if ("sort_order" in body) {
     if (typeof body.sort_order !== "number" || !Number.isFinite(body.sort_order)) {
       return { ok: false, message: "sort_order inválido." };
@@ -491,7 +505,7 @@ export async function listPublished(
     collection === "reformulacoes"
       ? await db`
           SELECT id, collection, title, category, price, link, status,
-                 image_url, image_key, alt_text, sort_order, published, featured,
+                 image_url, image_key, alt_text, sort_order, published, featured, show_in_recent,
                  focal_x, focal_y,
                  after_image_url, after_image_key, after_focal_x, after_focal_y,
                  created_at, updated_at
@@ -504,7 +518,7 @@ export async function listPublished(
         `
       : await db`
           SELECT id, collection, title, category, price, link, status,
-                 image_url, image_key, alt_text, sort_order, published, featured,
+                 image_url, image_key, alt_text, sort_order, published, featured, show_in_recent,
                  focal_x, focal_y,
                  after_image_url, after_image_key, after_focal_x, after_focal_y,
                  created_at, updated_at
@@ -522,7 +536,7 @@ export async function getFeaturedOrFirst(
   const db = sql(env);
   const featured = await db`
     SELECT id, collection, title, category, price, link, status,
-           image_url, image_key, alt_text, sort_order, published, featured,
+           image_url, image_key, alt_text, sort_order, published, featured, show_in_recent,
            focal_x, focal_y,
            after_image_url, after_image_key, after_focal_x, after_focal_y,
            created_at, updated_at
@@ -534,7 +548,7 @@ export async function getFeaturedOrFirst(
 
   const first = await db`
     SELECT id, collection, title, category, price, link, status,
-           image_url, image_key, alt_text, sort_order, published, featured,
+           image_url, image_key, alt_text, sort_order, published, featured, show_in_recent,
            focal_x, focal_y,
            after_image_url, after_image_key, after_focal_x, after_focal_y,
            created_at, updated_at
@@ -551,7 +565,7 @@ export async function listAll(env: Env, collection: GalleryCollection): Promise<
   const db = sql(env);
   const rows = await db`
     SELECT id, collection, title, category, price, link, status,
-           image_url, image_key, alt_text, sort_order, published, featured,
+           image_url, image_key, alt_text, sort_order, published, featured, show_in_recent,
            focal_x, focal_y,
            after_image_url, after_image_key, after_focal_x, after_focal_y,
            created_at, updated_at
@@ -566,7 +580,7 @@ export async function findItemById(env: Env, id: string): Promise<GalleryItem | 
   const db = sql(env);
   const rows = await db`
     SELECT id, collection, title, category, price, link, status,
-           image_url, image_key, alt_text, sort_order, published, featured,
+           image_url, image_key, alt_text, sort_order, published, featured, show_in_recent,
            focal_x, focal_y,
            after_image_url, after_image_key, after_focal_x, after_focal_y,
            created_at, updated_at
@@ -597,7 +611,7 @@ export async function createItem(
   const rows = await db`
     INSERT INTO gallery_items (
       collection, title, category, price, link, status,
-      image_url, image_key, alt_text, sort_order, published,
+      image_url, image_key, alt_text, sort_order, published, show_in_recent,
       focal_x, focal_y,
       after_image_url, after_image_key, after_focal_x, after_focal_y
     ) VALUES (
@@ -612,6 +626,7 @@ export async function createItem(
       ${input.alt_text},
       ${sortOrder},
       ${input.published},
+      ${input.show_in_recent},
       ${input.focal_x},
       ${input.focal_y},
       ${input.after_image_url},
@@ -620,7 +635,7 @@ export async function createItem(
       ${input.after_focal_y}
     )
     RETURNING id, collection, title, category, price, link, status,
-              image_url, image_key, alt_text, sort_order, published, featured,
+              image_url, image_key, alt_text, sort_order, published, featured, show_in_recent,
               focal_x, focal_y,
               after_image_url, after_image_key, after_focal_x, after_focal_y,
               created_at, updated_at
@@ -638,6 +653,8 @@ export async function updateItem(
 
   const published = patch.published ?? current.published;
   const featured = published === false ? false : current.featured;
+  const show_in_recent =
+    patch.show_in_recent !== undefined ? patch.show_in_recent : current.show_in_recent;
   const imageChanged = Boolean(patch.image_url && patch.image_key);
   const afterChanged =
     patch.after_image_url !== undefined || patch.after_image_key !== undefined;
@@ -657,6 +674,7 @@ export async function updateItem(
     sort_order: patch.sort_order ?? current.sort_order,
     published,
     featured,
+    show_in_recent,
     focal_x: imageChanged && patch.focal_x === undefined ? 50 : (patch.focal_x ?? current.focal_x),
     focal_y: imageChanged && patch.focal_y === undefined ? 50 : (patch.focal_y ?? current.focal_y),
     after_image_url:
@@ -687,6 +705,7 @@ export async function updateItem(
       sort_order = ${next.sort_order},
       published = ${next.published},
       featured = ${next.featured},
+      show_in_recent = ${next.show_in_recent},
       focal_x = ${next.focal_x},
       focal_y = ${next.focal_y},
       after_image_url = ${next.after_image_url},
@@ -696,7 +715,7 @@ export async function updateItem(
       updated_at = NOW()
     WHERE id = ${id}
     RETURNING id, collection, title, category, price, link, status,
-              image_url, image_key, alt_text, sort_order, published, featured,
+              image_url, image_key, alt_text, sort_order, published, featured, show_in_recent,
               focal_x, focal_y,
               after_image_url, after_image_key, after_focal_x, after_focal_y,
               created_at, updated_at
@@ -725,7 +744,7 @@ export async function setItemFeatured(
       SET featured = FALSE, updated_at = NOW()
       WHERE id = ${id}
       RETURNING id, collection, title, category, price, link, status,
-                image_url, image_key, alt_text, sort_order, published, featured,
+                image_url, image_key, alt_text, sort_order, published, featured, show_in_recent,
                 focal_x, focal_y,
                 after_image_url, after_image_key, after_focal_x, after_focal_y,
                 created_at, updated_at
@@ -756,7 +775,7 @@ export async function deleteItem(env: Env, id: string): Promise<GalleryItem | nu
     DELETE FROM gallery_items
     WHERE id = ${id}
     RETURNING id, collection, title, category, price, link, status,
-              image_url, image_key, alt_text, sort_order, published, featured,
+              image_url, image_key, alt_text, sort_order, published, featured, show_in_recent,
               focal_x, focal_y,
               after_image_url, after_image_key, after_focal_x, after_focal_y,
               created_at, updated_at

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { ArrowRight, Images, KeyRound, LinkIcon, RefreshCw, Sparkles, ShoppingBag } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
+import { AboutSettings } from "../AboutSettings";
 import { ConstructionSwitch } from "../ConstructionSwitch";
 import { YoutubeSettings } from "../YoutubeSettings";
 import { ProductsHeroSettings } from "../ProductsHeroSettings";
@@ -79,6 +80,8 @@ export function DashboardPage() {
       <YoutubeSettings />
 
       <ProductsHeroSettings />
+
+      <AboutSettings />
 
       <nav className="ks-admin-nav-cards ks-gallery-dash" aria-label="Galerias">
         {COLLECTION_LIST.map((c) => {

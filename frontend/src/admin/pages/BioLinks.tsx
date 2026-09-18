@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type MouseEvent } from "react";
-import { ArrowLeft, ArrowRight, ChevronDown, ChevronUp, Eye, Pencil, Trash2 } from "lucide-react";
-import { BioLinkAction, bioActionIcon } from "../../app/components/BioLinkAction";
-import { defaultLinkBioContent } from "../../app/link-bio-content";
+import { ArrowLeft, ChevronDown, ChevronUp, Eye, Pencil, Trash2 } from "lucide-react";
+import { bioActionIcon } from "../../app/components/BioLinkAction";
+import { LinkBioView } from "../../app/components/LinkBioView";
+import { defaultLinkBioContent, type LinkBioButton, type LinkBioContent } from "../../app/link-bio-content";
+import { whatsappHref } from "../../app/site-settings";
 import {
   ApiError,
   createBioChip,
@@ -30,7 +32,8 @@ import {
 } from "../auth/api";
 import { prepareImage, uploadPreparedImage, type UploadStage } from "../gallery/upload";
 import { FocalPreview } from "../gallery/FocalPreview";
-import { DEFAULT_FOCAL, focalStyle, type FocalPoint } from "../../app/focal";
+import { DEFAULT_FOCAL, type FocalPoint } from "../../app/focal";
+import "../../styles/bio-refined.css";
 import "../bio-preview.css";
 
 const ICONS: { id: BioIconId; label: string }[] = [
@@ -179,16 +182,68 @@ function kindChipLabel(kind: BioKindId): string {
   return "abre fora";
 }
 
-function isWhatsappPreview(icon: string, label: string) {
-  const i = icon.toLowerCase();
-  const l = label.toLowerCase();
-  return (
-    i.includes("whatsapp") ||
-    i.includes("message") ||
-    i.includes("zap") ||
-    l.includes("orçamento") ||
-    l.includes("orcamento")
-  );
+function resolvePreviewUrl(
+  kind: BioKindId,
+  url: string,
+  message: string | null | undefined,
+  phone: string,
+): string {
+  if (kind === "whatsapp") return whatsappHref(message || undefined, phone);
+  return url.trim() || "#";
+}
+
+function buildPreviewButtons(
+  items: BioLinkItem[],
+  editId: string | undefined,
+  draft: FormState | null | undefined,
+  phone: string,
+): LinkBioButton[] {
+  const out: LinkBioButton[] = [];
+
+  for (const [index, item] of items.entries()) {
+    if (editId && item.id === editId) {
+      if (draft?.published) {
+        out.push({
+          id: item.id,
+          kind: draft.kind,
+          label: normalizeBrandLabel(draft.label.trim() || "Rótulo do botão"),
+          url: resolvePreviewUrl(draft.kind, draft.url, draft.message, phone),
+          icon: draft.kind === "whatsapp" ? "whatsapp" : draft.icon,
+          active: true,
+          order: index,
+          featured: draft.featured,
+        });
+      }
+      continue;
+    }
+    if (!item.published) continue;
+    out.push({
+      id: item.id,
+      kind: item.kind,
+      label: normalizeBrandLabel(item.label),
+      url: resolvePreviewUrl(item.kind, item.url, item.message, phone),
+      icon: itemIcon(item),
+      active: true,
+      // Ordem da lista do painel (array) — não o sort_order antigo em memória.
+      order: index,
+      featured: item.featured,
+    });
+  }
+
+  if (draft && !editId && draft.published) {
+    out.push({
+      id: "draft",
+      kind: draft.kind,
+      label: normalizeBrandLabel(draft.label.trim() || "Rótulo do botão"),
+      url: resolvePreviewUrl(draft.kind, draft.url, draft.message, phone),
+      icon: draft.kind === "whatsapp" ? "whatsapp" : draft.icon,
+      active: true,
+      order: items.length,
+      featured: draft.featured,
+    });
+  }
+
+  return out;
 }
 
 function BioLivePreview({
@@ -198,6 +253,7 @@ function BioLivePreview({
   profile,
   chips,
   testimonials,
+  phone,
 }: {
   items: BioLinkItem[];
   editId?: string;
@@ -205,52 +261,43 @@ function BioLivePreview({
   profile: BioProfile | null;
   chips: BioStyleChip[];
   testimonials: BioTestimonial[];
+  phone: string;
 }) {
-  const buttons = useMemo(() => {
-    const out: { key: string; label: string; icon: string; featured: boolean }[] = [];
+  const content = useMemo((): LinkBioContent => {
+    const buttons = buildPreviewButtons(items, editId, draft, phone);
+    const showFooter = Boolean(profile?.show_site_footer);
+    return {
+      ...defaultLinkBioContent,
+      bio: profile?.subtitle?.trim() || defaultLinkBioContent.bio,
+      avatarUrl: profile?.avatar_url || defaultLinkBioContent.avatarUrl,
+      avatarFocalX: profile?.avatar_focal_x ?? 50,
+      avatarFocalY: profile?.avatar_focal_y ?? 50,
+      studioImageUrl: profile?.studio_image_url || defaultLinkBioContent.studioImageUrl,
+      studioFocalX: profile?.studio_focal_x ?? 50,
+      studioFocalY: profile?.studio_focal_y ?? 50,
+      backgroundUrl: profile?.cover_image_url || "",
+      backgroundFocalX: profile?.cover_focal_x ?? 50,
+      backgroundFocalY: profile?.cover_focal_y ?? 50,
+      footerLabel: showFooter ? "Site completo" : "",
+      footerUrl: showFooter ? "/" : "",
+      buttons,
+      styleChips: chips.map((chip, index) => ({
+        id: chip.id,
+        label: chip.label,
+        active: true,
+        order: index,
+      })),
+      testimonials: testimonials
+        .filter((t) => t.published && t.quote.trim())
+        .map((t, index) => ({
+          id: t.id,
+          text: t.quote,
+          active: true,
+          order: index,
+        })),
+    };
+  }, [items, editId, draft, profile, chips, testimonials, phone]);
 
-    for (const item of items) {
-      if (editId && item.id === editId) {
-        if (draft?.published) {
-          out.push({
-            key: item.id,
-            label: normalizeBrandLabel(draft.label.trim() || "Rótulo do botão"),
-            icon: draft.kind === "whatsapp" ? "whatsapp" : draft.icon,
-            featured: draft.featured,
-          });
-        }
-        continue;
-      }
-      if (!item.published) continue;
-      out.push({
-        key: item.id,
-        label: normalizeBrandLabel(item.label),
-        icon: itemIcon(item),
-        featured: item.featured,
-      });
-    }
-
-    if (draft && !editId && draft.published) {
-      out.push({
-        key: "draft",
-        label: normalizeBrandLabel(draft.label.trim() || "Rótulo do botão"),
-        icon: draft.kind === "whatsapp" ? "whatsapp" : draft.icon,
-        featured: draft.featured,
-      });
-    }
-
-    return out;
-  }, [items, editId, draft]);
-
-  const primary =
-    buttons.find((b) => isWhatsappPreview(b.icon, b.label)) ??
-    buttons.find((b) => b.featured) ??
-    null;
-  const secondary = buttons.filter((b) => b.key !== primary?.key);
-  const publishedQuotes = testimonials.filter((t) => t.published && t.quote.trim());
-  const subtitle = profile?.subtitle?.trim() || defaultLinkBioContent.bio;
-  const avatarUrl = profile?.avatar_url || defaultLinkBioContent.avatarUrl;
-  const studioUrl = profile?.studio_image_url || defaultLinkBioContent.studioImageUrl;
   const now = new Date();
   const clock = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
@@ -273,122 +320,15 @@ function BioLivePreview({
             </span>
           </div>
 
-          <div className="ks-bio-device-scroll ks-link-bio-page--lilac">
-            <div className="ks-bio-device-card">
-              <div className="ks-bio-device-profile">
-                <div className="ks-bio-device-avatar-wrap">
-                  {avatarUrl ? (
-                    <img
-                      className="ks-bio-device-avatar"
-                      src={avatarUrl}
-                      alt=""
-                      width={96}
-                      height={96}
-                      style={focalStyle(profile?.avatar_focal_x, profile?.avatar_focal_y)}
-                    />
-                  ) : (
-                    <span className="ks-bio-device-avatar ks-bio-device-avatar--empty" aria-hidden="true" />
-                  )}
-                </div>
-                <span className="ks-bio-device-eyebrow">{defaultLinkBioContent.eyebrow}</span>
-                <h2 className="ks-bio-device-name">Karina Sarte</h2>
-                <p className="ks-bio-device-subtitle">{subtitle}</p>
-              </div>
-
-              {primary ? (
-                <div className="ks-bio-device-links">
-                  <BioLinkAction
-                    preview
-                    button={{ label: primary.label, icon: primary.icon, featured: true }}
-                  />
-                </div>
-              ) : null}
-
-              <div className="ks-bio-device-links">
-                {secondary.length === 0 && !primary ? (
-                  <p className="ks-bio-device-empty">
-                    Sem botões publicados. No Instagram, a bio ficaria sem nenhum link clicável.
-                  </p>
-                ) : (
-                  secondary.map((b) => (
-                    <BioLinkAction
-                      key={b.key}
-                      preview
-                      button={{ label: b.label, icon: b.icon, featured: b.featured }}
-                    />
-                  ))
-                )}
-              </div>
-
-              <p className="ks-bio-device-site-link">
-                {defaultLinkBioContent.footerLabel} <ArrowRight size={12} aria-hidden="true" />
-              </p>
-
-              {chips.length > 0 ? (
-                <div className="ks-bio-device-styles">
-                  <span className="ks-bio-device-block-label">{defaultLinkBioContent.stylesLabel}</span>
-                  <p className="ks-bio-device-block-title">{defaultLinkBioContent.stylesTitle}</p>
-                  <p className="ks-bio-device-block-text">{defaultLinkBioContent.stylesText}</p>
-                  <div className="ks-bio-device-chip-grid">
-                    {chips.map((chip) => (
-                      <span key={chip.id} className="ks-bio-device-chip">
-                        {chip.label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-
-              {publishedQuotes.length > 0 ? (
-                <div className="ks-bio-device-quotes">
-                  <span className="ks-bio-device-block-label">{defaultLinkBioContent.testimonialsLabel}</span>
-                  <p className="ks-bio-device-block-title">{defaultLinkBioContent.testimonialsTitle}</p>
-                  <blockquote className="ks-bio-device-quote">
-                    “{publishedQuotes[0].quote}”
-                    {publishedQuotes[0].author ? (
-                      <cite> — {publishedQuotes[0].author}</cite>
-                    ) : null}
-                  </blockquote>
-                  {publishedQuotes.length > 1 ? (
-                    <p className="ks-bio-device-quote-meta">
-                      +{publishedQuotes.length - 1} depoimento{publishedQuotes.length > 2 ? "s" : ""}
-                    </p>
-                  ) : null}
-                </div>
-              ) : null}
-
-              <div className="ks-bio-device-studio">
-                <div className="ks-bio-device-studio-media">
-                  <img
-                    src={studioUrl}
-                    alt=""
-                    loading="lazy"
-                    style={focalStyle(profile?.studio_focal_x, profile?.studio_focal_y)}
-                  />
-                </div>
-                <span className="ks-bio-device-block-label">{defaultLinkBioContent.studioLabel}</span>
-                <p className="ks-bio-device-block-title">{defaultLinkBioContent.studioTitle}</p>
-                <p className="ks-bio-device-block-text">{defaultLinkBioContent.studioText}</p>
-                <span className="ks-bio-device-cta-text">
-                  {defaultLinkBioContent.studioButton} <ArrowRight size={12} aria-hidden="true" />
-                </span>
-              </div>
-
-              <div className="ks-bio-device-final">
-                <p className="ks-bio-device-final-title">{defaultLinkBioContent.finalTitle}</p>
-                <p className="ks-bio-device-final-text">{defaultLinkBioContent.finalText}</p>
-                <div className="ks-bio-device-links">
-                  <BioLinkAction
-                    preview
-                    button={{
-                      label: defaultLinkBioContent.finalButton,
-                      icon: "whatsapp",
-                      featured: true,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="ks-bio-device-scroll">
+            <LinkBioView
+              content={{ ...content, loaded: true }}
+              phone={phone || "5521990724477"}
+              preview
+              reduceMotion
+              showFlashSection={false}
+              className="ks-bio-device-live"
+            />
           </div>
 
           <div className="ks-bio-device-home" aria-hidden="true" />
@@ -424,6 +364,7 @@ export function BioLinksPage() {
   const [phoneStatus, setPhoneStatus] = useState<PhoneStatus>("idle");
   const [showPreview, setShowPreview] = useState(false);
   const [routeMenuOpen, setRouteMenuOpen] = useState(false);
+  const [footerBusy, setFooterBusy] = useState(false);
   const routeSelectRef = useRef<HTMLDivElement>(null);
 
   const [subtitleDraft, setSubtitleDraft] = useState("");
@@ -432,10 +373,14 @@ export function BioLinksPage() {
   const [avatarStage, setAvatarStage] = useState<UploadStage>("idle");
   const [studioBusy, setStudioBusy] = useState(false);
   const [studioStage, setStudioStage] = useState<UploadStage>("idle");
+  const [coverBusy, setCoverBusy] = useState(false);
+  const [coverStage, setCoverStage] = useState<UploadStage>("idle");
   const [avatarFocal, setAvatarFocal] = useState<FocalPoint>({ ...DEFAULT_FOCAL });
   const [studioFocal, setStudioFocal] = useState<FocalPoint>({ ...DEFAULT_FOCAL });
+  const [coverFocal, setCoverFocal] = useState<FocalPoint>({ ...DEFAULT_FOCAL });
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const studioInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   const [chipLabel, setChipLabel] = useState("");
   const [chipBusy, setChipBusy] = useState(false);
@@ -479,6 +424,10 @@ export function BioLinksPage() {
       setStudioFocal({
         x: bio.profile.studio_focal_x ?? 50,
         y: bio.profile.studio_focal_y ?? 50,
+      });
+      setCoverFocal({
+        x: bio.profile.cover_focal_x ?? 50,
+        y: bio.profile.cover_focal_y ?? 50,
       });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Não foi possível carregar.");
@@ -567,6 +516,21 @@ export function BioLinksPage() {
     }
   }
 
+  async function toggleSiteFooter(next: boolean) {
+    if (footerBusy) return;
+    setFooterBusy(true);
+    setError(null);
+    try {
+      const res = await patchBioProfile({ show_site_footer: next });
+      setProfile(res.profile);
+      setNotice(next ? "Link “Site completo” ativado." : "Link “Site completo” oculto.");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Não foi possível atualizar.");
+    } finally {
+      setFooterBusy(false);
+    }
+  }
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
@@ -629,7 +593,12 @@ export function BioLinksPage() {
     ids[next] = tmp;
     setBusyId(id);
     setError(null);
-    setItems(ids.map((xid) => items.find((i) => i.id === xid)!).filter(Boolean));
+    setItems(
+      ids.map((xid, i) => {
+        const row = items.find((item) => item.id === xid)!;
+        return { ...row, sort_order: i };
+      }),
+    );
     try {
       await reorderBioLinks(ids);
       setNotice("Ordem atualizada.");
@@ -730,6 +699,50 @@ export function BioLinksPage() {
     }
   }
 
+  async function onCoverFile(file: File | null) {
+    if (!file || coverBusy) return;
+    setCoverBusy(true);
+    setError(null);
+    try {
+      const prepared = await prepareImage(file, (s) => setCoverStage(s));
+      const uploaded = await uploadPreparedImage(prepared, "bio-cover", (s) => setCoverStage(s));
+      URL.revokeObjectURL(prepared.previewUrl);
+      const res = await patchBioProfile({
+        cover_image_url: uploaded.imageUrl,
+        cover_image_key: uploaded.imageKey,
+      });
+      setProfile(res.profile);
+      setCoverFocal({ ...DEFAULT_FOCAL });
+      setNotice("Capa da bio atualizada.");
+      setCoverStage("done");
+    } catch (err) {
+      setCoverStage("error");
+      setError(err instanceof ApiError || err instanceof Error ? err.message : "Falha no upload da capa.");
+    } finally {
+      setCoverBusy(false);
+      if (coverInputRef.current) coverInputRef.current.value = "";
+    }
+  }
+
+  async function clearCover() {
+    if (coverBusy || !profile?.cover_image_url) return;
+    setCoverBusy(true);
+    setError(null);
+    try {
+      const res = await patchBioProfile({
+        cover_image_url: "",
+        cover_image_key: null,
+      });
+      setProfile(res.profile);
+      setCoverFocal({ ...DEFAULT_FOCAL });
+      setNotice("Capa voltou ao padrão.");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Não foi possível restaurar a capa.");
+    } finally {
+      setCoverBusy(false);
+    }
+  }
+
   async function commitAvatarFocal(next: FocalPoint) {
     if (!profile?.avatar_url) return;
     try {
@@ -753,6 +766,19 @@ export function BioLinksPage() {
       setProfile(res.profile);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Não foi possível salvar o enquadramento do estúdio.");
+    }
+  }
+
+  async function commitCoverFocal(next: FocalPoint) {
+    if (!profile?.cover_image_url) return;
+    try {
+      const res = await patchBioProfile({
+        coverFocalX: next.x,
+        coverFocalY: next.y,
+      });
+      setProfile(res.profile);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Não foi possível salvar o enquadramento da capa.");
     }
   }
 
@@ -784,7 +810,12 @@ export function BioLinksPage() {
     ids[index] = ids[next]!;
     ids[next] = tmp;
     setBusyId(id);
-    setChips(ids.map((xid) => chips.find((c) => c.id === xid)!).filter(Boolean));
+    setChips(
+      ids.map((xid, i) => {
+        const row = chips.find((c) => c.id === xid)!;
+        return { ...row, sort_order: i };
+      }),
+    );
     try {
       await reorderBioChips(ids);
       setNotice("Ordem dos estilos atualizada.");
@@ -863,7 +894,12 @@ export function BioLinksPage() {
     ids[index] = ids[next]!;
     ids[next] = tmp;
     setBusyId(id);
-    setTestimonials(ids.map((xid) => testimonials.find((t) => t.id === xid)!).filter(Boolean));
+    setTestimonials(
+      ids.map((xid, i) => {
+        const row = testimonials.find((t) => t.id === xid)!;
+        return { ...row, sort_order: i };
+      }),
+    );
     try {
       await reorderBioTestimonials(ids);
       setNotice("Ordem dos depoimentos atualizada.");
@@ -914,12 +950,16 @@ export function BioLinksPage() {
     profile,
     chips,
     testimonials,
+    phone,
   };
 
   const phoneBlock = (
     <section className="ks-bio-phone-card">
       <h2 className="ks-bio-phone-title">WhatsApp do site</h2>
-      <p className="ks-bio-phone-lead">Número único da bio, orçamento, flash e rodapé.</p>
+      <p className="ks-bio-phone-lead">
+        <strong>Número global.</strong> Um só celular para bio, orçamento, flash, produtos, rodapé e
+        botão flutuante. Mude aqui e todos os links de conversa acompanham.
+      </p>
       <div className="ks-bio-phone-row">
         <label className={`ks-admin-field ks-bio-phone-field${fieldErrors.phone ? " has-error" : ""}`}>
           <span>Celular com DDD</span>
@@ -966,6 +1006,22 @@ export function BioLinksPage() {
         ) : null}
       </div>
     </section>
+  );
+
+  const siteFooterBlock = (
+    <label className={`ks-gallery-flag ks-bio-site-footer-flag${profile?.show_site_footer ? " is-on" : ""}`}>
+      <input
+        type="checkbox"
+        checked={Boolean(profile?.show_site_footer)}
+        disabled={footerBusy || loading || !profile}
+        onChange={(e) => void toggleSiteFooter(e.target.checked)}
+      />
+      <span className="ks-gallery-flag-switch" aria-hidden="true" />
+      <span className="ks-gallery-flag-copy">
+        <strong>Mostrar “Site completo”</strong>
+        <span>Link extra abaixo dos botões, apontando para a home do site.</span>
+      </span>
+    </label>
   );
 
   if (mode.type === "create" || mode.type === "edit") {
@@ -1262,13 +1318,74 @@ export function BioLinksPage() {
       <div className="ks-bio-workspace ks-bio-workspace--list">
         <div className="ks-bio-list-col">
           {tab === "links" ? phoneBlock : null}
+          {tab === "links" && !loading ? siteFooterBlock : null}
 
           {tab === "perfil" && !loading ? (
             <section className="ks-bio-panel">
-              <h2 className="ks-bio-panel-title">Avatar e subtítulo</h2>
-              <p className="ks-bio-panel-lead">Aparecem acima dos botões na página pública.</p>
+              <h2 className="ks-bio-panel-title">Avatar, capa e subtítulo</h2>
+              <p className="ks-bio-panel-lead">
+                Capa no topo da bio, avatar e texto logo abaixo — o que aparece antes dos botões.
+              </p>
+
+              <div className="ks-bio-cover-block">
+                <p className="ks-bio-field-label">Capa</p>
+                <div className="ks-bio-cover-preview ks-bio-focal-host ks-bio-focal-host--cover">
+                  <FocalPreview
+                    src={profile?.cover_image_url || "/assets/projeto-destaque.webp"}
+                    alt="Capa da bio"
+                    value={coverFocal}
+                    onChange={setCoverFocal}
+                    onCommit={(next) => {
+                      if (profile?.cover_image_url) void commitCoverFocal(next);
+                      else setCoverFocal(next);
+                    }}
+                    disabled={coverBusy || !profile?.cover_image_url}
+                  />
+                </div>
+                <div className="ks-bio-upload-actions">
+                  <input
+                    ref={coverInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+                    hidden
+                    onChange={(e) => void onCoverFile(e.target.files?.[0] ?? null)}
+                  />
+                  <button
+                    type="button"
+                    className="ks-admin-btn ks-admin-btn--secondary"
+                    disabled={coverBusy}
+                    onClick={() => coverInputRef.current?.click()}
+                  >
+                    {coverBusy ? "Enviando…" : "Trocar capa"}
+                  </button>
+                  {profile?.cover_image_url ? (
+                    <button
+                      type="button"
+                      className="ks-admin-btn ks-admin-btn--secondary"
+                      disabled={coverBusy}
+                      onClick={() => void clearCover()}
+                    >
+                      Usar padrão
+                    </button>
+                  ) : null}
+                  {coverBusy ? (
+                    <span className="ks-admin-muted">
+                      {coverStage === "uploading" || coverStage === "presigning"
+                        ? "Enviando…"
+                        : "Preparando imagem…"}
+                    </span>
+                  ) : (
+                    <span className="ks-admin-muted">
+                      {profile?.cover_image_url
+                        ? "Arraste na prévia para enquadrar."
+                        : "Sem capa customizada — usa a imagem padrão do site."}
+                    </span>
+                  )}
+                </div>
+              </div>
 
               <div className="ks-bio-avatar-block">
+                <p className="ks-bio-field-label">Avatar</p>
                 <div className="ks-bio-avatar-preview ks-bio-focal-host">
                   {profile?.avatar_url ? (
                     <FocalPreview

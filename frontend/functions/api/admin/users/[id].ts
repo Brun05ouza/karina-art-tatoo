@@ -1,7 +1,12 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
 import { authenticateRequest } from "../../../_lib/auth";
 import { type Env, error, handleError, json } from "../../../_lib/config";
-import { findUserById, setUserActive } from "../../../_lib/db";
+import {
+  countActiveOwners,
+  deleteUser,
+  findUserById,
+  setUserActive,
+} from "../../../_lib/db";
 
 export const onRequestPatch: PagesFunction<Env> = async (context) => {
   try {
@@ -31,6 +36,17 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       return error(400, "Você não pode desativar a própria conta.");
     }
 
+    if (
+      target.role === "owner" &&
+      target.active &&
+      body.active === false
+    ) {
+      const owners = await countActiveOwners(env);
+      if (owners <= 1) {
+        return error(400, "Não dá para desativar o último responsável ativo.");
+      }
+    }
+
     const updated = await setUserActive(env, id, body.active);
     if (!updated) return error(404, "Usuário não encontrado.");
 
@@ -44,6 +60,43 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
         mustChangePassword: updated.must_change_password,
         lastLoginAt: updated.last_login_at,
       },
+    });
+  } catch (err) {
+    return handleError(err);
+  }
+};
+
+export const onRequestDelete: PagesFunction<Env> = async (context) => {
+  try {
+    const { request, env, params } = context;
+    const identity = await authenticateRequest(request, env);
+    if (!identity) return error(401, "Faça login para continuar.");
+    if (identity.role !== "owner") return error(403, "Sem permissão para gerenciar usuários.");
+
+    const id = String(params.id ?? "");
+    if (!id) return error(400, "Usuário inválido.");
+
+    const target = await findUserById(env, id);
+    if (!target) return error(404, "Usuário não encontrado.");
+
+    if (target.id === identity.user.id) {
+      return error(400, "Você não pode excluir a própria conta.");
+    }
+
+    if (target.role === "owner" && target.active) {
+      const owners = await countActiveOwners(env);
+      if (owners <= 1) {
+        return error(400, "Não dá para excluir o último responsável ativo.");
+      }
+    }
+
+    const deleted = await deleteUser(env, id);
+    if (!deleted) return error(404, "Usuário não encontrado.");
+
+    return json({
+      ok: true,
+      id: deleted.id,
+      email: deleted.email,
     });
   } catch (err) {
     return handleError(err);

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 
 /**
- * Conteúdo da página /sobre vindo do admin (Neon, key "sobre") — mesma
- * separação de home-content.ts: tipo e cópia padrão próprios deste arquivo,
- * sem importar de src/admin. Mídia vem do CMS (defaults de imagem vazios).
+ * Conteúdo da página /sobre — textos ficam neste arquivo (defaults).
+ * Imagens vêm do CMS (site_settings.about_media) via /api/settings.
  */
 export type AboutCard = {
   id: string;
@@ -13,6 +12,8 @@ export type AboutCard = {
   order: number;
 };
 
+export type AboutImageFocal = { x: number; y: number };
+
 export type AboutStudioStep = {
   id: string;
   order: number;
@@ -21,6 +22,7 @@ export type AboutStudioStep = {
   title: string;
   text: string;
   imageUrl: string;
+  imageFocal?: AboutImageFocal;
 };
 
 export type AboutContent = {
@@ -28,17 +30,21 @@ export type AboutContent = {
   title: string;
   intro: string;
   heroImageUrl: string;
+  heroImageFocal?: AboutImageFocal;
 
   biography: string;
   quote: string;
   imageUrl: string;
+  imageFocal?: AboutImageFocal;
 
   approachCards: AboutCard[];
 
   behindScenesImageUrl: string;
   behindScenesCaption: string;
+  behindScenesImageFocal?: AboutImageFocal;
 
   studioInviteImageUrl: string;
+  studioInviteImageFocal?: AboutImageFocal;
   studioTourSteps: AboutStudioStep[];
   hiddenSections?: string[];
 };
@@ -104,21 +110,66 @@ export const defaultAboutContent: AboutContent = {
   ],
 };
 
-function mergeStudioSteps(incoming?: Partial<AboutStudioStep>[] | null): AboutStudioStep[] {
-  if (!Array.isArray(incoming) || incoming.length === 0) return defaultAboutContent.studioTourSteps;
+type AboutMediaApiSlot = {
+  url?: string;
+  key?: string;
+  focalX?: number;
+  focalY?: number;
+};
 
-  return incoming.map((step, index) => {
-    const fallback = defaultAboutContent.studioTourSteps[index] ?? defaultAboutContent.studioTourSteps[0]!;
+type AboutMediaApi = {
+  heroImage?: AboutMediaApiSlot;
+  image?: AboutMediaApiSlot;
+  behindScenesImage?: AboutMediaApiSlot;
+  studioInviteImage?: AboutMediaApiSlot;
+  studioTourSteps?: AboutMediaApiSlot[];
+  hiddenSections?: string[];
+};
+
+function pickUrl(slot: AboutMediaApiSlot | undefined, fallback: string): string {
+  const url = slot?.url?.trim();
+  return url || fallback;
+}
+
+function pickFocal(slot: AboutMediaApiSlot | undefined): AboutImageFocal | undefined {
+  if (!slot?.url?.trim()) return undefined;
+  const x = Number(slot.focalX);
+  const y = Number(slot.focalY);
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return { x: 50, y: 50 };
+  return {
+    x: Math.min(100, Math.max(0, x)),
+    y: Math.min(100, Math.max(0, y)),
+  };
+}
+
+function mergeAboutMedia(media: AboutMediaApi | null | undefined): AboutContent {
+  const base = defaultAboutContent;
+  if (!media) return base;
+
+  const tour = base.studioTourSteps.map((step, index) => {
+    const slot = media.studioTourSteps?.[index];
     return {
-      id: step.id || fallback.id,
-      order: typeof step.order === "number" ? step.order : index + 1,
-      active: step.active !== false,
-      label: step.label || fallback.label,
-      title: step.title || fallback.title,
-      text: step.text || fallback.text,
-      imageUrl: step.imageUrl || fallback.imageUrl,
+      ...step,
+      imageUrl: pickUrl(slot, step.imageUrl),
+      imageFocal: pickFocal(slot),
     };
   });
+
+  return {
+    ...base,
+    heroImageUrl: pickUrl(media.heroImage, base.heroImageUrl),
+    heroImageFocal: pickFocal(media.heroImage),
+    imageUrl: pickUrl(media.image, base.imageUrl),
+    imageFocal: pickFocal(media.image),
+    behindScenesImageUrl: pickUrl(media.behindScenesImage, base.behindScenesImageUrl),
+    behindScenesImageFocal: pickFocal(media.behindScenesImage),
+    studioInviteImageUrl: pickUrl(media.studioInviteImage, base.studioInviteImageUrl),
+    studioInviteImageFocal: pickFocal(media.studioInviteImage),
+    studioTourSteps: tour,
+    hiddenSections: Array.isArray(media.hiddenSections)
+      ? media.hiddenSections.filter((item): item is string => typeof item === "string")
+      : base.hiddenSections,
+  };
 }
 
 export function useAboutContent(): AboutContent {
@@ -126,9 +177,18 @@ export function useAboutContent(): AboutContent {
 
   useEffect(() => {
     let active = true;
-    void Promise.resolve(defaultAboutContent).then((next) => {
-      if (active) setData(next);
-    });
+    void fetch("/api/settings", { cache: "no-store" })
+      .then(async (res) => {
+        if (!res.ok) return defaultAboutContent;
+        const json = (await res.json()) as { aboutMedia?: AboutMediaApi };
+        return mergeAboutMedia(json.aboutMedia);
+      })
+      .then((next) => {
+        if (active) setData(next);
+      })
+      .catch(() => {
+        if (active) setData(defaultAboutContent);
+      });
     return () => {
       active = false;
     };

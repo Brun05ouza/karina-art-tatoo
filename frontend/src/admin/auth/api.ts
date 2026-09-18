@@ -1,5 +1,20 @@
 /** Chamadas à API admin — sempre com cookies de sessão. */
 
+function isLocalAdminHost(): boolean {
+  const host = window.location.hostname;
+  return host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+}
+
+/** Mensagem de falha de rede: técnica em dev, humana em produção. */
+function apiUnreachableMessage(kind: "timeout" | "network"): string {
+  if (isLocalAdminHost()) {
+    return kind === "timeout"
+      ? "A API não respondeu. Rode `npm run dev` na raiz do projeto (API na porta 8788)."
+      : "Não foi possível conectar à API. Confira se o `npm run dev` está rodando (porta 8788).";
+  }
+  return "Não conseguimos conectar agora. Tente de novo em instantes.";
+}
+
 export type AdminRole = "owner" | "editor";
 
 export type AdminSessionUser = {
@@ -65,9 +80,9 @@ async function request<T>(
     });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
-      throw new ApiError("A API não respondeu. Rode `npm run dev` na raiz do projeto (API na porta 8788).", 0);
+      throw new ApiError(apiUnreachableMessage("timeout"), 0);
     }
-    throw new ApiError("Não foi possível conectar à API.", 0);
+    throw new ApiError(apiUnreachableMessage("network"), 0);
   } finally {
     window.clearTimeout(timer);
   }
@@ -147,6 +162,12 @@ export function setUserActive(id: string, active: boolean) {
   });
 }
 
+export function deleteUser(id: string) {
+  return request<{ ok: true; id: string; email: string }>(`/api/admin/users/${id}`, {
+    method: "DELETE",
+  });
+}
+
 export type GalleryCollectionId = "portfolio" | "flash" | "produtos" | "reformulacoes";
 
 export type GalleryItem = {
@@ -163,6 +184,7 @@ export type GalleryItem = {
   sort_order: number;
   published: boolean;
   featured: boolean;
+  show_in_recent: boolean;
   focal_x: number;
   focal_y: number;
   after_image_url: string | null;
@@ -272,10 +294,15 @@ export type BioProfile = {
   subtitle: string;
   studio_image_url: string;
   studio_image_key: string | null;
+  cover_image_url: string;
+  cover_image_key: string | null;
   avatar_focal_x: number;
   avatar_focal_y: number;
   studio_focal_x: number;
   studio_focal_y: number;
+  cover_focal_x: number;
+  cover_focal_y: number;
+  show_site_footer: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -380,6 +407,32 @@ export function reorderBioTestimonials(ids: string[]) {
   });
 }
 
+export type AboutMediaSlot = {
+  url: string;
+  key: string;
+  focalX: number;
+  focalY: number;
+};
+
+export type AboutMediaSlotId =
+  | "heroImage"
+  | "image"
+  | "behindScenesImage"
+  | "studioInviteImage"
+  | "studioTour0"
+  | "studioTour1"
+  | "studioTour2"
+  | "studioTour3";
+
+export type AboutMediaBundle = {
+  heroImage: AboutMediaSlot;
+  image: AboutMediaSlot;
+  behindScenesImage: AboutMediaSlot;
+  studioInviteImage: AboutMediaSlot;
+  studioTourSteps: AboutMediaSlot[];
+  hiddenSections: string[];
+};
+
 export type AdminSettings = {
   whatsappPhone: string;
   whatsappPhoneDisplay: string;
@@ -394,6 +447,28 @@ export type AdminSettings = {
   productsHeroImageKey: string;
   productsHeroFocalX: number;
   productsHeroFocalY: number;
+  aboutMedia: AboutMediaBundle;
+};
+
+const EMPTY_ABOUT_SLOT: AboutMediaSlot = {
+  url: "",
+  key: "",
+  focalX: 50,
+  focalY: 50,
+};
+
+export const EMPTY_ABOUT_MEDIA: AboutMediaBundle = {
+  heroImage: { ...EMPTY_ABOUT_SLOT },
+  image: { ...EMPTY_ABOUT_SLOT },
+  behindScenesImage: { ...EMPTY_ABOUT_SLOT },
+  studioInviteImage: { ...EMPTY_ABOUT_SLOT },
+  studioTourSteps: [
+    { ...EMPTY_ABOUT_SLOT },
+    { ...EMPTY_ABOUT_SLOT },
+    { ...EMPTY_ABOUT_SLOT },
+    { ...EMPTY_ABOUT_SLOT },
+  ],
+  hiddenSections: [],
 };
 
 export function getAdminSettings() {
@@ -416,6 +491,15 @@ export function patchAdminSettings(body: {
   productsHeroFocalX?: number;
   productsHeroFocalY?: number;
   clearProductsHeroImage?: boolean;
+  aboutMediaSlot?: {
+    id: AboutMediaSlotId;
+    url?: string;
+    key?: string;
+    focalX?: number;
+    focalY?: number;
+  };
+  clearAboutMediaSlot?: AboutMediaSlotId;
+  aboutHiddenSection?: { id: string; hidden: boolean };
 }) {
   return request<AdminSettings & { ok: true }>("/api/admin/settings", {
     method: "PATCH",

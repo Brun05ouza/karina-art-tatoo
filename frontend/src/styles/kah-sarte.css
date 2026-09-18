@@ -8292,8 +8292,9 @@ button.ks-product-visual-card {
 
 .ks-window-portal > img {
   display: block;
+  max-width: none;
   object-fit: cover;
-  object-position: center 32%;
+  object-position: center 36%;
 }
 
 .ks-window-portal > .ks-hover-process-media {
@@ -8349,26 +8350,39 @@ button.ks-product-visual-card {
 }
 
 .ks-service-card-media .ks-window-portal img {
-  transform: scale(1.04);
+  transform: scale(1);
   filter: grayscale(35%) sepia(10%);
   transition: transform 0.5s ease, filter 0.5s ease;
 }
 
+/* Enquadramento fixo por serviço — sem inline style / scale por item */
+.ks-service-card[href="/portfolio"] .ks-window-portal > img {
+  object-position: 52% 34%;
+}
+
+.ks-service-card[href="/flash-tattoos"] .ks-window-portal > img {
+  object-position: center 44%;
+}
+
+.ks-service-card[href="/reformulacoes"] .ks-window-portal > img {
+  object-position: 60% 42%;
+}
+
 .ks-service-card-media .ks-window-portal .ks-hover-process-poster,
 .ks-service-card-media .ks-window-portal .ks-hover-process-video {
-  transform: scale(1.04);
+  transform: scale(1);
   filter: grayscale(35%) sepia(10%);
   transition: transform 0.5s ease, filter 0.5s ease, opacity 0.45s ease;
 }
 
 .ks-service-card:hover .ks-window-portal img {
-  transform: scale(1.08);
+  transform: scale(1.04);
   filter: grayscale(15%) sepia(8%);
 }
 
 .ks-service-card:hover .ks-window-portal .ks-hover-process-poster,
 .ks-service-card:hover .ks-window-portal .ks-hover-process-video {
-  transform: scale(1.08);
+  transform: scale(1.04);
   filter: grayscale(15%) sepia(8%);
 }
 

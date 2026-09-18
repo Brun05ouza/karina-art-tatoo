@@ -20,6 +20,11 @@ import { focalStyle } from "../../app/focal";
 
 type Mode = { type: "list" } | { type: "create" } | { type: "edit"; item: GalleryItem };
 
+type FeaturedSwap = {
+  candidate: GalleryItem;
+  current: GalleryItem;
+};
+
 export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionId }) {
   const config = COLLECTIONS[collectionId];
   const beforeAfter = config.imageMode === "before-after";
@@ -30,7 +35,8 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
   const [mode, setMode] = useState<Mode>({ type: "list" });
   const [busyId, setBusyId] = useState<string | null>(null);
   const [leavingId, setLeavingId] = useState<string | null>(null);
-  const supportsFeatured = collectionId === "portfolio";
+  const [featuredSwap, setFeaturedSwap] = useState<FeaturedSwap | null>(null);
+  const supportsFeatured = true;
 
   const displayItems = useMemo(() => {
     if (!beforeAfter) return items;
@@ -63,6 +69,7 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
     setLoading(true);
     setMode({ type: "list" });
     setNotice(null);
+    setFeaturedSwap(null);
     void reload();
   }, [reload]);
 
@@ -74,10 +81,14 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
 
   async function saveItem(payload: ItemFormSavePayload) {
     const v = payload.values;
+    const published = v.published;
+    const featured = published ? v.featured : false;
     const base: Record<string, unknown> = {
       title: v.title.trim(),
       alt_text: v.alt_text.trim() || null,
-      published: v.published,
+      published,
+      featured,
+      show_in_recent: v.show_in_recent,
       focalX: payload.focal.x,
       focalY: payload.focal.y,
     };
@@ -105,7 +116,10 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
       if (!payload.image) throw new Error(beforeAfter ? "Escolha a foto do antes." : "Escolha uma foto.");
       base.image_url = payload.image.imageUrl;
       base.image_key = payload.image.imageKey;
-      await createGalleryItem(collectionId, base);
+      const { item } = await createGalleryItem(collectionId, base);
+      if (featured) {
+        await patchGalleryItem(item.id, { featured: true });
+      }
     }
   }
 
@@ -130,19 +144,13 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
     }
   }
 
-  async function toggleFeatured(item: GalleryItem) {
-    if (!supportsFeatured) return;
-    if (!item.published && !item.featured) {
-      setError(
-        "Não dá para destacar um item oculto. Publique-o primeiro e depois marque como destaque.",
-      );
-      return;
-    }
+  async function applyFeatured(item: GalleryItem, nextFeatured: boolean) {
     setBusyId(item.id);
     setError(null);
     try {
-      const nextFeatured = !item.featured;
-      const { item: updated } = await patchGalleryItem(item.id, { featured: nextFeatured });
+      const { item: updated } = await patchGalleryItem(item.id, {
+        featured: nextFeatured,
+      });
       setItems((prev) =>
         prev.map((row) => {
           if (row.id === updated.id) return { ...row, ...updated };
@@ -156,6 +164,32 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
     } finally {
       setBusyId(null);
     }
+  }
+
+  async function toggleFeatured(item: GalleryItem) {
+    if (!supportsFeatured) return;
+    if (!item.published && !item.featured) {
+      setError(
+        "Não dá para destacar um item oculto. Publique-o primeiro e depois marque como destaque.",
+      );
+      return;
+    }
+    const nextFeatured = !item.featured;
+    if (nextFeatured) {
+      const current = items.find((row) => row.featured && row.id !== item.id);
+      if (current) {
+        setFeaturedSwap({ candidate: item, current });
+        return;
+      }
+    }
+    await applyFeatured(item, nextFeatured);
+  }
+
+  async function confirmFeaturedSwap() {
+    if (!featuredSwap) return;
+    const { candidate } = featuredSwap;
+    setFeaturedSwap(null);
+    await applyFeatured(candidate, true);
   }
 
   async function remove(item: GalleryItem) {
@@ -180,6 +214,7 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
     const parts: string[] = [];
     if (beforeAfter && isIncompleteReformulation(item)) parts.push("Aguardando depois");
     if (item.featured) parts.push("Destaque");
+    if (item.show_in_recent === false) parts.push("Fora dos recentes");
     if (!item.published) parts.push("Oculto");
     if (item.category) parts.push(item.category);
     if (item.price) parts.push(item.price);
@@ -313,6 +348,9 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
                     {incomplete ? (
                       <span className="ks-gallery-pending-badge">Aguardando foto do depois</span>
                     ) : null}
+                    {item.featured ? (
+                      <span className="ks-gallery-featured-badge">Destaque</span>
+                    ) : null}
                   </span>
                 ) : (
                   <span className="ks-gallery-tile-media">
@@ -398,6 +436,61 @@ export function GalleryPage({ collectionId }: { collectionId: GalleryCollectionI
           );
         })}
       </ul>
+
+      {featuredSwap ? (
+        <div
+          className="ks-admin-dialog-backdrop"
+          role="presentation"
+          onClick={() => setFeaturedSwap(null)}
+        >
+          <div
+            className="ks-admin-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="ks-featured-swap-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="ks-featured-swap-title">Trocar destaque?</h2>
+            <p>
+              Já existe um destaque nesta coleção. Ao confirmar,{" "}
+              <strong>{featuredSwap.candidate.title}</strong> passa a ser o destaque e o atual
+              deixa de ser.
+            </p>
+            <div className="ks-admin-featured-dialog-thumb">
+              <img
+                src={featuredSwap.current.image_url}
+                alt=""
+                width={72}
+                height={90}
+                style={focalStyle(featuredSwap.current.focal_x, featuredSwap.current.focal_y)}
+              />
+              <div>
+                <p className="ks-admin-muted" style={{ margin: 0, fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                  Destaque atual
+                </p>
+                <p style={{ margin: "4px 0 0", fontWeight: 600 }}>{featuredSwap.current.title}</p>
+              </div>
+            </div>
+            <div className="ks-admin-dialog-actions">
+              <button
+                type="button"
+                className="ks-admin-btn ks-admin-btn--secondary"
+                onClick={() => setFeaturedSwap(null)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="ks-admin-btn"
+                disabled={busyId !== null}
+                onClick={() => void confirmFeaturedSwap()}
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ApiError, getAdminSettings, patchAdminSettings, type AdminSettings } from "./auth/api";
+import { ApiError, EMPTY_ABOUT_MEDIA, getAdminSettings, patchAdminSettings, type AdminSettings } from "./auth/api";
 import { MediaDrop } from "./gallery/MediaDrop";
 import {
   prepareImage,
@@ -23,6 +23,7 @@ const EMPTY: AdminSettings = {
   productsHeroImageKey: "",
   productsHeroFocalX: 50,
   productsHeroFocalY: 50,
+  aboutMedia: EMPTY_ABOUT_MEDIA,
 };
 
 const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif,.heic,.heif";

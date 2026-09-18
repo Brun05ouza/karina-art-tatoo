@@ -20,7 +20,7 @@ type AuthState = {
   loading: boolean;
   user: AdminSessionUser | null;
   mustChangePassword: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ mustChangePassword: boolean }>;
   logout: () => Promise<void>;
   changePassword: (input: {
     currentPassword?: string;
@@ -79,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (email: string, password: string) => {
       const result = await apiLogin(email, password);
       applyUser(result.user, result.mustChangePassword);
+      return { mustChangePassword: result.mustChangePassword };
     },
     [applyUser],
   );

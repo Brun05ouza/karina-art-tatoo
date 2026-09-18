@@ -1,5 +1,7 @@
 /** Cliente público das galerias — uma tentativa, sem retry longo. */
 
+import { useEffect, useState } from "react";
+
 export type PublicGalleryCollection = "portfolio" | "flash" | "produtos" | "reformulacoes";
 
 export type PublicGalleryItem = {
@@ -15,6 +17,7 @@ export type PublicGalleryItem = {
   sort_order: number;
   published: boolean;
   featured?: boolean;
+  show_in_recent?: boolean;
   focal_x?: number;
   focal_y?: number;
   after_image_url?: string | null;
@@ -53,4 +56,23 @@ export async function fetchGalleryFeatured(
   } catch {
     return null;
   }
+}
+
+/** Hook: destaque (ou primeiro) de uma coleção — null enquanto carrega / se vazio. */
+export function useGalleryFeatured(
+  collection: PublicGalleryCollection,
+): PublicGalleryItem | null {
+  const [item, setItem] = useState<PublicGalleryItem | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    void fetchGalleryFeatured(collection).then((next) => {
+      if (live) setItem(next);
+    });
+    return () => {
+      live = false;
+    };
+  }, [collection]);
+
+  return item;
 }

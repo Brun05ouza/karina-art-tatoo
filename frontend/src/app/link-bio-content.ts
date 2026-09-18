@@ -42,6 +42,8 @@ export type LinkBioContent = {
   avatarFocalX?: number;
   avatarFocalY?: number;
   backgroundUrl: string;
+  backgroundFocalX?: number;
+  backgroundFocalY?: number;
   instagram: string;
   footerLabel: string;
   footerUrl: string;
@@ -100,8 +102,8 @@ export const defaultLinkBioContent: LinkBioContent = {
   avatarUrl: "/assets/karina-sarte.webp",
   backgroundUrl: "",
   instagram: "@karinasarte",
-  footerLabel: "Site completo",
-  footerUrl: "/",
+  footerLabel: "",
+  footerUrl: "",
   buttons: [
     {
       id: "link-1",
@@ -205,10 +207,14 @@ export async function loadLinkBioContent(): Promise<LinkBioContent & { linksErro
           avatar_url?: string;
           subtitle?: string;
           studio_image_url?: string;
+          cover_image_url?: string;
           avatar_focal_x?: number;
           avatar_focal_y?: number;
           studio_focal_x?: number;
           studio_focal_y?: number;
+          cover_focal_x?: number;
+          cover_focal_y?: number;
+          show_site_footer?: boolean;
         };
         chips?: Array<{ id: string; label: string; sort_order: number }>;
         testimonials?: Array<{
@@ -246,6 +252,21 @@ export async function loadLinkBioContent(): Promise<LinkBioContent & { linksErro
     if (profile?.avatar_url) next = { ...next, avatarUrl: profile.avatar_url };
     if (profile?.subtitle) next = { ...next, bio: profile.subtitle };
     if (profile?.studio_image_url) next = { ...next, studioImageUrl: profile.studio_image_url };
+    if (profile?.cover_image_url) {
+      next = {
+        ...next,
+        backgroundUrl: profile.cover_image_url,
+        backgroundFocalX: profile.cover_focal_x ?? 50,
+        backgroundFocalY: profile.cover_focal_y ?? 50,
+      };
+    } else {
+      next = { ...next, backgroundUrl: "", backgroundFocalX: undefined, backgroundFocalY: undefined };
+    }
+    if (profile?.show_site_footer) {
+      next = { ...next, footerLabel: "Site completo", footerUrl: "/" };
+    } else {
+      next = { ...next, footerLabel: "", footerUrl: "" };
+    }
     if (profile?.avatar_focal_x != null || profile?.avatar_focal_y != null) {
       next = {
         ...next,

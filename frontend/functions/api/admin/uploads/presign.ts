@@ -32,6 +32,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const isYoutubeThumb = collection === "youtube-thumb";
     const isYoutubeTrailer = collection === "youtube-trailer";
     const isProductsHero = collection === "products-hero";
+    const isAbout = collection === "about";
     if (contentType === "video/quicktime" || contentType === "video/mov") {
       return error(
         400,
@@ -58,13 +59,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         return error(400, "O vídeo passa de 10 MB. Envie um teaser mais curto, em MP4 ou WebM.");
       }
     }
-    if (isProductsHero) {
+    if (isProductsHero || isAbout) {
       const bytes = Number(body.bytes);
       if (!Number.isFinite(bytes) || bytes <= 0) {
         return error(400, "Informe o tamanho da imagem.");
       }
       if (bytes > 2 * 1024 * 1024) {
-        return error(400, "A imagem do hero passa de 2 MB. Exporte em WebP ou PNG mais leve.");
+        return error(
+          400,
+          isAbout
+            ? "A imagem do Sobre passa de 2 MB. Exporte em WebP ou PNG mais leve."
+            : "A imagem do hero passa de 2 MB. Exporte em WebP ou PNG mais leve.",
+        );
       }
     }
 
@@ -82,6 +88,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       path = `youtube/trailer/${crypto.randomUUID()}.${ext}`;
     } else if (isProductsHero) {
       path = `products/hero/${crypto.randomUUID()}.${ext}`;
+    } else if (isAbout) {
+      path = `about/${crypto.randomUUID()}.${ext}`;
     } else if (isBioUploadCollection(collection)) {
       path = buildBioObjectKey(collection, ext);
     } else if (isGalleryCollection(collection)) {
@@ -89,7 +97,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     } else {
       return error(
         400,
-        "Coleção inválida. Use portfolio, flash, produtos, bio-avatar, bio-studio, youtube ou products-hero.",
+        "Coleção inválida. Use portfolio, flash, produtos, bio-avatar, bio-studio, bio-cover, youtube, products-hero ou about.",
       );
     }
 

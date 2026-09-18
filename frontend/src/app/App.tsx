@@ -1,4 +1,4 @@
-﻿import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { gsap } from "gsap";
@@ -38,6 +38,7 @@ import { useFlashItems, useFlashPageContent } from "./flash-content";
 import { useFaqItems } from "./faq-content";
 import { PORTFOLIO_CATEGORIES, useFeaturedPortfolioWork, usePortfolioItems, usePortfolioPageContent, type PortfolioWork } from "./portfolio-works";
 import { focalStyle } from "./focal";
+import { useGalleryFeatured } from "./gallery-api";
 import {
   PRODUCTS_HERO_MOLD_SRC,
   useProductItems,
@@ -909,40 +910,82 @@ function NumberedPlaceholder({ number }: { number: string }) {
   );
 }
 
+/** Janela de serviços: destaque da coleção (reformulações usam sempre a foto “depois”). */
 function HomeServicesSection({ data }: { data: HomeContent }) {
   const cards = [...data.serviceCards].filter((card) => card.active).sort((a, b) => a.order - b.order);
+  const portfolioFeatured = useGalleryFeatured("portfolio");
+  const flashFeatured = useGalleryFeatured("flash");
+  const produtosFeatured = useGalleryFeatured("produtos");
+  const reformulacoesFeatured = useGalleryFeatured("reformulacoes");
+
+  const windowImage = (card: (typeof cards)[number]) => {
+    if (card.url === "/portfolio" && portfolioFeatured?.image_url) {
+      return {
+        src: portfolioFeatured.image_url,
+        alt: portfolioFeatured.alt_text || portfolioFeatured.title || card.title,
+      };
+    }
+    if (card.url === "/flash-tattoos" && flashFeatured?.image_url) {
+      return {
+        src: flashFeatured.image_url,
+        alt: flashFeatured.alt_text || flashFeatured.title || card.title,
+      };
+    }
+    if (card.url === "/produtos" && produtosFeatured?.image_url) {
+      return {
+        src: produtosFeatured.image_url,
+        alt: produtosFeatured.alt_text || produtosFeatured.title || card.title,
+      };
+    }
+    if (card.url === "/reformulacoes") {
+      const afterUrl = reformulacoesFeatured?.after_image_url?.trim();
+      if (afterUrl) {
+        return {
+          src: afterUrl,
+          alt: reformulacoesFeatured?.alt_text || reformulacoesFeatured?.title || card.title,
+        };
+      }
+    }
+    if (card.imageUrl) {
+      return { src: card.imageUrl, alt: card.title };
+    }
+    return null;
+  };
 
   return (
     <section className="ks-services-section">
       <SectionTitle eyebrow={data.servicesEyebrow} title={data.servicesTitle} text={data.servicesText} />
       <div className="ks-services-grid">
-        {cards.map((card, index) => (
-          <motion.div
-            key={card.id}
-            className="ks-service-grid-item"
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-8%" }}
-            transition={{ duration: 0.65, delay: index * 0.08, ease: EASE }}
-          >
-            <GuardedLink className="ks-service-card" to={card.url}>
-              <div className="ks-service-card-media">
-                <div className="ks-window-portal">
-                  {card.imageUrl ? (
-                    <img src={card.imageUrl} alt={card.title} loading="lazy" />
-                  ) : (
-                    <NumberedPlaceholder number={String(index).padStart(2, "0")} />
-                  )}
+        {cards.map((card, index) => {
+          const media = windowImage(card);
+          return (
+            <motion.div
+              key={card.id}
+              className="ks-service-grid-item"
+              initial={{ opacity: 0, y: 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-8%" }}
+              transition={{ duration: 0.65, delay: index * 0.08, ease: EASE }}
+            >
+              <GuardedLink className="ks-service-card" to={card.url}>
+                <div className="ks-service-card-media">
+                  <div className="ks-window-portal">
+                    {media ? (
+                      <img src={media.src} alt={media.alt} loading="lazy" />
+                    ) : (
+                      <NumberedPlaceholder number={String(index).padStart(2, "0")} />
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="ks-service-card-body">
-                <h3>{card.title}</h3>
-                <p>{card.text}</p>
-                <span className="ks-service-card-link">{card.cta}</span>
-              </div>
-            </GuardedLink>
-          </motion.div>
-        ))}
+                <div className="ks-service-card-body">
+                  <h3>{card.title}</h3>
+                  <p>{card.text}</p>
+                  <span className="ks-service-card-link">{card.cta}</span>
+                </div>
+              </GuardedLink>
+            </motion.div>
+          );
+        })}
       </div>
     </section>
   );
@@ -950,12 +993,13 @@ function HomeServicesSection({ data }: { data: HomeContent }) {
 
 function MuralPortfolioPreview({ data }: { data: HomeContent }) {
   const portfolioItems = usePortfolioItems(false);
+  const recentItems = portfolioItems.filter((item) => item.showInRecent !== false);
   const manualIds = data.portfolioIds || [];
   const manualItems = manualIds
-    .map((id) => portfolioItems.find((item) => item.id === id))
+    .map((id) => recentItems.find((item) => item.id === id))
     .filter((item): item is PortfolioWork => Boolean(item));
   const selectedItems =
-    data.portfolioMode === "manual" && manualItems.length > 0 ? manualItems : portfolioItems;
+    data.portfolioMode === "manual" && manualItems.length > 0 ? manualItems : recentItems;
   const displayedItems = selectedItems.slice(0, 6);
 
   return (
@@ -1159,7 +1203,7 @@ function PreviewSection({
 
 function PortfolioPreview() {
   const [active, setActive] = useState(0);
-  const items = usePortfolioItems();
+  const items = usePortfolioItems().filter((item) => item.showInRecent !== false);
   const total = items.length;
 
   const prev = () => {
@@ -1817,6 +1861,7 @@ function AboutPage() {
           title={about.title}
           text={about.intro}
           image={about.heroImageUrl}
+          imageFocal={about.heroImageFocal}
         >
           <PrimaryLink to="/orcamento">Quero criar minha tattoo</PrimaryLink>
         </PageHero>
@@ -1835,6 +1880,7 @@ function AboutPage() {
                 src={about.imageUrl}
                 alt="Karina Sarte"
                 loading="lazy"
+                style={about.imageFocal ? focalStyle(about.imageFocal.x, about.imageFocal.y) : undefined}
               />
             )}
           </motion.div>
@@ -1848,12 +1894,14 @@ function AboutPage() {
       {isSectionVisible(about, "studio") ? (
         <AboutStudioSection
           inviteImageUrl={about.studioInviteImageUrl}
+          inviteImageFocal={about.studioInviteImageFocal}
           steps={about.studioTourSteps}
         />
       ) : null}
       {isSectionVisible(about, "bastidores") ? (
         <AboutBastidorSection
           imageUrl={about.behindScenesImageUrl}
+          imageFocal={about.behindScenesImageFocal}
           caption={about.behindScenesCaption}
         />
       ) : null}
@@ -3169,9 +3217,11 @@ function ProductFaq({ full = false }: { full?: boolean }) {
 
 function AboutBastidorSection({
   imageUrl,
+  imageFocal,
   caption,
 }: {
   imageUrl: string;
+  imageFocal?: { x: number; y: number };
   caption: string;
 }) {
   const tags = ["tablet", "referências", "rabisco", "strogonoff", "ideia do nada"];
@@ -3220,7 +3270,12 @@ function AboutBastidorSection({
         >
           <div className="ks-about-bastidor-frame">
             {imageUrl ? (
-              <img src={imageUrl} alt="Karina Sarte criando no tablet" loading="lazy" />
+              <img
+                src={imageUrl}
+                alt="Karina Sarte criando no tablet"
+                loading="lazy"
+                style={imageFocal ? focalStyle(imageFocal.x, imageFocal.y) : undefined}
+              />
             ) : (
               <div className="ks-about-bastidor-placeholder" aria-hidden="true">
                 <img src="/assets/brand/star-karina-filled.webp" alt="" />
@@ -3237,15 +3292,20 @@ function AboutBastidorSection({
 
 function AboutStudioSection({
   inviteImageUrl,
+  inviteImageFocal,
   steps,
 }: {
   inviteImageUrl: string;
+  inviteImageFocal?: { x: number; y: number };
   steps: AboutStudioStep[];
 }) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const tourSteps = [...steps].filter((item) => item.active && item.imageUrl).sort((a, b) => a.order - b.order);
   const coverImage = inviteImageUrl || tourSteps[0]?.imageUrl || "";
+  const coverFocal = inviteImageUrl
+    ? inviteImageFocal
+    : tourSteps[0]?.imageFocal;
 
   const openTour = () => {
     if (tourSteps.length === 0) return;
@@ -3259,7 +3319,14 @@ function AboutStudioSection({
     <>
       <section className="ks-section ks-studio-invite">
         <div className="ks-studio-invite-media" aria-hidden="true">
-          {coverImage ? <img src={coverImage} alt="" loading="lazy" /> : null}
+          {coverImage ? (
+            <img
+              src={coverImage}
+              alt=""
+              loading="lazy"
+              style={coverFocal ? focalStyle(coverFocal.x, coverFocal.y) : undefined}
+            />
+          ) : null}
         </div>
         <div className="ks-studio-invite-veil" aria-hidden="true" />
 
@@ -3374,7 +3441,15 @@ function StudioTourExperience({
             exit={{ opacity: 0, scale: 1.02, filter: "blur(6px)" }}
             transition={{ duration: 0.7, ease: EASE }}
           >
-            <img src={current.imageUrl} alt={current.title} />
+            <img
+              src={current.imageUrl}
+              alt={current.title}
+              style={
+                current.imageFocal
+                  ? focalStyle(current.imageFocal.x, current.imageFocal.y)
+                  : undefined
+              }
+            />
           </motion.div>
         </AnimatePresence>
         <div className="ks-studio-tour-veil" aria-hidden="true" />

@@ -21,8 +21,8 @@ export function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      await login(email.trim(), password);
-      navigate("/admin", { replace: true });
+      const result = await login(email.trim(), password);
+      navigate(result.mustChangePassword ? "/admin/senha" : "/admin", { replace: true });
     } catch (err) {
       if (err instanceof ApiError) setError(err.message);
       else setError("Não foi possível entrar. Tente de novo.");

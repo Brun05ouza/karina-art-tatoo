@@ -55,8 +55,10 @@ export function isHeicFile(file: File): boolean {
 }
 
 /**
- * Safari iOS 16+ / Safari 16+ suportam `canvas.toBlob('image/webp')`.
- * Em versões antigas o callback recebe null — detectamos uma vez e caímos em JPEG.
+ * Chrome/Firefox/Edge: `canvas.toBlob('image/webp')` ok.
+ * Safari (desktop e iOS, todas as versões atuais): NÃO encode WebP via canvas —
+ * devolve PNG silenciosamente (spec). Detectamos via `blob.type === 'image/webp'`
+ * e caímos em JPEG no prepareImage — upload nunca é recusado por falta de WebP.
  */
 export async function canEncodeWebp(): Promise<boolean> {
   if (webpEncodeSupported !== null) return webpEncodeSupported;
@@ -74,6 +76,7 @@ export async function canEncodeWebp(): Promise<boolean> {
     const blob = await new Promise<Blob | null>((resolve) => {
       canvas.toBlob((b) => resolve(b), "image/webp", 0.8);
     });
+    // Safari devolve image/png aqui — não conta como suporte.
     webpEncodeSupported = Boolean(blob && blob.type === "image/webp" && blob.size > 0);
   } catch {
     webpEncodeSupported = false;
@@ -308,9 +311,11 @@ export async function uploadAdminBlob(
     | "reformulacoes"
     | "bio-avatar"
     | "bio-studio"
+    | "bio-cover"
     | "youtube-thumb"
     | "youtube-trailer"
-    | "products-hero",
+    | "products-hero"
+    | "about",
   bytes?: number,
 ): Promise<{ url: string; key: string }> {
   const presignRes = await fetch("/api/admin/uploads/presign", {
@@ -360,8 +365,10 @@ export async function uploadPreparedImage(
     | "reformulacoes"
     | "bio-avatar"
     | "bio-studio"
+    | "bio-cover"
     | "youtube-thumb"
-    | "products-hero",
+    | "products-hero"
+    | "about",
   onStage?: (stage: UploadStage, detail?: string) => void,
 ): Promise<UploadedImage> {
   onStage?.("presigning", "Preparando envio…");

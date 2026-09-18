@@ -57,10 +57,17 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
         ? current.studio_image_key
         : null;
 
+    const previousCoverKey =
+      parsed.value.cover_image_key !== undefined &&
+      parsed.value.cover_image_key !== current.cover_image_key &&
+      current.cover_image_key
+        ? current.cover_image_key
+        : null;
+
     const profile = await updateProfile(context.env, parsed.value);
     if (!profile) return error(404, "Perfil da bio não encontrado.");
 
-    for (const previousKey of [previousAvatarKey, previousStudioKey]) {
+    for (const previousKey of [previousAvatarKey, previousStudioKey, previousCoverKey]) {
       if (!previousKey) continue;
       try {
         const removed = await removeObject(context.env, previousKey);

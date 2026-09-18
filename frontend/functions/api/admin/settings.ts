@@ -9,10 +9,15 @@ import {
 import { removeObject } from "../../_lib/supabase";
 import {
   formatBrWhatsapp,
+  getAboutMedia,
+  getAboutMediaSlot,
   getDevelopmentMode,
   getProductsHero,
   getWhatsappPhone,
   getYoutubeFeature,
+  isAboutMediaSlotId,
+  publicAboutMedia,
+  setAboutMedia,
   setDevelopmentMode,
   setProductsHero,
   setProductsHeroFocal,
@@ -22,6 +27,10 @@ import {
   setYoutubeUrl,
   setYoutubeVisible,
   validateStoredMediaUrl,
+  withAboutHiddenSection,
+  withAboutMediaSlot,
+  type AboutMediaSettings,
+  type AboutMediaSlot,
   type ProductsHeroSettings,
   type YoutubeFeatureSettings,
 } from "../../_lib/site-settings";
@@ -35,12 +44,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     const developmentMode = await getDevelopmentMode(context.env);
     const youtube = await getYoutubeFeature(context.env);
     const productsHero = await getProductsHero(context.env);
+    const aboutMedia = await getAboutMedia(context.env);
     return json({
       whatsappPhone,
       whatsappPhoneDisplay: formatBrWhatsapp(whatsappPhone),
       developmentMode,
       ...publicYoutube(youtube),
       ...publicProductsHero(productsHero),
+      ...publicAboutMedia(aboutMedia),
     });
   } catch (err) {
     return handleError(err);
@@ -71,15 +82,21 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       body.clearProductsHeroImage === true ||
       "productsHeroFocalX" in body ||
       "productsHeroFocalY" in body;
+    const hasAboutMedia =
+      "aboutMediaSlot" in body ||
+      "aboutMedia" in body ||
+      body.clearAboutMediaSlot != null ||
+      "aboutHiddenSection" in body;
     if (
       !("whatsappPhone" in body) &&
       !("developmentMode" in body) &&
       !hasYoutube &&
-      !hasProductsHero
+      !hasProductsHero &&
+      !hasAboutMedia
     ) {
       return error(
         400,
-        "Informe whatsappPhone, developmentMode, os campos do vídeo ou o hero de produtos.",
+        "Informe whatsappPhone, developmentMode, os campos do vídeo, o hero de produtos ou as fotos do Sobre.",
       );
     }
 
@@ -146,6 +163,28 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       productsHero = { ...productsHero, focalX: nextX, focalY: nextY };
     }
 
+    let aboutMedia = await getAboutMedia(context.env);
+    if (hasAboutMedia) {
+      if ("aboutHiddenSection" in body) {
+        const payload =
+          body.aboutHiddenSection && typeof body.aboutHiddenSection === "object"
+            ? (body.aboutHiddenSection as Record<string, unknown>)
+            : null;
+        const sectionId = typeof payload?.id === "string" ? payload.id.trim() : "";
+        if (typeof payload?.hidden !== "boolean" || !sectionId) {
+          return error(400, "Informe a seção do Sobre e se deve ficar oculta.");
+        }
+        const next = withAboutHiddenSection(aboutMedia, sectionId, payload.hidden);
+        if (!next) return error(400, "Seção do Sobre inválida.");
+        await setAboutMedia(context.env, next);
+        aboutMedia = next;
+      } else {
+        const replaced = await replaceAboutMediaSlot(context, aboutMedia, body);
+        if (!replaced.ok) return error(400, replaced.message);
+        aboutMedia = replaced.aboutMedia;
+      }
+    }
+
     context.waitUntil(
       invalidatePublicPaths(context.request, context.env, [
         SETTINGS_PUBLIC_PATH,
@@ -160,6 +199,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       developmentMode,
       ...publicYoutube(youtube),
       ...publicProductsHero(productsHero),
+      ...publicAboutMedia(aboutMedia),
     });
   } catch (err) {
     return handleError(err);
@@ -248,4 +288,68 @@ async function replaceProductsHero(
     ok: true,
     productsHero: { imageUrl: check.url, imageKey: nextKey, focalX, focalY },
   };
+}
+
+async function replaceAboutMediaSlot(
+  context: Parameters<PagesFunction<Env>>[0],
+  aboutMedia: AboutMediaSettings,
+  body: Record<string, unknown>,
+): Promise<{ ok: true; aboutMedia: AboutMediaSettings } | { ok: false; message: string }> {
+  const clearId = body.clearAboutMediaSlot;
+  const slotPayload =
+    body.aboutMediaSlot && typeof body.aboutMediaSlot === "object"
+      ? (body.aboutMediaSlot as Record<string, unknown>)
+      : null;
+
+  const slotId = isAboutMediaSlotId(clearId)
+    ? clearId
+    : slotPayload && isAboutMediaSlotId(slotPayload.id)
+      ? slotPayload.id
+      : null;
+
+  if (!slotId) {
+    return { ok: false, message: "Informe o slot da foto do Sobre." };
+  }
+
+  const previous = getAboutMediaSlot(aboutMedia, slotId);
+  const clearing = isAboutMediaSlotId(clearId);
+
+  let nextSlot: AboutMediaSlot;
+  if (clearing) {
+    nextSlot = { url: "", key: "", focalX: 50, focalY: 50 };
+  } else {
+    const nextUrl = slotPayload?.url;
+    const nextKey = typeof slotPayload?.key === "string" ? slotPayload.key.trim() : "";
+    const check = validateStoredMediaUrl(nextUrl);
+    if (!check.ok) return check;
+    if (check.url && !nextKey) {
+      return { ok: false, message: "Faltou a chave do arquivo enviado." };
+    }
+    const focalOnly = !("url" in (slotPayload ?? {})) && !("key" in (slotPayload ?? {}));
+    if (focalOnly) {
+      const focalX =
+        typeof slotPayload?.focalX === "number" ? slotPayload.focalX : previous.focalX;
+      const focalY =
+        typeof slotPayload?.focalY === "number" ? slotPayload.focalY : previous.focalY;
+      if (!Number.isFinite(focalX) || !Number.isFinite(focalY)) {
+        return { ok: false, message: "Enquadramento inválido." };
+      }
+      nextSlot = { ...previous, focalX, focalY };
+    } else {
+      nextSlot = {
+        url: check.url,
+        key: nextKey,
+        focalX: typeof slotPayload?.focalX === "number" ? slotPayload.focalX : 50,
+        focalY: typeof slotPayload?.focalY === "number" ? slotPayload.focalY : 50,
+      };
+    }
+  }
+
+  if (previous.key && previous.key !== nextSlot.key) {
+    context.waitUntil(removeObject(context.env, previous.key));
+  }
+
+  const next = withAboutMediaSlot(aboutMedia, slotId, nextSlot);
+  await setAboutMedia(context.env, next);
+  return { ok: true, aboutMedia: next };
 }

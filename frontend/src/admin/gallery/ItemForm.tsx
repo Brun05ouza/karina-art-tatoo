@@ -20,6 +20,8 @@ export type ItemFormValues = {
   status: string;
   alt_text: string;
   published: boolean;
+  show_in_recent: boolean;
+  featured: boolean;
 };
 
 export type ItemFormSavePayload = {
@@ -38,6 +40,8 @@ const emptyValues = (cfg: CollectionConfig): ItemFormValues => ({
   status: cfg.statusOptions?.[0]?.value ?? "disponivel",
   alt_text: "",
   published: cfg.imageMode === "before-after" ? false : true,
+  show_in_recent: true,
+  featured: false,
 });
 
 function fromItem(item: GalleryItem, cfg: CollectionConfig): ItemFormValues {
@@ -49,6 +53,8 @@ function fromItem(item: GalleryItem, cfg: CollectionConfig): ItemFormValues {
     status: item.status ?? cfg.statusOptions?.[0]?.value ?? "disponivel",
     alt_text: item.alt_text ?? "",
     published: item.published,
+    show_in_recent: item.show_in_recent !== false,
+    featured: item.featured,
   };
 }
 
@@ -138,7 +144,6 @@ function PhotoSlot({
       <MediaDrop
         className="ks-gallery-drop"
         accept="image/jpeg,image/png,image/webp,image/avif,.heic,.heif,image/heic,image/heif"
-        capture="environment"
         disabled={busy}
         hasMedia={Boolean(previewSrc)}
         error={Boolean(error)}
@@ -300,8 +305,10 @@ export function ItemForm({ config, initial, onCancel, onSaved, save }: Props) {
     const canPublish = beforeAfter ? hasAfter || Boolean(after.prepared) : true;
     const publishValues: ItemFormValues =
       beforeAfter && values.published && !canPublish
-        ? { ...values, published: false }
-        : values;
+        ? { ...values, published: false, featured: false }
+        : !values.published
+          ? { ...values, featured: false }
+          : values;
 
     setErrors({});
     setSubmitting(true);
@@ -446,7 +453,20 @@ export function ItemForm({ config, initial, onCancel, onSaved, save }: Props) {
                   });
                   return;
                 }
-                setField("published", e.target.checked);
+                const nextPublished = e.target.checked;
+                if (!nextPublished && values.featured) {
+                  setValues((v) => ({
+                    ...v,
+                    published: false,
+                    featured: false,
+                  }));
+                  setErrors({
+                    form: "Este item era destaque — o destaque foi removido.",
+                  });
+                  return;
+                }
+                setErrors((err) => ({ ...err, form: undefined }));
+                setField("published", nextPublished);
               }}
               disabled={busy || (beforeAfter && !hasAfter && !values.published)}
             />
@@ -463,6 +483,57 @@ export function ItemForm({ config, initial, onCancel, onSaved, save }: Props) {
             </span>
           </label>
         ) : null}
+
+        <label className={`ks-gallery-flag${values.show_in_recent ? " is-on" : ""}`}>
+          <input
+            type="checkbox"
+            checked={values.show_in_recent}
+            onChange={(e) => setField("show_in_recent", e.target.checked)}
+            disabled={busy}
+          />
+          <span className="ks-gallery-flag-switch" aria-hidden="true" />
+          <span className="ks-gallery-flag-copy">
+            <strong>Aparecer em projetos recentes</strong>
+            <span>
+              {values.show_in_recent
+                ? "Incluído na vitrine da home"
+                : "Fora dos projetos recentes da home"}
+            </span>
+          </span>
+        </label>
+
+        <label
+          className={`ks-gallery-flag${values.featured ? " is-on" : ""}${
+            !values.published ? " is-blocked" : ""
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={values.featured}
+            onChange={(e) => {
+              if (e.target.checked && !values.published) {
+                setErrors({
+                  form: "Publique o item antes de marcá-lo como destaque.",
+                });
+                return;
+              }
+              setErrors((err) => ({ ...err, form: undefined }));
+              setField("featured", e.target.checked);
+            }}
+            disabled={busy || (!values.published && !values.featured)}
+          />
+          <span className="ks-gallery-flag-switch" aria-hidden="true" />
+          <span className="ks-gallery-flag-copy">
+            <strong>Destaque na janela</strong>
+            <span>
+              {!values.published
+                ? "Só disponível com o item publicado"
+                : values.featured
+                  ? "É o destaque desta coleção"
+                  : "Projeto em destaque na home"}
+            </span>
+          </span>
+        </label>
       </div>
 
       {errors.form ? (

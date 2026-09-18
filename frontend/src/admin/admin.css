@@ -456,6 +456,99 @@
   max-width: 42ch;
 }
 
+.ks-admin-about-media .ks-admin-youtube-head {
+  margin-bottom: 18px;
+}
+.ks-admin-about-block {
+  margin-top: 8px;
+  padding-top: 18px;
+  border-top: 1px solid var(--admin-border, #e8deec);
+}
+.ks-admin-about-block:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+.ks-admin-about-block-title {
+  margin: 0 0 14px;
+  font: 500 1.15rem/1.2 var(--admin-serif, "Cormorant Garamond", Georgia, serif);
+  color: var(--admin-ink);
+}
+.ks-admin-about-block--tour {
+  margin-top: 28px;
+  padding: 22px 20px 20px;
+  border-top: 0;
+  border-radius: 18px;
+  background:
+    linear-gradient(165deg, rgba(243, 235, 246, 0.95), rgba(250, 246, 251, 0.72)),
+    #fff;
+  box-shadow:
+    inset 0 0 0 1px rgba(203, 183, 212, 0.45),
+    0 14px 36px rgba(56, 32, 63, 0.06);
+}
+.ks-admin-about-tour-head {
+  margin: 0 0 18px;
+  max-width: 46ch;
+}
+.ks-admin-about-tour-kicker {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8b5a96;
+}
+.ks-admin-about-block--tour .ks-admin-about-block-title {
+  margin: 0 0 8px;
+  font-size: clamp(1.55rem, 2.2vw, 1.9rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--admin-ink, #2e173a);
+}
+.ks-admin-about-tour-lead {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--admin-muted, #6e5a74);
+}
+.ks-admin-about-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.ks-admin-about-slot {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+.ks-admin-about-slot-head {
+  display: grid;
+  gap: 2px;
+}
+.ks-admin-about-slot-head strong {
+  font-size: 14px;
+  color: var(--admin-ink);
+}
+.ks-admin-about-slot-head span {
+  font-size: 12px;
+  color: var(--admin-muted);
+}
+.ks-admin-about-frame {
+  aspect-ratio: 4 / 5;
+  min-height: 180px;
+}
+.ks-admin-about-frame .ks-focal-preview,
+.ks-admin-about-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ks-admin-about-hide-flag {
+  margin-top: 4px;
+}
+.ks-admin-about-slot.is-section-hidden .ks-admin-about-frame {
+  opacity: 0.55;
+}
+
 .ks-media-drop {
   position: relative;
   overflow: hidden;
@@ -1237,4 +1330,100 @@
   box-shadow: inset 0 0 0 1px var(--admin-lilac), 0 0 0 3px #a580af33;
   color: var(--admin-ink);
 }
+
+/* Dialogs (usuários, troca de destaque) */
+.ks-admin-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #2e173a66;
+  backdrop-filter: blur(4px);
+  animation: admin-toast-in .28s var(--admin-ease) both;
+}
+.ks-admin-dialog {
+  width: min(100%, 420px);
+  padding: 28px 26px 24px;
+  border-radius: 20px;
+  background: linear-gradient(165deg, #fffcfa, #f7f1f8);
+  color: var(--admin-ink);
+  box-shadow: var(--admin-shadow-lg), inset 0 0 0 1px #e8deec;
+}
+.ks-admin-dialog h2 {
+  margin: 0 0 10px;
+  font: 500 28px/1.15 var(--admin-serif);
+  letter-spacing: -0.02em;
+}
+.ks-admin-dialog p {
+  margin: 0 0 18px;
+  color: var(--admin-muted);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+.ks-admin-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+.ks-admin-btn--danger {
+  background: #7a2f45;
+  color: #fff;
+  box-shadow: 0 10px 24px #7a2f4522, inset 0 1px 0 #ffffff18;
+}
+.ks-admin-btn--danger:hover:not(:disabled) {
+  background: #8f3a52;
+  box-shadow: 0 14px 28px #7a2f4528, inset 0 1px 0 #ffffff22;
+}
+.ks-admin-ghost-btn--danger {
+  color: #7a2f45;
+  background: #f6e8ec;
+}
+.ks-admin-ghost-btn--danger:hover:not(:disabled) {
+  background: #efd6dd;
+}
+.ks-admin-user-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.ks-admin-featured-dialog-thumb {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 20px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--admin-border);
+}
+.ks-admin-featured-dialog-thumb img {
+  width: 56px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #eee8f0;
+}
+.ks-admin-featured-dialog-thumb strong {
+  display: block;
+  font-size: 15px;
+}
+.ks-admin-featured-dialog-thumb span {
+  font-size: 12px;
+  color: var(--admin-muted);
+}
+
+@media (max-width: 560px) {
+  .ks-admin-user-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
 

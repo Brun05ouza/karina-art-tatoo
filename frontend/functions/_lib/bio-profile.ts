@@ -10,10 +10,15 @@ export type BioProfile = {
   subtitle: string;
   studio_image_url: string;
   studio_image_key: string | null;
+  cover_image_url: string;
+  cover_image_key: string | null;
   avatar_focal_x: number;
   avatar_focal_y: number;
   studio_focal_x: number;
   studio_focal_y: number;
+  cover_focal_x: number;
+  cover_focal_y: number;
+  show_site_footer: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -77,10 +82,18 @@ function mapProfile(row: Record<string, unknown>): BioProfile {
       row.studio_image_key != null && String(row.studio_image_key).trim()
         ? String(row.studio_image_key)
         : null,
+    cover_image_url: String(row.cover_image_url ?? ""),
+    cover_image_key:
+      row.cover_image_key != null && String(row.cover_image_key).trim()
+        ? String(row.cover_image_key)
+        : null,
     avatar_focal_x: mapFocal(row, "avatar_focal_x"),
     avatar_focal_y: mapFocal(row, "avatar_focal_y"),
     studio_focal_x: mapFocal(row, "studio_focal_x"),
     studio_focal_y: mapFocal(row, "studio_focal_y"),
+    cover_focal_x: mapFocal(row, "cover_focal_x"),
+    cover_focal_y: mapFocal(row, "cover_focal_y"),
+    show_site_footer: Boolean(row.show_site_footer),
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
   };
@@ -116,10 +129,15 @@ export type BioProfilePatchInput = Partial<{
   subtitle: string;
   studio_image_url: string;
   studio_image_key: string | null;
+  cover_image_url: string;
+  cover_image_key: string | null;
   avatar_focal_x: number;
   avatar_focal_y: number;
   studio_focal_x: number;
   studio_focal_y: number;
+  cover_focal_x: number;
+  cover_focal_y: number;
+  show_site_footer: boolean;
 }>;
 
 export function validateProfilePatch(
@@ -172,11 +190,38 @@ export function validateProfilePatch(
     }
   }
 
+  if ("cover_image_url" in body) {
+    if (body.cover_image_url == null || String(body.cover_image_url).trim() === "") {
+      patch.cover_image_url = "";
+      patch.cover_image_key = null;
+      patch.cover_focal_x = 50;
+      patch.cover_focal_y = 50;
+    } else {
+      const cover_image_url = trimStr(body.cover_image_url, 2000);
+      if (!cover_image_url) return { ok: false, message: "URL da capa inválida." };
+      patch.cover_image_url = cover_image_url;
+      patch.cover_focal_x = 50;
+      patch.cover_focal_y = 50;
+    }
+  }
+
+  if ("cover_image_key" in body) {
+    if (body.cover_image_key == null || String(body.cover_image_key).trim() === "") {
+      patch.cover_image_key = null;
+    } else {
+      const key = trimStr(body.cover_image_key, 500);
+      if (!key) return { ok: false, message: "cover_image_key inválido." };
+      patch.cover_image_key = key;
+    }
+  }
+
   const focalFields = [
     ["avatarFocalX", "avatar_focal_x", "avatar_focal_x"],
     ["avatarFocalY", "avatar_focal_y", "avatar_focal_y"],
     ["studioFocalX", "studio_focal_x", "studio_focal_x"],
     ["studioFocalY", "studio_focal_y", "studio_focal_y"],
+    ["coverFocalX", "cover_focal_x", "cover_focal_x"],
+    ["coverFocalY", "cover_focal_y", "cover_focal_y"],
   ] as const;
 
   for (const [camel, snake, key] of focalFields) {
@@ -189,6 +234,14 @@ export function validateProfilePatch(
     patch[key] = parsed;
   }
 
+  if ("show_site_footer" in body || "showSiteFooter" in body) {
+    const raw = "show_site_footer" in body ? body.show_site_footer : body.showSiteFooter;
+    if (typeof raw !== "boolean") {
+      return { ok: false, message: "show_site_footer precisa ser verdadeiro ou falso." };
+    }
+    patch.show_site_footer = raw;
+  }
+
   if (Object.keys(patch).length === 0) {
     return { ok: false, message: "Nenhum campo para atualizar." };
   }
@@ -199,8 +252,10 @@ export async function getProfile(env: Env): Promise<BioProfile | null> {
   const db = sql(env);
   const rows = await db`
     SELECT id, avatar_url, avatar_key, subtitle, studio_image_url, studio_image_key,
+           cover_image_url, cover_image_key,
            avatar_focal_x, avatar_focal_y, studio_focal_x, studio_focal_y,
-           created_at, updated_at
+           cover_focal_x, cover_focal_y,
+           show_site_footer, created_at, updated_at
     FROM bio_profile
     WHERE id = 1
     LIMIT 1
@@ -218,6 +273,7 @@ export async function updateProfile(
 
   const avatarChanged = Boolean(patch.avatar_url);
   const studioChanged = Boolean(patch.studio_image_url);
+  const coverChanged = patch.cover_image_url !== undefined;
 
   const next = {
     avatar_url: patch.avatar_url ?? current.avatar_url,
@@ -226,6 +282,9 @@ export async function updateProfile(
     studio_image_url: patch.studio_image_url ?? current.studio_image_url,
     studio_image_key:
       patch.studio_image_key !== undefined ? patch.studio_image_key : current.studio_image_key,
+    cover_image_url: patch.cover_image_url !== undefined ? patch.cover_image_url : current.cover_image_url,
+    cover_image_key:
+      patch.cover_image_key !== undefined ? patch.cover_image_key : current.cover_image_key,
     avatar_focal_x:
       avatarChanged && patch.avatar_focal_x === undefined
         ? 50
@@ -242,6 +301,15 @@ export async function updateProfile(
       studioChanged && patch.studio_focal_y === undefined
         ? 50
         : (patch.studio_focal_y ?? current.studio_focal_y),
+    cover_focal_x:
+      coverChanged && patch.cover_focal_x === undefined
+        ? 50
+        : (patch.cover_focal_x ?? current.cover_focal_x),
+    cover_focal_y:
+      coverChanged && patch.cover_focal_y === undefined
+        ? 50
+        : (patch.cover_focal_y ?? current.cover_focal_y),
+    show_site_footer: patch.show_site_footer ?? current.show_site_footer,
   };
 
   const db = sql(env);
@@ -252,15 +320,22 @@ export async function updateProfile(
       subtitle = ${next.subtitle},
       studio_image_url = ${next.studio_image_url},
       studio_image_key = ${next.studio_image_key},
+      cover_image_url = ${next.cover_image_url},
+      cover_image_key = ${next.cover_image_key},
       avatar_focal_x = ${next.avatar_focal_x},
       avatar_focal_y = ${next.avatar_focal_y},
       studio_focal_x = ${next.studio_focal_x},
       studio_focal_y = ${next.studio_focal_y},
+      cover_focal_x = ${next.cover_focal_x},
+      cover_focal_y = ${next.cover_focal_y},
+      show_site_footer = ${next.show_site_footer},
       updated_at = NOW()
     WHERE id = 1
     RETURNING id, avatar_url, avatar_key, subtitle, studio_image_url, studio_image_key,
+              cover_image_url, cover_image_key,
               avatar_focal_x, avatar_focal_y, studio_focal_x, studio_focal_y,
-              created_at, updated_at
+              cover_focal_x, cover_focal_y,
+              show_site_footer, created_at, updated_at
   `;
   if (!rows[0]) return null;
   return mapProfile(rows[0] as Record<string, unknown>);
@@ -651,7 +726,7 @@ export async function reorderTestimonials(
 }
 
 /** Coleções de upload do bio (presign). */
-export const BIO_UPLOAD_COLLECTIONS = ["bio-avatar", "bio-studio"] as const;
+export const BIO_UPLOAD_COLLECTIONS = ["bio-avatar", "bio-studio", "bio-cover"] as const;
 export type BioUploadCollection = (typeof BIO_UPLOAD_COLLECTIONS)[number];
 
 export function isBioUploadCollection(value: unknown): value is BioUploadCollection {
@@ -662,6 +737,7 @@ export function isBioUploadCollection(value: unknown): value is BioUploadCollect
 }
 
 export function buildBioObjectKey(collection: BioUploadCollection, ext: string): string {
-  const folder = collection === "bio-avatar" ? "avatar" : "studio";
+  const folder =
+    collection === "bio-avatar" ? "avatar" : collection === "bio-studio" ? "studio" : "cover";
   return `bio/${folder}/${crypto.randomUUID()}.${ext}`;
 }
