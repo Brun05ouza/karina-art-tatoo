@@ -112,7 +112,12 @@ export function Header() {
         <div className="ks-header-inner">
           <Link to="/" className="ks-logo" aria-label="Karina Sarte">
             <StarGlyph size={8} color="currentColor" />
-            <span>Karina Sarte</span>
+            <span className="ks-logo-stack">
+              <span className="ks-logo-base">Karina Sarte</span>
+              <span className="ks-logo-hot" aria-hidden="true">
+                Karina Sarte
+              </span>
+            </span>
           </Link>
 
           <nav className="ks-desktop-nav">
@@ -198,7 +203,12 @@ function NavItem({
       className={`ks-nav-item${active ? " active" : ""}`}
       data-cursor="link"
     >
-      {label}
+      <span className="ks-nav-item-stack">
+        <span className="ks-nav-item-base">{label}</span>
+        <span className="ks-nav-item-hot" aria-hidden="true">
+          {label}
+        </span>
+      </span>
       <motion.span
         animate={{ scaleX: active ? 1 : 0 }}
         transition={{ duration: 0.3, ease: EASE }}

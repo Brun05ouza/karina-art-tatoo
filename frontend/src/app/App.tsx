@@ -721,7 +721,7 @@ function HomePage({ siteMode }: { siteMode: SiteModeContent }) {
             text={home.ctaText}
             cta={home.ctaButton}
             to={home.ctaButtonUrl}
-            artwork="/assets/brand/eye-heart.png"
+            artwork="/assets/brand/eye-heart.webp"
           />
         </>
       ) : null}

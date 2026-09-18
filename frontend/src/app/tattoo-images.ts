@@ -1,7 +1,7 @@
 /**
  * Assets locais permitidos no código (não vêm do CMS).
  * - Estrelas da marca: BrandStar / StarGlyph / CSS section stars
- * - Olho com coração: /assets/brand/eye-heart.png (CTA)
+ * - Olho com coração: /assets/brand/eye-heart.webp (CTA)
  * - Estúdio: frames/session mantidos temporariamente para o tour
  *
  * Fotos de trabalho, heroes e cards devem vir do admin.

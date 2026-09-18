@@ -58,7 +58,7 @@ export const defaultReformulationsContent: ReformulationsContent = {
   heroText: "Um novo projeto criado a partir da tattoo que você já tem, para melhorar desenho, composição e leitura sem apagar sua história.",
   heroButton: "Quero avaliar minha tattoo",
   heroButtonUrl: "/orcamento",
-  heroImageUrl: "/assets/hero-reformulacoes.png",
+  heroImageUrl: "/assets/hero-reformulacoes.webp",
   introEyebrow: "Reconstruir para evoluir",
   introTitle: "A tattoo continua sendo sua. O desenho evolui.",
   introText: "Partimos do desenho existente para corrigir, reorganizar e aprimorar o que já está na sua pele.",

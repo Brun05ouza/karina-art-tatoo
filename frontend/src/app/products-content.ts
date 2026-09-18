@@ -51,7 +51,7 @@ export const defaultProductsPageContent: ProductsPageContent = {
 export const defaultProductItems: ProductCatalogItem[] = [];
 
 /** Moldura fixa do hero de produtos (design, versionada em public/assets). */
-export const PRODUCTS_HERO_MOLD_SRC = "/assets/molde-produto.png";
+export const PRODUCTS_HERO_MOLD_SRC = "/assets/molde-produto.webp";
 
 function mapProducts(items: Awaited<ReturnType<typeof fetchGalleryItems>>): ProductCatalogItem[] {
   return items

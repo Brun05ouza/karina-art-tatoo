@@ -872,17 +872,28 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   }
 
   /* Contraste sobre hero escuro (home com foto) */
-  .ks-header.is-on-dark .ks-logo,
-  .ks-header.is-on-dark .ks-nav-item {
+  .ks-header.is-on-dark .ks-logo > svg,
+  .ks-header.is-on-dark .ks-logo .ks-star-glyph {
     color: rgba(247, 245, 246, 0.9);
   }
 
-  .ks-header.is-on-dark .ks-nav-item:hover,
-  .ks-header.is-on-dark .ks-nav-item.active {
+  .ks-header.is-on-dark .ks-logo-base {
+    color: rgba(247, 245, 246, 0.9);
+  }
+
+  .ks-header.is-on-dark .ks-logo-hot {
     color: #fff;
   }
 
-  .ks-header.is-on-dark .ks-nav-item span {
+  .ks-header.is-on-dark .ks-nav-item-base {
+    color: rgba(247, 245, 246, 0.9);
+  }
+
+  .ks-header.is-on-dark .ks-nav-item-hot {
+    color: #fff;
+  }
+
+  .ks-header.is-on-dark .ks-nav-item span:not(.ks-nav-item-stack):not(.ks-nav-item-base):not(.ks-nav-item-hot) {
     background: #fff;
   }
 
@@ -905,22 +916,35 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   }
 
   /* Pílula sempre em tipografia escura (sai do contraste do hero). */
-  .ks-header.is-scrolled .ks-logo,
-  .ks-header.is-scrolled .ks-nav-item,
-  .ks-header.is-open .ks-logo,
-  .ks-header.is-open .ks-nav-item {
+  .ks-header.is-scrolled .ks-logo > svg,
+  .ks-header.is-open .ks-logo > svg,
+  .ks-header.is-scrolled .ks-logo .ks-star-glyph,
+  .ks-header.is-open .ks-logo .ks-star-glyph {
     color: var(--ks-primary);
   }
 
-  .ks-header.is-scrolled .ks-nav-item:hover,
-  .ks-header.is-scrolled .ks-nav-item.active,
-  .ks-header.is-open .ks-nav-item:hover,
-  .ks-header.is-open .ks-nav-item.active {
+  .ks-header.is-scrolled .ks-logo-base,
+  .ks-header.is-open .ks-logo-base {
+    color: var(--ks-primary);
+  }
+
+  .ks-header.is-scrolled .ks-logo-hot,
+  .ks-header.is-open .ks-logo-hot {
     color: var(--ks-link);
   }
 
-  .ks-header.is-scrolled .ks-nav-item span,
-  .ks-header.is-open .ks-nav-item span {
+  .ks-header.is-scrolled .ks-nav-item-base,
+  .ks-header.is-open .ks-nav-item-base {
+    color: var(--ks-primary);
+  }
+
+  .ks-header.is-scrolled .ks-nav-item-hot,
+  .ks-header.is-open .ks-nav-item-hot {
+    color: var(--ks-link);
+  }
+
+  .ks-header.is-scrolled .ks-nav-item span:not(.ks-nav-item-stack):not(.ks-nav-item-base):not(.ks-nav-item-hot),
+  .ks-header.is-open .ks-nav-item span:not(.ks-nav-item-stack):not(.ks-nav-item-base):not(.ks-nav-item-hot) {
     background: var(--ks-link);
   }
 
@@ -992,14 +1016,55 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
 .ks-logo {
   flex: 0 0 auto;
   gap: 8px;
-  color: var(--ks-primary);
+  color: var(--ks-primary); /* fallback a11y; estrela usa fill explícito abaixo */
   text-decoration: none;
   font-family: var(--ks-font-display);
   font-size: clamp(24px, 2.6vw, 32px);
   letter-spacing: 0.04em;
   font-weight: 700;
   white-space: nowrap;
-  transition: color 0.35s ease;
+  transition: none;
+}
+
+.ks-logo > svg,
+.ks-logo .ks-star-glyph {
+  color: var(--ks-primary);
+  fill: currentColor;
+  transition: opacity 0.35s ease;
+}
+
+.ks-logo:hover > svg,
+.ks-logo:hover .ks-star-glyph {
+  opacity: 0.85;
+}
+
+.ks-logo-stack {
+  position: relative;
+  display: inline-grid;
+}
+
+.ks-logo-base,
+.ks-logo-hot {
+  grid-area: 1 / 1;
+  transition: opacity 0.35s ease;
+}
+
+.ks-logo-base {
+  color: var(--ks-primary);
+}
+
+.ks-logo-hot {
+  color: var(--ks-link);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ks-logo:hover .ks-logo-base {
+  opacity: 0;
+}
+
+.ks-logo:hover .ks-logo-hot {
+  opacity: 1;
 }
 
 .ks-logo-star {
@@ -1017,22 +1082,48 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
 .ks-nav-item {
   flex: 0 0 auto;
   position: relative;
-  color: var(--ks-on-surface-variant);
+  color: transparent;
   text-decoration: none;
   font-family: var(--ks-font-meta);
   font-size: var(--ks-text-ui);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   white-space: nowrap;
-  transition: color 0.3s ease, font-size 0.35s ease, letter-spacing 0.35s ease;
+  transition: font-size 0.35s ease, letter-spacing 0.35s ease;
 }
 
-.ks-nav-item:hover,
-.ks-nav-item.active {
+.ks-nav-item-stack {
+  position: relative;
+  display: inline-grid;
+}
+
+.ks-nav-item-base,
+.ks-nav-item-hot {
+  grid-area: 1 / 1;
+  transition: opacity 0.3s ease;
+}
+
+.ks-nav-item-base {
+  color: var(--ks-on-surface-variant);
+}
+
+.ks-nav-item-hot {
   color: var(--ks-link);
+  opacity: 0;
+  pointer-events: none;
 }
 
-.ks-nav-item span {
+.ks-nav-item:hover .ks-nav-item-base,
+.ks-nav-item.active .ks-nav-item-base {
+  opacity: 0;
+}
+
+.ks-nav-item:hover .ks-nav-item-hot,
+.ks-nav-item.active .ks-nav-item-hot {
+  opacity: 1;
+}
+
+.ks-nav-item span:not(.ks-nav-item-stack):not(.ks-nav-item-base):not(.ks-nav-item-hot) {
   position: absolute;
   left: 0;
   right: 0;
@@ -1068,7 +1159,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   white-space: nowrap;
-  transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease, transform 0.3s ease, min-height 0.35s ease, padding 0.35s ease, font-size 0.35s ease;
+  transition: transform 0.3s ease, min-height 0.35s ease, padding 0.35s ease, font-size 0.35s ease;
 }
 
 /* Botões e CTAs com borda arredondada */
@@ -1460,7 +1551,7 @@ html.ks-custom-cursor-enabled [contenteditable="true"] {
 }
 
 /*
- * Produtos: moldura fixa (molde-produto.png 800×800) + arte editável.
+ * Produtos: moldura fixa (molde-produto.webp 800×800) + arte editável.
  *
  * Abertura medida no PNG (alpha interior, laterais verticais):
  *   TL 139,53 · TR 690,152 · BR 690,750 · BL 139,737
@@ -8182,7 +8273,7 @@ button.ks-product-visual-card {
   inset: 0;
   z-index: 3;
   display: block;
-  background: url("/assets/modelo-janela.png") center / 185% 100% no-repeat;
+  background: url("/assets/modelo-janela.webp") center / 185% 100% no-repeat;
   pointer-events: none;
 }
 
@@ -8489,8 +8580,8 @@ button.ks-product-visual-card {
 
 .ks-service-card-media .ks-window-portal::after {
   background: var(--ks-lavender-aged);
-  -webkit-mask: url("/assets/modelo-janela.png") center / 185% 100% no-repeat;
-  mask: url("/assets/modelo-janela.png") center / 185% 100% no-repeat;
+  -webkit-mask: url("/assets/modelo-janela.webp") center / 185% 100% no-repeat;
+  mask: url("/assets/modelo-janela.webp") center / 185% 100% no-repeat;
   opacity: 0.92;
   filter: none;
 }

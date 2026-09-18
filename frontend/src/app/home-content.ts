@@ -85,7 +85,7 @@ export const defaultHomeContent: HomeContent = {
   heroButtonUrl: "/orcamento",
   heroSecondaryButton: "Ver portfólio",
   heroSecondaryUrl: "/portfolio",
-  heroImageUrl: "/assets/hero.jpeg",
+  heroImageUrl: "/assets/hero.webp",
 
   processEyebrow: "Processo criativo",
   processTitle: "Da conversa nasce uma composição autoral.",
@@ -93,7 +93,7 @@ export const defaultHomeContent: HomeContent = {
   processButton: "Conhecer a artista",
   processButtonUrl: "/sobre",
   processImageUrl: "/assets/karina-2.webp",
-  processPortraitUrl: "/assets/karina-sarte-retrato.jpg",
+  processPortraitUrl: "/assets/karina-sarte-retrato.webp",
   processSteps: [
     { id: "1", label: "01 · Referência", active: true, order: 1 },
     { id: "2", label: "02 · Desenho", active: true, order: 2 },

@@ -28,7 +28,7 @@ export const defaultFlashPageContent: FlashPageContent = {
   heroKicker: "Flash Tattoos",
   heroTitle: "Flash Tattoos disponíveis",
   heroText: "Artes autorais prontas para tatuar, com disponibilidade limitada.",
-  heroImageUrl: "/assets/flashs/gatin-sem-bkg.png",
+  heroImageUrl: "/assets/flashs/gatin-sem-bkg.webp",
 };
 
 export const defaultFlashItems: FlashTattooItem[] = [];

@@ -48,11 +48,11 @@ export const defaultAboutContent: AboutContent = {
   eyebrow: "A artista",
   title: "Sobre a Karina Sarte",
   intro: "Karina Sarte cria projetos que unem arte, identidade e cuidado. Cada tattoo é pensada de forma personalizada, respeitando a história, o corpo e o estilo de quem escolhe levar aquela arte na pele.",
-  heroImageUrl: "/assets/hero-sobre.jpeg",
+  heroImageUrl: "/assets/hero-sobre.webp",
 
   biography: "Minha estética é autoral, com traço fino e referências botânicas. Construo projetos que equilibram delicadeza e presença. Todo atendimento começa com escuta: quero entender suas referências, as proporções e o significado por trás da ideia.\n\nEm Teresópolis, criei um espaço de criação e cuidado. Da primeira mensagem à cicatrização, acompanho cada etapa com orientação clara e muita atenção.",
   quote: "Crio projetos que abraçam o corpo e são uma extensão da sua personalidade.",
-  imageUrl: "/assets/karina-sarte.png",
+  imageUrl: "/assets/karina-sarte.webp",
 
   approachCards: [
     { id: "1", title: "Processo criativo", text: "Penso cada projeto como uma conversa entre sua história, seu corpo e minha linguagem visual.", active: true, order: 1 },

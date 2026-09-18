@@ -106,7 +106,7 @@ export function LinkBioLanding() {
     .map((item) => item.text);
 
   const studioImage = content.studioImageUrl || "/assets/studio/processo.jpeg";
-  const coverImage = content.backgroundUrl || "/assets/projeto-destaque.jpeg";
+  const coverImage = content.backgroundUrl || "/assets/projeto-destaque.webp";
 
   return (
     <section

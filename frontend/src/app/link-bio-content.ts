@@ -97,7 +97,7 @@ export const defaultLinkBioContent: LinkBioContent = {
   eyebrow: "Link da bio",
   name: "Karina Sarte",
   bio: "Tatuagem autoral · Teresópolis, RJ",
-  avatarUrl: "/assets/karina-sarte.png",
+  avatarUrl: "/assets/karina-sarte.webp",
   backgroundUrl: "",
   instagram: "@karinasarte",
   footerLabel: "Site completo",
