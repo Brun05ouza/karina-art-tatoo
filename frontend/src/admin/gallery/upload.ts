@@ -1,4 +1,4 @@
-/** Pipeline de imagem no navegador: HEIC → resize → JPEG → presign → PUT Supabase. */
+/** Pipeline de imagem no navegador: HEIC → resize → WebP (fallback JPEG) → presign → PUT Supabase. */
 
 export type UploadStage =
   | "idle"
@@ -17,7 +17,7 @@ export type PreparedImage = {
   width: number;
   height: number;
   bytes: number;
-  contentType: "image/jpeg";
+  contentType: "image/webp" | "image/jpeg";
 };
 
 export type UploadedImage = {
@@ -28,12 +28,17 @@ export type UploadedImage = {
   bytes: number;
 };
 
-const MAX_EDGE = 2000;
-const MAX_BYTES = 2 * 1024 * 1024;
-const QUALITIES = [0.86, 0.78, 0.68, 0.58] as const;
+/** Maior lado em px — cobre retina (~800 CSS × 2) com folga. */
+export const MAX_EDGE = 1600;
+/** Teto após compressão. Só uploads novos; arquivos já no bucket não mudam. */
+export const MAX_BYTES = 800 * 1024;
+const WEBP_QUALITIES = [0.82, 0.78] as const;
+const JPEG_QUALITIES = [0.82, 0.78, 0.72] as const;
 
 const HEIC_MIME = /image\/hei(c|f)/i;
 const HEIC_EXT = /\.hei(c|f)$/i;
+
+let webpEncodeSupported: boolean | null = null;
 
 export function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`;
@@ -47,6 +52,33 @@ export function isHeicFile(file: File): boolean {
   // Alguns iOS entregam type vazio com nome .HEIC
   if (!file.type && /\.heic$/i.test(file.name)) return true;
   return false;
+}
+
+/**
+ * Safari iOS 16+ / Safari 16+ suportam `canvas.toBlob('image/webp')`.
+ * Em versões antigas o callback recebe null — detectamos uma vez e caímos em JPEG.
+ */
+export async function canEncodeWebp(): Promise<boolean> {
+  if (webpEncodeSupported !== null) return webpEncodeSupported;
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = 2;
+    canvas.height = 2;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      webpEncodeSupported = false;
+      return false;
+    }
+    ctx.fillStyle = "#abc";
+    ctx.fillRect(0, 0, 2, 2);
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((b) => resolve(b), "image/webp", 0.8);
+    });
+    webpEncodeSupported = Boolean(blob && blob.type === "image/webp" && blob.size > 0);
+  } catch {
+    webpEncodeSupported = false;
+  }
+  return webpEncodeSupported;
 }
 
 async function loadLibheif(): Promise<{ HeifDecoder: new () => HeifDecoder }> {
@@ -156,20 +188,38 @@ function drawScaled(
   return canvas;
 }
 
-function canvasToBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) reject(new Error("Falha ao comprimir a imagem."));
-        else resolve(blob);
-      },
-      "image/jpeg",
-      quality,
-    );
+function canvasToBlob(
+  canvas: HTMLCanvasElement,
+  mime: "image/webp" | "image/jpeg",
+  quality: number,
+): Promise<Blob | null> {
+  return new Promise((resolve) => {
+    try {
+      canvas.toBlob((blob) => resolve(blob), mime, quality);
+    } catch {
+      resolve(null);
+    }
   });
 }
 
-/** Lê arquivo, converte HEIC se preciso, redimensiona e comprime ≤ 2 MB. */
+async function encodeUnderCap(
+  canvas: HTMLCanvasElement,
+  mime: "image/webp" | "image/jpeg",
+  qualities: readonly number[],
+): Promise<{ blob: Blob; quality: number } | null> {
+  let best: { blob: Blob; quality: number } | null = null;
+  for (const q of qualities) {
+    const blob = await canvasToBlob(canvas, mime, q);
+    if (!blob || blob.size === 0) return null;
+    // Alguns Safari antigos ignoram o mime e devolvem PNG/JPEG — rejeita.
+    if (mime === "image/webp" && blob.type && blob.type !== "image/webp") return null;
+    best = { blob, quality: q };
+    if (blob.size <= MAX_BYTES) return best;
+  }
+  return best;
+}
+
+/** Lê arquivo, converte HEIC se preciso, redimensiona e comprime ≤ 800 KB (WebP, fallback JPEG). */
 export async function prepareImage(
   file: File,
   onStage?: (stage: UploadStage, detail?: string) => void,
@@ -193,22 +243,31 @@ export async function prepareImage(
     }
   }
 
-  let blob: Blob | null = null;
-  let usedQ = QUALITIES[QUALITIES.length - 1]!;
-  for (const q of QUALITIES) {
-    usedQ = q;
-    blob = await canvasToBlob(canvas, q);
-    if (blob.size <= MAX_BYTES) break;
+  let contentType: "image/webp" | "image/jpeg" = "image/webp";
+  let encoded: { blob: Blob; quality: number } | null = null;
+
+  if (await canEncodeWebp()) {
+    encoded = await encodeUnderCap(canvas, "image/webp", WEBP_QUALITIES);
   }
 
-  if (!blob || blob.size > MAX_BYTES) {
+  if (!encoded) {
+    contentType = "image/jpeg";
+    encoded = await encodeUnderCap(canvas, "image/jpeg", JPEG_QUALITIES);
+  }
+
+  if (!encoded || encoded.blob.size > MAX_BYTES) {
     throw new Error(
-      `Essa foto ficou grande demais mesmo comprimida (${formatBytes(blob?.size ?? 0)}). Escolha outra ou recorte antes de enviar.`,
+      `Essa foto ficou grande demais mesmo comprimida (${formatBytes(encoded?.blob.size ?? 0)}). Escolha outra ou recorte antes de enviar.`,
     );
   }
 
+  const { blob, quality: usedQ } = encoded;
   const previewUrl = URL.createObjectURL(blob);
-  onStage?.("preview", `Pronta · ${formatBytes(blob.size)} · qualidade ${Math.round(usedQ * 100)}%`);
+  const fmt = contentType === "image/webp" ? "WebP" : "JPEG";
+  onStage?.(
+    "preview",
+    `Pronta · ${formatBytes(blob.size)} · ${fmt} q${Math.round(usedQ * 100)}`,
+  );
 
   return {
     blob,
@@ -216,7 +275,7 @@ export async function prepareImage(
     width: canvas.width,
     height: canvas.height,
     bytes: blob.size,
-    contentType: "image/jpeg",
+    contentType,
   };
 }
 
@@ -330,7 +389,6 @@ export async function uploadPreparedImage(
 
   onStage?.("uploading", "Enviando foto…");
 
-  // Supabase signed upload: PUT no URL com token (ou POST — tentar PUT primeiro)
   let put = await fetch(presign.signedUrl, {
     method: "PUT",
     headers: {
@@ -365,3 +423,4 @@ export async function uploadPreparedImage(
     bytes: prepared.bytes,
   };
 }
+

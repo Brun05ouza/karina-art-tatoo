@@ -151,7 +151,7 @@ function PhotoSlot({
             <img src="/assets/brand/star-karina-outline.webp" alt="" className="ks-gallery-drop-star" />
             <strong>{emptyTitle}</strong>
             <span>Toque para escolher ou arraste a imagem aqui</span>
-            <span className="ks-gallery-drop-hint">JPEG, PNG, WebP ou HEIC · até ~2 MB</span>
+            <span className="ks-gallery-drop-hint">JPEG, PNG, WebP ou HEIC · até ~800 KB</span>
           </>
         }
       >

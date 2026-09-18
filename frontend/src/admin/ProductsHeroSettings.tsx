@@ -229,7 +229,7 @@ export function ProductsHeroSettings() {
           <p className="ks-admin-muted ks-admin-youtube-help" id="ks-admin-products-hero-help">
             Envie uma <strong>imagem quadrada da arte</strong> (JPEG, PNG ou WebP). O site coloca
             dentro da moldura com a perspectiva. Arraste na prévia para escolher o enquadramento.
-            Ideal ~800×800 px. Máx. 2 MB após compressão.
+            Ideal ~800×800 px. Máx. 800 KB após compressão.
           </p>
         </div>
       </div>
